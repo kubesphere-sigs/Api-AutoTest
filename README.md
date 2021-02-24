@@ -30,23 +30,23 @@
 ``` 
 
 ## 使用指南
-1、安装python3环境
-2、安装allure
-3、安装项目的依赖库
+- 安装python3环境
+- 安装allure
+- 安装项目的依赖库
 ```
 pip3 install -r requirements.txt
 ```
-4、暴露apiserver端口，在ks-apiserver deployment的配置文件中的增加hostPort
+- 暴露apiserver端口，在ks-apiserver deployment的配置文件中的增加hostPort
 ```
 kubectl edit deployment ks-apiserver -n kubesphere-system
 ``` 
-5、进入TestCase目录下，运行如下命令即可运行测试用例。
+- 进入TestCase目录下，运行如下命令即可运行测试用例。
 (pytest [file_or_dir] --alluredir ../report --clean-alluredir。不推荐执行testAppStore.py，该脚本运行时间很长。)
 ```
 pytest testRloe.py --alluredir ../report --clean-alluredir
 ```
-6、生成测试报告
+- 生成测试报告
 ```
 allure generate ../report ../allure_report --clean
 ```
-7、测试报告示例
+- 测试报告示例
