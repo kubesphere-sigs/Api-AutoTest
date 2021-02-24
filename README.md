@@ -32,8 +32,21 @@
 ## 使用指南
 - 安装python3环境
 - 安装allure 
+1、下载allure包，选择最新或者任意版本
 ```
 https://github.com/allure-framework/allure2/releases
+```
+2、如下载路径为 ’/usr/local/src/‘，解压并修改文件夹权限
+```
+unzip allure-commandline-2.13.6.zip
+mv allure-2.13.6 allure
+chmod -R 777 allure
+```
+3、配置allure环境变量
+```
+cat >> /root/.bashrc << "EOF" 
+export PATH=/usr/local/src/allure/bin:$PATH 
+EOF
 ```
 - 安装项目的依赖库
 ```
