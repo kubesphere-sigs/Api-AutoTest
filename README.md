@@ -64,7 +64,7 @@ pip3 install -r requirements.txt
 ```
 kubectl edit deployment ks-apiserver -n kubesphere-system
 ``` 
-5、进入TestCase目录下，运行如下命令即可运行测试用例。
+5、进入TestCase目录下，运行如下命令即可执行测试用例。
 (pytest [file_or_dir] --alluredir ../report --clean-alluredir。不推荐执行testAppStore.py，该脚本运行时间很长。)
 ```
 pytest testRloe.py --alluredir ../report --clean-alluredir
