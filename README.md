@@ -74,5 +74,5 @@ pytest testRloe.py --alluredir ../report --clean-alluredir
 allure generate ../report ../allure_report --clean
 ```
 7、测试报告示例
-https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/1.png
-https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/2.png
+![Image text](https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/1.png)
+![Image text](https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/2.png)
