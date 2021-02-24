@@ -1,0 +1,113 @@
+{
+  "uid" : "b28c1225a1dd28aa",
+  "name" : "创建存储卷时输入不符合规则的存储卷名称(包含大写字母)",
+  "fullName" : "TestCase.testProject.TestProject#test_project[5-/api/v1/namespaces/test-project/persistentvolumeclaims-{\"apiVersion\":\"v1\",\"kind\":\"PersistentVolumeClaim\",\"metadata\":{\"namespace\":\"test-project\",\"name\":\"testAvolume1\",\"labels\":{},\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"accessModes\":[\"ReadWriteOnce\"],\"resources\":{\"requests\":{\"storage\":\"10Gi\"}},\"storageClassName\":\"csi-standard\"},\"create_way\":\"storageclass\"}-存储管理-存储卷-创建存储卷时输入不符合规则的存储卷名称(包含大写字母)-post-normal-r.json()['message']-PersistentVolumeClaim \"testAvolume1\" is invalid: metadata.name: Invalid value: \"testAvolume1\": a DNS-1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*",
+  "historyId" : "acbc57339ed7744d4b76ac36f84a4854",
+  "time" : {
+    "start" : 1614158777699,
+    "stop" : 1614158778001,
+    "duration" : 302
+  },
+  "description" : "\n        :param id: 用例编号\n        :param url: 用例请求的URL地址\n        :param data: 用例使用的请求数据\n        :param story: 用例模块\n        :param title: 用例标题\n        :param method: 用例的请求方式\n        :param severity: 用例优先级\n        :param condition: 用例的校验条件\n        :param except_result: 用例的预期结果\n        ",
+  "descriptionHtml" : "<pre><code>    :param id: 用例编号\n    :param url: 用例请求的URL地址\n    :param data: 用例使用的请求数据\n    :param story: 用例模块\n    :param title: 用例标题\n    :param method: 用例的请求方式\n    :param severity: 用例优先级\n    :param condition: 用例的校验条件\n    :param except_result: 用例的预期结果\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "\n        :param id: 用例编号\n        :param url: 用例请求的URL地址\n        :param data: 用例使用的请求数据\n        :param story: 用例模块\n        :param title: 用例标题\n        :param method: 用例的请求方式\n        :param severity: 用例优先级\n        :param condition: 用例的校验条件\n        :param except_result: 用例的预期结果\n        ",
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "2e27555ffac9a8c7",
+      "name" : "stdout",
+      "source" : "2e27555ffac9a8c7.txt",
+      "type" : "text/plain",
+      "size" : 1467
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "story",
+    "value" : "存储管理-存储卷"
+  }, {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "feature",
+    "value" : "Project"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "parentSuite",
+    "value" : "TestCase"
+  }, {
+    "name" : "suite",
+    "value" : "testProject"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestProject"
+  }, {
+    "name" : "host",
+    "value" : "mrsunshinedeMacBook-Pro.local"
+  }, {
+    "name" : "thread",
+    "value" : "11232-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "TestCase.testProject"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "condition",
+    "value" : "'r.json()['message']'"
+  }, {
+    "name" : "data",
+    "value" : "'{\"apiVersion\":\"v1\",\"kind\":\"PersistentVolumeClaim\",\"metadata\":{\"namespace\":\"test-project\",\"name\":\"testAvolume1\",\"labels\":{},\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"accessModes\":[\"ReadWriteOnce\"],\"resources\":{\"requests\":{\"storage\":\"10Gi\"}},\"storageClassName\":\"csi-standard\"},\"create_way\":\"storageclass\"}'"
+  }, {
+    "name" : "except_result",
+    "value" : "'PersistentVolumeClaim \"testAvolume1\" is invalid: metadata.name: Invalid value: \"testAvolume1\": a DNS-1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'"
+  }, {
+    "name" : "id",
+    "value" : "5"
+  }, {
+    "name" : "method",
+    "value" : "'post'"
+  }, {
+    "name" : "severity",
+    "value" : "'normal'"
+  }, {
+    "name" : "story",
+    "value" : "'存储管理-存储卷'"
+  }, {
+    "name" : "title",
+    "value" : "'创建存储卷时输入不符合规则的存储卷名称(包含大写字母)'"
+  }, {
+    "name" : "url",
+    "value" : "'/api/v1/namespaces/test-project/persistentvolumeclaims'"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "b28c1225a1dd28aa.json",
+  "parameterValues" : [ "'r.json()['message']'", "'{\"apiVersion\":\"v1\",\"kind\":\"PersistentVolumeClaim\",\"metadata\":{\"namespace\":\"test-project\",\"name\":\"testAvolume1\",\"labels\":{},\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"accessModes\":[\"ReadWriteOnce\"],\"resources\":{\"requests\":{\"storage\":\"10Gi\"}},\"storageClassName\":\"csi-standard\"},\"create_way\":\"storageclass\"}'", "'PersistentVolumeClaim \"testAvolume1\" is invalid: metadata.name: Invalid value: \"testAvolume1\": a DNS-1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "5", "'post'", "'normal'", "'存储管理-存储卷'", "'创建存储卷时输入不符合规则的存储卷名称(包含大写字母)'", "'/api/v1/namespaces/test-project/persistentvolumeclaims'" ]
+}

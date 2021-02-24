@@ -1,0 +1,10 @@
+用例编号: 14
+用例请求的URL地址: http://139.198.9.112:9090/apis/snapshot.storage.k8s.io/v1beta1/namespaces/test-project/volumesnapshots
+用例使用的请求数据: {'apiVersion': 'snapshot.storage.k8s.io/v1beta1', 'kind': 'VolumeSnapshot', 'metadata': {'name': 'wx@snapshot', 'annotations': {'kubesphere.io/creator': 'admin'}}, 'spec': {'volumeSnapshotClassName': 'csi-ssd-enterprise', 'source': {'kind': 'PersistentVolumeClaim', 'persistentVolumeClaimName': 'test-project-volume'}}}
+用例模块: 存储管理-存储卷快照
+用例标题: 创建存储卷快照时输入不符合规则的快照名称(包含符号@)
+用例的请求方式: post
+用例优先级: normal
+用例的校验条件: r.json()['message']
+用例的实际结果: VolumeSnapshot.snapshot.storage.k8s.io "wx@snapshot" is invalid: metadata.name: Invalid value: "wx@snapshot": a DNS-1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')
+用例的预期结果: VolumeSnapshot.snapshot.storage.k8s.io "wx@snapshot" is invalid: metadata.name: Invalid value: "wx@snapshot": a DNS-1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')

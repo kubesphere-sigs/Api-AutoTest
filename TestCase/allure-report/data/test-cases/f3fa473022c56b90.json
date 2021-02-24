@@ -1,0 +1,110 @@
+{
+  "uid" : "f3fa473022c56b90",
+  "name" : "删除存在的存储卷，并验证删除成功",
+  "fullName" : "TestCase.testProject.TestProject#test_delete_volume",
+  "historyId" : "ab0816ba528425687c7edbaeb04f7ad3",
+  "time" : {
+    "start" : 1614158800980,
+    "stop" : 1614158801539,
+    "duration" : 559
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "beforeStages" : [ {
+    "name" : "_Class__pytest_setup_class",
+    "time" : {
+      "start" : 1614158675668,
+      "stop" : 1614158676907,
+      "duration" : 1239
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "31e8c16ca8e2f981",
+      "name" : "stdout",
+      "source" : "31e8c16ca8e2f981.txt",
+      "type" : "text/plain",
+      "size" : 86
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ {
+    "name" : "_Class__pytest_setup_class::0",
+    "time" : {
+      "start" : 1614158802094,
+      "stop" : 1614158807915,
+      "duration" : 5821
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "labels" : [ {
+    "name" : "story",
+    "value" : "存储管理-存储卷"
+  }, {
+    "name" : "feature",
+    "value" : "Project"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "parentSuite",
+    "value" : "TestCase"
+  }, {
+    "name" : "suite",
+    "value" : "testProject"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestProject"
+  }, {
+    "name" : "host",
+    "value" : "mrsunshinedeMacBook-Pro.local"
+  }, {
+    "name" : "thread",
+    "value" : "11232-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "TestCase.testProject"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "critical",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "f3fa473022c56b90.json",
+  "parameterValues" : [ ]
+}

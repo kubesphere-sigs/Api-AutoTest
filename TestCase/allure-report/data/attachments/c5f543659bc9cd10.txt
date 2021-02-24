@@ -1,0 +1,10 @@
+用例编号: 9
+用例请求的URL地址: http://139.198.9.112:9090/kapis/iam.kubesphere.io/v1alpha2/workspaces/auto-wx-ws/workspaceroles
+用例使用的请求数据: {'apiVersion': 'iam.kubesphere.io/v1alpha2', 'kind': 'WorkspaceRole', 'rules': [], 'metadata': {'name': 'wx-role', 'annotations': {'iam.kubesphere.io/aggregation-roles': '["role-template-view-basic"]', 'kubesphere.io/creator': 'admin'}}}
+用例模块: 企业空间设置-企业角色
+用例标题: 在企业空间auoto-wx-ws创建角色wx-role（该角色没有任何权限）
+用例的请求方式: post
+用例优先级: critical
+用例的校验条件: r.json()['metadata']['name']
+用例的实际结果: wx-role
+用例的预期结果: wx-role

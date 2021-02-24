@@ -1,0 +1,2 @@
+actual_result:r.json()['status']['phase'] = Succeeded
+expect_result: Succeeded

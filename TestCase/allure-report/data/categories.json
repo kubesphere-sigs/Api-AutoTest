@@ -1,0 +1,61 @@
+{
+  "uid" : "4b4757e66a1912dae1a509f688f20b0f",
+  "children" : [ {
+    "name" : "Test defects",
+    "children" : [ {
+      "name" : "json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "children" : [ {
+        "name" : "通过图形界面创建、编辑、运行流水线,最后删除流水线",
+        "uid" : "77d358b7d1f3761c",
+        "parentUid" : "7bcaf70ebf758f58bb51e7ee5ff79f52",
+        "status" : "broken",
+        "time" : {
+          "start" : 1614158664793,
+          "stop" : 1614158665651,
+          "duration" : 858
+        },
+        "flaky" : false,
+        "parameters" : [ ]
+      } ],
+      "uid" : "7bcaf70ebf758f58bb51e7ee5ff79f52"
+    } ],
+    "uid" : "bdbf199525818fae7a8651db9eafe741"
+  }, {
+    "name" : "Product defects",
+    "children" : [ {
+      "name" : "AssertionError: assert False == 'False'",
+      "children" : [ {
+        "name" : "开启企业空间auto-wx-ws网络隔离",
+        "uid" : "c03b2e05359c4c55",
+        "parentUid" : "5e5c7c15e397d5bff5022d2536bdf8bc",
+        "status" : "failed",
+        "time" : {
+          "start" : 1614158827767,
+          "stop" : 1614158828046,
+          "duration" : 279
+        },
+        "flaky" : false,
+        "parameters" : [ "'r.json()['spec']['template']['spec']['networkIsolation']'", "'{\"spec\":{\"template\":{\"spec\":{\"networkIsolation\":False}}}}'", "'False'", "23", "'patch'", "'critical'", "'企业空间设置-基本信息'", "'开启企业空间auto-wx-ws网络隔离'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/auto-wx-ws'" ]
+      } ],
+      "uid" : "5e5c7c15e397d5bff5022d2536bdf8bc"
+    }, {
+      "name" : "AssertionError: assert True == 'True'",
+      "children" : [ {
+        "name" : "关闭企业空间auto-wx-ws网络隔离",
+        "uid" : "a5653ef3d3c23f15",
+        "parentUid" : "6a5a5998996a63015453a37c39f82df9",
+        "status" : "failed",
+        "time" : {
+          "start" : 1614158828062,
+          "stop" : 1614158828342,
+          "duration" : 280
+        },
+        "flaky" : false,
+        "parameters" : [ "'r.json()['spec']['template']['spec']['networkIsolation']'", "'{\"spec\":{\"template\":{\"spec\":{\"networkIsolation\":True}}}}'", "'True'", "24", "'patch'", "'critical'", "'企业空间设置-基本信息'", "'关闭企业空间auto-wx-ws网络隔离'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/auto-wx-ws'" ]
+      } ],
+      "uid" : "6a5a5998996a63015453a37c39f82df9"
+    } ],
+    "uid" : "8fb3a91ba5aaf9de24cc8a92edc82b5d"
+  } ],
+  "name" : "categories"
+}

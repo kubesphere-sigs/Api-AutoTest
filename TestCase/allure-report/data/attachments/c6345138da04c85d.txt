@@ -1,0 +1,10 @@
+用例编号: 31
+用例请求的URL地址: http://139.198.9.112:9090/api/v1/namespaces/test-project/configmaps
+用例使用的请求数据: {'apiVersion': 'v1', 'kind': 'ConfigMap', 'metadata': {'namespace': 'test-project', 'labels': {}, 'name': 'wx-peizhi', 'annotations': {'kubesphere.io/creator': 'admin'}}, 'spec': {'template': {'metadata': {'labels': {}}}}, 'data': {'key': 'key'}}
+用例模块: 配置中心-配置
+用例标题: 创建配置
+用例的请求方式: post
+用例优先级: critical
+用例的校验条件: r.json()['metadata']['name']
+用例的实际结果: wx-peizhi
+用例的预期结果: wx-peizhi

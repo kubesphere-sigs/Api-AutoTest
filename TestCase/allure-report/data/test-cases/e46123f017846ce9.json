@@ -1,0 +1,110 @@
+{
+  "uid" : "e46123f017846ce9",
+  "name" : "删除不包含应用的分类",
+  "fullName" : "TestCase.testAppStoreManage.TestManageApp#test_delete_category",
+  "historyId" : "cb74772423112e39d4dec285c9846d3c",
+  "time" : {
+    "start" : 1614158547604,
+    "stop" : 1614158548287,
+    "duration" : 683
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "新建应用分类",
+      "time" : {
+        "start" : 1614158547605,
+        "stop" : 1614158547925,
+        "duration" : 320
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "cate_name",
+        "value" : "'test-wx1'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "删除不包含应用的分类",
+      "time" : {
+        "start" : 1614158547925,
+        "stop" : 1614158548287,
+        "duration" : 362
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "cate_id",
+        "value" : "'ctg-MjM4pypKGNmK'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 2,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "story",
+    "value" : "应用分类"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "feature",
+    "value" : "应用商店管理"
+  }, {
+    "name" : "parentSuite",
+    "value" : "TestCase"
+  }, {
+    "name" : "suite",
+    "value" : "testAppStoreManage"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestManageApp"
+  }, {
+    "name" : "host",
+    "value" : "mrsunshinedeMacBook-Pro.local"
+  }, {
+    "name" : "thread",
+    "value" : "11232-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "TestCase.testAppStoreManage"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "critical",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "e46123f017846ce9.json",
+  "parameterValues" : [ ]
+}

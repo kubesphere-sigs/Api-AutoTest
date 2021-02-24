@@ -1,0 +1,10 @@
+用例编号: 26
+用例请求的URL地址: http://139.198.9.112:9090/api/v1/namespaces/test-project/secrets
+用例使用的请求数据: {'apiVersion': 'v1', 'kind': 'Secret', 'metadata': {'namespace': 'test-project', 'labels': {}, 'name': 'wx-secret4', 'annotations': {'kubesphere.io/creator': 'admin'}}, 'type': '', 'spec': {'template': {'metadata': {'labels': {}}}}, 'data': {'wx-key': 'd3gtdmFsdWU='}}
+用例模块: 配置中心-秘钥
+用例标题: 创建自定义类型秘钥
+用例的请求方式: post
+用例优先级: critical
+用例的校验条件: r.json()['data']['wx-key']
+用例的实际结果: d3gtdmFsdWU=
+用例的预期结果: d3gtdmFsdWU=

@@ -1,0 +1,113 @@
+{
+  "uid" : "e09580ed49340005",
+  "name" : "增加用户(使用其它用户的邮箱)",
+  "fullName" : "TestCase.testUser.TestUser#test_user",
+  "historyId" : "9c9bf1af8f368c8c4725938fb67d177f",
+  "time" : {
+    "start" : 1614158816086,
+    "stop" : 1614158816383,
+    "duration" : 297
+  },
+  "description" : "\n        :param id: 用例编号\n        :param url: 用例请求的URL地址\n        :param data: 用例使用的请求数据\n        :param title: 用例标题\n        :param method: 用例的请求方式\n        :param severity: 用例优先级\n        :param condition: 用例的校验条件\n        :param except_result: 用例的预期结果\n        ",
+  "descriptionHtml" : "<pre><code>    :param id: 用例编号\n    :param url: 用例请求的URL地址\n    :param data: 用例使用的请求数据\n    :param title: 用例标题\n    :param method: 用例的请求方式\n    :param severity: 用例优先级\n    :param condition: 用例的校验条件\n    :param except_result: 用例的预期结果\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "\n        :param id: 用例编号\n        :param url: 用例请求的URL地址\n        :param data: 用例使用的请求数据\n        :param title: 用例标题\n        :param method: 用例的请求方式\n        :param severity: 用例优先级\n        :param condition: 用例的校验条件\n        :param except_result: 用例的预期结果\n        ",
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "ff53a6524f007347",
+      "name" : "stdout",
+      "source" : "ff53a6524f007347.txt",
+      "type" : "text/plain",
+      "size" : 794
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "story",
+    "value" : "添加用户"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "feature",
+    "value" : "系统账户管理"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "parentSuite",
+    "value" : "TestCase"
+  }, {
+    "name" : "suite",
+    "value" : "testUser"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestUser"
+  }, {
+    "name" : "host",
+    "value" : "mrsunshinedeMacBook-Pro.local"
+  }, {
+    "name" : "thread",
+    "value" : "11232-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "TestCase.testUser"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "condition",
+    "value" : "'r.text'"
+  }, {
+    "name" : "data",
+    "value" : "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"User\",\"metadata\":{\"name\":\"wx\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"email\":\"stevewen9@yunify.com\",\"password\":\"P@88w0rd\"}}'"
+  }, {
+    "name" : "except_result",
+    "value" : "'admission webhook \"validating-user.kubesphere.io\" denied the request: user email: stevewen9@yunify.com already exists'"
+  }, {
+    "name" : "id",
+    "value" : "12"
+  }, {
+    "name" : "method",
+    "value" : "'post'"
+  }, {
+    "name" : "severity",
+    "value" : "'critical'"
+  }, {
+    "name" : "story",
+    "value" : "'添加用户'"
+  }, {
+    "name" : "title",
+    "value" : "'增加用户(使用其它用户的邮箱)'"
+  }, {
+    "name" : "url",
+    "value" : "'/kapis/iam.kubesphere.io/v1alpha2/users'"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "critical",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "e09580ed49340005.json",
+  "parameterValues" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"User\",\"metadata\":{\"name\":\"wx\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"email\":\"stevewen9@yunify.com\",\"password\":\"P@88w0rd\"}}'", "'admission webhook \"validating-user.kubesphere.io\" denied the request: user email: stevewen9@yunify.com already exists'", "12", "'post'", "'critical'", "'添加用户'", "'增加用户(使用其它用户的邮箱)'", "'/kapis/iam.kubesphere.io/v1alpha2/users'" ]
+}

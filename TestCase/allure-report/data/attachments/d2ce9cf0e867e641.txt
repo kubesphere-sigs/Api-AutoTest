@@ -1,0 +1,3 @@
+删除存储卷快照耗时:8秒
+actual_result:r1.json()['totalItems'] = 0
+expect_result: 0

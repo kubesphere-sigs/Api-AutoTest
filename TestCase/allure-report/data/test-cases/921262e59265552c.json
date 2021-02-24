@@ -1,0 +1,136 @@
+{
+  "uid" : "921262e59265552c",
+  "name" : "查看devops工程默认的所有角色",
+  "fullName" : "TestCase.testDevops.TestDevOps#test_devops_role_all",
+  "historyId" : "64cd02ff8e008116b215712ea6737a46",
+  "time" : {
+    "start" : 1614158669990,
+    "stop" : 1614158670261,
+    "duration" : 271
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "beforeStages" : [ {
+    "name" : "_Class__pytest_setup_class",
+    "time" : {
+      "start" : 1614158662104,
+      "stop" : 1614158663344,
+      "duration" : 1240
+    },
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "创建devops工程并获取工程名称",
+      "time" : {
+        "start" : 1614158663048,
+        "stop" : 1614158663344,
+        "duration" : 296
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "ws_name",
+        "value" : "'wx-ws1'"
+      }, {
+        "name" : "devops_name",
+        "value" : "'wx-devops'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 1,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  } ],
+  "afterStages" : [ {
+    "name" : "_Class__pytest_setup_class::0",
+    "time" : {
+      "start" : 1614158674795,
+      "stop" : 1614158675663,
+      "duration" : 868
+    },
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "删除devops工程",
+      "time" : {
+        "start" : 1614158674795,
+        "stop" : 1614158675083,
+        "duration" : 288
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "ws_name",
+        "value" : "'wx-ws1'"
+      }, {
+        "name" : "devops_name",
+        "value" : "'wx-devops6thzg'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 1,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  } ],
+  "labels" : [ {
+    "name" : "feature",
+    "value" : "DevOps"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "story",
+    "value" : "工程管理-工程角色"
+  }, {
+    "name" : "parentSuite",
+    "value" : "TestCase"
+  }, {
+    "name" : "suite",
+    "value" : "testDevops"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestDevOps"
+  }, {
+    "name" : "host",
+    "value" : "mrsunshinedeMacBook-Pro.local"
+  }, {
+    "name" : "thread",
+    "value" : "11232-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "TestCase.testDevops"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "critical",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "921262e59265552c.json",
+  "parameterValues" : [ ]
+}

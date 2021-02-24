@@ -1,0 +1,11 @@
+{'metadata': {'annotations': {'kubesphere.io/network-isolate': 'enabled'}}}
+用例编号: 36
+用例请求的URL地址: http://139.198.9.112:9090/api/v1/namespaces/test-project
+用例使用的请求数据: {'metadata': {'annotations': {'kubesphere.io/network-isolate': 'enabled'}}}
+用例模块: 项目设置-网络隔离
+用例标题: 开启项目网络隔离
+用例的请求方式: patch
+用例优先级: critical
+用例的校验条件: r.json()['status']['phase']
+用例的实际结果: Active
+用例的预期结果: Active

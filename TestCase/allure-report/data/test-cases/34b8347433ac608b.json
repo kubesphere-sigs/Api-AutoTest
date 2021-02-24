@@ -1,0 +1,200 @@
+{
+  "uid" : "34b8347433ac608b",
+  "name" : "创建工作负载，并验证运行成功",
+  "fullName" : "TestCase.testProject.TestProject#test_create_workload",
+  "historyId" : "9eb84a7a63962de111ed9c8a54856473",
+  "time" : {
+    "start" : 1614158760717,
+    "stop" : 1614158764173,
+    "duration" : 3456
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "beforeStages" : [ {
+    "name" : "_Class__pytest_setup_class",
+    "time" : {
+      "start" : 1614158675668,
+      "stop" : 1614158676907,
+      "duration" : 1239
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "创建工作负载",
+      "time" : {
+        "start" : 1614158760718,
+        "stop" : 1614158761310,
+        "duration" : 592
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "project_name",
+        "value" : "'test-project'"
+      }, {
+        "name" : "work_name",
+        "value" : "'workload-demo'"
+      }, {
+        "name" : "container_name",
+        "value" : "'container-nginx'"
+      }, {
+        "name" : "image",
+        "value" : "'nginx'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "查询工作负载列表，指定的工作负载,并返回type=Available的status",
+      "time" : {
+        "start" : 1614158761311,
+        "stop" : 1614158761591,
+        "duration" : 280
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "project_name",
+        "value" : "'test-project'"
+      }, {
+        "name" : "work_name",
+        "value" : "'workload-demo'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "查询工作负载列表，指定的工作负载,并返回type=Available的status",
+      "time" : {
+        "start" : 1614158762596,
+        "stop" : 1614158762887,
+        "duration" : 291
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "project_name",
+        "value" : "'test-project'"
+      }, {
+        "name" : "work_name",
+        "value" : "'workload-demo'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "查询工作负载列表，指定的工作负载,并返回type=Available的status",
+      "time" : {
+        "start" : 1614158763892,
+        "stop" : 1614158764173,
+        "duration" : 281
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "project_name",
+        "value" : "'test-project'"
+      }, {
+        "name" : "work_name",
+        "value" : "'workload-demo'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ {
+      "uid" : "77b5418bf8b625f8",
+      "name" : "stdout",
+      "source" : "77b5418bf8b625f8.txt",
+      "type" : "text/plain",
+      "size" : 27
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 4,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ {
+    "name" : "_Class__pytest_setup_class::0",
+    "time" : {
+      "start" : 1614158802094,
+      "stop" : 1614158807915,
+      "duration" : 5821
+    },
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : false
+  } ],
+  "labels" : [ {
+    "name" : "story",
+    "value" : "应用负载-工作负载"
+  }, {
+    "name" : "feature",
+    "value" : "Project"
+  }, {
+    "name" : "severity",
+    "value" : "blocker"
+  }, {
+    "name" : "parentSuite",
+    "value" : "TestCase"
+  }, {
+    "name" : "suite",
+    "value" : "testProject"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestProject"
+  }, {
+    "name" : "host",
+    "value" : "mrsunshinedeMacBook-Pro.local"
+  }, {
+    "name" : "thread",
+    "value" : "11232-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "TestCase.testProject"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "blocker",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "34b8347433ac608b.json",
+  "parameterValues" : [ ]
+}

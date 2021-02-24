@@ -1,0 +1,2 @@
+actual_result:r.json()['items'][0]['metadata']['name'] = demo-job-p9vn6
+expect_result:demo-job-p9vn6

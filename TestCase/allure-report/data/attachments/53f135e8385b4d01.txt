@@ -1,0 +1,10 @@
+用例编号: 6
+用例请求的URL地址: http://139.198.9.112:9090/kapis/iam.kubesphere.io/v1alpha2/globalroles
+用例使用的请求数据: {'apiVersion': 'iam.kubesphere.io/v1alpha2', 'kind': 'GlobalRole', 'rules': [], 'metadata': {'name': 'wx', 'annotations': {'iam.kubesphere.io/aggregation-roles': '["role-template-view-basic"]', 'kubesphere.io/creator': 'admin'}}}
+用例模块: 添加角色
+用例标题: 增加角色(不选择权限)
+用例的请求方式: post
+用例优先级: critical
+用例的校验条件: r.json()['metadata']['name']
+用例的实际结果: wx
+用例的预期结果: wx

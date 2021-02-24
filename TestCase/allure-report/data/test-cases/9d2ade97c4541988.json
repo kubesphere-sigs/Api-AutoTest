@@ -1,0 +1,113 @@
+{
+  "uid" : "9d2ade97c4541988",
+  "name" : "查询指定角色信息",
+  "fullName" : "TestCase.testRole.TestRole#test_role[2-/kapis/iam.kubesphere.io/v1alpha2/globalroles?name=users-manager-nan-查询角色-查询指定角色信息-get-normal-r.json()['items'][0]['metadata']",
+  "historyId" : "06700b4084c260237d1096899cd01bdf",
+  "time" : {
+    "start" : 1614158808309,
+    "stop" : 1614158808587,
+    "duration" : 278
+  },
+  "description" : "\n        :param id: 用例编号\n        :param url: 用例请求的URL地址\n        :param data: 用例使用的请求数据\n        :param title: 用例标题\n        :param method: 用例的请求方式\n        :param severity: 用例优先级\n        :param condition: 用例的校验条件\n        :param except_result: 用例的预期结果\n        ",
+  "descriptionHtml" : "<pre><code>    :param id: 用例编号\n    :param url: 用例请求的URL地址\n    :param data: 用例使用的请求数据\n    :param title: 用例标题\n    :param method: 用例的请求方式\n    :param severity: 用例优先级\n    :param condition: 用例的校验条件\n    :param except_result: 用例的预期结果\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "\n        :param id: 用例编号\n        :param url: 用例请求的URL地址\n        :param data: 用例使用的请求数据\n        :param title: 用例标题\n        :param method: 用例的请求方式\n        :param severity: 用例优先级\n        :param condition: 用例的校验条件\n        :param except_result: 用例的预期结果\n        ",
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "618d39651d0037c4",
+      "name" : "stdout",
+      "source" : "618d39651d0037c4.txt",
+      "type" : "text/plain",
+      "size" : 420
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "story",
+    "value" : "查询角色"
+  }, {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "feature",
+    "value" : "系统角色管理"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "parentSuite",
+    "value" : "TestCase"
+  }, {
+    "name" : "suite",
+    "value" : "testRole"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestRole"
+  }, {
+    "name" : "host",
+    "value" : "mrsunshinedeMacBook-Pro.local"
+  }, {
+    "name" : "thread",
+    "value" : "11232-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "TestCase.testRole"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "condition",
+    "value" : "'r.json()['items'][0]['metadata']['name']'"
+  }, {
+    "name" : "data",
+    "value" : "nan"
+  }, {
+    "name" : "except_result",
+    "value" : "'users-manager'"
+  }, {
+    "name" : "id",
+    "value" : "2"
+  }, {
+    "name" : "method",
+    "value" : "'get'"
+  }, {
+    "name" : "severity",
+    "value" : "'normal'"
+  }, {
+    "name" : "story",
+    "value" : "'查询角色'"
+  }, {
+    "name" : "title",
+    "value" : "'查询指定角色信息'"
+  }, {
+    "name" : "url",
+    "value" : "'/kapis/iam.kubesphere.io/v1alpha2/globalroles?name=users-manager'"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "9d2ade97c4541988.json",
+  "parameterValues" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'users-manager'", "2", "'get'", "'normal'", "'查询角色'", "'查询指定角色信息'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles?name=users-manager'" ]
+}

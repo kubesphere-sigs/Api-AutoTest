@@ -1,0 +1,113 @@
+{
+  "uid" : "6d575b49505396ac",
+  "name" : "修改企业空间auto-wx-ws信息",
+  "fullName" : "TestCase.testWorkspace.TestWorkSpace#test_ws[1-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/auto-wx-ws-{\"metadata\":{\"name\":\"auto-wx-ws\",\"annotations\":{\"kubesphere.io/creator\":\"admin\",\"kubesphere.io/alias-name\":\"我是别名\",\"kubesphere.io/description\":\"我是描述信息\"}}}-企业空间列表-修改企业空间auto-wx-ws信息-patch-critical-r.json()['metadata']['annotations']",
+  "historyId" : "73f9cf383b2ac45c38a3c4a7b2ed7e7f",
+  "time" : {
+    "start" : 1614158820550,
+    "stop" : 1614158820948,
+    "duration" : 398
+  },
+  "description" : "\n        :param id: 用例编号\n        :param url: 用例请求的URL地址\n        :param data: 用例使用的请求数据\n        :param title: 用例标题\n        :param method: 用例的请求方式\n        :param severity: 用例优先级\n        :param condition: 用例的校验条件\n        :param except_result: 用例的预期结果\n        ",
+  "descriptionHtml" : "<pre><code>    :param id: 用例编号\n    :param url: 用例请求的URL地址\n    :param data: 用例使用的请求数据\n    :param title: 用例标题\n    :param method: 用例的请求方式\n    :param severity: 用例优先级\n    :param condition: 用例的校验条件\n    :param except_result: 用例的预期结果\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "\n        :param id: 用例编号\n        :param url: 用例请求的URL地址\n        :param data: 用例使用的请求数据\n        :param title: 用例标题\n        :param method: 用例的请求方式\n        :param severity: 用例优先级\n        :param condition: 用例的校验条件\n        :param except_result: 用例的预期结果\n        ",
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "3b67c3ebd4e01f87",
+      "name" : "stdout",
+      "source" : "3b67c3ebd4e01f87.txt",
+      "type" : "text/plain",
+      "size" : 817
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "story",
+    "value" : "企业空间列表"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "feature",
+    "value" : "企业空间角色&用户管理"
+  }, {
+    "name" : "parentSuite",
+    "value" : "TestCase"
+  }, {
+    "name" : "suite",
+    "value" : "testWorkspace"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestWorkSpace"
+  }, {
+    "name" : "host",
+    "value" : "mrsunshinedeMacBook-Pro.local"
+  }, {
+    "name" : "thread",
+    "value" : "11232-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "TestCase.testWorkspace"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "condition",
+    "value" : "'r.json()['metadata']['annotations']['kubesphere.io/alias-name']'"
+  }, {
+    "name" : "data",
+    "value" : "'{\"metadata\":{\"name\":\"auto-wx-ws\",\"annotations\":{\"kubesphere.io/creator\":\"admin\",\"kubesphere.io/alias-name\":\"我是别名\",\"kubesphere.io/description\":\"我是描述信息\"}}}'"
+  }, {
+    "name" : "except_result",
+    "value" : "'我是别名'"
+  }, {
+    "name" : "id",
+    "value" : "1"
+  }, {
+    "name" : "method",
+    "value" : "'patch'"
+  }, {
+    "name" : "severity",
+    "value" : "'critical'"
+  }, {
+    "name" : "story",
+    "value" : "'企业空间列表'"
+  }, {
+    "name" : "title",
+    "value" : "'修改企业空间auto-wx-ws信息'"
+  }, {
+    "name" : "url",
+    "value" : "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/auto-wx-ws'"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "critical",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "6d575b49505396ac.json",
+  "parameterValues" : [ "'r.json()['metadata']['annotations']['kubesphere.io/alias-name']'", "'{\"metadata\":{\"name\":\"auto-wx-ws\",\"annotations\":{\"kubesphere.io/creator\":\"admin\",\"kubesphere.io/alias-name\":\"我是别名\",\"kubesphere.io/description\":\"我是描述信息\"}}}'", "'我是别名'", "1", "'patch'", "'critical'", "'企业空间列表'", "'修改企业空间auto-wx-ws信息'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/auto-wx-ws'" ]
+}

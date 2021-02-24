@@ -1,0 +1,2 @@
+actual_result:r.json()['metadata']['annotations']['kubesphere.io/alias-name']=我是别名
+expect_result:我是别名

@@ -1,0 +1,10 @@
+用例编号: 23
+用例请求的URL地址: http://139.198.9.112:9090/api/v1/namespaces/test-project/secrets
+用例使用的请求数据: {'apiVersion': 'v1', 'kind': 'Secret', 'metadata': {'namespace': 'test-project', 'labels': {}, 'name': 'wx-secret1', 'annotations': {'kubesphere.io/creator': 'admin'}}, 'type': 'kubernetes.io/tls', 'spec': {'template': {'metadata': {'labels': {}}}}, 'data': {'tls.crt': 'cGluZ3poZW5n', 'tls.key': 'c2l5YW8='}}
+用例模块: 配置中心-秘钥
+用例标题: 创建TLS类型的秘钥
+用例的请求方式: post
+用例优先级: critical
+用例的校验条件: r.json()['data']['tls.crt']
+用例的实际结果: cGluZ3poZW5n
+用例的预期结果: cGluZ3poZW5n

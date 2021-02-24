@@ -1,0 +1,2 @@
+actual_result:r.json()['items'][0]['metadata']['name']=viewer
+expect_result:viewer

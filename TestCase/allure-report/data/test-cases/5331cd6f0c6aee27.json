@@ -1,0 +1,113 @@
+{
+  "uid" : "5331cd6f0c6aee27",
+  "name" : "在企业空间auto-wx-ws中精确查询存在的项目",
+  "fullName" : "TestCase.testWorkspace.TestWorkSpace#test_ws[27-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/auto-wx-ws/namespaces?name=wx-project-nan-项目管理-在企业空间auto-wx-ws中精确查询存在的项目-get-normal-r.json()['items'][0]['metadata']",
+  "historyId" : "8fee1283a0b994903600047f13f077af",
+  "time" : {
+    "start" : 1614158828940,
+    "stop" : 1614158829224,
+    "duration" : 284
+  },
+  "description" : "\n        :param id: 用例编号\n        :param url: 用例请求的URL地址\n        :param data: 用例使用的请求数据\n        :param title: 用例标题\n        :param method: 用例的请求方式\n        :param severity: 用例优先级\n        :param condition: 用例的校验条件\n        :param except_result: 用例的预期结果\n        ",
+  "descriptionHtml" : "<pre><code>    :param id: 用例编号\n    :param url: 用例请求的URL地址\n    :param data: 用例使用的请求数据\n    :param title: 用例标题\n    :param method: 用例的请求方式\n    :param severity: 用例优先级\n    :param condition: 用例的校验条件\n    :param except_result: 用例的预期结果\n</code></pre>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "\n        :param id: 用例编号\n        :param url: 用例请求的URL地址\n        :param data: 用例使用的请求数据\n        :param title: 用例标题\n        :param method: 用例的请求方式\n        :param severity: 用例优先级\n        :param condition: 用例的校验条件\n        :param except_result: 用例的预期结果\n        ",
+    "status" : "passed",
+    "steps" : [ ],
+    "attachments" : [ {
+      "uid" : "250d53487a5e4a0a",
+      "name" : "stdout",
+      "source" : "250d53487a5e4a0a.txt",
+      "type" : "text/plain",
+      "size" : 467
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 0,
+    "attachmentsCount" : 1,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "story",
+    "value" : "项目管理"
+  }, {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "feature",
+    "value" : "企业空间角色&用户管理"
+  }, {
+    "name" : "parentSuite",
+    "value" : "TestCase"
+  }, {
+    "name" : "suite",
+    "value" : "testWorkspace"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestWorkSpace"
+  }, {
+    "name" : "host",
+    "value" : "mrsunshinedeMacBook-Pro.local"
+  }, {
+    "name" : "thread",
+    "value" : "11232-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "TestCase.testWorkspace"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "condition",
+    "value" : "'r.json()['items'][0]['metadata']['name']'"
+  }, {
+    "name" : "data",
+    "value" : "nan"
+  }, {
+    "name" : "except_result",
+    "value" : "'wx-project'"
+  }, {
+    "name" : "id",
+    "value" : "27"
+  }, {
+    "name" : "method",
+    "value" : "'get'"
+  }, {
+    "name" : "severity",
+    "value" : "'normal'"
+  }, {
+    "name" : "story",
+    "value" : "'项目管理'"
+  }, {
+    "name" : "title",
+    "value" : "'在企业空间auto-wx-ws中精确查询存在的项目'"
+  }, {
+    "name" : "url",
+    "value" : "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/auto-wx-ws/namespaces?name=wx-project'"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "5331cd6f0c6aee27.json",
+  "parameterValues" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'wx-project'", "27", "'get'", "'normal'", "'项目管理'", "'在企业空间auto-wx-ws中精确查询存在的项目'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/auto-wx-ws/namespaces?name=wx-project'" ]
+}

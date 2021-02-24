@@ -1,0 +1,10 @@
+用例编号: 8
+用例请求的URL地址: http://139.198.9.112:9090/kapis/iam.kubesphere.io/v1alpha2/globalroles/wx-role
+用例使用的请求数据: {'metadata': {'name': 'wx-role', 'annotations': {'iam.kubesphere.io/aggregation-roles': '["role-template-manage-clusters","role-template-view-clusters","role-template-view-basic"]', 'kubesphere.io/creator': 'admin', 'kubesphere.io/description': '新建角色', 'kubesphere.io/alias-name': 'eait-role123'}}}
+用例模块: 添加角色
+用例标题: 编辑角色非权限信息
+用例的请求方式: patch
+用例优先级: critical
+用例的校验条件: r.json()['metadata']['annotations']['kubesphere.io/alias-name']
+用例的实际结果: eait-role123
+用例的预期结果: eait-role123

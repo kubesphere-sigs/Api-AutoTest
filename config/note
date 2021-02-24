@@ -1,0 +1,20 @@
+
+
+
+testProject.py 测试项目的所有内容，目前剩余应用负载-服务，应用负载-应用路由，灰度发布、构建镜像的用例没有编写。
+
+testAppManage.py 测试企业空间下的应用管理模块。包含应用模块和应用仓库两部分。
+
+testRole.py 测试系统角色的所有操作，包含增删改查。
+
+testUser.py 测试系统用户的所有操作，包含增删改查。
+
+testWorkspace.py 测试企业空间，剩余devops用例还未编写。
+
+testAppStoreManage.py 测试应用商店、应用分类、应用审核。
+
+testDevops.py 测试devops工程的工程管理和流水线（其中流水线仅覆盖通过图形化的方式创建流水线）。
+
+testAppStore.py 遍历部署appstore的所有应用，查看资源使用情况。
+
+

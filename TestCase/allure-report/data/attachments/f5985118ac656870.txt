@@ -1,0 +1,10 @@
+用例编号: 40
+用例请求的URL地址: http://139.198.9.112:9090/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies
+用例使用的请求数据: {'apiVersion': 'network.kubesphere.io/v1alpha1', 'kind': 'NamespaceNetworkPolicy', 'metadata': {'namespace': 'test-project', 'name': 'policy-to-7gmirw', 'annotations': {'kubesphere.io/creator': 'admin'}}, 'spec': {'egress': [{'ports': [{'port': 80, 'protocol': 'TCP'}], 'to': [{'ipBlock': {'cidr': '192.168.1.1/24'}}]}]}}
+用例模块: 项目设置-网络隔离
+用例标题: 添加集群外部ip地址白名单(出口)
+用例的请求方式: post
+用例优先级: critical
+用例的校验条件: r.json()['metadata']['name']
+用例的实际结果: policy-to-7gmirw
+用例的预期结果: policy-to-7gmirw

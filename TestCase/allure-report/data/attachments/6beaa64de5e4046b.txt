@@ -1,0 +1,10 @@
+用例编号: 42
+用例请求的URL地址: http://139.198.9.112:9090/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies/policy-to-girf49
+用例使用的请求数据: nan
+用例模块: 项目设置-网络隔离
+用例标题: 删除集群内部白名单
+用例的请求方式: delete
+用例优先级: critical
+用例的校验条件: r.json()['status']
+用例的实际结果: Success
+用例的预期结果: Success

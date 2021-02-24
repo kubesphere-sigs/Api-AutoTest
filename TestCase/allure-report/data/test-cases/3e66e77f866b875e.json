@@ -1,0 +1,131 @@
+{
+  "uid" : "3e66e77f866b875e",
+  "name" : "修改分类信息",
+  "fullName" : "TestCase.testAppStoreManage.TestManageApp#test_change_category",
+  "historyId" : "5c85eaa18b359e08d2a64c34224f2aec",
+  "time" : {
+    "start" : 1614158548290,
+    "stop" : 1614158549225,
+    "duration" : 935
+  },
+  "status" : "passed",
+  "flaky" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "新建应用分类",
+      "time" : {
+        "start" : 1614158548290,
+        "stop" : 1614158548638,
+        "duration" : 348
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "cate_name",
+        "value" : "'test-wx2'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "修改分类信息",
+      "time" : {
+        "start" : 1614158548638,
+        "stop" : 1614158548928,
+        "duration" : 290
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "cate_id",
+        "value" : "'ctg-4k394D3yprXr'"
+      }, {
+        "name" : "new_name",
+        "value" : "'test-wx3'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "删除不包含应用的分类",
+      "time" : {
+        "start" : 1614158548928,
+        "stop" : 1614158549224,
+        "duration" : 296
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "cate_id",
+        "value" : "'ctg-4k394D3yprXr'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 3,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "story",
+    "value" : "应用分类"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "feature",
+    "value" : "应用商店管理"
+  }, {
+    "name" : "parentSuite",
+    "value" : "TestCase"
+  }, {
+    "name" : "suite",
+    "value" : "testAppStoreManage"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestManageApp"
+  }, {
+    "name" : "host",
+    "value" : "mrsunshinedeMacBook-Pro.local"
+  }, {
+    "name" : "thread",
+    "value" : "11232-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "TestCase.testAppStoreManage"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "critical",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "3e66e77f866b875e.json",
+  "parameterValues" : [ ]
+}

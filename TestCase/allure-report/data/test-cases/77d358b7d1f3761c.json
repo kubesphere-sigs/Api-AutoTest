@@ -1,0 +1,225 @@
+{
+  "uid" : "77d358b7d1f3761c",
+  "name" : "通过图形界面创建、编辑、运行流水线,最后删除流水线",
+  "fullName" : "TestCase.testDevops.TestDevOps#test_create_pipeline",
+  "historyId" : "98eb5aeb5ce67e6f24094d2e60124163",
+  "time" : {
+    "start" : 1614158664793,
+    "stop" : 1614158665651,
+    "duration" : 858
+  },
+  "status" : "broken",
+  "statusMessage" : "json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+  "statusTrace" : "self = <TestCase.testDevops.TestDevOps object at 0x7fc3ed5c9da0>\n\n>   ???\n\n/Users/mr.sunshine/PycharmProjects/kubesphere/TestCase/testDevops.py:325: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/Users/mr.sunshine/PycharmProjects/kubesphere/TestCase/testDevops.py:163: in step_pipeline_checkScriptCompile\n    ???\n../../venv/lib/python3.7/site-packages/requests/models.py:898: in json\n    return complexjson.loads(self.text, **kwargs)\n/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py:348: in loads\n    return _default_decoder.decode(s)\n/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py:337: in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fc3eb9f38d0>\ns = '<html>\\n<head>\\n<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/>\\n<title>Error 403 No valid crumb ...uest</pre></p><hr><a href=\"http://eclipse.org/jetty\">Powered by Jetty:// 9.4.z-SNAPSHOT</a><hr/>\\n\\n</body>\\n</html>\\n'\nidx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py:355: JSONDecodeError",
+  "flaky" : false,
+  "beforeStages" : [ {
+    "name" : "_Class__pytest_setup_class",
+    "time" : {
+      "start" : 1614158662104,
+      "stop" : 1614158663344,
+      "duration" : 1240
+    },
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "创建devops工程并获取工程名称",
+      "time" : {
+        "start" : 1614158663048,
+        "stop" : 1614158663344,
+        "duration" : 296
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "ws_name",
+        "value" : "'wx-ws1'"
+      }, {
+        "name" : "devops_name",
+        "value" : "'wx-devops'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 1,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  } ],
+  "testStage" : {
+    "status" : "broken",
+    "statusMessage" : "json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+    "statusTrace" : "self = <TestCase.testDevops.TestDevOps object at 0x7fc3ed5c9da0>\n\n>   ???\n\n/Users/mr.sunshine/PycharmProjects/kubesphere/TestCase/testDevops.py:325: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/Users/mr.sunshine/PycharmProjects/kubesphere/TestCase/testDevops.py:163: in step_pipeline_checkScriptCompile\n    ???\n../../venv/lib/python3.7/site-packages/requests/models.py:898: in json\n    return complexjson.loads(self.text, **kwargs)\n/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py:348: in loads\n    return _default_decoder.decode(s)\n/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py:337: in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x7fc3eb9f38d0>\ns = '<html>\\n<head>\\n<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/>\\n<title>Error 403 No valid crumb ...uest</pre></p><hr><a href=\"http://eclipse.org/jetty\">Powered by Jetty:// 9.4.z-SNAPSHOT</a><hr/>\\n\\n</body>\\n</html>\\n'\nidx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py:355: JSONDecodeError",
+    "steps" : [ {
+      "name" : "通过图形化的方式创建流水线",
+      "time" : {
+        "start" : 1614158664793,
+        "stop" : 1614158665075,
+        "duration" : 282
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "devops_name",
+        "value" : "'wx-devops'"
+      }, {
+        "name" : "devops_name_new",
+        "value" : "'wx-devops6thzg'"
+      }, {
+        "name" : "pipline_name",
+        "value" : "'test-pipline'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "获取指定流水线的uid、resourceVersion、creationTimestamp",
+      "time" : {
+        "start" : 1614158665075,
+        "stop" : 1614158665346,
+        "duration" : 271
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "devops_name_new",
+        "value" : "'wx-devops6thzg'"
+      }, {
+        "name" : "pipline_name",
+        "value" : "'test-pipline'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    }, {
+      "name" : "checkScriptCompile",
+      "time" : {
+        "start" : 1614158665346,
+        "stop" : 1614158665624,
+        "duration" : 278
+      },
+      "status" : "broken",
+      "statusMessage" : "json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n",
+      "statusTrace" : "  File \"/Users/mr.sunshine/PycharmProjects/testing/venv/lib/python3.7/site-packages/allure_commons/_allure.py\", line 172, in impl\n    return func(*a, **kw)\n  File \"/Users/mr.sunshine/PycharmProjects/kubesphere/TestCase/testDevops.py\", line 163, in step_pipeline_checkScriptCompile\n  File \"/Users/mr.sunshine/PycharmProjects/testing/venv/lib/python3.7/site-packages/requests/models.py\", line 898, in json\n    return complexjson.loads(self.text, **kwargs)\n  File \"/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/__init__.py\", line 348, in loads\n    return _default_decoder.decode(s)\n  File \"/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py\", line 337, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n  File \"/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/json/decoder.py\", line 355, in raw_decode\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\n",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "devops_name_new",
+        "value" : "'wx-devops6thzg'"
+      }, {
+        "name" : "pipline_name",
+        "value" : "'test-pipline'"
+      }, {
+        "name" : "data",
+        "value" : "'value=pipeline%20%7B%0A%20%20%20%20agent%20any%0A%20%20%20%20stages%20%7B%0A%20%20%20%20%20%20%20%20stage%28%27Example%27%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20steps%20%7B%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20echo%20%27Hello%20World%27%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : true,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 3,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : true,
+    "hasContent" : true
+  },
+  "afterStages" : [ {
+    "name" : "_Class__pytest_setup_class::0",
+    "time" : {
+      "start" : 1614158674795,
+      "stop" : 1614158675663,
+      "duration" : 868
+    },
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "删除devops工程",
+      "time" : {
+        "start" : 1614158674795,
+        "stop" : 1614158675083,
+        "duration" : 288
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ {
+        "name" : "ws_name",
+        "value" : "'wx-ws1'"
+      }, {
+        "name" : "devops_name",
+        "value" : "'wx-devops6thzg'"
+      } ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 1,
+    "attachmentsCount" : 0,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  } ],
+  "labels" : [ {
+    "name" : "feature",
+    "value" : "DevOps"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "story",
+    "value" : "流水线"
+  }, {
+    "name" : "parentSuite",
+    "value" : "TestCase"
+  }, {
+    "name" : "suite",
+    "value" : "testDevops"
+  }, {
+    "name" : "subSuite",
+    "value" : "TestDevOps"
+  }, {
+    "name" : "host",
+    "value" : "mrsunshinedeMacBook-Pro.local"
+  }, {
+    "name" : "thread",
+    "value" : "11232-MainThread"
+  }, {
+    "name" : "framework",
+    "value" : "pytest"
+  }, {
+    "name" : "language",
+    "value" : "cpython3"
+  }, {
+    "name" : "package",
+    "value" : "TestCase.testDevops"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "critical",
+    "retries" : [ ],
+    "categories" : [ {
+      "name" : "Test defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "tags" : [ ]
+  },
+  "source" : "77d358b7d1f3761c.json",
+  "parameterValues" : [ ]
+}

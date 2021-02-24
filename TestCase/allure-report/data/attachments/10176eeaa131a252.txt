@@ -1,0 +1,2 @@
+actual_result:r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']=["role-template-view-basic","role-template-view-volumes","role-template-view-secrets","role-template-view-configmaps","role-template-view-snapshots","role-template-view-app-workloads"]
+expect_result:["role-template-view-basic","role-template-view-volumes","role-template-view-secrets","role-template-view-configmaps","role-template-view-snapshots","role-template-view-app-workloads"]

@@ -1,0 +1,5 @@
+actual_result:r.json()['metadata']['name'] = testshot
+expect_result:testshot
+创建存储卷快照耗时:26秒
+actual_result:r1.json()['items'][0]['status']['readyToUse'] = True
+expect_result: True
