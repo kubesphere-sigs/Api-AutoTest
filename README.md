@@ -1,4 +1,4 @@
-# Api-Autotest
+# Api-AutoTest
 本工程是基于kubesphere3.0版本编写的接口自动化测试用例，通过访问apiserver的方式运行，目前已基本覆盖ks3.0的基础功能。仍在持续优化中...
 ## 目录结构
 
