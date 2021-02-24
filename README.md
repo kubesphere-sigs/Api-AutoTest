@@ -31,7 +31,10 @@
 
 ## 使用指南
 - 安装python3环境
-- 安装allure
+- 安装allure 
+```
+https://github.com/allure-framework/allure2/releases
+```
 - 安装项目的依赖库
 ```
 pip3 install -r requirements.txt
