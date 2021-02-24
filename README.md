@@ -30,45 +30,44 @@
 ``` 
 
 ## 使用指南
-- 安装python3环境
-- 安装allure 
-
-1、下载allure包，选择最新或者任意版本
+1、安装python3环境
+2、安装allure 
+- 下载allure包，选择最新或者任意版本
 ```
 https://github.com/allure-framework/allure2/releases
 ```
-2、如下载路径为 ’/usr/local/src/‘，解压并修改文件夹权限
+- 如下载路径为 ’/usr/local/src/‘，解压并修改文件夹权限
 ```
 unzip allure-commandline-2.13.6.zip
 mv allure-2.13.6 allure
 chmod -R 777 allure
 ```
-3、配置allure环境变量
+- 配置allure环境变量
 ```
 cat >> /root/.bashrc << "EOF" 
 export PATH=/usr/local/src/allure/bin:$PATH 
 EOF
 ```
-4、更新环境变量配置文件并验证生效
+- 更新环境变量配置文件并验证生效
 ```
 source /root/.bashrc
 allure --version
 ```
-- 安装项目的依赖库
+3、安装项目的依赖库
 ```
 pip3 install -r requirements.txt
 ```
-- 暴露apiserver端口，在ks-apiserver deployment的配置文件中的增加hostPort
+4、暴露apiserver端口，在ks-apiserver deployment的配置文件中的增加hostPort
 ```
 kubectl edit deployment ks-apiserver -n kubesphere-system
 ``` 
-- 进入TestCase目录下，运行如下命令即可运行测试用例。
+5、进入TestCase目录下，运行如下命令即可运行测试用例。
 (pytest [file_or_dir] --alluredir ../report --clean-alluredir。不推荐执行testAppStore.py，该脚本运行时间很长。)
 ```
 pytest testRloe.py --alluredir ../report --clean-alluredir
 ```
-- 生成测试报告
+6、生成测试报告
 ```
 allure generate ../report ../allure_report --clean
 ```
-- 测试报告示例
+7、测试报告示例
