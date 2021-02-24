@@ -1,8 +1,27 @@
 # Api-Autotest
 本工程是基于kubesphere3.0版本编写的接口自动化测试用例，已基本覆盖ks3.0的基础功能。仍在持续优化中...
 ## 目录结构
-- TestCase>>>用于存放测试脚本
-- common>>>>用于存放公共的方法
-- config>>>>用于存放配置文件
-- data>>>>用于存放测试用例
+.
+├── TestCase
+│   ├── testAppManage.py
+│   ├── testAppStore.py
+│   ├── testAppStoreManage.py
+│   ├── testDevops.py
+│   ├── testProject.py
+│   ├── testRole.py
+│   ├── testUser.py
+│   └── testWorkspace.py
+├── common
+│   ├── commonFunction.py
+│   ├── getCookie.py
+│   ├── getData.py
+│   ├── getHeader.py
+│   └── logFormat.py
+├── config
+│   ├── config.py
+│   └── note
+├── data
+│   ├── data.xlsx
+├── requirements.txt
+
 ## 使用指南
