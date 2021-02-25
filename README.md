@@ -76,5 +76,6 @@ allure generate ../report ../allure_report --clean
 7、测试报告示例
 ![Image text](https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/1.png)
 ![Image text](https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/2.png)
+
 8、jenkins体验地址
 http://139.198.9.112:8080   root/admin
