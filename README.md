@@ -1,4 +1,4 @@
-# Api-Autotest
+# Api-AutoTest
 本工程是基于kubesphere3.0版本编写的接口自动化测试用例，通过访问apiserver的方式运行，目前已基本覆盖ks3.0的基础功能。仍在持续优化中...
 ## 目录结构
 
@@ -64,7 +64,7 @@ pip3 install -r requirements.txt
 ```
 kubectl edit deployment ks-apiserver -n kubesphere-system
 ``` 
-5、进入TestCase目录下，运行如下命令即可运行测试用例。
+5、进入TestCase目录下，运行如下命令即可执行测试用例。
 (pytest [file_or_dir] --alluredir ../report --clean-alluredir。不推荐执行testAppStore.py，该脚本运行时间很长。)
 ```
 pytest testRloe.py --alluredir ../report --clean-alluredir
@@ -74,3 +74,8 @@ pytest testRloe.py --alluredir ../report --clean-alluredir
 allure generate ../report ../allure_report --clean
 ```
 7、测试报告示例
+![Image text](https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/1.png)
+![Image text](https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/2.png)
+
+8、jenkins体验地址
+http://139.198.9.112:8080  root/admin
