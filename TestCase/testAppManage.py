@@ -171,7 +171,7 @@ def step_delete_app_template(self):
     data = {}
     url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + self.ws_name + '/apps/' + app_id + '/'
     r = requests.delete(url, headers=get_header(), data=json.dumps(data))  #删除应用模板
-    r.json()['message'] == 'success'
+    assert r.json()['message'] == 'success'
 
 @allure.step('查找指定的应用')
 def step_get_app(ws_name, project_name, app_name):
