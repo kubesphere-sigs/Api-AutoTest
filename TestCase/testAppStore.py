@@ -19,7 +19,7 @@ def step_deployment_app(project_name, app_id, app_version_id, name, conf):
     """
     :param project_name: 项目名称
     :param app_id: 应用id
-    :param app_version_id: 应用的版本号
+    :param app_version_id: 应用版本号
     :param name: 部署时的应用名称
     :param conf: 应用的镜像信息
     """
