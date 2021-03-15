@@ -253,38 +253,37 @@ def step_create_sa(project_name, sa_name):
     data = {"apiVersion": "v1", "kind": "ServiceAccount",
             "metadata": {"namespace": project_name, "labels": {}, "name": sa_name,
                          "annotations": {"kubesphere.io/creator": "admin"}}}
-    r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
-    print(r.text)
+    requests.post(url=url, headers=get_header(), data=json.dumps(data))
+
 
 
 @allure.step('查询指定sa并返回密钥名称')
 def step_get_sa(project_name, sa_name):
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/serviceaccounts?name=' + sa_name + '&sortBy=createTime&limit=10'
     r = requests.get(url=url, headers=get_header())
-    print(r.json()['items'][0]['metadata']['name'])
-    print(r.json()['items'][0]['secrets'][0]['name'])
-    return r.json()['items'][0]['secrets'][0]['name']
+    if r.json()['totalItems'] > 0:
+        return r.json()['items'][0]['secrets'][0]['name']
+    else:
+        return r.json()['totalItems']
 
 
 @allure.step('查看指定sa详情信息')
 def step_get_sa_detail(project_name, sa_name):
     url = config.url + '/api/v1/namespaces/' + project_name + '/serviceaccounts/' + sa_name
     r = requests.get(url=url, headers=get_header())
-    print(r.json()['metadata']['name'])
 
 
 @allure.step('查看指定密钥并返回密钥类型')
 def step_get_secret(project_name, secret_name):
     url = config.url + '/api/v1/namespaces/' + project_name + '/secrets/' + secret_name
     r = requests.get(url=url, headers=get_header())
-    print(r.json()['type'])
     return r.json()['type']
 
 
 @allure.step('删除指定sa')
 def step_delete_sa(project_name, sa_name):
     url = config.url + '/api/v1/namespaces/' + project_name + '/serviceaccounts/' + sa_name
-    requests.delete(url + url, headers=get_header())
+    r = requests.delete(url =url, headers=get_header())
 
 
 @allure.feature('Project')
@@ -309,11 +308,11 @@ class TestProject(object):
         commonFunction.create_project(self.ws_name, self.project_name)  # 创建一个project工程
 
     # 所有用例执行完之后执行该方法
-    # def teardown_class(self):
-    #     commonFunction.delete_project(self.ws_name, self.project_name)  # 删除创建的项目
-    #     time.sleep(5)
-    #     commonFunction.delete_workspace(self.ws_name)  # 删除创建的工作空间
-    #     commonFunction.delete_user(self.user_name)  # 删除创建的用户
+    def teardown_class(self):
+        commonFunction.delete_project(self.ws_name, self.project_name)  # 删除创建的项目
+        time.sleep(5)
+        commonFunction.delete_workspace(self.ws_name)  # 删除创建的工作空间
+        commonFunction.delete_user(self.user_name)  # 删除创建的用户
 
     '''
     以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
@@ -1397,6 +1396,11 @@ class TestProject(object):
 
         # 步骤5：删除sa
         step_delete_sa(project_name=self.project_name, sa_name=sa_name)
+
+        # 步骤6：验证删除成功
+        num = step_get_sa(project_name=self.project_name, sa_name=sa_name)
+
+        assert num == 0
 
     @allure.title('{title}')  # 设置用例标题
     @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
