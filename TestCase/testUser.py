@@ -4,6 +4,7 @@ import json
 import allure
 import sys
 import logging
+import time
 sys.path.append('../')  #将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from config import config
@@ -97,6 +98,7 @@ class TestUser(object):
         user_name = 'wx123'
         email = 'stevewen123@yunify.com'
         commonFunction.create_user(user_name)  #创建用户
+        time.sleep(3)
         version = commonFunction.get_user_version()  #获取创建用户的resourceVersion
         #编辑用户信息的url地址
         url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users/' + user_name

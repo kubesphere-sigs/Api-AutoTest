@@ -29,7 +29,7 @@ class TestWorkSpace(object):
         commonFunction.create_user(self.user_name)  #创建一个用户
         commonFunction.create_workspace(self.ws_name)  #创建一个企业空间
         commonFunction.create_workspace(self.ws_name1)  # 创建一个企业空间,供excle文件中的用例使用
-
+        time.sleep(3)
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
         time.sleep(10)
