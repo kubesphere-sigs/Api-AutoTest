@@ -12,6 +12,7 @@ from common.getData import DoexcleByPandas
 from common.getHeader import get_header, get_header_for_patch
 from common import commonFunction
 
+
 @allure.step('创建任务')
 def step_create_job(project_name, job_name):
     """
@@ -44,6 +45,7 @@ def step_create_job(project_name, job_name):
     requests.post(url=url, headers=get_header(), data=json.dumps(data))
     requests.post(url=url1, headers=get_header(), data=json.dumps(data))
 
+
 @allure.step('验证任务状态为完成,并返回任务的uid')
 def step_get_job_status(project_name, job_name):
     """
@@ -68,6 +70,7 @@ def step_get_job_status(project_name, job_name):
     assert r2.json()['items'][0]['status']['conditions'][0]['type'] == 'Complete'
     return r2.json()['items'][0]['metadata']['uid']
 
+
 @allure.step('验证任务状态为运行中,并返回任务的uid')
 def step_get_job_status_run(project_name, job_name):
     """
@@ -87,6 +90,7 @@ def step_get_job_status_run(project_name, job_name):
     except KeyError:
         pass
 
+
 @allure.step('查询指定任务，并返回结果')
 def step_get_assign_job(project_name, way, condition):
     """
@@ -98,6 +102,7 @@ def step_get_assign_job(project_name, way, condition):
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/jobs?' + way + '=' + condition + '&sortBy=updateTime&limit=10'
     r = requests.get(url=url, headers=get_header())
     return r.json()['totalItems']
+
 
 @allure.step('删除指定任务，并返回删除结果')
 def step_delete_job(project_name, job_name):
@@ -114,6 +119,7 @@ def step_delete_job(project_name, job_name):
     # 返回删除结果
     return r.json()['status']
 
+
 @allure.step('查看任务的容器组名称信息,并获取第一个容器名称')
 def step_get_job_pods(project_name, uid):
     """
@@ -125,6 +131,7 @@ def step_get_job_pods(project_name, uid):
           '/pods?limit=10&ownerKind=Job&labelSelector=controller-uid%3D' + uid + '&sortBy=startTime'
     r = requests.get(url=url, headers=get_header())
     return r.json()['items'][0]['metadata']['name']
+
 
 @allure.step('获取容器组的日志，并验证任务运行结果')
 def step_get_pods_log(project_name, pod_name, job_name):
@@ -139,6 +146,7 @@ def step_get_pods_log(project_name, pod_name, job_name):
 
     print(r.text)
     assert '3.1415926' in r.text
+
 
 @allure.step('创建工作负载')
 def step_create_workload(project_name, work_name, container_name, image):
@@ -183,12 +191,14 @@ def step_create_workload(project_name, work_name, container_name, image):
     assert r2.json()['kind'] == 'Deployment'
     # return r2.json()['metadata']['uid']
 
+
 @allure.step('查询工作负载列表，指定的工作负载,并返回type=Available的status')
 def step_get_workload(project_name, work_name):
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/deployments' \
-                       '?name=' + work_name + '&sortBy=updateTime&limit=10'
+                                                                                              '?name=' + work_name + '&sortBy=updateTime&limit=10'
     r = requests.get(url=url, headers=get_header())
     return r.json()['items'][0]['status']['conditions'][0]['status']
+
 
 @allure.step('修改工作负载副本数')
 def step_modify_work_replicas(project_name, work_name, replicas):
@@ -200,14 +210,15 @@ def step_modify_work_replicas(project_name, work_name, replicas):
     url = config.url + '/apis/apps/v1/namespaces/' + project_name + '/deployments/' + work_name
     data = {"spec": {"replicas": replicas}}
     r = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
-    #验证修改后的副本数
+    # 验证修改后的副本数
     assert r.json()['spec']['replicas'] == replicas
+
 
 @allure.step('获取工作负载中所有的容器组的运行状态')
 def step_get_work_pod_status(project_name, work_name):
     status = []
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods' \
-        '?ownerKind=ReplicaSet&labelSelector=app%3' + work_name + '&name=' + work_name + '&sortBy=startTime'
+                                                                                              '?ownerKind=ReplicaSet&labelSelector=app%3' + work_name + '&name=' + work_name + '&sortBy=startTime'
 
     r = requests.get(url=url, headers=get_header())
     for i in range(r.json()['totalItems']):
@@ -215,23 +226,66 @@ def step_get_work_pod_status(project_name, work_name):
 
     return status
 
+
 @allure.step('创建存储卷')
 def step_create_volume(project_name, volume_name):
     url = config.url + '/api/v1/namespaces/' + project_name + '/persistentvolumeclaims'
     data = {"apiVersion": "v1",
             "kind": "PersistentVolumeClaim",
-            "metadata":{"namespace": project_name,"name": volume_name,"labels":{},
-                        "annotations":{"kubesphere.io/creator":"admin"}},
-            "spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},
-                    "storageClassName":"csi-standard"},"create_way":"storageclass"}
+            "metadata": {"namespace": project_name, "name": volume_name, "labels": {},
+                         "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "10Gi"}},
+                     "storageClassName": "csi-standard"}, "create_way": "storageclass"}
     r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     print(r.json()['status']['phase'])
+
 
 @allure.step('获取存储卷状态')
 def step_get_volume_status(project_name, volume_name):
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime&limit=10'
     r = requests.get(url=url, headers=get_header())
     print(r.json()['items'][0]['status']['phase'])
+
+
+@allure.step('创建sa')
+def step_create_sa(project_name, sa_name):
+    url = config.url + '/api/v1/namespaces/' + project_name + '/serviceaccounts'
+    data = {"apiVersion": "v1", "kind": "ServiceAccount",
+            "metadata": {"namespace": project_name, "labels": {}, "name": sa_name,
+                         "annotations": {"kubesphere.io/creator": "admin"}}}
+    r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    print(r.text)
+
+
+@allure.step('查询指定sa并返回密钥名称')
+def step_get_sa(project_name, sa_name):
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/serviceaccounts?name=' + sa_name + '&sortBy=createTime&limit=10'
+    r = requests.get(url=url, headers=get_header())
+    print(r.json()['items'][0]['metadata']['name'])
+    print(r.json()['items'][0]['secrets'][0]['name'])
+    return r.json()['items'][0]['secrets'][0]['name']
+
+
+@allure.step('查看指定sa详情信息')
+def step_get_sa_detail(project_name, sa_name):
+    url = config.url + '/api/v1/namespaces/' + project_name + '/serviceaccounts/' + sa_name
+    r = requests.get(url=url, headers=get_header())
+    print(r.json()['metadata']['name'])
+
+
+@allure.step('查看指定密钥并返回密钥类型')
+def step_get_secret(project_name, secret_name):
+    url = config.url + '/api/v1/namespaces/' + project_name + '/secrets/' + secret_name
+    r = requests.get(url=url, headers=get_header())
+    print(r.json()['type'])
+    return r.json()['type']
+
+
+@allure.step('删除指定sa')
+def step_delete_sa(project_name, sa_name):
+    url = config.url + '/api/v1/namespaces/' + project_name + '/serviceaccounts/' + sa_name
+    requests.delete(url + url, headers=get_header())
+
 
 @allure.feature('Project')
 class TestProject(object):
@@ -255,11 +309,11 @@ class TestProject(object):
         commonFunction.create_project(self.ws_name, self.project_name)  # 创建一个project工程
 
     # 所有用例执行完之后执行该方法
-    def teardown_class(self):
-        commonFunction.delete_project(self.ws_name, self.project_name)  # 删除创建的项目
-        time.sleep(5)
-        commonFunction.delete_workspace(self.ws_name)  # 删除创建的工作空间
-        commonFunction.delete_user(self.user_name)  # 删除创建的用户
+    # def teardown_class(self):
+    #     commonFunction.delete_project(self.ws_name, self.project_name)  # 删除创建的项目
+    #     time.sleep(5)
+    #     commonFunction.delete_workspace(self.ws_name)  # 删除创建的工作空间
+    #     commonFunction.delete_user(self.user_name)  # 删除创建的用户
 
     '''
     以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
@@ -704,7 +758,6 @@ class TestProject(object):
     @allure.story('应用负载-容器组')
     @allure.title('按名称模糊查询存在的容器组')
     @allure.severity(allure.severity_level.NORMAL)
-
     # 在用例'创建任务，并验证运行正常'中创建的是一个有4个容器组的任务
     def test_fuzzy_query_pod(self):
         pod_name = self.job_name
@@ -786,7 +839,6 @@ class TestProject(object):
     @allure.story('应用负载-任务')
     @allure.title('删除状态为已完成的任务')
     @allure.severity(allure.severity_level.CRITICAL)
-
     # 删除用例'创建任务，并验证运行正常'创建的任务
     def test_delete_job(self):
         result = step_delete_job(self.project_name, self.job_name)
@@ -799,7 +851,6 @@ class TestProject(object):
     @allure.story('应用负载-任务')
     @allure.title('删除不存在的任务')
     @allure.severity(allure.severity_level.NORMAL)
-
     # 删除用例'创建任务，并验证运行正常'创建的任务
     def test_delete_job_no(self):
         job_name = 'test123'
@@ -816,9 +867,10 @@ class TestProject(object):
         container_name = 'container-nginx'  # 容器名称
         image = 'nginx'  # 镜像名称
         # 创建工作负载,副本数为1
-        step_create_workload(project_name=self.project_name, work_name=self.work_name, container_name=container_name, image=image)
+        step_create_workload(project_name=self.project_name, work_name=self.work_name, container_name=container_name,
+                             image=image)
 
-        #在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间600s
+        # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间600s
         i = 0
         while i < 60:
             status = step_get_workload(project_name=self.project_name, work_name=self.work_name)
@@ -846,13 +898,13 @@ class TestProject(object):
                                               "kubesphere.io/creator": "admin"}},
                  "spec": {"selector": {
                      "matchLabels": {"app.kubernetes.io/version": "v1", "app.kubernetes.io/name": "bookinfo"}},
-                          "addOwnerRef": "true", "descriptor": {"icons": [{"src": "/assets/bookinfo.svg"}]},
-                          "componentKinds": [{"group": "", "kind": "Service"},
-                                             {"group": "apps", "kind": "Deployment"},
-                                             {"group": "apps", "kind": "StatefulSet"},
-                                             {"group": "extensions", "kind": "Ingress"},
-                                             {"group": "servicemesh.kubesphere.io", "kind": "Strategy"},
-                                             {"group": "servicemesh.kubesphere.io", "kind": "ServicePolicy"}]}}
+                     "addOwnerRef": "true", "descriptor": {"icons": [{"src": "/assets/bookinfo.svg"}]},
+                     "componentKinds": [{"group": "", "kind": "Service"},
+                                        {"group": "apps", "kind": "Deployment"},
+                                        {"group": "apps", "kind": "StatefulSet"},
+                                        {"group": "extensions", "kind": "Ingress"},
+                                        {"group": "servicemesh.kubesphere.io", "kind": "Strategy"},
+                                        {"group": "servicemesh.kubesphere.io", "kind": "ServicePolicy"}]}}
 
         url2 = config.url + '/apis/extensions/v1beta1/namespaces/' + self.project_name + '/ingresses?dryRun=All'
         data2 = {"apiVersion": "extensions/v1beta1", "kind": "Ingress",
@@ -864,7 +916,7 @@ class TestProject(object):
                                   "kubesphere.io/creator": "admin"}},
                  "spec": {"rules": [{"http": {
                      "paths": [{"path": "/", "backend": {"serviceName": "productpage", "servicePort": 9080}}]},
-                                     "host": "productpage.wx.192.168.0.5.nip.io"}]}}
+                     "host": "productpage.wx.192.168.0.5.nip.io"}]}}
 
         url3 = config.urlc + '/apis/apps/v1/namespaces/' + self.project_name + '/deployments?dryRun=All'
         data3 = {"apiVersion": "apps/v1", "kind": "Deployment", "metadata": {"namespace": "wx", "annotations": {
@@ -884,7 +936,7 @@ class TestProject(object):
                                                            "limits": {"cpu": "1", "memory": "1000Mi"}},
                       "imagePullPolicy": "IfNotPresent", "image": "kubesphere/examples-bookinfo-productpage-v1:1.13.0",
                       "ports": [{"name": "http-web", "protocol": "TCP", "containerPort": 9080, "servicePort": 9080}]}],
-                                                                                   "serviceAccount": "default"}},
+                     "serviceAccount": "default"}},
                           "strategy": {"type": "RollingUpdate",
                                        "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}}}
 
@@ -924,10 +976,10 @@ class TestProject(object):
                                                                                                    "imagePullPolicy": "IfNotPresent",
                                                                                                    "image": "kubesphere/examples-bookinfo-reviews-v1:1.13.0",
                                                                                                    "ports": [{
-                                                                                                                 "name": "http-web",
-                                                                                                                 "protocol": "TCP",
-                                                                                                                 "containerPort": 9080,
-                                                                                                                 "servicePort": 9080}]}],
+                                                                                                       "name": "http-web",
+                                                                                                       "protocol": "TCP",
+                                                                                                       "containerPort": 9080,
+                                                                                                       "servicePort": 9080}]}],
                                                                                    "serviceAccount": "default"}},
                           "strategy": {"type": "RollingUpdate",
                                        "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}}}
@@ -968,10 +1020,10 @@ class TestProject(object):
                                                                                                    "imagePullPolicy": "IfNotPresent",
                                                                                                    "image": "kubesphere/examples-bookinfo-details-v1:1.13.0",
                                                                                                    "ports": [{
-                                                                                                                 "name": "http-web",
-                                                                                                                 "protocol": "TCP",
-                                                                                                                 "containerPort": 9080,
-                                                                                                                 "servicePort": 9080}]}],
+                                                                                                       "name": "http-web",
+                                                                                                       "protocol": "TCP",
+                                                                                                       "containerPort": 9080,
+                                                                                                       "servicePort": 9080}]}],
                                                                                    "serviceAccount": "default"}},
                           "strategy": {"type": "RollingUpdate",
                                        "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}}}
@@ -1012,10 +1064,10 @@ class TestProject(object):
                                                                                                    "imagePullPolicy": "IfNotPresent",
                                                                                                    "image": "kubesphere/examples-bookinfo-ratings-v1:1.13.0",
                                                                                                    "ports": [{
-                                                                                                                 "name": "http-web",
-                                                                                                                 "protocol": "TCP",
-                                                                                                                 "containerPort": 9080,
-                                                                                                                 "servicePort": 9080}]}],
+                                                                                                       "name": "http-web",
+                                                                                                       "protocol": "TCP",
+                                                                                                       "containerPort": 9080,
+                                                                                                       "servicePort": 9080}]}],
                                                                                    "serviceAccount": "default"}},
                           "strategy": {"type": "RollingUpdate",
                                        "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}}}
@@ -1054,7 +1106,7 @@ class TestProject(object):
                                                                                           "kubesphere.io/creator": "admin"}},
                   "spec": {"rules": [{"http": {
                       "paths": [{"path": "/", "backend": {"serviceName": "productpage", "servicePort": 9080}}]},
-                                      "host": "productpage.wx.192.168.0.5.nip.io"}]}}
+                      "host": "productpage.wx.192.168.0.5.nip.io"}]}}
 
         url13 = config.url + '/apis/apps/v1/namespaces/' + self.project_name + '/deployments'
         data13 = {"apiVersion": "apps/v1", "kind": "Deployment", "metadata": {"namespace": "wx", "annotations": {
@@ -1074,7 +1126,7 @@ class TestProject(object):
                                                             "limits": {"cpu": "1", "memory": "1000Mi"}},
                        "imagePullPolicy": "IfNotPresent", "image": "kubesphere/examples-bookinfo-productpage-v1:1.13.0",
                        "ports": [{"name": "http-web", "protocol": "TCP", "containerPort": 9080, "servicePort": 9080}]}],
-                                                                                    "serviceAccount": "default"}},
+                      "serviceAccount": "default"}},
                            "strategy": {"type": "RollingUpdate",
                                         "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}}}
 
@@ -1115,10 +1167,10 @@ class TestProject(object):
                                                                                                     "imagePullPolicy": "IfNotPresent",
                                                                                                     "image": "kubesphere/examples-bookinfo-reviews-v1:1.13.0",
                                                                                                     "ports": [{
-                                                                                                                  "name": "http-web",
-                                                                                                                  "protocol": "TCP",
-                                                                                                                  "containerPort": 9080,
-                                                                                                                  "servicePort": 9080}]}],
+                                                                                                        "name": "http-web",
+                                                                                                        "protocol": "TCP",
+                                                                                                        "containerPort": 9080,
+                                                                                                        "servicePort": 9080}]}],
                                                                                     "serviceAccount": "default"}},
                            "strategy": {"type": "RollingUpdate",
                                         "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}}}
@@ -1159,10 +1211,10 @@ class TestProject(object):
                                                                                                     "imagePullPolicy": "IfNotPresent",
                                                                                                     "image": "kubesphere/examples-bookinfo-details-v1:1.13.0",
                                                                                                     "ports": [{
-                                                                                                                  "name": "http-web",
-                                                                                                                  "protocol": "TCP",
-                                                                                                                  "containerPort": 9080,
-                                                                                                                  "servicePort": 9080}]}],
+                                                                                                        "name": "http-web",
+                                                                                                        "protocol": "TCP",
+                                                                                                        "containerPort": 9080,
+                                                                                                        "servicePort": 9080}]}],
                                                                                     "serviceAccount": "default"}},
                            "strategy": {"type": "RollingUpdate",
                                         "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}}}
@@ -1203,10 +1255,10 @@ class TestProject(object):
                                                                                                     "imagePullPolicy": "IfNotPresent",
                                                                                                     "image": "kubesphere/examples-bookinfo-ratings-v1:1.13.0",
                                                                                                     "ports": [{
-                                                                                                                  "name": "http-web",
-                                                                                                                  "protocol": "TCP",
-                                                                                                                  "containerPort": 9080,
-                                                                                                                  "servicePort": 9080}]}],
+                                                                                                        "name": "http-web",
+                                                                                                        "protocol": "TCP",
+                                                                                                        "containerPort": 9080,
+                                                                                                        "servicePort": 9080}]}],
                                                                                     "serviceAccount": "default"}},
                            "strategy": {"type": "RollingUpdate",
                                         "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}}}
@@ -1228,12 +1280,12 @@ class TestProject(object):
     @allure.title('修改工作负载副本并验证运行正常')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_add_work_replica(self):
-        #依赖于用例'创建工作负载，并验证运行成功'创建的工作负载
-        replicas = 3  #副本数
-        #修改副本数
+        # 依赖于用例'创建工作负载，并验证运行成功'创建的工作负载
+        replicas = 3  # 副本数
+        # 修改副本数
         step_modify_work_replicas(project_name=self.project_name, work_name=self.work_name, replicas=replicas)
-        #获取工作负载中所有的容器组，并验证其运行正常，最长等待时间60s
-        status_test = []  #创建一个对比数组
+        # 获取工作负载中所有的容器组，并验证其运行正常，最长等待时间60s
+        status_test = []  # 创建一个对比数组
         for j in range(replicas):
             status_test.append('Running')
         i = 0
@@ -1253,28 +1305,26 @@ class TestProject(object):
         # 依赖于用例"创建工作负载，并验证运行成功"
         status = 'running'
         url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
-                            '?status=' + status + '&sortBy=updateTime&limit=10'
+                                                                                                       '?status=' + status + '&sortBy=updateTime&limit=10'
         r = requests.get(url=url, headers=get_header())
         assert r.json()['totalItems'] >= 1
 
     @allure.story('应用负载-工作负载')
     @allure.title('按名称精确查询存在的工作负载')
     @allure.severity(allure.severity_level.NORMAL)
-
-    #依赖于用例"创建工作负载，并验证运行成功"
+    # 依赖于用例"创建工作负载，并验证运行成功"
     def test_query_work_by_name(self):
         url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
-                            '?name=' + self.work_name
+                                                                                                       '?name=' + self.work_name
 
         r = requests.get(url=url, headers=get_header())
-        #验证查询结果
+        # 验证查询结果
         assert r.json()['items'][0]['metadata']['name'] == self.work_name
 
     @allure.story('应用负载-工作负载')
     @allure.title('按名称模糊查询存在的工作负载')
     @allure.severity(allure.severity_level.NORMAL)
-
-    #依赖于用例"创建工作负载，并验证运行成功"
+    # 依赖于用例"创建工作负载，并验证运行成功"
     def test_fuzzy_query_work_by_name(self):
         name = 'demo'
         url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
@@ -1286,7 +1336,6 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('按名称查询不存在的工作负载')
     @allure.severity(allure.severity_level.NORMAL)
-
     # 依赖于用例"创建工作负载，并验证运行成功"
     def test_fuzzy_query_work_by_name(self):
         name = 'demo123'
@@ -1310,12 +1359,13 @@ class TestProject(object):
                                             "kind": "Deployment",
                                             "name": self.work_name}, "minReplicas": 1, "maxReplicas": 20,
                          "metrics": [{"type": "Resource",
-                "resource": {"name": "memory", "target": {"type": "AverageValue", "averageValue": "2Mi"}}},
+                                      "resource": {"name": "memory",
+                                                   "target": {"type": "AverageValue", "averageValue": "2Mi"}}},
                                      {"type": "Resource", "resource": {"name": "cpu", "target":
                                          {"type": "Utilization", "averageUtilization": 50}}}]},
                 "apiVersion": "autoscaling/v2beta2", "kind": "HorizontalPodAutoscaler"}
         r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
-        #验证设置成功
+        # 验证设置成功
         assert r.json()['kind'] == 'HorizontalPodAutoscaler'
 
     @allure.story('应用负载-工作负载')
@@ -1325,9 +1375,28 @@ class TestProject(object):
         url = config.url + '/apis/apps/v1/namespaces/' + self.project_name + '/deployments/' + self.work_name
         data = {"kind": "DeleteOptions", "apiVersion": "v1", "propagationPolicy": "Background"}
         r = requests.delete(url=url, headers=get_header(), data=json.dumps(data))
-        #验证删除成功
+        # 验证删除成功
         assert r.json()['status'] == 'Success'
 
+    @allure.story('配置中心-服务账号')
+    @allure.title('创建sa并验证sa内容正确、生成的密钥正确、然后删除sa')
+    def test_create_sa(self):
+        sa_name = 'satest'
+        # 步骤1：创建sa
+        step_create_sa(project_name=self.project_name, sa_name=sa_name)
+
+        # 步骤2：验证sa创建成功并返回secret
+        sa_secret = step_get_sa(project_name=self.project_name, sa_name=sa_name)
+
+        # 步骤3：查询sa详情
+        step_get_sa_detail(project_name=self.project_name, sa_name=sa_name)
+
+        # 步骤4：查询sa的密钥信息并返回密钥类型
+        secret_type = step_get_secret(project_name=self.project_name, secret_name=sa_secret)
+        assert secret_type == 'kubernetes.io/service-account-token'
+
+        # 步骤5：删除sa
+        step_delete_sa(project_name=self.project_name, sa_name=sa_name)
 
     @allure.title('{title}')  # 设置用例标题
     @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
@@ -1395,8 +1464,6 @@ class TestProject(object):
                                                                 '用例的预期结果: ' + str(except_result)
         )
 
-
-
     @allure.story('存储管理-存储卷快照')
     @allure.title('删除创建的存储卷快照，并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -1422,8 +1489,9 @@ class TestProject(object):
             i = i + 1
         print("actual_result:r1.json()['totalItems'] = " + str(r1.json()['totalItems']))
         print("expect_result: 0")
-        # 验证存储卷快照成功
         assert r1.json()['totalItems'] == 0
+
+    # 验证存储卷快照成功
 
     @allure.story('存储管理-存储卷')
     @allure.title('删除存在的存储卷，并验证删除成功')
