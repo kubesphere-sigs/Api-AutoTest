@@ -321,7 +321,7 @@ class TestProject(object):
     @allure.story('存储管理-存储卷')
     @allure.title('创建存储卷，并验证其状态正常')
     @allure.severity(allure.severity_level.BLOCKER)
-    def test_create_volume(self):
+    def wx_test_create_volume(self):
         url = config.url + '/api/v1/namespaces/' + self.project_name + '/persistentvolumeclaims'
         data = {"apiVersion": "v1",
                 "kind": "PersistentVolumeClaim",
@@ -359,7 +359,7 @@ class TestProject(object):
     @allure.story('存储管理-存储卷快照')
     @allure.title('创建存储卷快照，并验证创建成功')
     @allure.severity(allure.severity_level.BLOCKER)
-    def test_create_volume_snapshot(self):
+    def wx_test_create_volume_snapshot(self):
         url = config.url + '/apis/snapshot.storage.k8s.io/v1beta1/namespaces/' + self.project_name + '/volumesnapshots'
         data = {"apiVersion": "snapshot.storage.k8s.io/v1beta1",
                 "kind": "VolumeSnapshot",

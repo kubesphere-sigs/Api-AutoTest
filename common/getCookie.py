@@ -12,7 +12,6 @@ def get_token(server):
         'grant_type': 'password'
     }
 
-
     r = requests.post(server + '/oauth/token', headers=header, data=data)
 
     if r.status_code == 200:
@@ -23,7 +22,3 @@ def get_token(server):
 
     ks_token = 'Bearer ' + token
     return ks_token
-
-
-# token = get_token('http://139.198.9.107:8082')
-# print(token)
