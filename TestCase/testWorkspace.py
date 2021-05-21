@@ -31,6 +31,35 @@ def step_create_department(ws_name, group_name, data):
     return r
 
 
+@allure.step('查看企业组织可分配的用户信息')
+def step_get_user_for_department(name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users?notingroup=' + name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查看企业组织已分配的用户信息')
+def step_get_user_assigned_department(name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users?ingroup=' + name
+    response = requests.get(url)
+    return response
+
+
+@allure.step('将指定用户绑定到指定企业组织')
+def step_binding_user(ws_name, group_name, user_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groupbindings'
+    data = [{"userName": user_name, "groupName": group_name}]
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('将用户从企业组织解绑')
+def step_unbind_user(ws_name, user_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groupbindings/' + user_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
 @allure.step('查询企业组织')
 # 返回企业空间的所有企业组织名称
 def step_get_department(ws_name):
@@ -107,9 +136,9 @@ def step_edit_quota(ws_name, hard_data, cluster, resource_version):
 
 @allure.feature('企业空间角色&用户管理')
 class TestWorkSpace(object):
-    user_name = 'test-user-for-test-ws'
-    ws_name = 'test-ws-for-test-ws'
-    ws_name1 = 'test-ws-for-test-ws1'
+    user_name = 'user-for-test-ws'
+    ws_name = 'ws-for-test-ws'
+    ws_name1 = 'ws1-for-test-ws'
     ws_role_name = ws_name + '-viewer'
     log_format()  # 配置日志格式
     # 从文件中读取用例信息
@@ -379,6 +408,76 @@ class TestWorkSpace(object):
         # 获取返回信息
         response = step_create_department(self.ws_name, group_name, data)
         print(response.text)
+
+    @allure.story('企业组织')
+    @allure.title('为用户分配企业组织')
+    def test_assign_user(self):
+        group_name = 'test1'
+        data = {"kubesphere.io/workspace-role": "wx-regular",
+                "kubesphere.io/alias-name": "",
+                "kubesphere.io/project-roles": "[]",
+                "kubesphere.io/devops-roles": "[]",
+                "kubesphere.io/creator": "admin"
+                }
+        # 创建企业组织,并获取创建的企业组织的name
+        response = step_create_department(self.ws_name, group_name, data)
+        name = response.json()['metadata']['name']
+        # 获取该企业组织可分配的用户数量
+        res = step_get_user_for_department(name)
+        counts = res.json()['totalItems']
+        # 将指定用户绑定到指定企业组织
+        re = step_binding_user(self.ws_name, name, self.user_name)
+        # 获取绑定后返回的用户名
+        binding_user = re.json()[0]['users'][0]
+        # 校验绑定的用户名称
+        assert binding_user == self.user_name
+        # 重新获取企业组织可分配的用户数量
+        r = step_get_user_for_department(name)
+        counts_new = r.json()['totalItems']
+        # 验证可绑定的用户数量
+        assert counts_new == counts - 1
+
+    @allure.story('企业组织')
+    @allure.title('将已绑定企业组织的用户再次绑定该企业组织')
+    # 接口没有限制将同一个用户重复绑定到一个企业组织
+    def wx_test_reassign_user(self):
+        group_name = 'test2'
+        data = {"kubesphere.io/workspace-role": "wx-regular",
+                "kubesphere.io/alias-name": "",
+                "kubesphere.io/project-roles": "[]",
+                "kubesphere.io/devops-roles": "[]",
+                "kubesphere.io/creator": "admin"
+                }
+        # 创建企业组织,并获取创建的企业组织的name
+        response = step_create_department(self.ws_name, group_name, data)
+        name = response.json()['metadata']['name']
+        # 将指定用户绑定到指定企业组织
+        step_binding_user(self.ws_name, name, self.user_name)
+        # 将指定用户再次绑定到该企业空间
+        response = step_binding_user(self.ws_name, name, self.user_name)
+        print(response.text)
+
+    @allure.story('企业组织')
+    @allure.title('将用户从企业组织解绑')
+    def test_unbind_user(self):
+        group_name = 'test2'
+        data = {"kubesphere.io/workspace-role": "wx-regular",
+                "kubesphere.io/alias-name": "",
+                "kubesphere.io/project-roles": "[]",
+                "kubesphere.io/devops-roles": "[]",
+                "kubesphere.io/creator": "admin"
+                }
+        # 创建企业组织,并获取创建的企业组织的name
+        response = step_create_department(self.ws_name, group_name, data)
+        name = response.json()['metadata']['name']
+        # 将指定用户绑定到指定企业组织
+        res = step_binding_user(self.ws_name, name, self.user_name)
+        # 获取绑定后返回的用户名
+        binding_user = res.json()[0]['metadata']['name']
+        # 将用户从企业组织解绑
+        response = step_unbind_user(ws_name=self.ws_name, user_name=binding_user)
+        # 校验解绑结果
+        assert response.json()['message'] == 'success'
 
     @allure.story('配额管理')
     @allure.title('编辑配额')
