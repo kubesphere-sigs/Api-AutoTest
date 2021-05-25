@@ -148,56 +148,180 @@ def step_get_pods_log(project_name, pod_name, job_name):
     assert '3.1415926' in r.text
 
 
-@allure.step('创建工作负载')
-def step_create_workload(project_name, work_name, container_name, image):
+@allure.step('创建deployment')
+def step_create_deploy(project_name, work_name, container_name, image, replicas, ports, volumemount,
+                       volume_info, strategy):
     """
+    :param ports: 容器的端口信息
+    :param volumemount: 绑定存储卷的设置
+    :param strategy_name: 策略名称
+    :param strategy_info: 策略信息
+    :return: 接口响应对象
+    :param replicas: 副本数
+    :return: 接口对象
+    :param volume_info: 绑定的存储卷信息
     :param project_name: 项目名称
     :param work_name: 工作负载名称
     :param container_name: 容器名称
     :param image: 镜像名称
     """
-    url1 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/deployments?dryRun=All'
+    url1 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/' + 'deployments?dryRun=All'
     url2 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/deployments'
-    data1 = {"apiVersion": "apps/v1", "kind": "Deployment",
-             "metadata": {"namespace": project_name, "labels": {"app": work_name},
-                          "name": work_name, "annotations": {"kubesphere.io/creator": "admin"}},
-             "spec": {"replicas": 1, "selector":
-                 {"matchLabels": {"app": work_name}},
-                      "template": {"metadata": {"labels": {"app": work_name}},
-                                   "spec": {"containers": [{"name": container_name,
-                                                            "imagePullPolicy": "IfNotPresent", "image": image}],
-                                            "serviceAccount": "default", "affinity": {},
-                                            "initContainers": [], "volumes": []}},
-                      "strategy": {"type": "RollingUpdate",
-                                   "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}}}
 
-    data2 = {"apiVersion": "apps/v1", "kind": "Deployment",
-             "metadata": {"namespace": project_name, "labels": {"app": work_name},
-                          "name": work_name, "annotations": {"kubesphere.io/creator": "admin"}},
-             "spec": {"replicas": 1, "selector": {"matchLabels": {"app": work_name}},
-                      "template": {"metadata": {"labels": {"app": work_name}
-                                                },
-                                   "spec": {"containers": [
-                                       {"name": container_name, "imagePullPolicy": "IfNotPresent", "image": image}],
-                                       "serviceAccount": "default", "affinity": {}, "initContainers": [],
-                                       "volumes": []}},
-                      "strategy": {"type": "RollingUpdate",
-                                   "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}}}
-    r1 = requests.post(url=url1, headers=get_header(), data=json.dumps(data1))
-    assert r1.json()['kind'] == 'Deployment'
-    # return r1.json()['metadata']['uid']
-
-    r2 = requests.post(url=url2, headers=get_header(), data=json.dumps(data2))
-    assert r2.json()['kind'] == 'Deployment'
-    # return r2.json()['metadata']['uid']
+    data = {"apiVersion": "apps/v1", "kind": "Deployment",
+            "metadata": {"namespace": project_name,
+                         "labels": {"app": work_name},
+                         "name": work_name,
+                         "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": {"replicas": replicas,
+                     "selector": {"matchLabels": {"app": work_name}},
+                     "template": {"metadata": {
+                         "labels": {"app": work_name},
+                         "annotations": {"logging.kubesphere.io/logsidecar-config": "{}"}},
+                         "spec": {
+                             "containers": [{
+                                 "name": container_name,
+                                 "imagePullPolicy": "IfNotPresent",
+                                 "image": image,
+                                 "ports": ports,
+                                 "volumeMounts": volumemount
+                             }],
+                             "serviceAccount": "default",
+                             "affinity": {},
+                             "imagePullSecrets": None,
+                             "initContainers": [],
+                             "volumes": volume_info}},
+                     "strategy": strategy
+                     }}
+    requests.post(url=url1, headers=get_header(), data=json.dumps(data))
+    response = requests.post(url=url2, headers=get_header(), data=json.dumps(data))
+    return response
 
 
-@allure.step('查询工作负载列表，指定的工作负载,并返回type=Available的status')
-def step_get_workload(project_name, work_name):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/deployments' \
-                                                                                              '?name=' + work_name + '&sortBy=updateTime&limit=10'
-    r = requests.get(url=url, headers=get_header())
-    return r.json()['items'][0]['status']['conditions'][0]['status']
+@allure.step('创建statefulsets')
+def step_create_stateful(project_name, work_name, container_name, image, replicas, ports, service_ports, volumemount,
+                         volume_info,
+                         service_name):
+    url1 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/statefulsets?dryRun=All'
+    url3 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/statefulsets'
+    url2 = config.url + '/api/v1/namespaces/' + project_name + '/services?dryRun=All'
+    url4 = config.url + '/api/v1/namespaces/' + project_name + '/services'
+    data1 = {"apiVersion": "apps/v1",
+             "kind": "StatefulSet",
+             "metadata": {
+                 "namespace": project_name,
+                 "labels": {"app": work_name},
+                 "name": work_name,
+                 "annotations": {"kubesphere.io/creator": "admin"}},
+             "spec": {
+                 "replicas": replicas,
+                 "selector": {"matchLabels": {"app": work_name}},
+                 "template": {
+                     "metadata": {
+                         "labels": {"app": work_name},
+                         "annotations": {"logging.kubesphere.io/logsidecar-config": "{}"}},
+                     "spec": {
+                         "containers": [{
+                             "name": container_name,
+                             "imagePullPolicy": "IfNotPresent",
+                             "image": image,
+                             "ports": ports,
+                             "volumeMounts": volumemount}],
+                         "serviceAccount": "default",
+                         "affinity": {},
+                         "initContainers": [],
+                         "volumes": volume_info,
+                         "imagePullSecrets": None}},
+                 "updateStrategy": {
+                     "type": "RollingUpdate",
+                     "rollingUpdate": {"partition": 0}},
+                 "serviceName": service_name}}
+
+    data2 = {"apiVersion": "v1",
+             "kind": "Service",
+             "metadata": {
+                 "namespace": project_name,
+                 "labels": {"app": work_name},
+                 "name": service_name,
+                 "annotations": {"kubesphere.io/alias-name": work_name,
+                                 "kubesphere.io/serviceType": "statefulservice",
+                                 "kubesphere.io/creator": "admin"}},
+             "spec": {"sessionAffinity": "None",
+                      "selector": {"app": work_name},
+                      "ports": service_ports,
+                      "clusterIP": "None"}}
+    requests.post(url=url1, headers=get_header(), data=json.dumps(data1))
+    requests.post(url=url2, headers=get_header(), data=json.dumps(data2))
+    requests.post(url=url3, headers=get_header(), data=json.dumps(data1))
+    response = requests.post(url=url4, headers=get_header(), data=json.dumps(data2))
+    return response
+
+
+@allure.step('创建daemonsets')
+def step_create_daemonset(project_name, work_name, container_name, image, ports, volumemount,
+                          volume_info):
+    url1 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/daemonsets?dryRun=All'
+    url2 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/daemonsets'
+    data = {"apiVersion": "apps/v1", "kind": "DaemonSet",
+            "metadata": {
+                "namespace": project_name,
+                "labels": {"app": work_name},
+                "name": work_name,
+                "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": {"replicas": 1,
+                     "selector": {"matchLabels": {"app": work_name}},
+                     "template": {
+                         "metadata": {
+                             "labels": {"app": work_name},
+                             "annotations": {"logging.kubesphere.io/logsidecar-config": "{}"}},
+                         "spec": {
+                             "containers": [{
+                                 "name": container_name,
+                                 "imagePullPolicy": "IfNotPresent",
+                                 "image": image,
+                                 "ports": ports,
+                                 "volumeMounts": volumemount}],
+                             "serviceAccount": "default",
+                             "affinity": {},
+                             "initContainers": [],
+                             "volumes": volume_info,
+                             "imagePullSecrets": None}},
+                     "updateStrategy": {
+                         "type": "RollingUpdate",
+                         "rollingUpdate": {"maxUnavailable": "20%"}}, "minReadySeconds": 0}}
+    requests.post(url=url1, headers=get_header(), data=json.dumps(data))
+    response = requests.post(url=url2, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('创建service')
+def step_create_service(project_name, service_name, port):
+    url1 = config.url + '/api/v1/namespaces/' + project_name + '/services?dryRun=All'
+    url2 = config.url + '/api/v1/namespaces/' + project_name + '/services'
+
+    data = {"apiVersion": "v1",
+            "kind": "Service",
+            "metadata": {
+                "namespace": project_name,
+                "labels": {"version": "v1", "app": service_name},
+                "annotations": {"kubesphere.io/serviceType": "statelessservice", "kubesphere.io/creator": "admin"},
+                "name": service_name},
+            "spec": {
+                "sessionAffinity": "None",
+                "selector": {"app": service_name},
+                "template": {
+                    "metadata": {"labels": {"version": "v1", "app": service_name}}},
+                "ports": port}}
+    requests.post(url=url1, headers=get_header(), data=json.dumps(data))
+    response = requests.post(url=url2, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('删除service')
+def step_delete_service(project_name, service_name):
+    url = config.url + '/api/v1/namespaces/' + project_name + '/services/' + service_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
 
 
 @allure.step('修改工作负载副本数')
@@ -227,6 +351,29 @@ def step_get_work_pod_status(project_name, work_name):
     return status
 
 
+@allure.step('获取指定的工作负载')
+def step_get_workload(project_name, type, condition):
+    """
+
+    :param project_name: 项目名称
+    :param type: 负载类型
+    :param condition: 查询条件  如：name=test
+    :return:
+    """
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' \
+          + project_name + '/' + type + '?' + condition
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('删除指定的工作负载')
+def step_delete_workload(project_name, type, work_name):
+    url = config.url + '/apis/apps/v1/namespaces/' + project_name + '/' + type + '/' + work_name
+    data = {"kind": "DeleteOptions", "apiVersion": "v1", "propagationPolicy": "Background"}
+    response = requests.delete(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
 @allure.step('创建存储卷')
 def step_create_volume(project_name, volume_name):
     url = config.url + '/api/v1/namespaces/' + project_name + '/persistentvolumeclaims'
@@ -234,17 +381,32 @@ def step_create_volume(project_name, volume_name):
             "kind": "PersistentVolumeClaim",
             "metadata": {"namespace": project_name, "name": volume_name, "labels": {},
                          "annotations": {"kubesphere.io/creator": "admin"}},
-            "spec": {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "10Gi"}},
-                     "storageClassName": "csi-standard"}, "create_way": "storageclass"}
-    r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
-    print(r.json()['status']['phase'])
+            "spec": {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "10Gi"}}}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('删除存储卷')
+def step_delete_volume(project_name, volume_name):
+    url = config.url + '/api/v1/namespaces/' + project_name + '/persistentvolumeclaims/' + volume_name
+    # 删除存储卷
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查询指定的存储卷')
+def step_get_volume(project_name, volume_name):
+    url1 = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+           '/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime&limit=10'
+    response = requests.get(url=url1, headers=get_header())
+    return response
 
 
 @allure.step('获取存储卷状态')
 def step_get_volume_status(project_name, volume_name):
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime&limit=10'
-    r = requests.get(url=url, headers=get_header())
-    print(r.json()['items'][0]['status']['phase'])
+    response = requests.get(url=url, headers=get_header())
+    return response
 
 
 @allure.step('创建sa')
@@ -254,7 +416,6 @@ def step_create_sa(project_name, sa_name):
             "metadata": {"namespace": project_name, "labels": {}, "name": sa_name,
                          "annotations": {"kubesphere.io/creator": "admin"}}}
     requests.post(url=url, headers=get_header(), data=json.dumps(data))
-
 
 
 @allure.step('查询指定sa并返回密钥名称')
@@ -283,15 +444,46 @@ def step_get_secret(project_name, secret_name):
 @allure.step('删除指定sa')
 def step_delete_sa(project_name, sa_name):
     url = config.url + '/api/v1/namespaces/' + project_name + '/serviceaccounts/' + sa_name
-    r = requests.delete(url =url, headers=get_header())
+    r = requests.delete(url=url, headers=get_header())
+
+
+@allure.step('删除存储卷快照')
+def step_delete_volume_snapshot(project_name, snapshot_name):
+    url = config.url + '/apis/snapshot.storage.k8s.io/v1beta1/namespaces/' + project_name + \
+          '/volumesnapshots/' + snapshot_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查询指定的存储卷快照')
+def step_get_volume_snapshot(project_name, snapshot_name):
+    url1 = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+           '/volumesnapshots?name=' + snapshot_name + '&sortBy=createTime&limit=10'
+    response = requests.get(url=url1, headers=get_header())
+    return response
+
+
+@allure.step('查询指定的项目')
+def step_get_project(ws_name, project_name):
+    url1 = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + \
+           '/namespaces?name=' + project_name
+    response = requests.get(url=url1, headers=get_header())
+    return response
+
+
+@allure.step('删除指定的项目')
+def step_delete_project(ws_name, project_name):
+    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
 
 
 @allure.feature('Project')
 class TestProject(object):
     volume_name = 'testvolume'  # 存储卷名称，在创建、删除存储卷和创建存储卷快照时使用,excle中的用例也用到了这个存储卷
     snapshot_name = 'testshot'  # 存储卷快照的名称,在创建和删除存储卷快照时使用，在excle中的用例也用到了这个快照
-    user_name = 'system-user'  # 系统用户名称
-    ws_name = 'test-ws'  # 企业空间名称,不可修改，从excle中获取的测试用例中用到了这个企业空间
+    user_name = 'user-for-test-project'  # 系统用户名称
+    ws_name = 'ws-for-test-project'  # 企业空间名称,不可修改，从excle中获取的测试用例中用到了这个企业空间
     project_name = 'test-project'  # 项目名称，从excle中获取的测试用例中用到了这个项目名称
     ws_role_name = ws_name + '-viewer'  # 企业空间角色名称
     project_role_name = 'test-project-role'  # 项目角色名称
@@ -319,42 +511,143 @@ class TestProject(object):
     '''
 
     @allure.story('存储管理-存储卷')
-    @allure.title('创建存储卷，并验证其状态正常')
+    @allure.title('创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常')
     @allure.severity(allure.severity_level.BLOCKER)
-    def wx_test_create_volume(self):
-        url = config.url + '/api/v1/namespaces/' + self.project_name + '/persistentvolumeclaims'
-        data = {"apiVersion": "v1",
-                "kind": "PersistentVolumeClaim",
-                "metadata": {"namespace": self.project_name,
-                             "name": self.volume_name,
-                             "labels": {},
-                             "annotations": {"kubesphere.io/creator": "admin"}},
-                "spec": {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "10Gi"}},
-                         "storageClassName": "csi-standard"},
-                "create_way": "storageclass"}
+    def test_create_volume_for_deployment(self):
+        type_name = 'volume-type'  # 存储卷的类型
+        replicas = 1  # 副本数
+        image = 'redis'  # 镜像名称
+        container_name = 'container1'  # 容器名称
+        condition = 'name=' + self.work_name  # 查询条件
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
+        volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+        strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
+        volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": self.volume_name}}]  # 存储卷的信息
         # 创建存储卷
-        r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
-        # 验证存储卷创建成功
-        print("actual_result:r.json()['metadata']['name'] = " + r.json()['metadata']['name'])
-        print("expect_result:" + self.volume_name)
-        assert r.json()['metadata']['name'] == self.volume_name
+        step_create_volume(self.project_name, self.volume_name)
+        # 创建资源并将存储卷绑定到资源
+        step_create_deploy(self.project_name, work_name=self.work_name, image=image, replicas=replicas,
+                           container_name=container_name, volume_info=volume_info, ports=port,
+                           volumemount=volumeMounts, strategy=strategy_info)
+        # 验证资源创建成功
+        time.sleep(10)  # 等待资源创建成功
+        # 获取工作负载的状态
+        response = step_get_workload(self.project_name, type='deployments', condition=condition)
+        status = response.json()['items'][0]['status']
+        # 验证资源的所有副本已就绪
+        assert 'unavailableReplicas' not in status
+        # 获取存储卷状态
+        response = step_get_volume_status(self.project_name, self.volume_name)
+        status = response.json()['items'][0]['status']['phase']
+        # 验证存储卷状态正常
+        assert status == 'Bound'
 
-        # 查询存储卷状态
-        url1 = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + \
-               '/persistentvolumeclaims?name=' + self.volume_name + '&sortBy=createTime&limit=10'
-        i = 0
-        # 验证存储卷状态为bound，最长等待时间为30s
-        while i < 30:
-            r1 = requests.get(url=url1, headers=get_header())
-            if r1.json()['items'][0]['status']['phase'] == 'Bound':
-                break
-            time.sleep(5)
-            i = i + 5
-        print("创建存储卷耗时:" + str(i) + '秒')
-        # 验证存储卷的状态为Bound
-        print("actual_result:r1.json()['items'][0]['status']['phase'] = " + r1.json()['items'][0]['status']['phase'])
-        print("expect_result: Bound")
-        assert r1.json()['items'][0]['status']['phase'] == 'Bound'
+    @allure.story('存储管理-存储卷')
+    @allure.title('创建存储卷，然后将存储卷绑定到新建的statefulsets上，最后验证资源和存储卷的状态正常')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_create_volume_for_statefulsets(self):
+        volume_name = 'volume-stateful'  # 存储卷的名称
+        type_name = 'volume-type'  # 存储卷的类型
+        work_name = 'stateful-with-volume'  # 工作负载的名称
+        service_name = 'service' + volume_name
+        replicas = 2  # 副本数
+        image = 'nginx'  # 镜像名称
+        container_name = 'container-stateful'  # 容器名称
+        condition = 'name=' + work_name  # 查询条件
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
+        service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
+        volumemounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]
+        volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
+        # 创建存储卷
+        step_create_volume(self.project_name, volume_name)
+        # 创建资源并将存储卷绑定到资源
+        step_create_stateful(project_name=self.project_name, work_name=work_name, container_name=container_name,
+                             image=image, replicas=replicas, ports=port, service_ports=service_port,
+                             volumemount=volumemounts, volume_info=volume_info, service_name=service_name)
+
+        # 验证资源创建成功
+        time.sleep(10)  # 等待资源创建成功
+        # 获取工作负载的状态
+        response = step_get_workload(self.project_name, type='statefulsets', condition=condition)
+        readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+        # 验证资源的所有副本已就绪
+        assert readyReplicas == replicas
+        # 获取存储卷状态
+        response = step_get_volume_status(self.project_name, volume_name)
+        status = response.json()['items'][0]['status']['phase']
+        # 验证存储卷状态正常
+        assert status == 'Bound'
+
+    @allure.story('存储管理-存储卷')
+    @allure.title('创建存储卷，然后将存储卷绑定到新建的daemonsets上，最后验证资源和存储卷的状态正常')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_create_volume_for_daemonsets(self):
+        volume_name = 'volume-deamon'  # 存储卷的名称
+        type_name = 'volume-type'  # 存储卷的类型
+        work_name = 'workload-daemon'  # 工作负载的名称
+        image = 'redis'  # 镜像名称
+        container_name = 'container-daemon'  # 容器名称
+        condition = 'name=' + work_name  # 查询条件
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
+        volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+        volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
+        # 创建存储卷
+        step_create_volume(self.project_name, volume_name)
+        # 创建资源并将存储卷绑定到资源
+        step_create_daemonset(self.project_name, work_name=work_name, image=image,
+                              container_name=container_name, volume_info=volume_info, ports=port,
+                              volumemount=volumeMounts)
+        # 验证资源创建成功
+        time.sleep(10)  # 等待资源创建成功
+        # 获取工作负载的状态
+        response = step_get_workload(self.project_name, type='daemonsets', condition=condition)
+        numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
+        assert numberReady == 1
+        # 获取存储卷状态
+        response = step_get_volume_status(self.project_name, volume_name)
+        status = response.json()['items'][0]['status']['phase']
+        # 验证存储卷状态正常
+        assert status == 'Bound'
+
+    @allure.story('存储管理-存储卷')
+    @allure.title('创建存储卷，然后将存储卷绑定到新建的service上，最后验证资源和存储卷的状态正常')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_create_volume_for_service(self):
+        volume_name = 'volume-service'  # 存储卷的名称
+        type_name = 'volume-type'  # 存储卷的类型
+        service_name = 'service' + str(commonFunction.get_random())   # 工作负载的名称
+        image = 'redis'  # 镜像名称
+        container_name = 'container-daemon'  # 容器名称
+        condition = 'name=' + service_name  # 查询条件
+        port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
+        port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
+        volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+        volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
+        strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
+        replicas = 2  # 副本数
+        # 创建存储卷
+        step_create_volume(self.project_name, volume_name)
+        # 创建service
+        step_create_service(self.project_name, service_name, port_service)
+        # 创建service绑定的deployment
+        step_create_deploy(project_name=self.project_name, work_name=service_name, container_name=container_name,
+                           ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
+                           volume_info=volume_info, strategy=strategy_info)
+        # 验证service创建成功
+        response = step_get_workload(self.project_name, type='services', condition=condition)
+        name = response.json()['items'][0]['metadata']['name']
+        assert name == service_name
+        # 验证deploy创建成功
+        time.sleep(3)
+        re = step_get_workload(self.project_name, type='deployments', condition=condition)
+        # 获取并验证deployment的名称正确
+        name = re.json()['items'][0]['metadata']['name']
+        assert name == service_name
+        # 获取存储卷状态
+        response = step_get_volume_status(self.project_name, volume_name)
+        status = response.json()['items'][0]['status']['phase']
+        # 验证存储卷状态正常
+        assert status == 'Bound'
 
     @allure.story('存储管理-存储卷快照')
     @allure.title('创建存储卷快照，并验证创建成功')
@@ -860,25 +1153,318 @@ class TestProject(object):
         assert result == 'Failure'
 
     @allure.story('应用负载-工作负载')
-    @allure.title('创建工作负载，并验证运行成功')
+    @allure.title('创建未绑定存储卷的deployment，并验证运行成功')
     @allure.severity(allure.severity_level.BLOCKER)
     def test_create_workload(self):
+        workload_name = 'workload2'  # 工作负载名称
         container_name = 'container-nginx'  # 容器名称
         image = 'nginx'  # 镜像名称
-        # 创建工作负载,副本数为1
-        step_create_workload(project_name=self.project_name, work_name=self.work_name, container_name=container_name,
-                             image=image)
+        condition = 'name=' + workload_name  # 查询条件
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
+        volumeMounts = []  # 设置挂载哦的存储卷
+        strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
+        replicas = 2  # 副本数
+        volume_info = []
+        # 创建工作负载
+        step_create_deploy(project_name=self.project_name, work_name=workload_name,
+                           container_name=container_name, ports=port, volumemount=volumeMounts,
+                           image=image, replicas=replicas, volume_info=volume_info,
+                           strategy=strategy_info)
 
-        # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间600s
+        # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
         i = 0
         while i < 60:
-            status = step_get_workload(project_name=self.project_name, work_name=self.work_name)
-            if status == 'True':
-                print('创建工作负载耗时:' + str(i))
+            response = step_get_workload(project_name=self.project_name, type='deployments', condition=condition)
+            status = response.json()['items'][0]['status']
+            # 验证资源的所有副本已就绪
+            if 'unavailableReplicas' not in status:
+                print('创建工作负载耗时:' + str(i) + 's')
                 break
             time.sleep(1)
             i = i + 1
-        assert status == 'True'
+        assert 'unavailableReplicas' not in status
+
+    @allure.story('应用负载-工作负载')
+    @allure.title('按状态查询存在的deployment')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_deployment_by_status(self):
+        workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
+        condition = 'status=running'
+        container_name = 'container-nginx'  # 容器名称
+        image = 'nginx'  # 镜像名称
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
+        volumeMounts = []  # 设置挂载的存储卷
+        strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
+        replicas = 1  # 副本数
+        volume_info = []
+        # 创建工作负载
+        step_create_deploy(project_name=self.project_name, work_name=workload_name,
+                           container_name=container_name, ports=port, volumemount=volumeMounts,
+                           image=image, replicas=replicas, volume_info=volume_info,
+                           strategy=strategy_info)
+        # 按名称精确查询deployment
+        time.sleep(3)
+        response = step_get_workload(self.project_name, type='deployments', condition=condition)
+        # 获取并验证deployment的名称正确
+        name = response.json()['items'][0]['metadata']['name']
+        assert name == workload_name
+        # 删除deployment
+        re = step_delete_workload(project_name=self.project_name, type='deployments', work_name=workload_name)
+        assert re.json()['status'] == 'Success'
+
+    @allure.story('应用负载-工作负载')
+    @allure.title('按名称查询存在的deployment')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_deployment_by_name(self):
+        workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
+        conndition = 'name=' + workload_name  # 查询条件
+        container_name = 'container-nginx'  # 容器名称
+        image = 'nginx'  # 镜像名称
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
+        volumeMounts = []  # 设置挂载哦的存储卷
+        strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
+        replicas = 2  # 副本数
+        volume_info = []
+        # 创建工作负载
+        step_create_deploy(project_name=self.project_name, work_name=workload_name,
+                           container_name=container_name, ports=port, volumemount=volumeMounts,
+                           image=image, replicas=replicas, volume_info=volume_info,
+                           strategy=strategy_info)
+        # 按名称精确查询deployment
+        time.sleep(3)
+        response = step_get_workload(self.project_name, type='deployments', condition=conndition)
+        # 获取并验证deployment的名称正确
+        name = response.json()['items'][0]['metadata']['name']
+        assert name == workload_name
+        # 删除deployment
+        re = step_delete_workload(project_name=self.project_name, type='deployments', work_name=workload_name)
+        assert re.json()['status'] == 'Success'
+
+    @allure.story('应用负载-工作负载')
+    @allure.title('创建未绑定存储卷的StatefulSets，并验证运行成功')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_create_statefulsets(self):
+        workload_name = 'workload3'  # 工作负载名称
+        container_name = 'container-nginx'  # 容器名称
+        image = 'nginx'  # 镜像名称
+        replicas = 2  # 副本数
+        condition = 'name=' + workload_name  # 查询条件
+        volume_info = []
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
+        service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
+        service_name = 'service' + workload_name
+        volumemounts = []
+        # 创建工作负载
+        step_create_stateful(project_name=self.project_name, work_name=workload_name,
+                             container_name=container_name,
+                             image=image, replicas=replicas, volume_info=volume_info, ports=port,
+                             service_ports=service_port, volumemount=volumemounts, service_name=service_name)
+
+        # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
+        time.sleep(3)
+        i = 3
+        while i < 60:
+            response = step_get_workload(project_name=self.project_name, type='statefulsets', condition=condition)
+            readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+            # 验证资源的所有副本已就绪
+            if readyReplicas == replicas:
+                print('创建工作负载耗时:' + str(i) + 's')
+                break
+            time.sleep(1)
+            i = i + 1
+        assert readyReplicas == replicas
+
+    @allure.story('应用负载-工作负载')
+    @allure.title('按名称查询存在的StatefulSets')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_statefulstes_by_name(self):
+        workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
+        condition = 'name=' + workload_name
+        type = 'statefulsets'
+        container_name = 'container-nginx'  # 容器名称
+        image = 'nginx'  # 镜像名称
+        replicas = 2  # 副本数
+        volume_info = []
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
+        service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
+        service_name = 'service' + workload_name
+        volumemounts = []
+        # 创建工作负载
+        step_create_stateful(project_name=self.project_name, work_name=workload_name,
+                             container_name=container_name,
+                             image=image, replicas=replicas, volume_info=volume_info, ports=port,
+                             service_ports=service_port, volumemount=volumemounts, service_name=service_name)
+
+        # 按名称精确查询statefulsets
+        time.sleep(1)
+        response = step_get_workload(self.project_name, type=type, condition=condition)
+        # 获取并验证deployment的名称正确
+        name = response.json()['items'][0]['metadata']['name']
+        assert name == workload_name
+        # 删除创建的statefulsets
+        re = step_delete_workload(project_name=self.project_name, type=type, work_name=workload_name)
+        assert re.json()['status'] == 'Success'
+
+    @allure.story('应用负载-工作负载')
+    @allure.title('按状态查询存在的StatefulSets')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_statefulstes_by_status(self):
+        workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
+        condition = 'status=running'
+        type = 'statefulsets'
+        container_name = 'container-nginx'  # 容器名称
+        image = 'nginx'  # 镜像名称
+        replicas = 2  # 副本数
+        volume_info = []
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
+        service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
+        service_name = 'service' + workload_name
+        volumemounts = []
+        # 创建工作负载
+        step_create_stateful(project_name=self.project_name, work_name=workload_name,
+                             container_name=container_name,
+                             image=image, replicas=replicas, volume_info=volume_info, ports=port,
+                             service_ports=service_port, volumemount=volumemounts, service_name=service_name)
+
+        # 按状态精确查询statefulsets
+        time.sleep(5)
+        response = step_get_workload(self.project_name, type=type, condition=condition)
+        # 获取并验证deployment的名称正确
+        name = response.json()['items'][0]['metadata']['name']
+        assert name == workload_name
+        # 删除创建的statefulsets
+        re = step_delete_workload(project_name=self.project_name, type=type, work_name=workload_name)
+        assert re.json()['status'] == 'Success'
+
+    @allure.story('应用负载-工作负载')
+    @allure.title('创建未绑定存储卷的DaemonSets，并验证运行成功')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_create_daemonsets(self):
+        workload_name = 'workload4'  # 工作负载名称
+        container_name = 'container-nginx'  # 容器名称
+        image = 'nginx'  # 镜像名称
+        condition = 'name=' + workload_name  # 查询条件
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
+        volume_info = []
+        volumemount = []
+        # 创建工作负载
+        step_create_daemonset(project_name=self.project_name, work_name=workload_name,
+                              container_name=container_name, image=image, ports=port,
+                              volume_info=volume_info, volumemount=volumemount)
+        # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
+        time.sleep(3)
+        i = 3
+        while i < 60:
+            response = step_get_workload(project_name=self.project_name, type='daemonsets', condition=condition)
+            numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
+            # 验证资源的所有副本已就绪
+            if numberReady == 1:
+                print('创建工作负载耗时:' + str(i) + 's')
+                break
+            time.sleep(1)
+            i = i + 1
+        assert numberReady == 1
+
+    @allure.story('应用负载-工作负载')
+    @allure.title('按名称查询存在的DaemonSets')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_daemonsets_by_name(self):
+        workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
+        container_name = 'container-nginx'  # 容器名称
+        condition = 'name=' + workload_name
+        image = 'nginx'  # 镜像名称
+        type = 'daemonsets'
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
+        volume_info = []
+        volumemount = []
+        # 创建工作负载
+        step_create_daemonset(project_name=self.project_name, work_name=workload_name,
+                              container_name=container_name, image=image, ports=port,
+                              volume_info=volume_info, volumemount=volumemount)
+        # 按名称查询DaemonSets
+        time.sleep(3)
+        response = step_get_workload(self.project_name, type=type, condition=condition)
+        # 获取并验证deployment的名称正确
+        name = response.json()['items'][0]['metadata']['name']
+        # 删除创建的daemonsets
+        re = step_delete_workload(project_name=self.project_name, type=type, work_name=workload_name)
+        assert re.json()['status'] == 'Success'
+
+    @allure.story('应用负载-工作负载')
+    @allure.title('按状态查询存在的DaemonSets')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_daemonsets_by_name(self):
+        workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
+        container_name = 'container-nginx'  # 容器名称
+        condition = 'status=running'
+        image = 'nginx'  # 镜像名称
+        type = 'daemonsets'
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
+        volume_info = []
+        volumemount = []
+        # 创建工作负载
+        step_create_daemonset(project_name=self.project_name, work_name=workload_name,
+                              container_name=container_name, image=image, ports=port,
+                              volume_info=volume_info, volumemount=volumemount)
+        # 按名称查询DaemonSets
+        time.sleep(3)
+        response = step_get_workload(self.project_name, type=type, condition=condition)
+        # 获取并验证deployment的名称正确
+        name = response.json()['items'][0]['metadata']['name']
+        # 删除创建的daemonsets
+        re = step_delete_workload(project_name=self.project_name, type=type, work_name=workload_name)
+        assert re.json()['status'] == 'Success'
+
+    @allure.story('应用负载-工作负载')
+    @allure.title('创建未绑定存储卷的service，并验证运行成功')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_create_service(self):
+        service_name = 'service' + str(commonFunction.get_random())
+        port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
+        image = 'nginx'  # 镜像名称
+        container_name = 'container-nginx'  # 容器名称
+        condition = 'name=' + service_name  # 查询deploy和service条件
+        port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]  # 容器的端口信息
+        volumeMounts = []  # 设置挂载的存储卷
+        strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
+        replicas = 2  # 副本数
+        volume_info = []
+        # 创建service
+        step_create_service(self.project_name, service_name, port_service)
+        # 创建service绑定的deployment
+        step_create_deploy(project_name=self.project_name, work_name=service_name, container_name=container_name,
+                           ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
+                           volume_info=volume_info, strategy=strategy_info)
+        # 验证service创建成功
+        response = step_get_workload(self.project_name, type='services', condition=condition)
+        name = response.json()['items'][0]['metadata']['name']
+        assert name == service_name
+        # 验证deploy创建成功
+        time.sleep(3)
+        re = step_get_workload(self.project_name, type='deployments', condition=condition)
+        # 获取并验证deployment的名称正确
+        name = re.json()['items'][0]['metadata']['name']
+        assert name == service_name
+
+    @allure.story('应用负载-工作负载')
+    @allure.title('删除service，并验证删除成功')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_create_service(self):
+        service_name = 'service' + str(commonFunction.get_random())
+        port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
+        condition = 'name=' + service_name  # 查询service的条件
+        # 创建service
+        step_create_service(self.project_name, service_name, port_service)
+        # 验证service创建成功
+        response = step_get_workload(self.project_name, type='services', condition=condition)
+        name = response.json()['items'][0]['metadata']['name']
+        assert name == service_name
+        # 删除service
+        step_delete_service(self.project_name, service_name)
+        # 验证service删除成功
+        response = step_get_workload(self.project_name, type='services', condition=condition)
+        count = response.json()['totalItems']
+        assert count == 0
 
     @allure.story('应用负载-任务')
     @allure.title('部署示例应用')
@@ -1293,8 +1879,8 @@ class TestProject(object):
             if status == status_test:
                 break
             else:
-                time.sleep(10)
-                i = i + 10
+                time.sleep(5)
+                i = i + 5
         assert status == status_test
 
     @allure.story('应用负载-工作负载')
@@ -1311,7 +1897,7 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('按名称精确查询存在的工作负载')
     @allure.severity(allure.severity_level.NORMAL)
-    # 依赖于用例"创建工作负载，并验证运行成功"
+    # 依赖于用例"创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常"
     def test_query_work_by_name(self):
         url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
                                                                                                        '?name=' + self.work_name
@@ -1323,7 +1909,7 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('按名称模糊查询存在的工作负载')
     @allure.severity(allure.severity_level.NORMAL)
-    # 依赖于用例"创建工作负载，并验证运行成功"
+    # 依赖于用例"创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常"
     def test_fuzzy_query_work_by_name(self):
         name = 'demo'
         url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
@@ -1335,7 +1921,7 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('按名称查询不存在的工作负载')
     @allure.severity(allure.severity_level.NORMAL)
-    # 依赖于用例"创建工作负载，并验证运行成功"
+    # 依赖于用例"创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常"
     def test_fuzzy_query_work_by_name(self):
         name = 'demo123'
         url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
@@ -1369,7 +1955,7 @@ class TestProject(object):
 
     @allure.story('应用负载-工作负载')
     @allure.title('删除工作负载')
-    @allure.severity(allure.severity_level.CRITICAL)
+    # 依赖于用例"创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常"
     def test_delete_work(self):
         url = config.url + '/apis/apps/v1/namespaces/' + self.project_name + '/deployments/' + self.work_name
         data = {"kind": "DeleteOptions", "apiVersion": "v1", "propagationPolicy": "Background"}
@@ -1472,81 +2058,61 @@ class TestProject(object):
     @allure.title('删除创建的存储卷快照，并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_volume_snapshot(self):
-        url = config.url + '/apis/snapshot.storage.k8s.io/v1beta1/namespaces/' + self.project_name + \
-              '/volumesnapshots/' + self.snapshot_name
         # 删除存储卷快照
-        r = requests.delete(url=url, headers=get_header())
-        assert r.status_code == 200
-
+        step_delete_volume_snapshot(self.project_name, self.snapshot_name)
         # 查询被删除的存储卷快照
-        url1 = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + \
-               '/volumesnapshots?name=' + self.snapshot_name + '&sortBy=createTime&limit=10'
         i = 0
         # 验证存储卷快照被删除，最长等待时间为30s
         while i < 30:
-            r1 = requests.get(url=url1, headers=get_header())
+            response = step_get_volume_status(self.project_name, self.snapshot_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if r1.json()['totalItems'] == 0:
+            if response.json()['totalItems'] == 0:
                 print("删除存储卷快照耗时:" + str(i) + '秒')
                 break
             time.sleep(1)
             i = i + 1
-        print("actual_result:r1.json()['totalItems'] = " + str(r1.json()['totalItems']))
+        print("actual_result:r1.json()['totalItems'] = " + str(response.json()['totalItems']))
         print("expect_result: 0")
-        assert r1.json()['totalItems'] == 0
-
-    # 验证存储卷快照成功
+        assert response.json()['totalItems'] == 0
 
     @allure.story('存储管理-存储卷')
     @allure.title('删除存在的存储卷，并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_volume(self):
-        url = config.url + '/api/v1/namespaces/' + self.project_name + '/persistentvolumeclaims/' + self.volume_name
         # 删除存储卷
-        r = requests.delete(url=url, headers=get_header())
-        # 验证删除成功
-        assert r.status_code == 200
+        step_delete_volume(self.project_name, self.volume_name)
         # 查询被删除的存储卷
-        url1 = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + \
-               '/persistentvolumeclaims?name=' + self.volume_name + '&sortBy=createTime&limit=10'
         i = 0
         # 验证存储卷被删除，最长等待时间为30s
         while i < 30:
-            r1 = requests.get(url=url1, headers=get_header())
+            response = step_get_volume(self.project_name, self.volume_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if r1.json()['totalItems'] == 0:
+            if response.json()['totalItems'] == 0:
                 print("删除存储卷耗时:" + str(i) + '秒')
                 break
             time.sleep(1)
             i = i + 1
-        print("actual_result:r1.json()['totalItems'] = " + str(r1.json()['totalItems']))
+        print("actual_result:r1.json()['totalItems'] = " + str(response.json()['totalItems']))
         print("expect_result: 0")
         # 验证存储卷成功
-        assert r1.json()['totalItems'] == 0
+        assert response.json()['totalItems'] == 0
 
     @allure.story('项目')
     @allure.title('删除项目，并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_project(self):
-        url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + self.ws_name + '/namespaces/' + self.project_name
-
         # 删除创建的项目
-        r = requests.delete(url=url, headers=get_header())
-        # 验证删除操作成功
-        assert r.status_code == 200
-        # 在项目列表中查询被删除的项目
-        url1 = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + self.ws_name + \
-               '/namespaces?name=' + self.project_name + '2&labelSelector=kubefed.io%2Fmanaged%21%3Dtrue%2C%20kubesphere.io%2Fkubefed-host-namespace%21%3Dtrue&sortBy=createTime&limit=10'
+        step_delete_project(self.ws_name, self.project_name)
         i = 0
         # 验证项目删除结果，最长等待时间为60s
         while i < 60:
-            r1 = requests.get(url=url1, headers=get_header())
-            if r1.json()['totalItems'] == 0:
+            response = step_get_project(self.ws_name, self.project_name)
+            if response.json()['totalItems'] == 0:
                 print("删除项目耗时:" + str(i) + '秒')
                 break
             time.sleep(1)
             i = i + 1
-            assert r.json()['totalItems'] == 0
+        assert response.json()['totalItems'] == 0
 
 
 if __name__ == "__main__":
