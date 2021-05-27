@@ -152,10 +152,9 @@ def step_get_pods_log(project_name, pod_name, job_name):
 def step_create_deploy(project_name, work_name, container_name, image, replicas, ports, volumemount,
                        volume_info, strategy):
     """
+    :param strategy: 策略信息
     :param ports: 容器的端口信息
     :param volumemount: 绑定存储卷的设置
-    :param strategy_name: 策略名称
-    :param strategy_info: 策略信息
     :return: 接口响应对象
     :param replicas: 副本数
     :return: 接口对象
@@ -317,6 +316,29 @@ def step_create_service(project_name, service_name, port):
     return response
 
 
+@allure.step('创建路由')
+def step_create_route(project_name, ingress_name, host, service_info):
+    url = config.url + '/apis/extensions/v1beta1/namespaces/' + project_name + '/ingresses'
+    data = {"apiVersion": "extensions/v1beta1",
+            "kind": "Ingress",
+            "metadata": {
+                "namespace": project_name,
+                "labels": {},
+                "name": ingress_name,
+                "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": {
+                "rules": [{
+                    "protocol": "http",
+                    "host": host,
+                    "http": {
+                        "paths": [{
+                            "path": "/",
+                            "backend": service_info}]}}],
+                "tls": []}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
 @allure.step('删除service')
 def step_delete_service(project_name, service_name):
     url = config.url + '/api/v1/namespaces/' + project_name + '/services/' + service_name
@@ -426,6 +448,28 @@ def step_get_sa(project_name, sa_name):
         return r.json()['items'][0]['secrets'][0]['name']
     else:
         return r.json()['totalItems']
+
+
+@allure.step('查询项目的角色信息')
+def step_get_role(project_name, role_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles?name=' + role_name + '&annotation=kubesphere.io%2Fcreator'
+    response = requests.get(url, headers=get_header())
+    return response
+
+
+@allure.step('创建角色')
+def step_create_role(project_name, role_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles'
+    data = {"apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "Role",
+            "metadata": {"namespace": project_name,
+                         "name": role_name,
+                         "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-basic\"]",
+                                         "kubesphere.io/creator": "admin"}
+                         },
+            "rules": []}
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
 
 
 @allure.step('查看指定sa详情信息')
@@ -687,46 +731,43 @@ class TestProject(object):
         # 验证存储卷快照的状态为准备就绪
         assert str(r1.json()['items'][0]['status']['readyToUse']) == 'True'
 
-    @allure.story("角色")
+    @allure.story("项目设置-项目角色")
     @allure.title('查看project工程默认的所有角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_role_all(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles?sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
-        r = requests.get(url, headers=get_header())
+        role_name = ''
+        r = step_get_role(self.project_name, role_name)
         print("actual_result:r.json()['totalItems']=" + str(r.json()['totalItems']))  # 在日志中打印出实际结果
         print('expect_result: 3')  # 在日志中打印出预期结果
         assert r.json()['totalItems'] == 3  # 验证初始的角色数量为3
 
-    @allure.story("角色")
+    @allure.story("项目设置-项目角色")
     @allure.title('查找project工程中指定的角色')
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_role_one(self):
         role_name = 'viewer'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles?name=' + role_name
-        r = requests.get(url, headers=get_header())
+        r = step_get_role(self.project_name, role_name)
         print("actual_result:r.json()['items'][0]['metadata']['name']=" + r.json()['items'][0]['metadata'][
             'name'])  # 在日志中打印出实际结果
         print('expect_result:' + role_name)  # 在日志中打印出预期结果
         assert r.json()['items'][0]['metadata']['name'] == role_name  # 验证查询的角色结果为viewer
 
-    @allure.story("角色")
+    @allure.story("项目设置-项目角色")
     @allure.title('查找project工程中不存在的角色')
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_role_none(self):
         role_name = 'viewer123'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles?name=' + role_name
-        r = requests.get(url, headers=get_header())
+        r = step_get_role(self.project_name, role_name)
         print("actual_result:r.json()['totalItems'] =" + str(r.json()['totalItems']))  # 在日志中打印出实际结果
         print('expect_result: 0')  # 在日志中打印出预期结果
         assert r.json()['totalItems'] == 0  # 验证查询到的结果为空
 
-    @allure.story("角色")
+    @allure.story("项目设置-项目角色")
     @allure.title('模糊查找project工程中的角色')
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_role_fuzzy(self):
         role_name = 'a'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles?name=' + role_name + '&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
-        r = requests.get(url, headers=get_header())
+        r = step_get_role(self.project_name, role_name)
         assert r.json()['totalItems'] == 2  # 验证查询到的结果数量为2
         # 验证查找到的角色
         print("actual_result:r.json()['items'][0]['metadata']['name']=" + r.json()['items'][0]['metadata'][
@@ -735,48 +776,29 @@ class TestProject(object):
         assert r.json()['items'][0]['metadata']['name'] == 'operator'
         assert r.json()['items'][1]['metadata']['name'] == 'admin'
 
-    @allure.story("角色")
+    @allure.story("项目设置-项目角色")
     @allure.title('在project工程中创建角色')
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_role_create(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
-        data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-                "kind": "Role",
-                "metadata": {"namespace": self.project_name,
-                             "name": self.project_role_name,
-                             "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-basic\"]",
-                                             "kubesphere.io/creator": "admin"}
-                             },
-                "rules": []}
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
-
+        role_name = 'role' + str(commonFunction.get_random())
+        r = step_create_role(self.project_name, role_name)
         print("actual_result:r.json()['metadata']['name']=" + r.json()['metadata']['name'])  # 在日志中打印出实际结果
-        print('expect_result:' + self.project_role_name)  # 在日志中打印出预期结果
-        assert r.json()['metadata']['name'] == self.project_role_name  # 验证新建的角色名称
+        print('expect_result:' + role_name)  # 在日志中打印出预期结果
+        assert r.json()['metadata']['name'] == role_name  # 验证新建的角色名称
 
-    @allure.story("角色")
-    @allure.title('在devops工程中创建角色-角色名称为空')
+    @allure.story("项目设置-项目角色")
+    @allure.title('在project工程中创建角色-角色名称为空')
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_role_create_name_none(self):
-        project_role_name = ''
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
-        data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-                "kind": "Role",
-                "metadata": {"namespace": self.project_name,
-                             "name": project_role_name,
-                             "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-basic\"]",
-                                             "kubesphere.io/creator": "admin"}
-                             },
-                "rules": []}
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
-
+        role_name = ''
+        r = step_create_role(self.project_name, role_name)
         # 验证创建角色失败的异常提示信息
         print("actual_result:" + r.text.strip())  # 在日志中打印出实际结果
         print(
             'expect_result:Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required')  # 在日志中打印出预期结果
         assert r.text.strip() == 'Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required'
 
-    @allure.story("角色")
+    @allure.story("项目设置-项目角色")
     @allure.title('在project工程中编辑角色基本信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_role_edit_info(self):
@@ -797,7 +819,7 @@ class TestProject(object):
         assert r.json()['metadata']['annotations']['kubesphere.io/alias-name'] == '我是别名'  # 验证修改后的别名
         assert r.json()['metadata']['annotations']['kubesphere.io/description'] == '我是描述信息'  # 验证修改后的描述信息
 
-    @allure.story("角色")
+    @allure.story("项目设置-项目角色")
     @allure.title('在project工程中编辑角色的权限信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_role_edit_authority(self):
@@ -822,7 +844,7 @@ class TestProject(object):
         print('expect_result:' + authority)  # 在日志中打印出预期结果
         assert r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority  # 验证修改后的权限信息
 
-    @allure.story("角色")
+    @allure.story("项目设置-项目角色")
     @allure.title('在project工程中删除角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_role_delete(self):
@@ -833,7 +855,7 @@ class TestProject(object):
         print('expect_result: success')  # 在日志中打印出预期结果
         assert r.json()['message'] == 'success'
 
-    @allure.story("用户")
+    @allure.story("项目设置-项目成员")
     @allure.title('查看project默认的所有用户')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_user_all(self):
@@ -845,7 +867,7 @@ class TestProject(object):
         print('expect_result: admin')  # 在日志中打印出预期结果
         assert r.json()['items'][0]['metadata']['name'] == 'admin'  # 验证默认的用户仅有admin
 
-    @allure.story("用户")
+    @allure.story("项目设置-项目成员")
     @allure.title('查找project指定的用户')
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_user_one(self):
@@ -858,7 +880,7 @@ class TestProject(object):
         print('expect_result:' + user_condition)  # 在日志中打印出预期结果
         assert r.json()['items'][0]['metadata']['name'] == user_condition  # 验证查找的结果为admin
 
-    @allure.story("用户")
+    @allure.story("项目设置-项目成员")
     @allure.title('模糊查找project的用户')
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_user_fuzzy(self):
@@ -871,7 +893,7 @@ class TestProject(object):
         print('expect_result: admin')  # 在日志中打印出预期结果
         assert r.json()['items'][0]['metadata']['name'] == 'admin'  # 验证查找的结果为admin
 
-    @allure.story("用户")
+    @allure.story("项目设置-项目成员")
     @allure.title('查找project工程不存在的用户')
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_user_none(self):
@@ -883,7 +905,7 @@ class TestProject(object):
         print('expect_result: 0')  # 在日志中打印出预期结果
         assert r.json()['totalItems'] == 0  # 验证查找的结果为空
 
-    @allure.story("用户")
+    @allure.story("项目设置-项目成员")
     @allure.title('邀请用户到project')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_invite_user(self):
@@ -907,7 +929,7 @@ class TestProject(object):
         r = requests.post(url, headers=get_header(), data=json.dumps(data))
         print(r.text)
 
-    @allure.story("角色")
+    @allure.story("项目设置-项目角色")
     @allure.title('编辑project成员的角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_edit_user(self):
@@ -917,7 +939,7 @@ class TestProject(object):
         r = requests.put(url, headers=get_header(), data=json.dumps(data))
         assert r.json()['roleRef'] == 'operator'  # 验证修改后的用户角色
 
-    @allure.story("用户")
+    @allure.story("项目设置-项目成员")
     @allure.title('删除project的成员')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_delete_user(self):
@@ -1415,7 +1437,7 @@ class TestProject(object):
         re = step_delete_workload(project_name=self.project_name, type=type, work_name=workload_name)
         assert re.json()['status'] == 'Success'
 
-    @allure.story('应用负载-工作负载')
+    @allure.story('应用负载-服务')
     @allure.title('创建未绑定存储卷的service，并验证运行成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_service(self):
@@ -1446,7 +1468,7 @@ class TestProject(object):
         name = re.json()['items'][0]['metadata']['name']
         assert name == service_name
 
-    @allure.story('应用负载-工作负载')
+    @allure.story('应用负载-服务')
     @allure.title('删除service，并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_service(self):
@@ -1465,6 +1487,47 @@ class TestProject(object):
         response = step_get_workload(self.project_name, type='services', condition=condition)
         count = response.json()['totalItems']
         assert count == 0
+
+    @allure.story('应用负载-应用路由')
+    @allure.title('为服务创建应有路由')
+    def test_create_route(self):
+        # 创建服务
+        service_name = 'service' + str(commonFunction.get_random())  # 服务名称
+        port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
+        image = 'nginx'  # 镜像名称
+        container_name = 'container-nginx'  # 容器名称
+        condition = 'name=' + service_name  # 查询deploy和service条件
+        port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]  # 容器的端口信息
+        volumeMounts = []  # 设置挂载的存储卷
+        strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
+        replicas = 2  # 副本数
+        volume_info = []
+        # 创建service
+        step_create_service(self.project_name, service_name, port_service)
+        # 创建service绑定的deployment
+        step_create_deploy(project_name=self.project_name, work_name=service_name, container_name=container_name,
+                           ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
+                           volume_info=volume_info, strategy=strategy_info)
+        # 验证service创建成功
+        response = step_get_workload(self.project_name, type='services', condition=condition)
+        name = response.json()['items'][0]['metadata']['name']
+        assert name == service_name
+        # 验证deploy创建成功
+        time.sleep(3)
+        re = step_get_workload(self.project_name, type='deployments', condition=condition)
+        # 获取并验证deployment的名称正确
+        name = re.json()['items'][0]['metadata']['name']
+        assert name == service_name
+        # 为服务创建路由
+        ingress_name = 'ingress' + str(commonFunction.get_random())
+        host = 'www.test.com'
+        service_info = {"serviceName": service_name, "servicePort": 80}
+        response = step_create_route(project_name=self.project_name, ingress_name=ingress_name, host=host,
+                                     service_info=service_info)
+        # 获取路由绑定的服务名称
+        name = response.json()['spec']['rules'][0]['http']['paths'][0]['backend']['serviceName']
+        # 验证路由创建成功
+        assert name == service_name
 
     @allure.story('应用负载-任务')
     @allure.title('部署示例应用')
@@ -2097,7 +2160,7 @@ class TestProject(object):
         # 验证存储卷成功
         assert response.json()['totalItems'] == 0
 
-    @allure.story('项目')
+    @allure.story('项目管理')
     @allure.title('删除项目，并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_project(self):
