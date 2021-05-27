@@ -5,7 +5,8 @@ import allure
 import sys
 import logging
 import time
-sys.path.append('../')  #将项目路径加到搜索路径中，使得自定义模块可以引用
+
+sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from config import config
 from common.getData import DoexcleByPandas
@@ -16,7 +17,7 @@ from common import commonFunction
 
 @allure.feature('系统账户管理')
 class TestUser(object):
-    log_format()  #配置日志格式
+    log_format()  # 配置日志格式
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='system_user')
 
@@ -37,28 +38,27 @@ class TestUser(object):
         :param except_result: 用例的预期结果
         '''
 
-
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
 
         # test开头的测试函数
         url = config.url + url
         if method == 'get':
-            #测试get方法
+            # 测试get方法
             r = requests.get(url, headers=get_header())
 
         elif method == 'post':
-            #测试post方法
+            # 测试post方法
             data = eval(data)
             r = requests.post(url, headers=get_header(), data=json.dumps(data))
 
         elif method == 'put':
-            #测试put方法
+            # 测试put方法
             data = eval(data)
             r = requests.put(url, headers=get_header(), data=json.dumps(data))
 
         elif method == 'delete':
-            #测试delete方法
+            # 测试delete方法
             r = requests.delete(url, headers=get_header())
 
         # 将校验条件和预期结果参数化
@@ -85,24 +85,22 @@ class TestUser(object):
                                                                 '用例的预期结果: ' + str(except_result)
         )
 
-
-
-
     '''
         以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
     '''
+
     @allure.story('编辑用户')
     @allure.severity('critical')
     @allure.title('测试修改用户信息')
     def test_edit_user(self):
         user_name = 'wx123'
         email = 'stevewen123@yunify.com'
-        commonFunction.create_user(user_name)  #创建用户
+        commonFunction.create_user(user_name)  # 创建用户
         time.sleep(3)
-        version = commonFunction.get_user_version()  #获取创建用户的resourceVersion
-        #编辑用户信息的url地址
+        version = commonFunction.get_user_version()  # 获取创建用户的resourceVersion
+        # 编辑用户信息的url地址
         url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users/' + user_name
-        #编辑用户的目标数据
+        # 编辑用户的目标数据
         data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
                 "kind": "User",
                 "metadata": {"name": user_name,
@@ -112,17 +110,15 @@ class TestUser(object):
                              "resourceVersion": version},
                 "spec": {"email": email}
                 }
-        r = requests.put(url, headers=get_header(), data=json.dumps(data))  #修改新建用户的邮箱和描述信息
+        r = requests.put(url, headers=get_header(), data=json.dumps(data))  # 修改新建用户的邮箱和描述信息
         # print(r.text)
         try:
-            assert r.json()['spec']['email'] == email  #验证修改用户后的邮箱信息
-            #在日志中输出实际结果
+            assert r.json()['spec']['email'] == email  # 验证修改用户后的邮箱信息
+            # 在日志中输出实际结果
             logging.info('reality_result:' + str(r.json()['spec']['email']))
         finally:
-            commonFunction.delete_user(user_name)  #删除新建的用户
+            commonFunction.delete_user(user_name)  # 删除新建的用户
 
 
 if __name__ == "__main__":
     pytest.main(['-s', 'testUser.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
-
-
