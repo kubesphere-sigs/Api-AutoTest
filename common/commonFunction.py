@@ -256,13 +256,6 @@ def get_app_version(app_id):
     return r.json()['latest_app_version']['version_id']
 
 
-# 从应用模板页面获取应用模板中的app_id 和version_id（只有一个版本）
-def get_app_template(ws_name, app_name):
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/apps?paging=limit%3D10%2Cpage%3D1&conditions=status%3Ddraft%7Cactive%7Csuspended%7Cpassed%2Ckeyword%3D' + app_name
-    r = requests.get(url=url, headers=get_header())
-    return r.json()['items'][0]['app_id'], r.json()['items'][0]['latest_app_version']['version_id']
-
-
 # 获取应用模板中获取version_id
 def get_app_versions(ws_name, app_id):
     versions = []
