@@ -4,22 +4,25 @@ import json
 import allure
 import sys
 
-sys.path.append('../')  #将项目路径加到搜索路径中，使得自定义模块可以引用
+sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from config import config
 from common.getData import DoexcleByPandas
 from common.getHeader import get_header, get_header_for_patch
 from common.logFormat import log_format
 from common import commonFunction
+from math import ceil
 
-@allure.step('获取分类的category_id')
-def step_get_category_id(category_name):
+
+@allure.step('获取指定应用分类的category_id')
+def step_get_category_id_by_name(category_name):
     """
     :param category_name: 分类名称
     :return: 分类的category_id
     """
-    url = config.url + '/kapis/openpitrix.io/v1/categories?orderBy=create_time&paging=limit%3D200%2Cpage%3D1&conditions=status%3D&reverse=true&statistics=true'
+    url = config.url + '/kapis/openpitrix.io/v1/categories'
     r = requests.get(url=url, headers=get_header())
+    # 获取分类的数量
     count = r.json()['total_count']
     name = []
     id = []
@@ -27,8 +30,20 @@ def step_get_category_id(category_name):
         name.append(r.json()['items'][i]['category_id'])
         id.append(r.json()['items'][i]['name'])
     name_id = dict(zip(id, name))
-
     return name_id[category_name]
+
+
+@allure.step('获取所有应用分类的category_id')
+def step_get_categories_id():
+    url = config.url + '/kapis/openpitrix.io/v1/categories'
+    r = requests.get(url=url, headers=get_header())
+    # 获取分类的数量
+    count = r.json()['total_count']
+    categories_id = []
+    for i in range(count):
+        categories_id.append(r.json()['items'][i]['category_id'])
+
+    return categories_id
 
 
 @allure.step('新建应用分类')
@@ -38,16 +53,17 @@ def step_create_category(cate_name):
             "description": "documentation",
             "locale": "{}"
             }
-    r = requests.post(url, headers=get_header(), data=json.dumps(data))
-    assert r.status_code == 200
-    return r.json()['category_id']
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
+
 
 @allure.title('向应用分类中添加应用')
 def step_app_to_category(app_id, cat_id):
     url = config.url + '/kapis/openpitrix.io/v1/apps/' + app_id + '/'
     data = {"category_id": cat_id}
-    r = requests.patch(url, headers=get_header_for_patch(), data=json.dumps(data))
-    assert r.json()['message'] == 'success'
+    response = requests.patch(url, headers=get_header_for_patch(), data=json.dumps(data))
+    return response
+
 
 @allure.step('删除分类')
 def step_delete_app_category(cate_id):
@@ -55,11 +71,13 @@ def step_delete_app_category(cate_id):
     r = requests.delete(url, headers=get_header())
     return r.text.strip()
 
+
 @allure.step('删除不包含应用的分类')
 def step_delete_category(cate_id):
     url = config.url + '/kapis/openpitrix.io/v1/categories/' + cate_id
-    r = requests.delete(url, headers=get_header())
-    assert r.json()['message'] == 'success'
+    response = requests.delete(url, headers=get_header())
+    return response
+
 
 @allure.step('修改分类信息')
 def step_change_category(cate_id, new_name):
@@ -68,15 +86,39 @@ def step_change_category(cate_id, new_name):
             "description": "documentation",
             "locale": "{}"
             }
-    r = requests.patch(url, headers=get_header_for_patch(), data=json.dumps(data))
-    assert r.json()['message'] == 'success'
+    requests.patch(url, headers=get_header_for_patch(), data=json.dumps(data))
+
+
+@allure.step('获取应用商店管理/应用商店中所有的应用的app_id')
+def step_get_apps_id():
+    page = 1
+    url = config.url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D' + str(page) + '&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm&reverse=true'
+    # 获取应用总数量
+    r = requests.get(url=url, headers=get_header())
+    count = r.json()['total_count']
+    # 获取页数
+    pages = ceil(count/10)
+    apps = []
+    for page in range(1, pages+1):
+        r = requests.get(url, get_header())
+        for item in r.json()['items']:
+            apps.append(item['app_id'])
+    return apps
+
+
+@allure.step('查看应用的详情信息')
+def step_get_app_detail(app_id):
+    url = config.url + '/kapis/openpitrix.io/v1/apps/' + app_id
+    response = requests.get(url=url, headers=get_header())
+    return response
+
 
 @allure.feature('应用商店管理')
 class TestManageApp(object):
-    ws_name = 'test-ws1'   #在excle中读取的用例此名称，不能修改。
-    project_name = 'test-project3'  #在excle中读取的用例此名称，不能修改。
-    log_format()  #配置日志格式
-    #从文件中读取用例信息
+    ws_name = 'test-appstore-manage'  # 在excle中读取的用例此名称，不能修改。
+    project_name = 'project-for-test-appstore-manage'  # 在excle中读取的用例此名称，不能修改。
+    log_format()  # 配置日志格式
+    # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='manageapps')
 
     @allure.title('{title}')  # 设置用例标题
@@ -147,55 +189,74 @@ class TestManageApp(object):
     @allure.title('删除不包含应用的分类')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_category(self):
-        category_id = step_create_category('test-wx1')  # 新建应用分类'test-wx1'
-        step_delete_category(category_id)  # 删除分类
+        # 新建应用分类
+        category_name = 'category' + str(commonFunction.get_random())
+        response = step_create_category(category_name)
+        # 获取创建分类的category_id
+        category_id = response.json()['category_id']
+        # 删除分类
+        step_delete_category(category_id)
+        # 查询所有分类的category_id
+        categories_id = step_get_categories_id()
+        # 验证被删除分类的category_id不存在
+        assert category_id not in categories_id
 
     @allure.story('应用分类')
     @allure.title('修改分类信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_change_category(self):
-        category_id = step_create_category('test-wx2')  # 新建应用分类'test-wx2'
-        step_change_category(category_id, 'test-wx3')  # 修改分类名称为test-wx3
-        step_delete_category(category_id)   #删除分类test-wx3
+        old_name = 'category' + str(commonFunction.get_random())
+        new_name = 'category' + str(commonFunction.get_random())
+        # 新建应用分类
+        response = step_create_category(old_name)
+        # 获取新建分类的category_id
+        category_id = response.json()['category_id']
+        # 修改分类名称为test-wx3
+        step_change_category(category_id, new_name)
+        # 验证修改成功，使用修改后的名称查询category_id
+        category_id_new = step_get_category_id_by_name(new_name)
+        assert category_id == category_id_new
+        # 删除分类
+        step_delete_category(category_id)
 
     @allure.story('应用商店')
     @allure.title('查看所有内置应用的详情信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_check_apps_detail(self):
-        apps_id = commonFunction.get_apps_id()  #获取应用商店管理/应用商店页面，所有应用的app_id
+        # 获取应用商店管理/应用商店页面，所有应用的app_id
+        apps_id = step_get_apps_id()
+        # 查看所有应用的详情信息，并验证查询成功
         for app_id in apps_id:
-            url = config.url + '/kapis/openpitrix.io/v1/apps/' + app_id + '/'
-            r = requests.get(url, get_header())
-            assert r.json()['app_id'] == app_id
+            response = step_get_app_detail(app_id)
+            assert response.json()['app_id'] == app_id
 
     @allure.story('应用分类')
     @allure.title('删除包含应用的分类')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_app_category(self):
-        category_id = step_create_category('test-wx')  #新建应用分类'test-wx'
-        apps_id = commonFunction.get_apps_id()  #获取应用商店页面所有应用的app_id
+        category_name = 'category' + str(commonFunction.get_random())
+        # 新建应用分类
+        response = step_create_category(category_name)
+        # 获取新建分类的category_id
+        category_id = response.json()['category_id']
+        # 获取应用商店页面所有应用的app_id
+        apps_id = step_get_apps_id()
+        # print(apps_id)
+        # 向分类test-wx中添加所有内置应用
         for app_id in apps_id:
-            step_app_to_category(app_id, category_id)  #向分类test-wx中添加所有内置应用
-        result = step_delete_app_category(category_id)  #删除分类
-        #验证删除结果
-        assert result == 'rpc error: code = FailedPrecondition desc = delete resources failed'
-
-        #获取未分类的category_id
-        uncategorized_id = step_get_category_id('uncategorized')
-
+            step_app_to_category(app_id, category_id)
+        # 删除分类
+        result = step_delete_app_category(category_id)
+        # 验证删除结果
+        assert result == 'category ' + category_name + ' owns application'
+        # 获取未分类的category_id
+        uncategorized_id = step_get_category_id_by_name('uncategorized')
         # 将所有的内置应用移动到未分类中
         for app_id in apps_id:
             step_app_to_category(app_id, uncategorized_id)
-
-        #删除新建的分类test-wx
+        # 删除新建的分类
         step_delete_category(category_id)
 
 
 if __name__ == "__main__":
     pytest.main(['-s', 'testAppStoreManage.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
-
-
-
-
-
-
