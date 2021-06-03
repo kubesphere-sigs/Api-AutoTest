@@ -1,2 +1,0 @@
-actual_result:r.json()['totalItems']=3
-expect_result: 3

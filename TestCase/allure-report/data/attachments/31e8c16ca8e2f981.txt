@@ -1,3 +1,0 @@
-删除存储卷耗时:0秒
-actual_result:r1.json()['totalItems'] = 0
-expect_result: 0

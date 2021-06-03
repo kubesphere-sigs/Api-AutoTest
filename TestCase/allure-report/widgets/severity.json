@@ -1,2100 +1,2780 @@
 [ {
-  "uid" : "7f3ddf8d1188305d",
-  "name" : "增加角色(不选择权限)",
+  "uid" : "cf2d035e7f0a8a33",
+  "name" : "只设置资源默认请求-输入错误的cpu信息(包含字母)",
   "time" : {
-    "start" : 1614158809480,
-    "stop" : 1614158809755,
-    "duration" : 275
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "3047d951483b302e",
-  "name" : "创建存储卷快照时输入不符合规则的快照名称(包含符号@)",
-  "time" : {
-    "start" : 1614158780376,
-    "stop" : 1614158780649,
-    "duration" : 273
+    "start" : 1622528640609,
+    "stop" : 1622528641230,
+    "duration" : 621
   },
   "status" : "passed",
   "severity" : "normal"
 }, {
-  "uid" : "b28c1225a1dd28aa",
-  "name" : "创建存储卷时输入不符合规则的存储卷名称(包含大写字母)",
+  "uid" : "8cb66e7ac1cfa1c1",
+  "name" : "查询不存在的应用仓库",
   "time" : {
-    "start" : 1614158777699,
-    "stop" : 1614158778001,
-    "duration" : 302
+    "start" : 1622528697499,
+    "stop" : 1622528697803,
+    "duration" : 304
   },
   "status" : "passed",
   "severity" : "normal"
 }, {
-  "uid" : "537b6d940784bad8",
-  "name" : "模糊查询用户信息",
-  "time" : {
-    "start" : 1614158813638,
-    "stop" : 1614158813930,
-    "duration" : 292
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "3f97aa4896d03d4e",
-  "name" : "修改用户密码",
-  "time" : {
-    "start" : 1614158815165,
-    "stop" : 1614158815478,
-    "duration" : 313
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "5a6e0300c99b3257",
-  "name" : "在存储卷快照列表查询不存在的快照",
-  "time" : {
-    "start" : 1614158781850,
-    "stop" : 1614158782120,
-    "duration" : 270
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "6b65c31f4272d94e",
-  "name" : "创建kubeconfig凭证",
-  "time" : {
-    "start" : 1614158667483,
-    "stop" : 1614158667766,
-    "duration" : 283
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "5331cd6f0c6aee27",
-  "name" : "在企业空间auto-wx-ws中精确查询存在的项目",
-  "time" : {
-    "start" : 1614158828940,
-    "stop" : 1614158829224,
-    "duration" : 284
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "6690d7f393f4c745",
+  "uid" : "4b3d44166b2b47e4",
   "name" : "查看所有内置应用的详情信息",
   "time" : {
-    "start" : 1614158549228,
-    "stop" : 1614158554894,
-    "duration" : 5666
+    "start" : 1622528958664,
+    "stop" : 1622528969394,
+    "duration" : 10730
   },
   "status" : "passed",
   "severity" : "critical"
 }, {
-  "uid" : "504346a1cf65e4d5",
-  "name" : "查看角色的详情",
+  "uid" : "cb892aa91636bb97",
+  "name" : "按名称和状态组合查询不存在的存储卷",
   "time" : {
-    "start" : 1614158810356,
-    "stop" : 1614158810627,
-    "duration" : 271
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "4903250eeedce12f",
-  "name" : "在企业空间auoto-wx-ws创建角色( 不输入角色名）",
-  "time" : {
-    "start" : 1614158823888,
-    "stop" : 1614158824169,
-    "duration" : 281
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "fd693036b77676a5",
-  "name" : "创建存储卷快照，并验证创建成功",
-  "time" : {
-    "start" : 1614158693505,
-    "stop" : 1614158728829,
-    "duration" : 35324
-  },
-  "status" : "passed",
-  "severity" : "blocker"
-}, {
-  "uid" : "7e96927e03774e47",
-  "name" : "删除角色wx-role",
-  "time" : {
-    "start" : 1614158811315,
-    "stop" : 1614158811595,
-    "duration" : 280
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "fee545aaab781ad8",
-  "name" : "按名称查询不存在的工作负载",
-  "time" : {
-    "start" : 1614158775676,
-    "stop" : 1614158775954,
-    "duration" : 278
+    "start" : 1622528617212,
+    "stop" : 1622528617516,
+    "duration" : 304
   },
   "status" : "passed",
   "severity" : "normal"
 }, {
-  "uid" : "fcb8fead66407ae6",
-  "name" : "在企业空间auto-wx-ws修改角色wx-role的基本信息",
-  "time" : {
-    "start" : 1614158825629,
-    "stop" : 1614158825909,
-    "duration" : 280
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "a699bab8177c9a3b",
-  "name" : "查找devops工程指定的用户",
-  "time" : {
-    "start" : 1614158673094,
-    "stop" : 1614158673377,
-    "duration" : 283
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "5745a2b591db197a",
-  "name" : "在devops工程中创建角色",
-  "time" : {
-    "start" : 1614158671106,
-    "stop" : 1614158671383,
-    "duration" : 277
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "81b3b212c7eb3f86",
-  "name" : "编辑project成员的角色",
-  "time" : {
-    "start" : 1614158733074,
-    "stop" : 1614158733374,
-    "duration" : 300
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "85a3e7d767a081bb",
-  "name" : "删除配置",
-  "time" : {
-    "start" : 1614158786620,
-    "stop" : 1614158786897,
-    "duration" : 277
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "c384356b7a052621",
-  "name" : "精确查询存在的devops工程",
-  "time" : {
-    "start" : 1614158663926,
-    "stop" : 1614158664212,
-    "duration" : 286
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "10a28b7007820db7",
-  "name" : "查询不存在的凭证",
-  "time" : {
-    "start" : 1614158668319,
-    "stop" : 1614158668594,
-    "duration" : 275
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "2c817aab85d04ba9",
-  "name" : "模糊查询配置",
-  "time" : {
-    "start" : 1614158786049,
-    "stop" : 1614158786321,
-    "duration" : 272
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "8de3adffb450a71c",
-  "name" : "模糊查询存在的秘钥",
-  "time" : {
-    "start" : 1614158784525,
-    "stop" : 1614158784813,
-    "duration" : 288
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "1e57b1b73304c905",
-  "name" : "查询所有角色信息",
-  "time" : {
-    "start" : 1614158807928,
-    "stop" : 1614158808295,
-    "duration" : 367
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "a7717491e1943207",
-  "name" : "按名称查询不存的存储卷",
-  "time" : {
-    "start" : 1614158778915,
-    "stop" : 1614158779184,
-    "duration" : 269
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "36333e7c05cbdd45",
-  "name" : "在应用商店列表模糊查询存在的应用",
-  "time" : {
-    "start" : 1614158545062,
-    "stop" : 1614158545355,
-    "duration" : 293
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "cf751225e579260c",
-  "name" : "创建默认类型秘钥",
-  "time" : {
-    "start" : 1614158782725,
-    "stop" : 1614158783007,
-    "duration" : 282
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "7a8df07bc9361ec",
-  "name" : "创建应用模板后添加版本",
-  "time" : {
-    "start" : 1614158597527,
-    "stop" : 1614158600301,
-    "duration" : 2774
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "7afaa9bd6b6bf53a",
-  "name" : "模糊查找project工程中的角色",
-  "time" : {
-    "start" : 1614158729721,
-    "stop" : 1614158729996,
-    "duration" : 275
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "c1f46fc1a64a9127",
-  "name" : "查找project工程中指定的角色",
-  "time" : {
-    "start" : 1614158729136,
-    "stop" : 1614158729429,
-    "duration" : 293
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "247f645deb1aeda2",
-  "name" : "删除状态为已完成的容器组",
-  "time" : {
-    "start" : 1614158757307,
-    "stop" : 1614158758197,
-    "duration" : 890
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "ec9affd4c55734d7",
-  "name" : "查找project工程不存在的用户",
-  "time" : {
-    "start" : 1614158732498,
-    "stop" : 1614158732778,
-    "duration" : 280
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "20e766a57b882364",
-  "name" : "添加集群外部ip地址白名单(出口)",
-  "time" : {
-    "start" : 1614158788160,
-    "stop" : 1614158788434,
-    "duration" : 274
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "802d4c215d929eeb",
-  "name" : "按名称精确查询存在的存储卷",
-  "time" : {
-    "start" : 1614158778320,
-    "stop" : 1614158778603,
-    "duration" : 283
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "9d6bf979099bfb86",
-  "name" : "查询企业空间auto-wx-ws的所有角色",
-  "time" : {
-    "start" : 1614158821946,
-    "stop" : 1614158822222,
-    "duration" : 276
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "5b42fac2a208c27d",
-  "name" : "模糊查找devops工程中的角色",
-  "time" : {
-    "start" : 1614158670821,
-    "stop" : 1614158671103,
-    "duration" : 282
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "6d771775636c58a4",
-  "name" : "编辑信息",
-  "time" : {
-    "start" : 1614158666001,
-    "stop" : 1614158666588,
-    "duration" : 587
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "e806f8d723af34bd",
-  "name" : "邀请用户到devops工程",
-  "time" : {
-    "start" : 1614158673955,
-    "stop" : 1614158674228,
-    "duration" : 273
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "6a0aaede1f4c3923",
-  "name" : "创建secret_text凭证",
-  "time" : {
-    "start" : 1614158667198,
-    "stop" : 1614158667480,
-    "duration" : 282
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "906f9f2a8d866020",
-  "name" : "在企业空间auto-wx-ws创建项目wx-project",
-  "time" : {
-    "start" : 1614158828358,
-    "stop" : 1614158828630,
-    "duration" : 272
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "9a518cc9657e99af",
-  "name" : "模糊查询存在的凭证",
-  "time" : {
-    "start" : 1614158668035,
-    "stop" : 1614158668316,
-    "duration" : 281
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "9c68eb9592aae708",
-  "name" : "模糊查询角色信息",
-  "time" : {
-    "start" : 1614158808888,
-    "stop" : 1614158809170,
-    "duration" : 282
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "6f133c717478a103",
-  "name" : "在企业空间test-ws删除不存在的项目wx-pro",
-  "time" : {
-    "start" : 1614158782425,
-    "stop" : 1614158782710,
-    "duration" : 285
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "af68f40532ed3618",
-  "name" : "测试修改用户信息",
-  "time" : {
-    "start" : 1614158818508,
-    "stop" : 1614158819678,
-    "duration" : 1170
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "68b33e915bf83967",
-  "name" : "创建存储卷时输入已存在的存储卷名称",
-  "time" : {
-    "start" : 1614158777121,
-    "stop" : 1614158777396,
-    "duration" : 275
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "1166024c68be3b0a",
-  "name" : "在企业空间auto-wx-ws删除角色wx-role1",
-  "time" : {
-    "start" : 1614158826260,
-    "stop" : 1614158826592,
-    "duration" : 332
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "2a70a3ff7f964546",
-  "name" : "查找devops工程不存在的用户",
-  "time" : {
-    "start" : 1614158673666,
-    "stop" : 1614158673952,
-    "duration" : 286
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "3bb1f79b58b56d5f",
-  "name" : "创建配置",
-  "time" : {
-    "start" : 1614158785430,
-    "stop" : 1614158785710,
-    "duration" : 280
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "7b7af7fe6147ed4e",
-  "name" : "创建存储卷快照时输入不符合规则的快照名称(已分隔符开头)",
-  "time" : {
-    "start" : 1614158780965,
-    "stop" : 1614158781248,
-    "duration" : 283
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "1f18fd701b7235c8",
-  "name" : "在应用审核页面已处理列表查询不存在的应用",
-  "time" : {
-    "start" : 1614158546314,
-    "stop" : 1614158546588,
-    "duration" : 274
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "5dafad9fac2f22a3",
-  "name" : "在project工程中编辑角色基本信息",
-  "time" : {
-    "start" : 1614158730562,
-    "stop" : 1614158730839,
-    "duration" : 277
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "658d71fe5025ce66",
-  "name" : "删除状态为运行中的任务",
-  "time" : {
-    "start" : 1614158758476,
-    "stop" : 1614158759862,
-    "duration" : 1386
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "a0737b357b7e2983",
-  "name" : "在devops工程中删除角色",
-  "time" : {
-    "start" : 1614158672509,
-    "stop" : 1614158672790,
-    "duration" : 281
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "68f9b1fdbcd50a07",
-  "name" : "增加角色wx-role",
-  "time" : {
-    "start" : 1614158809769,
-    "stop" : 1614158810047,
-    "duration" : 278
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "7bd90b31c34509b7",
-  "name" : "增加用户(不输入邮箱)",
-  "time" : {
-    "start" : 1614158814246,
-    "stop" : 1614158814534,
-    "duration" : 288
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "808463d4379a2411",
-  "name" : "在企业空间auto-wx-ws删除角色wx-role",
-  "time" : {
-    "start" : 1614158825921,
-    "stop" : 1614158826231,
-    "duration" : 310
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "216ae6218cb06976",
-  "name" : "在企业空间auto-wx-ws创建重复的项目wx-project",
-  "time" : {
-    "start" : 1614158828643,
-    "stop" : 1614158828922,
-    "duration" : 279
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "6a9c9448c194c8b3",
-  "name" : "工作负载设置弹性伸缩",
-  "time" : {
-    "start" : 1614158775957,
-    "stop" : 1614158776239,
-    "duration" : 282
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "8a9ef2cb85b7329b",
-  "name" : "查找project指定的用户",
-  "time" : {
-    "start" : 1614158731947,
-    "stop" : 1614158732212,
-    "duration" : 265
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "a44fcca0b904646f",
-  "name" : "在企业空间auto-wx-ws模糊查询企业成员",
-  "time" : {
-    "start" : 1614158827464,
-    "stop" : 1614158827741,
-    "duration" : 277
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "a5dfc6cf9db6c37d",
-  "name" : "删除工作负载",
-  "time" : {
-    "start" : 1614158776242,
-    "stop" : 1614158776518,
-    "duration" : 276
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "c23054d6d6156583",
-  "name" : "在应用分类类表中模糊查询存在的应用",
-  "time" : {
-    "start" : 1614158546912,
-    "stop" : 1614158547295,
-    "duration" : 383
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "b9a445e52bbe2a6d",
-  "name" : "删除角色wx",
-  "time" : {
-    "start" : 1614158811606,
-    "stop" : 1614158811891,
-    "duration" : 285
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "508ae575b495bfdb",
-  "name" : "按状态查询存在的工作负载",
-  "time" : {
-    "start" : 1614158775116,
-    "stop" : 1614158775390,
-    "duration" : 274
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "7403c9a978c941ed",
-  "name" : "查找project工程中不存在的角色",
-  "time" : {
-    "start" : 1614158729434,
-    "stop" : 1614158729717,
-    "duration" : 283
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "298f383c562bf276",
-  "name" : "查找devops工程指定的角色",
-  "time" : {
-    "start" : 1614158670264,
-    "stop" : 1614158670539,
-    "duration" : 275
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "745210f55b98fdcc",
-  "name" : "按名称模糊查询存在的存储卷",
-  "time" : {
-    "start" : 1614158778625,
-    "stop" : 1614158778905,
-    "duration" : 280
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "b9c8cdba79609e57",
-  "name" : "按状态查询运行中的任务",
-  "time" : {
-    "start" : 1614158753772,
-    "stop" : 1614158754932,
-    "duration" : 1160
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "921262e59265552c",
-  "name" : "查看devops工程默认的所有角色",
-  "time" : {
-    "start" : 1614158669990,
-    "stop" : 1614158670261,
-    "duration" : 271
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "1187a6a2c97421b4",
-  "name" : "在企业空间auoto-wx-ws创建角色( 角色名包含符号，非分隔符）",
-  "time" : {
-    "start" : 1614158824759,
-    "stop" : 1614158825030,
-    "duration" : 271
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "a864e85bc5e9e748",
-  "name" : "删除包含应用的分类",
-  "time" : {
-    "start" : 1614158554898,
-    "stop" : 1614158570292,
-    "duration" : 15394
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "3bd350ed107ca7a",
-  "name" : "在企业空间auoto-wx-ws创建角色( 角色名以分隔符开头）",
-  "time" : {
-    "start" : 1614158825046,
-    "stop" : 1614158825321,
-    "duration" : 275
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "a5653ef3d3c23f15",
-  "name" : "关闭企业空间auto-wx-ws网络隔离",
-  "time" : {
-    "start" : 1614158828062,
-    "stop" : 1614158828342,
-    "duration" : 280
-  },
-  "status" : "failed",
-  "severity" : "critical"
-}, {
-  "uid" : "bce72ec93ff52fd4",
-  "name" : "开启项目网络隔离",
-  "time" : {
-    "start" : 1614158786914,
-    "stop" : 1614158787190,
-    "duration" : 276
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "56710d034d390528",
-  "name" : "增加已经存在的用户",
-  "time" : {
-    "start" : 1614158815789,
-    "stop" : 1614158816070,
-    "duration" : 281
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "8d0bfda874a2d9b5",
-  "name" : "邀请用户到project",
-  "time" : {
-    "start" : 1614158732781,
-    "stop" : 1614158733070,
-    "duration" : 289
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "d374c6dd7b1b1466",
-  "name" : "精确查询存在的配置",
-  "time" : {
-    "start" : 1614158785739,
-    "stop" : 1614158786038,
-    "duration" : 299
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "e84a6baf258a03ae",
-  "name" : "在企业空间auto-wx-ws查看指定的企业成员",
-  "time" : {
-    "start" : 1614158826899,
-    "stop" : 1614158827169,
-    "duration" : 270
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "9c2a4502e64f7363",
-  "name" : "模糊查询存在的企业空间",
-  "time" : {
-    "start" : 1614158821370,
-    "stop" : 1614158821641,
-    "duration" : 271
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "9d2ade97c4541988",
-  "name" : "查询指定角色信息",
-  "time" : {
-    "start" : 1614158808309,
-    "stop" : 1614158808587,
-    "duration" : 278
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "f6650af13dc9b78b",
-  "name" : "在项目test-project中删除不存在的存储卷test-project-vol",
-  "time" : {
-    "start" : 1614158782133,
-    "stop" : 1614158782413,
-    "duration" : 280
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "d7e323601f490d86",
-  "name" : "按名称模糊查询存在的容器组",
-  "time" : {
-    "start" : 1614158755823,
-    "stop" : 1614158756140,
-    "duration" : 317
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "a864ebf35f940767",
-  "name" : "测试部署创建的应用模板",
-  "time" : {
-    "start" : 1614158600304,
-    "stop" : 1614158661431,
-    "duration" : 61127
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "90d126b49ccadb43",
-  "name" : "查询不存在的配置",
-  "time" : {
-    "start" : 1614158786334,
-    "stop" : 1614158786606,
-    "duration" : 272
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "9d76a72f9c2d8987",
-  "name" : "在企业空间编辑邀请成员的角色",
-  "time" : {
-    "start" : 1614158833045,
-    "stop" : 1614158833635,
-    "duration" : 590
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "864020d2b3ccbc50",
-  "name" : "增加用户(不输入用户名)",
-  "time" : {
-    "start" : 1614158813944,
-    "stop" : 1614158814227,
-    "duration" : 283
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "644e13025d72e3e0",
-  "name" : "删除用户wx",
-  "time" : {
-    "start" : 1614158817318,
-    "stop" : 1614158817608,
-    "duration" : 290
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "c6f83c3e5ddb731f",
-  "name" : "编辑devops工程成员的角色",
-  "time" : {
-    "start" : 1614158674231,
-    "stop" : 1614158674506,
-    "duration" : 275
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "26d5000b31f21063",
-  "name" : "应用审核不通过,然后重新提交审核，最后审核通过",
-  "time" : {
-    "start" : 1614158590444,
-    "stop" : 1614158597524,
-    "duration" : 7080
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "b9af90169cd7a1d1",
-  "name" : "创建存储卷，并验证其状态正常",
-  "time" : {
-    "start" : 1614158676908,
-    "stop" : 1614158693489,
-    "duration" : 16581
-  },
-  "status" : "passed",
-  "severity" : "blocker"
-}, {
-  "uid" : "619ad795e65f9c0a",
-  "name" : "按状态查询不存在的存储卷",
-  "time" : {
-    "start" : 1614158779198,
-    "stop" : 1614158779470,
-    "duration" : 272
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "e1cc5c069e877c7a",
-  "name" : "在应用分类列表中精确查询存在的应用nginx",
-  "time" : {
-    "start" : 1614158546601,
-    "stop" : 1614158546898,
-    "duration" : 297
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "cf5d7147b333d1a4",
-  "name" : "设置项目wx-project配置",
-  "time" : {
-    "start" : 1614158829835,
-    "stop" : 1614158830268,
-    "duration" : 433
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "9bda51649d331ac7",
-  "name" : "创建存储卷时输入不符合规则的存储卷名称(包含符号@)",
-  "time" : {
-    "start" : 1614158777406,
-    "stop" : 1614158777686,
-    "duration" : 280
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "a12402d277a79ab4",
-  "name" : "设置项目test-project配额",
-  "time" : {
-    "start" : 1614158776529,
-    "stop" : 1614158776813,
-    "duration" : 284
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "4c32b429e571aacb",
-  "name" : "发布应用模板到商店，然后将应用下架，再重新上架，最后下架应用",
-  "time" : {
-    "start" : 1614158584275,
-    "stop" : 1614158590441,
-    "duration" : 6166
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "cec4ad493652d959",
-  "name" : "添加仓库时不输入应用仓库名称",
-  "time" : {
-    "start" : 1614158571171,
-    "stop" : 1614158571602,
-    "duration" : 431
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "74b6eba5c9d97271",
-  "name" : "创建账号密码秘钥",
-  "time" : {
-    "start" : 1614158783628,
-    "stop" : 1614158783906,
-    "duration" : 278
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "579dcef57efa0cde",
-  "name" : "增加用户（用户名包含符号）",
-  "time" : {
-    "start" : 1614158816693,
-    "stop" : 1614158816970,
-    "duration" : 277
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "89cb472827c05699",
-  "name" : "增加用户(不输入密码)",
-  "time" : {
-    "start" : 1614158814546,
-    "stop" : 1614158814824,
-    "duration" : 278
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "3dde8cf8bae5dcf2",
-  "name" : "查询不存在的秘钥",
-  "time" : {
-    "start" : 1614158784843,
-    "stop" : 1614158785126,
-    "duration" : 283
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "c4360bd8f7b434a4",
-  "name" : "在project工程中创建角色",
-  "time" : {
-    "start" : 1614158730000,
-    "stop" : 1614158730274,
-    "duration" : 274
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "167f3a998424dfc3",
-  "name" : "按状态查询已完成的任务",
-  "time" : {
-    "start" : 1614158753379,
-    "stop" : 1614158753765,
-    "duration" : 386
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "3846fa497c8ce1a2",
-  "name" : "编辑角色非权限信息",
-  "time" : {
-    "start" : 1614158810060,
-    "stop" : 1614158810343,
-    "duration" : 283
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "74e9ad50aeaafce7",
-  "name" : "按名称精确查询存在的工作负载",
-  "time" : {
-    "start" : 1614158775393,
-    "stop" : 1614158775671,
-    "duration" : 278
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "d071a8895f437f08",
-  "name" : "创建存储卷快照时输入不符合规则的快照名称(包含大写字母)",
-  "time" : {
-    "start" : 1614158780667,
-    "stop" : 1614158780951,
-    "duration" : 284
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "15bc43fd47dce641",
-  "name" : "查看角色的授权用户",
-  "time" : {
-    "start" : 1614158810639,
-    "stop" : 1614158810919,
-    "duration" : 280
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "c03b2e05359c4c55",
-  "name" : "开启企业空间auto-wx-ws网络隔离",
-  "time" : {
-    "start" : 1614158827767,
-    "stop" : 1614158828046,
-    "duration" : 279
-  },
-  "status" : "failed",
-  "severity" : "critical"
-}, {
-  "uid" : "995586276903f6f6",
-  "name" : "查询不存在的devops工程",
-  "time" : {
-    "start" : 1614158664503,
-    "stop" : 1614158664790,
-    "duration" : 287
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "ab8e85d3b365e590",
-  "name" : "删除用户wx（输入不正确的用户名）",
-  "time" : {
-    "start" : 1614158818219,
-    "stop" : 1614158818496,
-    "duration" : 277
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "548ed1a15bc3a2d0",
-  "name" : "删除项目，并验证删除成功",
-  "time" : {
-    "start" : 1614158801543,
-    "stop" : 1614158802093,
-    "duration" : 550
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "7d6f1765c0c4e4ee",
-  "name" : "在企业空间auto-wx-ws中查询不存在的项目",
-  "time" : {
-    "start" : 1614158829538,
-    "stop" : 1614158829819,
-    "duration" : 281
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "606a36875f790645",
-  "name" : "增加用户（用户名包含大写字母）",
-  "time" : {
-    "start" : 1614158816394,
-    "stop" : 1614158816679,
-    "duration" : 285
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "4460c7a21ea2b16c",
-  "name" : "创建SSH凭证",
-  "time" : {
-    "start" : 1614158666902,
-    "stop" : 1614158667194,
-    "duration" : 292
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "27cd12450418510e",
-  "name" : "删除存在的应用仓库",
-  "time" : {
-    "start" : 1614158577553,
-    "stop" : 1614158583984,
-    "duration" : 6431
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "1dabbbe6ccc514af",
-  "name" : "查看指定用户详情信息",
-  "time" : {
-    "start" : 1614158815502,
-    "stop" : 1614158815773,
-    "duration" : 271
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "a278552e7dbcba91",
-  "name" : "查询所有用户信息",
-  "time" : {
-    "start" : 1614158812756,
-    "stop" : 1614158813039,
-    "duration" : 283
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "8470f717cf347f9a",
-  "name" : "模糊查询企业空间auto-wx-ws的角色",
-  "time" : {
-    "start" : 1614158822555,
-    "stop" : 1614158822829,
-    "duration" : 274
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "23fb8ec4dacb3273",
-  "name" : "设置项目wx-project容器资源默认配置",
-  "time" : {
-    "start" : 1614158830281,
-    "stop" : 1614158830554,
-    "duration" : 273
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "bd13df271e4926ea",
-  "name" : "删除角色wx-role(输入错误的角色名)",
-  "time" : {
-    "start" : 1614158810996,
-    "stop" : 1614158811305,
-    "duration" : 309
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "8dc24ddc6fb1f9a2",
-  "name" : "在应用审核页面已处理列表精确查询存在的应用",
-  "time" : {
-    "start" : 1614158545688,
-    "stop" : 1614158545979,
-    "duration" : 291
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "c5ca4f782b6bdc74",
-  "name" : "增加用户wx",
-  "time" : {
-    "start" : 1614158814841,
-    "stop" : 1614158815145,
+  "uid" : "289cc2fe52a027b6",
+  "name" : "使用重复的名称创建sa",
+  "time" : {
+    "start" : 1622528626059,
+    "stop" : 1622528626363,
     "duration" : 304
   },
   "status" : "passed",
   "severity" : "critical"
 }, {
-  "uid" : "e4cf29415b481ed2",
-  "name" : "在企业空间auoto-wx-ws创建角色( 角色名包含大写字母）",
+  "uid" : "7ca59053de891a0c",
+  "name" : "在project工程中创建角色",
   "time" : {
-    "start" : 1614158824473,
-    "stop" : 1614158824746,
-    "duration" : 273
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "1d0b0987561ccb49",
-  "name" : "查询企业空间auto-wx-ws不存在的角色",
-  "time" : {
-    "start" : 1614158822841,
-    "stop" : 1614158823118,
-    "duration" : 277
+    "start" : 1622528520801,
+    "stop" : 1622528521139,
+    "duration" : 338
   },
   "status" : "passed",
   "severity" : "normal"
 }, {
-  "uid" : "415ab5ad81a22e2",
-  "name" : "添加仓库时输入错误的URL地址",
+  "uid" : "65e15a3a98e504ae",
+  "name" : "在project工程中删除角色",
   "time" : {
-    "start" : 1614158572339,
-    "stop" : 1614158572620,
-    "duration" : 281
+    "start" : 1622528523087,
+    "stop" : 1622528524357,
+    "duration" : 1270
   },
   "status" : "passed",
   "severity" : "critical"
 }, {
-  "uid" : "f3fa473022c56b90",
+  "uid" : "db2e4e93c43cbb9b",
+  "name" : "查询不存在的devops工程",
+  "time" : {
+    "start" : 1622528940790,
+    "stop" : 1622528941115,
+    "duration" : 325
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "6dbff030d6c4c03",
+  "name" : "开启企业空间ws1-for-test-ws网络隔离",
+  "time" : {
+    "start" : 1622528908748,
+    "stop" : 1622528909061,
+    "duration" : 313
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "9b4f147eecc0ca88",
+  "name" : "查询不存在的秘钥",
+  "time" : {
+    "start" : 1622528623115,
+    "stop" : 1622528623434,
+    "duration" : 319
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "5b136fda893cea17",
+  "name" : "在企业空间ws1-for-test-ws中模糊查询存在的项目",
+  "time" : {
+    "start" : 1622528910357,
+    "stop" : 1622528910669,
+    "duration" : 312
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "f2e43f982a6ea394",
+  "name" : "只设置项目配额-输入错误的资源配额信息(包含负数)",
+  "time" : {
+    "start" : 1622528638143,
+    "stop" : 1622528638751,
+    "duration" : 608
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "d35c22cac4bc526e",
+  "name" : "创建存储卷时输入不符合规则的存储卷名称(包含大写字母)",
+  "time" : {
+    "start" : 1622528615239,
+    "stop" : 1622528615577,
+    "duration" : 338
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "bb9adbbe4a428b2e",
+  "name" : "模糊查询角色信息",
+  "time" : {
+    "start" : 1622528933990,
+    "stop" : 1622528934297,
+    "duration" : 307
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "21159d20dded141e",
+  "name" : "删除project的成员",
+  "time" : {
+    "start" : 1622528526238,
+    "stop" : 1622528526539,
+    "duration" : 301
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "55d636db8b9285b0",
   "name" : "删除存在的存储卷，并验证删除成功",
   "time" : {
-    "start" : 1614158800980,
-    "stop" : 1614158801539,
-    "duration" : 559
+    "start" : 1622528631205,
+    "stop" : 1622528631939,
+    "duration" : 734
   },
   "status" : "passed",
   "severity" : "critical"
 }, {
-  "uid" : "e09580ed49340005",
-  "name" : "增加用户(使用其它用户的邮箱)",
+  "uid" : "224565d7ac1c41a5",
+  "name" : "删除用户wx（输入不正确的用户名）",
   "time" : {
-    "start" : 1614158816086,
-    "stop" : 1614158816383,
+    "start" : 1622528680552,
+    "stop" : 1622528680858,
+    "duration" : 306
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "6dcc0ce633705012",
+  "name" : "在企业空间ws1-for-test-ws修改角色wx-role的基本信息",
+  "time" : {
+    "start" : 1622528906422,
+    "stop" : 1622528906750,
+    "duration" : 328
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "969fbfd484f00aca",
+  "name" : "查看存储卷testvolume详情",
+  "time" : {
+    "start" : 1622528617555,
+    "stop" : 1622528617877,
+    "duration" : 322
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "34d7687e9d110da1",
+  "name" : "删除sa test-sa",
+  "time" : {
+    "start" : 1622528627017,
+    "stop" : 1622528627314,
     "duration" : 297
   },
   "status" : "passed",
   "severity" : "critical"
 }, {
-  "uid" : "ab1ad67e92ef9f02",
-  "name" : "查看project工程默认的所有角色",
+  "uid" : "664c72eb3f7b54c4",
+  "name" : "不输入名称创建sa",
   "time" : {
-    "start" : 1614158728846,
-    "stop" : 1614158729132,
-    "duration" : 286
+    "start" : 1622528626373,
+    "stop" : 1622528626677,
+    "duration" : 304
   },
   "status" : "passed",
   "severity" : "critical"
 }, {
-  "uid" : "2cbdd69fed14945c",
-  "name" : "在project工程中编辑角色的权限信息",
-  "time" : {
-    "start" : 1614158730843,
-    "stop" : 1614158731391,
-    "duration" : 548
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "65963292d2455ab",
-  "name" : "模糊查找devops工程的用户",
-  "time" : {
-    "start" : 1614158673380,
-    "stop" : 1614158673663,
-    "duration" : 283
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "194de7f630f1a327",
-  "name" : "在存储卷快照列表精确查询存在的快照",
-  "time" : {
-    "start" : 1614158781274,
-    "stop" : 1614158781550,
-    "duration" : 276
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "a5617818c24c259a",
-  "name" : "测试编辑角色权限",
-  "time" : {
-    "start" : 1614158811901,
-    "stop" : 1614158812751,
-    "duration" : 850
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "a465df5e12fb9fa2",
-  "name" : "按状态查询不存在的工作负载",
-  "time" : {
-    "start" : 1614158789709,
-    "stop" : 1614158789983,
-    "duration" : 274
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "98d516be956554b2",
-  "name" : "删除用户wx1",
-  "time" : {
-    "start" : 1614158817631,
-    "stop" : 1614158817908,
-    "duration" : 277
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "2d64510fd8e26c46",
-  "name" : "查看添加的集群内部白名单",
-  "time" : {
-    "start" : 1614158787867,
-    "stop" : 1614158788148,
-    "duration" : 281
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "e4bf279736fd47f4",
-  "name" : "在企业空间auoto-wx-ws创建角色wx-role1（该角色有项目创建的权限）",
-  "time" : {
-    "start" : 1614158823563,
-    "stop" : 1614158823861,
-    "duration" : 298
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "f4d335c621103512",
-  "name" : "在企业空间编辑角色的权限信息",
-  "time" : {
-    "start" : 1614158830860,
-    "stop" : 1614158832764,
-    "duration" : 1904
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "c11a216647d6dece",
-  "name" : "在应用审核页面已处理列表模糊查询存在应用",
-  "time" : {
-    "start" : 1614158545991,
-    "stop" : 1614158546291,
-    "duration" : 300
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "b4a98c139a0f7272",
-  "name" : "增加角色(不输入角色名称)",
-  "time" : {
-    "start" : 1614158809183,
-    "stop" : 1614158809468,
-    "duration" : 285
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "9f083134525768bc",
-  "name" : "查找devops工程中不存在的角色",
-  "time" : {
-    "start" : 1614158670542,
-    "stop" : 1614158670818,
-    "duration" : 276
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "4989034b36b951",
-  "name" : "在企业空间auto-wx-ws中模糊查询存在的项目",
-  "time" : {
-    "start" : 1614158829236,
-    "stop" : 1614158829525,
-    "duration" : 289
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "fed3a5a2379d8594",
-  "name" : "在应用商店列表查询不存在的应用",
-  "time" : {
-    "start" : 1614158545383,
-    "stop" : 1614158545675,
-    "duration" : 292
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "fa88378a26aaf3cd",
-  "name" : "关闭项目网络隔离",
-  "time" : {
-    "start" : 1614158789036,
-    "stop" : 1614158789385,
-    "duration" : 349
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "a108295ff6f8a557",
-  "name" : "在存储卷快照列表模糊查询存在的快照",
-  "time" : {
-    "start" : 1614158781563,
-    "stop" : 1614158781836,
-    "duration" : 273
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "ecc3104b1d347653",
-  "name" : "在devops工程中创建角色-角色名称为空",
-  "time" : {
-    "start" : 1614158671389,
-    "stop" : 1614158671656,
-    "duration" : 267
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "e40f8af379568b5a",
-  "name" : "在企业空间auto-wx-ws创建角色（输入已存在的角色名wx-role）",
-  "time" : {
-    "start" : 1614158824181,
-    "stop" : 1614158824460,
-    "duration" : 279
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "87f3acc744aa8c64",
-  "name" : "删除project的成员",
-  "time" : {
-    "start" : 1614158733386,
-    "stop" : 1614158733671,
-    "duration" : 285
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "974e31649eae7093",
-  "name" : "添加仓库时，输入正确的条件",
-  "time" : {
-    "start" : 1614158572631,
-    "stop" : 1614158577538,
-    "duration" : 4907
-  },
-  "status" : "passed",
-  "severity" : "blocker"
-}, {
-  "uid" : "3e3684680bde96cd",
-  "name" : "删除devops工程的成员",
-  "time" : {
-    "start" : 1614158674509,
-    "stop" : 1614158674794,
-    "duration" : 285
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "e0cef550e7a9cc40",
-  "name" : "模糊查询存在的devops工程",
-  "time" : {
-    "start" : 1614158664215,
-    "stop" : 1614158664499,
-    "duration" : 284
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "5af8ffed6d12414a",
-  "name" : "删除创建的存储卷快照，并验证删除成功",
-  "time" : {
-    "start" : 1614158789993,
-    "stop" : 1614158800977,
-    "duration" : 10984
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "ba892f7c6a579faf",
-  "name" : "删除状态为已完成的任务",
-  "time" : {
-    "start" : 1614158759866,
-    "stop" : 1614158760434,
-    "duration" : 568
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "ab99a77d7c5ea2c6",
-  "name" : "修改工作负载副本并验证运行正常",
-  "time" : {
-    "start" : 1614158764177,
-    "stop" : 1614158775113,
-    "duration" : 10936
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "d8520d6e3cd70350",
-  "name" : "删除凭证",
-  "time" : {
-    "start" : 1614158668598,
-    "stop" : 1614158669987,
-    "duration" : 1389
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "c8935781ca0d4a45",
-  "name" : "模糊查找project的用户",
-  "time" : {
-    "start" : 1614158732219,
-    "stop" : 1614158732494,
-    "duration" : 275
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "dca2742013b6529c",
-  "name" : "在devops工程中编辑角色基本信息",
-  "time" : {
-    "start" : 1614158671659,
-    "stop" : 1614158671940,
-    "duration" : 281
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "e95e0196bcf9bdd4",
-  "name" : "添加集群外部ip地址白名单(入口)",
-  "time" : {
-    "start" : 1614158788445,
-    "stop" : 1614158788715,
-    "duration" : 270
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "9834cbcd4cbddb19",
-  "name" : "创建存储卷快照(使用该项目中已经存在的存储卷快照的名称)",
-  "time" : {
-    "start" : 1614158780084,
-    "stop" : 1614158780359,
-    "duration" : 275
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "34b8347433ac608b",
-  "name" : "创建工作负载，并验证运行成功",
-  "time" : {
-    "start" : 1614158760717,
-    "stop" : 1614158764173,
-    "duration" : 3456
-  },
-  "status" : "passed",
-  "severity" : "blocker"
-}, {
-  "uid" : "928e0a6afa637771",
-  "name" : "按名称和状态组合查询不存在的存储卷",
-  "time" : {
-    "start" : 1614158779487,
-    "stop" : 1614158779760,
-    "duration" : 273
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "3106d277aec5dd7d",
-  "name" : "在企业空间auoto-wx-ws创建角色( 角色名以分隔符结尾）",
-  "time" : {
-    "start" : 1614158825332,
-    "stop" : 1614158825614,
-    "duration" : 282
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "80369b7d5183b2c5",
-  "name" : "在应用商店列表精确查询存在的应用rabbitmq",
-  "time" : {
-    "start" : 1614158544722,
-    "stop" : 1614158545051,
-    "duration" : 329
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "8831ef9914b782ec",
-  "name" : "精确查询存在的凭证",
-  "time" : {
-    "start" : 1614158667770,
-    "stop" : 1614158668032,
-    "duration" : 262
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "96e11882233e95c9",
-  "name" : "按名称查询不存在的工作负载",
-  "time" : {
-    "start" : 1614158789409,
-    "stop" : 1614158789695,
-    "duration" : 286
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "c29c5e5816b5b9d8",
-  "name" : "按名称查询不存在的容器组",
-  "time" : {
-    "start" : 1614158756145,
-    "stop" : 1614158756415,
-    "duration" : 270
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "2e6b92aef7160e87",
-  "name" : "在企业空间删除邀请的成员",
-  "time" : {
-    "start" : 1614158833647,
-    "stop" : 1614158834230,
-    "duration" : 583
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "4eb3a6156127b1bc",
-  "name" : "创建存储卷时输入不符合规则的存储卷名称(以分隔符开头)",
-  "time" : {
-    "start" : 1614158778033,
-    "stop" : 1614158778309,
-    "duration" : 276
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "6d575b49505396ac",
-  "name" : "修改企业空间auto-wx-ws信息",
-  "time" : {
-    "start" : 1614158820550,
-    "stop" : 1614158820948,
-    "duration" : 398
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "fb456bd3be13c77f",
-  "name" : "创建任务，并验证运行正常",
-  "time" : {
-    "start" : 1614158733676,
-    "stop" : 1614158753094,
-    "duration" : 19418
-  },
-  "status" : "passed",
-  "severity" : "blocker"
-}, {
-  "uid" : "4c495833c36f5da5",
-  "name" : "设置项目test-project容器资源默认配置",
-  "time" : {
-    "start" : 1614158776826,
-    "stop" : 1614158777103,
-    "duration" : 277
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "fdfb8d1ee042b93d",
-  "name" : "查询不存在用户信息",
-  "time" : {
-    "start" : 1614158813344,
-    "stop" : 1614158813623,
-    "duration" : 279
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "320abbc0062d60dd",
-  "name" : "查询不存在的角色信息",
-  "time" : {
-    "start" : 1614158808600,
-    "stop" : 1614158808872,
-    "duration" : 272
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "43cbbb00bacfda1b",
-  "name" : "查看存储卷testvolume详情",
-  "time" : {
-    "start" : 1614158779772,
-    "stop" : 1614158780070,
-    "duration" : 298
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "9c6d81dd835e8a43",
-  "name" : "添加仓库时不输入URL地址",
-  "time" : {
-    "start" : 1614158571758,
-    "stop" : 1614158572285,
-    "duration" : 527
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "29b9bcdec233c339",
-  "name" : "创建自定义类型秘钥",
-  "time" : {
-    "start" : 1614158783918,
-    "stop" : 1614158784217,
-    "duration" : 299
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "59d183fdf26595cc",
-  "name" : "查询不存在的企业空间",
-  "time" : {
-    "start" : 1614158821653,
-    "stop" : 1614158821934,
-    "duration" : 281
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "60f03bc697572a02",
-  "name" : "在devops工程中创建角色-角色名称为空",
-  "time" : {
-    "start" : 1614158730277,
-    "stop" : 1614158730558,
-    "duration" : 281
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "77d358b7d1f3761c",
-  "name" : "通过图形界面创建、编辑、运行流水线,最后删除流水线",
-  "time" : {
-    "start" : 1614158664793,
-    "stop" : 1614158665651,
-    "duration" : 858
-  },
-  "status" : "broken",
-  "severity" : "critical"
-}, {
-  "uid" : "18796c10d8020a83",
-  "name" : "在project工程中删除角色",
-  "time" : {
-    "start" : 1614158731395,
-    "stop" : 1614158731659,
-    "duration" : 264
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "ca0b9523e45391dc",
-  "name" : "删除不存在的任务",
-  "time" : {
-    "start" : 1614158760440,
-    "stop" : 1614158760714,
-    "duration" : 274
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "f89e50e6d8d0a010",
-  "name" : "查看devops工程默认的所有用户",
-  "time" : {
-    "start" : 1614158672794,
-    "stop" : 1614158673090,
-    "duration" : 296
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "fb26991b81761477",
-  "name" : "增加用户（邮箱不合法）",
-  "time" : {
-    "start" : 1614158816988,
-    "stop" : 1614158817291,
-    "duration" : 303
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "65828b17d7f1ae2a",
-  "name" : "精确查询存在的秘钥",
-  "time" : {
-    "start" : 1614158784235,
-    "stop" : 1614158784513,
-    "duration" : 278
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "6d440d188fe95c2d",
-  "name" : "删除不存在的应用仓库",
-  "time" : {
-    "start" : 1614158583989,
-    "stop" : 1614158584270,
-    "duration" : 281
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "d154f5b0a029c89",
-  "name" : "在企业空间auoto-wx-ws创建角色wx-role（该角色没有任何权限）",
-  "time" : {
-    "start" : 1614158823138,
-    "stop" : 1614158823517,
-    "duration" : 379
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "d524a7cf755d7f1a",
-  "name" : "在应用分类列表中查询不存在的应用nginx",
-  "time" : {
-    "start" : 1614158547306,
-    "stop" : 1614158547592,
-    "duration" : 286
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "75810d7714b08d7b",
-  "name" : "在企业空间邀请存在的新成员",
-  "time" : {
-    "start" : 1614158832771,
-    "stop" : 1614158833042,
-    "duration" : 271
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "53d088f29e7ae1d2",
-  "name" : "查看project默认的所有用户",
-  "time" : {
-    "start" : 1614158731662,
-    "stop" : 1614158731941,
-    "duration" : 279
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "b0645945054f7fa2",
-  "name" : "删除用户wx2",
-  "time" : {
-    "start" : 1614158817924,
-    "stop" : 1614158818203,
-    "duration" : 279
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "be07ad23fe8135c7",
-  "name" : "创建devops工程,然后将其删除",
-  "time" : {
-    "start" : 1614158663345,
-    "stop" : 1614158663922,
-    "duration" : 577
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "81c252a275baf0fc",
-  "name" : "创建镜像仓库秘钥",
-  "time" : {
-    "start" : 1614158783315,
-    "stop" : 1614158783615,
-    "duration" : 300
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "b1dcfbe89788351d",
-  "name" : "创建TLS类型的秘钥",
-  "time" : {
-    "start" : 1614158783023,
-    "stop" : 1614158783294,
-    "duration" : 271
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "95305069262d039a",
-  "name" : "删除不存在的容器组",
-  "time" : {
-    "start" : 1614158758200,
-    "stop" : 1614158758473,
-    "duration" : 273
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "a9c9bebaf330d774",
-  "name" : "查看容器组详情",
-  "time" : {
-    "start" : 1614158756419,
-    "stop" : 1614158757293,
-    "duration" : 874
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "ae416a0bd0fa30bc",
-  "name" : "查询企业空间auto-wx-ws的指定角色",
-  "time" : {
-    "start" : 1614158822234,
-    "stop" : 1614158822522,
-    "duration" : 288
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "ec826ecd7f1d0ea5",
-  "name" : "在企业空间auto-wx-ws查看所有的企业成员",
-  "time" : {
-    "start" : 1614158826606,
-    "stop" : 1614158826882,
-    "duration" : 276
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "162bc543d690aa7d",
-  "name" : "按名称精确查询存在的容器组",
-  "time" : {
-    "start" : 1614158754939,
-    "stop" : 1614158755817,
-    "duration" : 878
-  },
-  "status" : "passed",
-  "severity" : "normal"
-}, {
-  "uid" : "e7a6a57fae3266e1",
-  "name" : "删除秘钥",
-  "time" : {
-    "start" : 1614158785136,
-    "stop" : 1614158785420,
-    "duration" : 284
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "3bc657542e9e412b",
-  "name" : "添加集群内部白名单(出口)",
-  "time" : {
-    "start" : 1614158787220,
-    "stop" : 1614158787562,
-    "duration" : 342
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "a2d12ad2235d95c2",
+  "uid" : "d097331b9a6bb4f9",
   "name" : "按名称模糊查询存在的任务",
   "time" : {
-    "start" : 1614158753098,
-    "stop" : 1614158753376,
-    "duration" : 278
+    "start" : 1622528547179,
+    "stop" : 1622528547493,
+    "duration" : 314
   },
   "status" : "passed",
   "severity" : "normal"
 }, {
-  "uid" : "e46123f017846ce9",
-  "name" : "删除不包含应用的分类",
+  "uid" : "5b02985d4677687b",
+  "name" : "设置项目test-project配额",
   "time" : {
-    "start" : 1614158547604,
-    "stop" : 1614158548287,
-    "duration" : 683
+    "start" : 1622528613867,
+    "stop" : 1622528614203,
+    "duration" : 336
   },
   "status" : "passed",
   "severity" : "critical"
 }, {
-  "uid" : "bbe57f9987dd00dc",
-  "name" : "删除集群内部白名单",
+  "uid" : "70964a1d0ef8685e",
+  "name" : "项目-基本信息-了解更多",
   "time" : {
-    "start" : 1614158788731,
-    "stop" : 1614158789018,
-    "duration" : 287
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "11022ef480e4b01",
-  "name" : "添加集群内部白名单(入口)",
-  "time" : {
-    "start" : 1614158787576,
-    "stop" : 1614158787856,
-    "duration" : 280
-  },
-  "status" : "passed",
-  "severity" : "critical"
-}, {
-  "uid" : "df5dd08e9a108038",
-  "name" : "在企业空间auto-wx-ws查看不存在的企业成员",
-  "time" : {
-    "start" : 1614158827182,
-    "stop" : 1614158827450,
-    "duration" : 268
+    "start" : 1622528999578,
+    "stop" : 1622528999818,
+    "duration" : 240
   },
   "status" : "passed",
   "severity" : "normal"
 }, {
-  "uid" : "3e66e77f866b875e",
-  "name" : "修改分类信息",
+  "uid" : "45f2ce6aa9132511",
+  "name" : "在应用审核页面已处理列表精确查询存在的应用",
   "time" : {
-    "start" : 1614158548290,
-    "stop" : 1614158549225,
-    "duration" : 935
+    "start" : 1622528954558,
+    "stop" : 1622528954863,
+    "duration" : 305
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "1ab7553ef543dc1c",
+  "name" : "只设置项目配额-资源配额",
+  "time" : {
+    "start" : 1622528636606,
+    "stop" : 1622528637514,
+    "duration" : 908
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "dbb447c367102e09",
+  "name" : "设置网关-LoadBalancer",
+  "time" : {
+    "start" : 1622528601152,
+    "stop" : 1622528602482,
+    "duration" : 1330
   },
   "status" : "passed",
   "severity" : "critical"
 }, {
-  "uid" : "4d31d48c0d8bfd47",
-  "name" : "创建账户凭证",
+  "uid" : "5e26d1945fa0e49a",
+  "name" : "查找project工程中不存在的角色",
   "time" : {
-    "start" : 1614158666592,
-    "stop" : 1614158666900,
+    "start" : 1622528520132,
+    "stop" : 1622528520448,
+    "duration" : 316
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "971f03bc23ff17b2",
+  "name" : "查找project工程不存在的用户",
+  "time" : {
+    "start" : 1622528525272,
+    "stop" : 1622528525586,
+    "duration" : 314
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "835fb47eb5a4840e",
+  "name" : "服务账号页面默认显示sa信息",
+  "time" : {
+    "start" : 1622528625389,
+    "stop" : 1622528625698,
+    "duration" : 309
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "ede0eae25435f99e",
+  "name" : "test_edit_project_quota_wrong_cpu",
+  "time" : {
+    "start" : 1622528633206,
+    "stop" : 1622528633835,
+    "duration" : 629
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "46ddac48aaa15b4b",
+  "name" : "在企业空间ws1-for-test-ws删除角色wx-role",
+  "time" : {
+    "start" : 1622528906777,
+    "stop" : 1622528907093,
+    "duration" : 316
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "f7888441df03c6e0",
+  "name" : "查找devops工程指定的用户",
+  "time" : {
+    "start" : 1622528950737,
+    "stop" : 1622528951039,
+    "duration" : 302
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "a25a9c6297daed73",
+  "name" : "在应用审核页面已处理列表模糊查询存在应用",
+  "time" : {
+    "start" : 1622528954874,
+    "stop" : 1622528955181,
+    "duration" : 307
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "a46235eecf11bca3",
+  "name" : "在应用分类列表中查询不存在的应用nginx",
+  "time" : {
+    "start" : 1622528956156,
+    "stop" : 1622528956471,
+    "duration" : 315
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "375d3202e38e25d2",
+  "name" : "按名称查询不存在的deployment",
+  "time" : {
+    "start" : 1622528629937,
+    "stop" : 1622528630237,
+    "duration" : 300
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "4cee83e0de4904b6",
+  "name" : "删除应用仓库并验证删除成功",
+  "time" : {
+    "start" : 1622528733718,
+    "stop" : 1622528770569,
+    "duration" : 36851
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "f0d9de7f6cd87802",
+  "name" : "创建存储卷，然后将存储卷绑定到新建的daemonsets上，最后验证资源和存储卷的状态正常",
+  "time" : {
+    "start" : 1622528501259,
+    "stop" : 1622528512945,
+    "duration" : 11686
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "ef3a79d23a8a8f8f",
+  "name" : "在企业空间删除邀请的成员",
+  "time" : {
+    "start" : 1622528915011,
+    "stop" : 1622528915649,
+    "duration" : 638
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "7cf3af5eac7b3aed",
+  "name" : "在应用商店列表查询不存在的应用",
+  "time" : {
+    "start" : 1622528954232,
+    "stop" : 1622528954546,
+    "duration" : 314
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "6da99294e43d21ed",
+  "name" : "按名称精确查询应用仓库",
+  "time" : {
+    "start" : 1622528722033,
+    "stop" : 1622528733714,
+    "duration" : 11681
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "5c7e8e1bfeac82c3",
+  "name" : "添加集群内部白名单(出口)",
+  "time" : {
+    "start" : 1622528627639,
+    "stop" : 1622528628032,
+    "duration" : 393
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "79ef7a0a50cda915",
+  "name" : "将用户从企业组织解绑",
+  "time" : {
+    "start" : 1622528919678,
+    "stop" : 1622528920617,
+    "duration" : 939
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "6580bf7f7faaf5c4",
+  "name" : "编辑devops工程成员的角色",
+  "time" : {
+    "start" : 1622528951963,
+    "stop" : 1622528952279,
+    "duration" : 316
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "33683502e81b7156",
+  "name" : "项目-邀请其他成员到当前项目中",
+  "time" : {
+    "start" : 1622528991065,
+    "stop" : 1622528996212,
+    "duration" : 5147
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "a37f801b0c90c912",
+  "name" : "项目-使用灰度发布的前提条件-了解更多",
+  "time" : {
+    "start" : 1622528999032,
+    "stop" : 1622528999278,
+    "duration" : 246
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "9b3b5761bec2399d",
+  "name" : "查询不存在的配置",
+  "time" : {
+    "start" : 1622528624753,
+    "stop" : 1622528625054,
+    "duration" : 301
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "d8ee49903e4b8532",
+  "name" : "在存储卷快照列表模糊查询存在的快照",
+  "time" : {
+    "start" : 1622528619552,
+    "stop" : 1622528619865,
+    "duration" : 313
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "894e29d5bfefe092",
+  "name" : "添加集群外部ip地址白名单(入口)",
+  "time" : {
+    "start" : 1622528628973,
+    "stop" : 1622528629281,
     "duration" : 308
   },
   "status" : "passed",
   "severity" : "critical"
 }, {
-  "uid" : "e9d6d0ca960dd8ca",
-  "name" : "在企业空间auto-wx-ws删除项目wx-project",
+  "uid" : "eb9e5d0315220d00",
+  "name" : "删除状态为已完成的任务",
   "time" : {
-    "start" : 1614158830566,
-    "stop" : 1614158830849,
-    "duration" : 283
+    "start" : 1622528554853,
+    "stop" : 1622528555490,
+    "duration" : 637
   },
   "status" : "passed",
   "severity" : "critical"
 }, {
-  "uid" : "e488050b2c611b25",
-  "name" : "查询指定用户信息",
+  "uid" : "910e8bc29fefdcc7",
+  "name" : "删除状态为运行中的任务",
   "time" : {
-    "start" : 1614158813057,
-    "stop" : 1614158813333,
-    "duration" : 276
+    "start" : 1622528553250,
+    "stop" : 1622528554851,
+    "duration" : 1601
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "257a94671780324b",
+  "name" : "编辑信息",
+  "time" : {
+    "start" : 1622528942490,
+    "stop" : 1622528943123,
+    "duration" : 633
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "d122b772cc690564",
+  "name" : "通过图形界面创建、编辑、运行流水线,最后删除流水线",
+  "time" : {
+    "start" : 1622528941121,
+    "stop" : 1622528942193,
+    "duration" : 1072
+  },
+  "status" : "broken",
+  "severity" : "critical"
+}, {
+  "uid" : "b2aafc01c77f022c",
+  "name" : "查看容器组详情",
+  "time" : {
+    "start" : 1622528550849,
+    "stop" : 1622528551890,
+    "duration" : 1041
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "7fd9eb954e28a104",
+  "name" : "创建自定义类型秘钥",
+  "time" : {
+    "start" : 1622528622151,
+    "stop" : 1622528622472,
+    "duration" : 321
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "c4e1efa04749afb6",
+  "name" : "在企业空间ws1-for-test-ws创建项目wx-project",
+  "time" : {
+    "start" : 1622528909400,
+    "stop" : 1622528909698,
+    "duration" : 298
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "dc01c62b63adcb0c",
+  "name" : "查询不存在的应用模版",
+  "time" : {
+    "start" : 1622528697819,
+    "stop" : 1622528698129,
+    "duration" : 310
   },
   "status" : "passed",
   "severity" : "normal"
 }, {
-  "uid" : "98aabb1521f70409",
-  "name" : "精确查询企业空间",
+  "uid" : "ca47beedfacd70e3",
+  "name" : "在企业空间auoto-wx-ws创建角色wx-role1（该角色有项目创建的权限）",
   "time" : {
-    "start" : 1614158820958,
-    "stop" : 1614158821358,
-    "duration" : 400
+    "start" : 1622528903855,
+    "stop" : 1622528904187,
+    "duration" : 332
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "9d4fbb39864da6fa",
+  "name" : "增加已经存在的用户",
+  "time" : {
+    "start" : 1622528677954,
+    "stop" : 1622528678267,
+    "duration" : 313
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "4b6973693d220c8e",
+  "name" : "在应用模版中精确查询存在的模版",
+  "time" : {
+    "start" : 1622528893260,
+    "stop" : 1622528894934,
+    "duration" : 1674
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "61df9b4c780961df",
+  "name" : "按状态查询存在的deployment",
+  "time" : {
+    "start" : 1622528560934,
+    "stop" : 1622528565240,
+    "duration" : 4306
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "81c8b9f9c35d1b3",
+  "name" : "添加仓库时输入错误的URL地址",
+  "time" : {
+    "start" : 1622528697172,
+    "stop" : 1622528697490,
+    "duration" : 318
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "a74267a0939f37f2",
+  "name" : "精确查询存在的配置",
+  "time" : {
+    "start" : 1622528624117,
+    "stop" : 1622528624417,
+    "duration" : 300
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "53b4d1a902c602ff",
+  "name" : "只设置资源默认请求-cpu",
+  "time" : {
+    "start" : 1622528639686,
+    "stop" : 1622528640606,
+    "duration" : 920
   },
   "status" : "passed",
   "severity" : "normal"
 }, {
-  "uid" : "779263af5b1095ba",
+  "uid" : "2ecb33f4ca8f683c",
+  "name" : "添加集群外部ip地址白名单(出口)",
+  "time" : {
+    "start" : 1622528628668,
+    "stop" : 1622528628963,
+    "duration" : 295
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "6c04f667384fb145",
+  "name" : "设置项目配额-cpu、memory、资源配额",
+  "time" : {
+    "start" : 1622528638754,
+    "stop" : 1622528639684,
+    "duration" : 930
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "ff675d1a85bf4888",
+  "name" : "只设置资源默认请求-输入错误的内存信息(包含负数)",
+  "time" : {
+    "start" : 1622528642502,
+    "stop" : 1622528643099,
+    "duration" : 597
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "a8a9636a2946ba03",
+  "name" : "删除凭证",
+  "time" : {
+    "start" : 1622528945730,
+    "stop" : 1622528947291,
+    "duration" : 1561
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "ae9bb35c08733046",
+  "name" : "增加角色(不输入角色名称)",
+  "time" : {
+    "start" : 1622528934307,
+    "stop" : 1622528934630,
+    "duration" : 323
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "be0dea13e8682ac4",
+  "name" : "使用正确的信息新建应用仓库",
+  "time" : {
+    "start" : 1622528698141,
+    "stop" : 1622528722029,
+    "duration" : 23888
+  },
+  "status" : "passed",
+  "severity" : "blocker"
+}, {
+  "uid" : "a96208c4e4670ec4",
+  "name" : "在存储卷快照列表查询不存在的快照",
+  "time" : {
+    "start" : 1622528619875,
+    "stop" : 1622528620178,
+    "duration" : 303
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "1cf3e5d2a462542b",
+  "name" : "创建kubeconfig凭证",
+  "time" : {
+    "start" : 1622528944115,
+    "stop" : 1622528944454,
+    "duration" : 339
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "475508944616d232",
+  "name" : "按名称模糊查询存在的存储卷",
+  "time" : {
+    "start" : 1622528616252,
+    "stop" : 1622528616567,
+    "duration" : 315
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "674dda27950594da",
+  "name" : "在应用分类列表中精确查询存在的应用nginx",
+  "time" : {
+    "start" : 1622528955532,
+    "stop" : 1622528955843,
+    "duration" : 311
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "2126d12f8d82e4f4",
+  "name" : "项目-配置中心-配置-了解更多",
+  "time" : {
+    "start" : 1622528998283,
+    "stop" : 1622528998524,
+    "duration" : 241
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "35f1aad54a86e8c5",
+  "name" : "在企业空间编辑角色的权限信息",
+  "time" : {
+    "start" : 1622528912164,
+    "stop" : 1622528914086,
+    "duration" : 1922
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "3dcf654c2cf2cdd4",
+  "name" : "添加集群内部白名单(入口)",
+  "time" : {
+    "start" : 1622528628042,
+    "stop" : 1622528628347,
+    "duration" : 305
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "dd2a215486c92a97",
+  "name" : "查找devops工程中不存在的角色",
+  "time" : {
+    "start" : 1622528947926,
+    "stop" : 1622528948245,
+    "duration" : 319
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "552911d3d9d93a63",
+  "name" : "修改分类信息",
+  "time" : {
+    "start" : 1622528957420,
+    "stop" : 1622528958661,
+    "duration" : 1241
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "e15dc2d535b11baa",
+  "name" : "按名称精确查询部署的应用",
+  "time" : {
+    "start" : 1622528885215,
+    "stop" : 1622528893257,
+    "duration" : 8042
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "d693ba3645573430",
+  "name" : "查看指定用户详情信息",
+  "time" : {
+    "start" : 1622528677651,
+    "stop" : 1622528677945,
+    "duration" : 294
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "a09ee0f504cbe04f",
+  "name" : "设置项目test-project容器资源默认配置",
+  "time" : {
+    "start" : 1622528614213,
+    "stop" : 1622528614547,
+    "duration" : 334
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "d0b791735e658b7d",
+  "name" : "删除工作负载",
+  "time" : {
+    "start" : 1622528611679,
+    "stop" : 1622528611993,
+    "duration" : 314
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "d82e76cc0c3e3d16",
+  "name" : "模糊查询存在的企业空间",
+  "time" : {
+    "start" : 1622528901318,
+    "stop" : 1622528901666,
+    "duration" : 348
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "d9ead75481ea4f86",
+  "name" : "按状态查询不存在的存储卷",
+  "time" : {
+    "start" : 1622528616901,
+    "stop" : 1622528617202,
+    "duration" : 301
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "34db219d21fb26b6",
+  "name" : "精确查询存在的秘钥",
+  "time" : {
+    "start" : 1622528622482,
+    "stop" : 1622528622787,
+    "duration" : 305
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "4e12dcc2643620bc",
+  "name" : "查看角色的详情",
+  "time" : {
+    "start" : 1622528935675,
+    "stop" : 1622528935996,
+    "duration" : 321
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "671f1816081de16a",
+  "name" : "创建任务，并验证运行正常",
+  "time" : {
+    "start" : 1622528526542,
+    "stop" : 1622528547174,
+    "duration" : 20632
+  },
+  "status" : "passed",
+  "severity" : "blocker"
+}, {
+  "uid" : "1180a08edb12281f",
+  "name" : "邀请用户到project",
+  "time" : {
+    "start" : 1622528525589,
+    "stop" : 1622528525910,
+    "duration" : 321
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "518542a1eb12f73d",
+  "name" : "删除集群内部白名单",
+  "time" : {
+    "start" : 1622528629293,
+    "stop" : 1622528629599,
+    "duration" : 306
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "842a3f1473481b65",
+  "name" : "在devops工程中删除角色",
+  "time" : {
+    "start" : 1622528950097,
+    "stop" : 1622528950422,
+    "duration" : 325
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "85d3795fb5f48201",
+  "name" : "创建配置",
+  "time" : {
+    "start" : 1622528623780,
+    "stop" : 1622528624105,
+    "duration" : 325
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "c2d07d9d19d1d50a",
+  "name" : "增加用户(不输入邮箱)",
+  "time" : {
+    "start" : 1622528676305,
+    "stop" : 1622528676611,
+    "duration" : 306
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "1569dd25602142f0",
+  "name" : "模糊查询用户信息",
+  "time" : {
+    "start" : 1622528675604,
+    "stop" : 1622528675928,
+    "duration" : 324
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "a9f250029300be80",
+  "name" : "项目-灰度发布-了解更多",
+  "time" : {
+    "start" : 1622528998781,
+    "stop" : 1622528999020,
+    "duration" : 239
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "62d27041123b0a84",
+  "name" : "为服务创建应用路由",
+  "time" : {
+    "start" : 1622528595772,
+    "stop" : 1622528601146,
+    "duration" : 5374
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "dab0e0e71ccab310",
+  "name" : "添加仓库时不输入应用仓库名称",
+  "time" : {
+    "start" : 1622528685799,
+    "stop" : 1622528696844,
+    "duration" : 11045
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "da5b572bb49c4022",
+  "name" : "在企业空间ws1-for-test-ws删除角色wx-role1",
+  "time" : {
+    "start" : 1622528907107,
+    "stop" : 1622528907435,
+    "duration" : 328
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "2a0e914f17814d28",
+  "name" : "删除角色wx-role",
+  "time" : {
+    "start" : 1622528936637,
+    "stop" : 1622528936944,
+    "duration" : 307
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "96a7e2537adb29e3",
+  "name" : "按名称查询存在的deployment",
+  "time" : {
+    "start" : 1622528565243,
+    "stop" : 1622528569623,
+    "duration" : 4380
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "20e203e76be86754",
+  "name" : "从应用商店部署新应用",
+  "time" : {
+    "start" : 1622528835191,
+    "stop" : 1622528885194,
+    "duration" : 50003
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "aae20818cccda996",
+  "name" : "在项目test-project中删除不存在的存储卷test-project-vol",
+  "time" : {
+    "start" : 1622528620189,
+    "stop" : 1622528620485,
+    "duration" : 296
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "6bd8e7b97dcddf89",
+  "name" : "查询指定角色信息",
+  "time" : {
+    "start" : 1622528933363,
+    "stop" : 1622528933669,
+    "duration" : 306
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "fd5f7709e4d238ec",
+  "name" : "创建存储卷快照时输入不符合规则的快照名称(包含符号@)",
+  "time" : {
+    "start" : 1622528618211,
+    "stop" : 1622528618530,
+    "duration" : 319
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "fdf96e8ea14d131a",
+  "name" : "在企业空间ws1-for-test-ws创建角色（输入已存在的角色名wx-role）",
+  "time" : {
+    "start" : 1622528904534,
+    "stop" : 1622528904855,
+    "duration" : 321
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "8256a52cf5f7cdbe",
   "name" : "在devops工程中编辑角色的权限信息",
   "time" : {
-    "start" : 1614158671949,
-    "stop" : 1614158672505,
-    "duration" : 556
+    "start" : 1622528949483,
+    "stop" : 1622528950093,
+    "duration" : 610
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "7a6ad24c7eda1ef7",
+  "name" : "只设置项目配额-输入错误的资源配额信息(包含字母)",
+  "time" : {
+    "start" : 1622528637517,
+    "stop" : 1622528638138,
+    "duration" : 621
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "5e5a305a10ec79d7",
+  "name" : "在devops工程中创建角色-角色名称为空",
+  "time" : {
+    "start" : 1622528948866,
+    "stop" : 1622528949164,
+    "duration" : 298
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "c15fb09fcbd22bdf",
+  "name" : "关闭企业空间ws1-for-test-ws网络隔离",
+  "time" : {
+    "start" : 1622528909074,
+    "stop" : 1622528909389,
+    "duration" : 315
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "a680f817bd5fd187",
+  "name" : "查询不存在用户信息",
+  "time" : {
+    "start" : 1622528675295,
+    "stop" : 1622528675594,
+    "duration" : 299
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "61a240b6f17f0e7b",
+  "name" : "创建账户凭证",
+  "time" : {
+    "start" : 1622528943127,
+    "stop" : 1622528943451,
+    "duration" : 324
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "1011f256450ebb97",
+  "name" : "查询指定用户信息",
+  "time" : {
+    "start" : 1622528674965,
+    "stop" : 1622528675283,
+    "duration" : 318
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "3f11bf809c72491c",
+  "name" : "在project工程中编辑角色的权限信息",
+  "time" : {
+    "start" : 1622528522102,
+    "stop" : 1622528523084,
+    "duration" : 982
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "997087f90a8705b",
+  "name" : "增加用户wx",
+  "time" : {
+    "start" : 1622528676967,
+    "stop" : 1622528677304,
+    "duration" : 337
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "f85e16a206576cc3",
+  "name" : "模糊查询存在的devops工程",
+  "time" : {
+    "start" : 1622528940447,
+    "stop" : 1622528940785,
+    "duration" : 338
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "864e7780f2d43877",
+  "name" : "创建存储卷，然后将存储卷绑定到新建的statefulsets上，最后验证资源和存储卷的状态正常",
+  "time" : {
+    "start" : 1622528489044,
+    "stop" : 1622528501254,
+    "duration" : 12210
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "cdf08f1f7647d9e7",
+  "name" : "创建未绑定存储卷的deployment，并验证运行成功",
+  "time" : {
+    "start" : 1622528555804,
+    "stop" : 1622528560930,
+    "duration" : 5126
+  },
+  "status" : "passed",
+  "severity" : "blocker"
+}, {
+  "uid" : "f50c7fd057e2dd63",
+  "name" : "在应用商店列表精确查询存在的应用rabbitmq",
+  "time" : {
+    "start" : 1622528953555,
+    "stop" : 1622528953853,
+    "duration" : 298
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "4e8de95096cb82b8",
+  "name" : "在企业空间ws1-for-test-ws中精确查询存在的项目",
+  "time" : {
+    "start" : 1622528910040,
+    "stop" : 1622528910335,
+    "duration" : 295
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "732fad9fa804b09f",
+  "name" : "在企业空间auoto-wx-ws创建角色( 角色名包含大写字母）",
+  "time" : {
+    "start" : 1622528904872,
+    "stop" : 1622528905199,
+    "duration" : 327
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "828456354c7cfbed",
+  "name" : "删除角色wx",
+  "time" : {
+    "start" : 1622528936957,
+    "stop" : 1622528937268,
+    "duration" : 311
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "a62aa999422f189f",
+  "name" : "在企业空间ws-for-test-project删除不存在的项目wx-pro",
+  "time" : {
+    "start" : 1622528620495,
+    "stop" : 1622528620819,
+    "duration" : 324
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "f3319defa3765639",
+  "name" : "在企业空间auoto-wx-ws创建角色( 角色名以分隔符开头）",
+  "time" : {
+    "start" : 1622528905677,
+    "stop" : 1622528906056,
+    "duration" : 379
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "9cf0fb0b447281d",
+  "name" : "在应用商店列表模糊查询存在的应用",
+  "time" : {
+    "start" : 1622528953867,
+    "stop" : 1622528954216,
+    "duration" : 349
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "dca7c240048ee89",
+  "name" : "模糊查找project工程中的角色",
+  "time" : {
+    "start" : 1622528520452,
+    "stop" : 1622528520798,
+    "duration" : 346
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "3cbfae2b57adab3f",
+  "name" : "增加用户(不输入用户名)",
+  "time" : {
+    "start" : 1622528675971,
+    "stop" : 1622528676288,
+    "duration" : 317
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "59d1ee5c83dafaf6",
+  "name" : "查找project工程中指定的角色",
+  "time" : {
+    "start" : 1622528519818,
+    "stop" : 1622528520127,
+    "duration" : 309
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "b731eef158489fca",
+  "name" : "应用审核不通过,然后重新提交审核，最后审核通过",
+  "time" : {
+    "start" : 1622528779789,
+    "stop" : 1622528783696,
+    "duration" : 3907
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "7601f034eef185d1",
+  "name" : "查看devops工程默认的所有角色",
+  "time" : {
+    "start" : 1622528947296,
+    "stop" : 1622528947599,
+    "duration" : 303
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "2024d4209c278b9",
+  "name" : "编辑网关",
+  "time" : {
+    "start" : 1622528602487,
+    "stop" : 1622528604014,
+    "duration" : 1527
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "a307232e17bea7a4",
+  "name" : "查看project默认的所有用户",
+  "time" : {
+    "start" : 1622528524359,
+    "stop" : 1622528524651,
+    "duration" : 292
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "8e16cb88f6892a6d",
+  "name" : "在应用分类类表中模糊查询存在的应用",
+  "time" : {
+    "start" : 1622528955852,
+    "stop" : 1622528956146,
+    "duration" : 294
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "ffa7ed567b0d6198",
+  "name" : "项目-如何设置项目网关",
+  "time" : {
+    "start" : 1622528996223,
+    "stop" : 1622528996462,
+    "duration" : 239
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "25daf128f059328b",
+  "name" : "增加用户(使用其它用户的邮箱)",
+  "time" : {
+    "start" : 1622528678278,
+    "stop" : 1622528678580,
+    "duration" : 302
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "f0cbcd774352c7fa",
+  "name" : "查询不存在的凭证",
+  "time" : {
+    "start" : 1622528945388,
+    "stop" : 1622528945724,
+    "duration" : 336
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "2953e113cca65b5",
+  "name" : "项目-应用治理-了解更多",
+  "time" : {
+    "start" : 1622529000341,
+    "stop" : 1622529002317,
+    "duration" : 1976
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "ed72d02e0c0c234b",
+  "name" : "创建存储卷时输入不符合规则的存储卷名称(以分隔符开头)",
+  "time" : {
+    "start" : 1622528615588,
+    "stop" : 1622528615922,
+    "duration" : 334
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "1c11a6a9f581a671",
+  "name" : "按名称查询不存在的容器组",
+  "time" : {
+    "start" : 1622528550512,
+    "stop" : 1622528550847,
+    "duration" : 335
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "418647b63b41b4c3",
+  "name" : "创建默认类型秘钥",
+  "time" : {
+    "start" : 1622528620830,
+    "stop" : 1622528621141,
+    "duration" : 311
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "3e4fa253309c7c7b",
+  "name" : "项目-存储管理-存储类型-了解更多",
+  "time" : {
+    "start" : 1622528999302,
+    "stop" : 1622528999562,
+    "duration" : 260
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "8efa6062bbced38c",
+  "name" : "在企业空间ws1-for-test-ws创建重复的项目wx-project",
+  "time" : {
+    "start" : 1622528909709,
+    "stop" : 1622528910024,
+    "duration" : 315
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "3bcc72c218b42958",
+  "name" : "测试编辑角色权限",
+  "time" : {
+    "start" : 1622528937278,
+    "stop" : 1622528938223,
+    "duration" : 945
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "ad374555f276c11c",
+  "name" : "在devops工程中编辑角色基本信息",
+  "time" : {
+    "start" : 1622528949167,
+    "stop" : 1622528949478,
+    "duration" : 311
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "cbe93fb996dcb998",
+  "name" : "创建未绑定存储卷的StatefulSets，并验证运行成功",
+  "time" : {
+    "start" : 1622528569627,
+    "stop" : 1622528575549,
+    "duration" : 5922
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "73f80f792f7bd790",
+  "name" : "按状态查询存在的DaemonSets",
+  "time" : {
+    "start" : 1622528589655,
+    "stop" : 1622528593965,
+    "duration" : 4310
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "e5308b020f0b03b3",
+  "name" : "创建、编辑、删除企业组织",
+  "time" : {
+    "start" : 1622528915652,
+    "stop" : 1622528916869,
+    "duration" : 1217
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "a6b7918a879f9907",
+  "name" : "按状态查询运行中的任务",
+  "time" : {
+    "start" : 1622528547806,
+    "stop" : 1622528549044,
+    "duration" : 1238
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "feaa6b948e900e19",
+  "name" : "项目-应用负载-任务-了解更多",
+  "time" : {
+    "start" : 1622528997287,
+    "stop" : 1622528997523,
+    "duration" : 236
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "3fcc5432ac2140f5",
+  "name" : "按状态查询不存在的deployment",
+  "time" : {
+    "start" : 1622528630247,
+    "stop" : 1622528630550,
+    "duration" : 303
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "5ee10442052d7e5a",
+  "name" : "在project工程中编辑角色基本信息",
+  "time" : {
+    "start" : 1622528521461,
+    "stop" : 1622528522100,
+    "duration" : 639
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "f75b46714c8952d",
+  "name" : "创建的企业组织名称中包含大写字母",
+  "time" : {
+    "start" : 1622528917818,
+    "stop" : 1622528918123,
+    "duration" : 305
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "fa494398f3b5f162",
+  "name" : "设置项目wx-project容器资源默认配置",
+  "time" : {
+    "start" : 1622528911358,
+    "stop" : 1622528911789,
+    "duration" : 431
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "29e2dbadac1e8931",
+  "name" : "删除创建的存储卷快照，并验证删除成功",
+  "time" : {
+    "start" : 1622528630558,
+    "stop" : 1622528631200,
+    "duration" : 642
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "f391415cc951cb8b",
+  "name" : "创建应用模板后添加版本",
+  "time" : {
+    "start" : 1622528783711,
+    "stop" : 1622528785632,
+    "duration" : 1921
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "99df445a9e6852c9",
+  "name" : "删除不存在的容器组",
+  "time" : {
+    "start" : 1622528552939,
+    "stop" : 1622528553247,
+    "duration" : 308
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "572abef169d5e5e2",
+  "name" : "查看角色的授权用户",
+  "time" : {
+    "start" : 1622528936009,
+    "stop" : 1622528936309,
+    "duration" : 300
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "cf53ad4957a06aad",
+  "name" : "平台设置-如何修改平台信息",
+  "time" : {
+    "start" : 1622529000085,
+    "stop" : 1622529000327,
+    "duration" : 242
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "a7a9473c566b40bf",
+  "name" : "只设置资源默认请求-输入错误的cpu信息(包含负数)",
+  "time" : {
+    "start" : 1622528641232,
+    "stop" : 1622528641860,
+    "duration" : 628
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "6545c6f053ba59ed",
+  "name" : "创建SSH凭证",
+  "time" : {
+    "start" : 1622528943455,
+    "stop" : 1622528943768,
+    "duration" : 313
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "17124c544caceb5c",
+  "name" : "创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常",
+  "time" : {
+    "start" : 1622528477419,
+    "stop" : 1622528489034,
+    "duration" : 11615
+  },
+  "status" : "passed",
+  "severity" : "blocker"
+}, {
+  "uid" : "c727e70b318266a8",
+  "name" : "只设置项目配额-CPU",
+  "time" : {
+    "start" : 1622528632261,
+    "stop" : 1622528633203,
+    "duration" : 942
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "ff7c5fc7ae80e045",
+  "name" : "测试修改用户信息",
+  "time" : {
+    "start" : 1622528680867,
+    "stop" : 1622528685157,
+    "duration" : 4290
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "f077004874d2dd0c",
+  "name" : "按名称模糊查询存在的容器组",
+  "time" : {
+    "start" : 1622528550109,
+    "stop" : 1622528550508,
+    "duration" : 399
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "d5b946bc91e2b61c",
+  "name" : "在企业空间auoto-wx-ws创建角色wx-role（该角色没有任何权限）",
+  "time" : {
+    "start" : 1622528903509,
+    "stop" : 1622528903840,
+    "duration" : 331
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "5e4ef2ca9ea4bdd6",
+  "name" : "按名称查询不存的存储卷",
+  "time" : {
+    "start" : 1622528616579,
+    "stop" : 1622528616887,
+    "duration" : 308
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "817e1396ba99582d",
+  "name" : "查找project指定的用户",
+  "time" : {
+    "start" : 1622528524654,
+    "stop" : 1622528524959,
+    "duration" : 305
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "f1314453adef4473",
+  "name" : "创建sa并验证sa内容正确、生成的密钥正确、然后删除sa",
+  "time" : {
+    "start" : 1622528611996,
+    "stop" : 1622528613863,
+    "duration" : 1867
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "3dbb90b4b7d0cd2a",
+  "name" : "项目-配置中心-密钥-了解更多",
+  "time" : {
+    "start" : 1622528998028,
+    "stop" : 1622528998268,
+    "duration" : 240
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "64721169282776dc",
+  "name" : "修改工作负载副本并验证运行正常",
+  "time" : {
+    "start" : 1622528604018,
+    "stop" : 1622528610173,
+    "duration" : 6155
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "7cdb38e169172baa",
+  "name" : "编辑项目信息",
+  "time" : {
+    "start" : 1622528631941,
+    "stop" : 1622528632256,
+    "duration" : 315
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "c6c465a390d91317",
+  "name" : "删除不包含应用的分类",
+  "time" : {
+    "start" : 1622528956479,
+    "stop" : 1622528957417,
+    "duration" : 938
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "8baff3f6c8e88327",
+  "name" : "设置项目wx-project配置",
+  "time" : {
+    "start" : 1622528911031,
+    "stop" : 1622528911345,
+    "duration" : 314
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "7a80d5db57531d89",
+  "name" : "创建存储卷时输入已存在的存储卷名称",
+  "time" : {
+    "start" : 1622528614558,
+    "stop" : 1622528614877,
+    "duration" : 319
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "c957ff3815e8c410",
+  "name" : "查找devops工程不存在的用户",
+  "time" : {
+    "start" : 1622528951335,
+    "stop" : 1622528951635,
+    "duration" : 300
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "af61969985543ce4",
+  "name" : "为用户分配企业组织",
+  "time" : {
+    "start" : 1622528918447,
+    "stop" : 1622528919675,
+    "duration" : 1228
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "b65ca6fa407e7638",
+  "name" : "创建未绑定存储卷的DaemonSets，并验证运行成功",
+  "time" : {
+    "start" : 1622528585498,
+    "stop" : 1622528589651,
+    "duration" : 4153
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "621f8404e4336839",
+  "name" : "查找devops工程指定的角色",
+  "time" : {
+    "start" : 1622528947602,
+    "stop" : 1622528947923,
+    "duration" : 321
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "1940993105dfb6bf",
+  "name" : "只设置项目配额-内存",
+  "time" : {
+    "start" : 1622528633839,
+    "stop" : 1622528634749,
+    "duration" : 910
+  },
+  "status" : "failed",
+  "severity" : "normal"
+}, {
+  "uid" : "5a8e2798d3a9cece",
+  "name" : "项目-应用负载-应用-了解更多",
+  "time" : {
+    "start" : 1622528996485,
+    "stop" : 1622528996741,
+    "duration" : 256
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "b89c2f6f0c8915f4",
+  "name" : "从应用模版部署新应用",
+  "time" : {
+    "start" : 1622528785636,
+    "stop" : 1622528835185,
+    "duration" : 49549
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "e7878ff4eb1a2636",
+  "name" : "编辑角色非权限信息",
+  "time" : {
+    "start" : 1622528935354,
+    "stop" : 1622528935662,
+    "duration" : 308
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "226d6a09b65f01d2",
+  "name" : "在企业空间编辑邀请成员的角色",
+  "time" : {
+    "start" : 1622528914396,
+    "stop" : 1622528915008,
+    "duration" : 612
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "eda49ec53c254fd4",
+  "name" : "在企业空间auoto-wx-ws创建角色( 不输入角色名）",
+  "time" : {
+    "start" : 1622528904203,
+    "stop" : 1622528904516,
+    "duration" : 313
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "f230297e20c64f23",
+  "name" : "模糊查询企业空间ws1-for-test-ws的角色",
+  "time" : {
+    "start" : 1622528902784,
+    "stop" : 1622528903129,
+    "duration" : 345
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "e01b9f83c2b66473",
+  "name" : "创建存储卷快照时输入不符合规则的快照名称(已分隔符开头)",
+  "time" : {
+    "start" : 1622528618893,
+    "stop" : 1622528619221,
+    "duration" : 328
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "8f29138d9c50d527",
+  "name" : "编辑project成员的角色",
+  "time" : {
+    "start" : 1622528525913,
+    "stop" : 1622528526235,
+    "duration" : 322
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "9b1fe7a0c8df15f",
+  "name" : "项目-应用负载-工作负载-了解更多",
+  "time" : {
+    "start" : 1622528997025,
+    "stop" : 1622528997275,
+    "duration" : 250
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "78715c6ee240d211",
+  "name" : "创建存储卷快照",
+  "time" : {
+    "start" : 1622528617890,
+    "stop" : 1622528618200,
+    "duration" : 310
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "cff2c0dba2ac954a",
+  "name" : "工作负载设置弹性伸缩",
+  "time" : {
+    "start" : 1622528611235,
+    "stop" : 1622528611674,
+    "duration" : 439
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "60b41f0c020e052f",
+  "name" : "查询所有用户信息",
+  "time" : {
+    "start" : 1622528674576,
+    "stop" : 1622528674931,
+    "duration" : 355
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "f6e019e9c1e13f94",
+  "name" : "查看devops工程默认的所有用户",
+  "time" : {
+    "start" : 1622528950427,
+    "stop" : 1622528950731,
+    "duration" : 304
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "f346df3f99c6ec32",
+  "name" : "模糊查询存在的秘钥",
+  "time" : {
+    "start" : 1622528622796,
+    "stop" : 1622528623107,
+    "duration" : 311
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "6af67be55083449f",
+  "name" : "按名称精确查询存在的存储卷",
+  "time" : {
+    "start" : 1622528615933,
+    "stop" : 1622528616243,
+    "duration" : 310
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "6faf64ad6109c03",
+  "name" : "在企业空间邀请存在的新成员",
+  "time" : {
+    "start" : 1622528914089,
+    "stop" : 1622528914393,
+    "duration" : 304
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "5fb073a903298fb3",
+  "name" : "发布应用模板到商店，然后将应用下架，再重新上架，最后下架应用",
+  "time" : {
+    "start" : 1622528770899,
+    "stop" : 1622528779781,
+    "duration" : 8882
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "74b1a4a0ad584c4a",
+  "name" : "创建sa 'test-sa'",
+  "time" : {
+    "start" : 1622528625735,
+    "stop" : 1622528626049,
+    "duration" : 314
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "21bf739bc01a84aa",
+  "name" : "设置项目配额-CPU、内存",
+  "time" : {
+    "start" : 1622528635624,
+    "stop" : 1622528636603,
+    "duration" : 979
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "1016e640ffc8c077",
+  "name" : "模糊查询配置",
+  "time" : {
+    "start" : 1622528624428,
+    "stop" : 1622528624744,
+    "duration" : 316
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "d573516d37b199da",
+  "name" : "修改企业空间ws1-for-test-ws信息",
+  "time" : {
+    "start" : 1622528900644,
+    "stop" : 1622528900966,
+    "duration" : 322
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "1a9d83890cdffa85",
+  "name" : "创建TLS类型的秘钥",
+  "time" : {
+    "start" : 1622528621149,
+    "stop" : 1622528621453,
+    "duration" : 304
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "cb491e5e0047820d",
+  "name" : "查询企业空间ws1-for-test-ws不存在的角色",
+  "time" : {
+    "start" : 1622528903152,
+    "stop" : 1622528903491,
+    "duration" : 339
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "724c4e8a2a1b3336",
+  "name" : "查询企业空间ws1-for-test-ws的指定角色",
+  "time" : {
+    "start" : 1622528902429,
+    "stop" : 1622528902769,
+    "duration" : 340
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "3ae093ee9a943c89",
+  "name" : "在企业空间auoto-wx-ws创建角色( 角色名包含符号，非分隔符）",
+  "time" : {
+    "start" : 1622528905209,
+    "stop" : 1622528905666,
+    "duration" : 457
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "9e77c350862846b7",
+  "name" : "查看添加的集群内部白名单",
+  "time" : {
+    "start" : 1622528628356,
+    "stop" : 1622528628658,
+    "duration" : 302
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "c2cbe8abde246909",
+  "name" : "项目-配置中心-服务账号-了解更多",
+  "time" : {
+    "start" : 1622528998540,
+    "stop" : 1622528998771,
+    "duration" : 231
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "e565d51ab9f4c979",
+  "name" : "在企业空间auoto-wx-ws创建角色( 角色名以分隔符结尾）",
+  "time" : {
+    "start" : 1622528906074,
+    "stop" : 1622528906401,
+    "duration" : 327
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "159980f99f32b0b5",
+  "name" : "增加用户（用户名包含大写字母）",
+  "time" : {
+    "start" : 1622528678590,
+    "stop" : 1622528678922,
+    "duration" : 332
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "c256c39f4948cd25",
+  "name" : "查询不存在的角色信息",
+  "time" : {
+    "start" : 1622528933681,
+    "stop" : 1622528933980,
+    "duration" : 299
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "4a31e8393c3b218a",
+  "name" : "查询所有角色信息",
+  "time" : {
+    "start" : 1622528932552,
+    "stop" : 1622528933349,
+    "duration" : 797
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "c118a3f051c98730",
+  "name" : "创建devops工程,然后将其删除",
+  "time" : {
+    "start" : 1622528939474,
+    "stop" : 1622528940123,
+    "duration" : 649
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "b1ca490d7fdd66a0",
+  "name" : "邀请用户到devops工程",
+  "time" : {
+    "start" : 1622528951638,
+    "stop" : 1622528951961,
+    "duration" : 323
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "682f358ba5176172",
+  "name" : "集群-集群节点-了解更多",
+  "time" : {
+    "start" : 1622528999829,
+    "stop" : 1622529000073,
+    "duration" : 244
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "c5681aeb3b67e741",
+  "name" : "增加用户（邮箱不合法）",
+  "time" : {
+    "start" : 1622528679285,
+    "stop" : 1622528679573,
+    "duration" : 288
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "c3998c66fa25671",
+  "name" : "精确查询存在的devops工程",
+  "time" : {
+    "start" : 1622528940129,
+    "stop" : 1622528940443,
+    "duration" : 314
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "6652a929ff9bdcdf",
+  "name" : "在企业空间ws1-for-test-ws查看不存在的企业成员",
+  "time" : {
+    "start" : 1622528908123,
+    "stop" : 1622528908440,
+    "duration" : 317
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "89a7f2a0c88311f0",
+  "name" : "在devops工程中创建角色",
+  "time" : {
+    "start" : 1622528948548,
+    "stop" : 1622528948864,
+    "duration" : 316
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "a26d7fdbded160cc",
+  "name" : "在编辑sa时修改namespace",
+  "time" : {
+    "start" : 1622528626687,
+    "stop" : 1622528627004,
+    "duration" : 317
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "fa49fe44742e34a2",
+  "name" : "删除service，并验证删除成功",
+  "time" : {
+    "start" : 1622528593968,
+    "stop" : 1622528595769,
+    "duration" : 1801
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "d629ac5b1004912d",
+  "name" : "删除用户wx1",
+  "time" : {
+    "start" : 1622528679901,
+    "stop" : 1622528680204,
+    "duration" : 303
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "94a65142d9b54bde",
+  "name" : "只设置资源默认请求-内存、cpu",
+  "time" : {
+    "start" : 1622528643102,
+    "stop" : 1622528644014,
+    "duration" : 912
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "d41f718ea5639900",
+  "name" : "在应用审核页面已处理列表查询不存在的应用",
+  "time" : {
+    "start" : 1622528955212,
+    "stop" : 1622528955521,
+    "duration" : 309
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "8e2d00dc0abf1712",
+  "name" : "模糊查找devops工程的用户",
+  "time" : {
+    "start" : 1622528951041,
+    "stop" : 1622528951332,
+    "duration" : 291
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "7a253216c7cdc378",
+  "name" : "在企业空间ws1-for-test-ws查看指定的企业成员",
+  "time" : {
+    "start" : 1622528907796,
+    "stop" : 1622528908112,
+    "duration" : 316
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "2ca376d9ae63f655",
+  "name" : "按名称精确查询存在的工作负载",
+  "time" : {
+    "start" : 1622528610549,
+    "stop" : 1622528610859,
+    "duration" : 310
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "a39bf2652e3da88a",
+  "name" : "添加仓库时不输入URL地址",
+  "time" : {
+    "start" : 1622528696856,
+    "stop" : 1622528697162,
+    "duration" : 306
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "617eb15cc6dfa2ec",
+  "name" : "在企业空间ws1-for-test-ws中查询不存在的项目",
+  "time" : {
+    "start" : 1622528910678,
+    "stop" : 1622528911007,
+    "duration" : 329
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "74bd308124d73ab2",
+  "name" : "修改用户密码",
+  "time" : {
+    "start" : 1622528677314,
+    "stop" : 1622528677640,
+    "duration" : 326
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "d954516bc72303d5",
+  "name" : "按状态查询已完成的任务",
+  "time" : {
+    "start" : 1622528547496,
+    "stop" : 1622528547803,
+    "duration" : 307
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "94b1a3d7d6d9969a",
+  "name" : "开启项目网络隔离",
+  "time" : {
+    "start" : 1622528627323,
+    "stop" : 1622528627630,
+    "duration" : 307
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "86d35d1d3d631ee8",
+  "name" : "按名称查询不存在的工作负载",
+  "time" : {
+    "start" : 1622528610862,
+    "stop" : 1622528611230,
+    "duration" : 368
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "6da77646d453649a",
+  "name" : "创建的企业组织名称中包含特殊字符",
+  "time" : {
+    "start" : 1622528918126,
+    "stop" : 1622528918443,
+    "duration" : 317
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "dc750d1372188a9d",
+  "name" : "查询企业空间ws1-for-test-ws的所有角色",
+  "time" : {
+    "start" : 1622528902091,
+    "stop" : 1622528902416,
+    "duration" : 325
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "c4b6f278e3547cbf",
+  "name" : "在企业空间ws1-for-test-ws删除项目wx-project",
+  "time" : {
+    "start" : 1622528911822,
+    "stop" : 1622528912151,
+    "duration" : 329
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "8c257a73591f1a08",
+  "name" : "删除不存在的应用仓库",
+  "time" : {
+    "start" : 1622528770583,
+    "stop" : 1622528770897,
+    "duration" : 314
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "47c160f2bfbc3a1c",
+  "name" : "在不删除应用版本的情况下删除应用模版",
+  "time" : {
+    "start" : 1622528894937,
+    "stop" : 1622528896014,
+    "duration" : 1077
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "f3df0121bf071407",
+  "name" : "模糊查询存在的凭证",
+  "time" : {
+    "start" : 1622528944770,
+    "stop" : 1622528945385,
+    "duration" : 615
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "b7aba1cf5d245d57",
+  "name" : "创建存储卷时输入不符合规则的存储卷名称(包含符号@)",
+  "time" : {
+    "start" : 1622528614889,
+    "stop" : 1622528615225,
+    "duration" : 336
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "98434d7a440da3d2",
+  "name" : "在企业空间ws1-for-test-ws模糊查询企业成员",
+  "time" : {
+    "start" : 1622528908450,
+    "stop" : 1622528908738,
+    "duration" : 288
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "ff0f9cf9b2a7b5e3",
+  "name" : "创建重名的企业组织",
+  "time" : {
+    "start" : 1622528916874,
+    "stop" : 1622528917815,
+    "duration" : 941
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "50813357640aaec8",
+  "name" : "精确查询存在的凭证",
+  "time" : {
+    "start" : 1622528944459,
+    "stop" : 1622528944760,
+    "duration" : 301
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "346d0c31979bc8c3",
+  "name" : "编辑配额",
+  "time" : {
+    "start" : 1622528920625,
+    "stop" : 1622528921579,
+    "duration" : 954
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "814663ad96683055",
+  "name" : "项目-应用负载-服务-了解更多",
+  "time" : {
+    "start" : 1622528996749,
+    "stop" : 1622528997013,
+    "duration" : 264
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "8b3943d62938feb5",
+  "name" : "创建账号密码秘钥",
+  "time" : {
+    "start" : 1622528621835,
+    "stop" : 1622528622142,
+    "duration" : 307
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "875e19077682a55a",
+  "name" : "创建secret_text凭证",
+  "time" : {
+    "start" : 1622528943773,
+    "stop" : 1622528944113,
+    "duration" : 340
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "964fb0b802d93e9e",
+  "name" : "按状态查询存在的工作负载",
+  "time" : {
+    "start" : 1622528610176,
+    "stop" : 1622528610544,
+    "duration" : 368
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "5b3e83871bbfca60",
+  "name" : "在project工程中创建角色-角色名称为空",
+  "time" : {
+    "start" : 1622528521141,
+    "stop" : 1622528521458,
+    "duration" : 317
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "689d32d6f11026fe",
+  "name" : "关闭项目网络隔离",
+  "time" : {
+    "start" : 1622528629608,
+    "stop" : 1622528629925,
+    "duration" : 317
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "ecac577a9985d18f",
+  "name" : "查看project工程默认的所有角色",
+  "time" : {
+    "start" : 1622528519489,
+    "stop" : 1622528519812,
+    "duration" : 323
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "2a07a0a0cde1ab65",
+  "name" : "精确查询企业空间",
+  "time" : {
+    "start" : 1622528900987,
+    "stop" : 1622528901305,
+    "duration" : 318
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "dd6d647d1307b000",
+  "name" : "增加角色wx-role",
+  "time" : {
+    "start" : 1622528935030,
+    "stop" : 1622528935345,
+    "duration" : 315
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "16ba582ba603d63",
+  "name" : "创建存储卷，然后将存储卷绑定到新建的service上，最后验证资源和存储卷的状态正常",
+  "time" : {
+    "start" : 1622528512951,
+    "stop" : 1622528519486,
+    "duration" : 6535
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "8b2de31cf99c7c00",
+  "name" : "在存储卷快照列表精确查询存在的快照",
+  "time" : {
+    "start" : 1622528619232,
+    "stop" : 1622528619542,
+    "duration" : 310
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "5ee4881204fb60d3",
+  "name" : "按名称精确查询存在的容器组",
+  "time" : {
+    "start" : 1622528549047,
+    "stop" : 1622528550106,
+    "duration" : 1059
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "4af079e02c444eec",
+  "name" : "设置项目配额-输入错误的内存(包含负数)",
+  "time" : {
+    "start" : 1622528635006,
+    "stop" : 1622528635621,
+    "duration" : 615
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "689d754b33d660db",
+  "name" : "按名称查询存在的StatefulSets",
+  "time" : {
+    "start" : 1622528575555,
+    "stop" : 1622528578524,
+    "duration" : 2969
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "9c0b25edf26d4a80",
+  "name" : "在企业空间ws1-for-test-ws查看所有的企业成员",
+  "time" : {
+    "start" : 1622528907444,
+    "stop" : 1622528907758,
+    "duration" : 314
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "212ff8991c5cd2b5",
+  "name" : "查询不存在的企业空间",
+  "time" : {
+    "start" : 1622528901680,
+    "stop" : 1622528902076,
+    "duration" : 396
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "6a0f3b18ec14c448",
+  "name" : "删除角色wx-role(输入错误的角色名)",
+  "time" : {
+    "start" : 1622528936321,
+    "stop" : 1622528936626,
+    "duration" : 305
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "7ab662ce7f213d2f",
+  "name" : "删除包含应用的分类",
+  "time" : {
+    "start" : 1622528969400,
+    "stop" : 1622528991058,
+    "duration" : 21658
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "388212d6a87f5258",
+  "name" : "删除用户wx2",
+  "time" : {
+    "start" : 1622528680212,
+    "stop" : 1622528680542,
+    "duration" : 330
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "5bbbce6550c3fd7a",
+  "name" : "删除状态为已完成的容器组",
+  "time" : {
+    "start" : 1622528551893,
+    "stop" : 1622528552935,
+    "duration" : 1042
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "30128cc8d0b83c41",
+  "name" : "项目-应用负载-应用路由-了解更多",
+  "time" : {
+    "start" : 1622528997534,
+    "stop" : 1622528997768,
+    "duration" : 234
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "794f7b71d1b59312",
+  "name" : "按状态查询存在的StatefulSets",
+  "time" : {
+    "start" : 1622528578527,
+    "stop" : 1622528585492,
+    "duration" : 6965
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "e1863d18160e364f",
+  "name" : "模糊查找devops工程中的角色",
+  "time" : {
+    "start" : 1622528948248,
+    "stop" : 1622528948544,
+    "duration" : 296
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "8146e57e32312a58",
+  "name" : "删除用户wx",
+  "time" : {
+    "start" : 1622528679584,
+    "stop" : 1622528679892,
+    "duration" : 308
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "6448828d5fca899",
+  "name" : "增加角色(不选择权限)",
+  "time" : {
+    "start" : 1622528934646,
+    "stop" : 1622528935010,
+    "duration" : 364
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "b9bf6382b802d837",
+  "name" : "创建镜像仓库秘钥",
+  "time" : {
+    "start" : 1622528621465,
+    "stop" : 1622528621821,
+    "duration" : 356
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "d8ca0a86a26628f2",
+  "name" : "增加用户（用户名包含符号）",
+  "time" : {
+    "start" : 1622528678934,
+    "stop" : 1622528679273,
+    "duration" : 339
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "79de778f7e5423c7",
+  "name" : "删除不存在的任务",
+  "time" : {
+    "start" : 1622528555492,
+    "stop" : 1622528555801,
+    "duration" : 309
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "37fcc10e877ea528",
+  "name" : "增加用户(不输入密码)",
+  "time" : {
+    "start" : 1622528676628,
+    "stop" : 1622528676935,
+    "duration" : 307
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "e8f555309caf9826",
+  "name" : "只设置资源默认请求-输入错误的内存信息(包含非单位字母)",
+  "time" : {
+    "start" : 1622528641863,
+    "stop" : 1622528642499,
+    "duration" : 636
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "53835f0aa51f84a5",
+  "name" : "模糊查找project的用户",
+  "time" : {
+    "start" : 1622528524962,
+    "stop" : 1622528525269,
+    "duration" : 307
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "c747135bbce77627",
+  "name" : "删除秘钥",
+  "time" : {
+    "start" : 1622528623445,
+    "stop" : 1622528623768,
+    "duration" : 323
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "4043f1ec5a40d7e8",
+  "name" : "删除项目，并验证删除成功",
+  "time" : {
+    "start" : 1622528644019,
+    "stop" : 1622528668644,
+    "duration" : 24625
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "50948b8b52af5ceb",
+  "name" : "删除devops工程的成员",
+  "time" : {
+    "start" : 1622528952282,
+    "stop" : 1622528952588,
+    "duration" : 306
+  },
+  "status" : "passed",
+  "severity" : "critical"
+}, {
+  "uid" : "779f6db92c7fec4a",
+  "name" : "项目-应用负载-使用应用路由的前提-了解更多",
+  "time" : {
+    "start" : 1622528997778,
+    "stop" : 1622528998017,
+    "duration" : 239
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "c60b8a31cfe15235",
+  "name" : "创建存储卷快照时输入不符合规则的快照名称(包含大写字母)",
+  "time" : {
+    "start" : 1622528618567,
+    "stop" : 1622528618884,
+    "duration" : 317
+  },
+  "status" : "passed",
+  "severity" : "normal"
+}, {
+  "uid" : "f8bc339df6586f0e",
+  "name" : "删除配置",
+  "time" : {
+    "start" : 1622528625064,
+    "stop" : 1622528625376,
+    "duration" : 312
   },
   "status" : "passed",
   "severity" : "critical"

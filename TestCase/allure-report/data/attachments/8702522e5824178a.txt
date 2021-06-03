@@ -1,5 +1,0 @@
-actual_result:r.json()['metadata']['name'] = testvolume
-expect_result:testvolume
-创建存储卷耗时:15秒
-actual_result:r1.json()['items'][0]['status']['phase'] = Bound
-expect_result: Bound

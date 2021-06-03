@@ -1,15 +1,15 @@
 {
-  "total" : 7,
+  "total" : 8,
   "items" : [ {
-    "uid" : "a85a667e52c0238e0ebde55611c37a32",
-    "name" : "企业空间角色&用户管理",
+    "uid" : "b71caa12e5654478957b8c5110b9dd6c",
+    "name" : "Project",
     "statistic" : {
       "failed" : 1,
       "broken" : 0,
       "skipped" : 0,
-      "passed" : 9,
+      "passed" : 17,
       "unknown" : 0,
-      "total" : 10
+      "total" : 18
     }
   }, {
     "uid" : "5afbcca1a435dfc07cf8808f10dabd8d",
@@ -23,19 +23,19 @@
       "total" : 6
     }
   }, {
-    "uid" : "b71caa12e5654478957b8c5110b9dd6c",
-    "name" : "Project",
+    "uid" : "a85a667e52c0238e0ebde55611c37a32",
+    "name" : "企业空间角色&用户管理",
     "statistic" : {
       "failed" : 0,
       "broken" : 0,
       "skipped" : 0,
-      "passed" : 13,
+      "passed" : 12,
       "unknown" : 0,
-      "total" : 13
+      "total" : 12
     }
   }, {
-    "uid" : "dbc138c053c1f9ec97646a4c8f0d12a3",
-    "name" : "系统角色管理",
+    "uid" : "ab4e6fed9547375b2111ca9bf47123d0",
+    "name" : "系统账户管理",
     "statistic" : {
       "failed" : 0,
       "broken" : 0,
@@ -45,8 +45,19 @@
       "total" : 4
     }
   }, {
-    "uid" : "ab4e6fed9547375b2111ca9bf47123d0",
-    "name" : "系统账户管理",
+    "uid" : "88d359e6ffa2a4656a31962bc9774344",
+    "name" : "应用管理",
+    "statistic" : {
+      "failed" : 0,
+      "broken" : 0,
+      "skipped" : 0,
+      "passed" : 4,
+      "unknown" : 0,
+      "total" : 4
+    }
+  }, {
+    "uid" : "dbc138c053c1f9ec97646a4c8f0d12a3",
+    "name" : "系统角色管理",
     "statistic" : {
       "failed" : 0,
       "broken" : 0,
@@ -67,15 +78,15 @@
       "total" : 3
     }
   }, {
-    "uid" : "88d359e6ffa2a4656a31962bc9774344",
-    "name" : "应用管理",
+    "uid" : "1b224fa9384bf96eb947a918d61b926c",
+    "name" : "Help",
     "statistic" : {
       "failed" : 0,
       "broken" : 0,
       "skipped" : 0,
-      "passed" : 2,
+      "passed" : 1,
       "unknown" : 0,
-      "total" : 2
+      "total" : 1
     }
   } ]
 }

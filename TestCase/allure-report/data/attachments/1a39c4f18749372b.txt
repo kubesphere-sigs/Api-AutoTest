@@ -1,1 +1,0 @@
-{'spec': {'template': {'spec': {'networkIsolation': True}}}}

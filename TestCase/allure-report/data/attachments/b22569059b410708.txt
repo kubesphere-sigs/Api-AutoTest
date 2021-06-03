@@ -1,2 +1,0 @@
-actual_result:Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required
-expect_result:Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required

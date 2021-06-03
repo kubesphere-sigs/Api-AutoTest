@@ -1,2 +1,0 @@
-actual_result:r.json()[0]['username']=system-user
-expect_result:system-user
