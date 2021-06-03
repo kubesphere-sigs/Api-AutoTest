@@ -1,5 +1,4 @@
 import requests
-from config import config
 
 
 def get_token(server):

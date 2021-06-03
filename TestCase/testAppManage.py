@@ -453,7 +453,7 @@ class TestAppTemplate(object):
         # 删除应用仓库
         step_delete_app_repo(self.ws_name, repo_id)
         # 查询列表，验证删除成功
-        time.sleep(5)  # 等待删除成功
+        time.sleep(10)  # 等待删除成功
         response = step_get_app_reposity(self.ws_name, repo_name)
         count = response.json()['total_count']
         # 验证仓库删除成功

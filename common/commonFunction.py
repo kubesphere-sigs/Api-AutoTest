@@ -244,8 +244,6 @@ def get_app_id(key):
         item_name.append(item['name'])
         item_id.append(item['app_id'])
     dic = dict(zip(item_name, item_id))
-    # print(item_name)
-    # print(key +':'+ dic[key])
     return dic[key]
 
 
