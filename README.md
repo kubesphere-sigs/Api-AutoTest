@@ -1,5 +1,5 @@
 # Api-AutoTest
-本工程是基于kubesphere3.0版本编写的接口自动化测试用例，通过访问apiserver的方式运行，目前已基本覆盖ks3.0的基础功能。仍在持续优化中...
+本工程是基于kubesphere3.1版本编写的接口自动化测试用例，通过访问apiserver的方式运行，目前已基本覆盖ks3.0的基础功能。仍在持续优化中...
 ## 目录结构
 
 ```
@@ -77,5 +77,3 @@ allure generate ../report ../allure_report --clean
 ![Image text](https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/1.png)
 ![Image text](https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/2.png)
 
-8、jenkins体验地址
-http://139.198.9.112:8080  root/admin
