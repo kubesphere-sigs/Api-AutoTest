@@ -244,7 +244,7 @@ class TestAppStore(object):
         step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id, name=name,
                                        version_id=version_id, conf=conf)
         i = 0
-        while i < 600:
+        while i < 300:
             # 查看应用部署情况
             response = step_get_app_status(self.ws_name, self.project_name, name)
             # 获取应用状态

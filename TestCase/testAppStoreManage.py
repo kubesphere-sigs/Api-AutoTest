@@ -114,7 +114,7 @@ def step_get_app_detail(app_id):
 
 
 @allure.feature('应用商店管理')
-class TestManageApp(object):
+class TestManageAppStore(object):
     ws_name = 'test-appstore-manage'  # 在excle中读取的用例此名称，不能修改。
     project_name = 'project-for-test-appstore-manage'  # 在excle中读取的用例此名称，不能修改。
     log_format()  # 配置日志格式
@@ -125,7 +125,7 @@ class TestManageApp(object):
     @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
     # 将用例信息以参数化的方式传入测试方法
     @pytest.mark.parametrize('id,url,data, story, title,method,severity,condition,except_result', parametrize)
-    def test_ws_role_user(self, id, url, data, story, title, method, severity, condition, except_result):
+    def test_manage_app_store(self, id, url, data, story, title, method, severity, condition, except_result):
 
         '''
         :param id: 用例编号
