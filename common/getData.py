@@ -8,7 +8,7 @@ class DoexcleByPandas(object):
         :param sheet_name:
         :return:
         """
-        df =pd.read_excel(filename, sheet_name=sheet_name) #默认读取第一个表单，读出来是一个二维矩阵
+        df =pd.read_excel(filename, sheet_name=sheet_name, keep_default_na=False) #默认读取第一个表单，读出来是一个二维矩阵
         test_data = []
         for i in df.values.tolist():
             test_data.append(i)
@@ -20,7 +20,7 @@ class DoexcleByPandas(object):
         :param sheet_name:
         :return:
         """
-        df = pd.read_excel(filename, sheet_name=sheet_name)  # 默认读取第一个表单，读出来是一个二维矩阵
+        df = pd.read_excel(filename, sheet_name=sheet_name, keep_default_na=False)  # 默认读取第一个表单，读出来是一个二维矩阵
         test_data = []
         #获取索引号，并对其进行遍历
         for i in df.index.values:

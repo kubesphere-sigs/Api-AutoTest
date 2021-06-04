@@ -162,7 +162,7 @@ class TestManageAppStore(object):
             r = requests.delete(url, headers=get_header())
 
         # 将校验条件和预期结果参数化
-        if condition != 'nan':
+        if condition != '':
             condition_new = eval(condition)  # 将字符串转化为表达式
             if isinstance(condition_new, str):
                 # 判断表达式的结果是否为字符串，如果为字符串格式，则去掉其首尾的空格
