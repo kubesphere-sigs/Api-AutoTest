@@ -148,14 +148,14 @@ class TestAppStore(object):
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='appstore')
 
     # 所有用例执行之前执行该方法
-    # def setup_class(self):
-    #     commonFunction.create_workspace(self.ws_name)  # 创建一个企业空间
-    #     commonFunction.create_project(ws_name=self.ws_name, project_name=self.project_name)  # 创建一个项目
+    def setup_class(self):
+        commonFunction.create_workspace(self.ws_name)  # 创建一个企业空间
+        commonFunction.create_project(ws_name=self.ws_name, project_name=self.project_name)  # 创建一个项目
 
     # 所有用例执行完之后执行该方法
-    # def teardown_class(self):
-    #     commonFunction.delete_project(self.ws_name, self.ws_name)  # 删除创建的项目
-    #     commonFunction.delete_workspace(self.ws_name)  # 删除创建的企业空间
+    def teardown_class(self):
+        commonFunction.delete_project(self.ws_name, self.ws_name)  # 删除创建的项目
+        commonFunction.delete_workspace(self.ws_name)  # 删除创建的企业空间
 
     @allure.title('从应用商店部署应用时使用已经存在的名称')
     @allure.severity(allure.severity_level.NORMAL)

@@ -3,7 +3,8 @@ import pytest
 import json
 import allure
 import sys
-sys.path.append('../')  #将项目路径加到搜索路径中，使得自定义模块可以引用
+
+sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from config import config
 from common.getHeader import get_header, get_header_for_patch
@@ -22,12 +23,13 @@ def step_create_devops(ws_name, devops_name):
     """
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/workspaces/' + ws_name + '/devops'
     data = {"metadata": {"generateName": devops_name,
-                        "labels": {"kubesphere.io/workspace": devops_name},
-                        "annotations": {"kubesphere.io/creator": "admin"}},
+                         "labels": {"kubesphere.io/workspace": devops_name},
+                         "annotations": {"kubesphere.io/creator": "admin"}},
             "kind": "DevOpsProject",
             "apiVersion": "devops.kubesphere.io/v1alpha3"}
     r = requests.post(url, headers=get_header(), data=json.dumps(data))
     return r.json()['metadata']['name']
+
 
 @allure.story('查询devops工程')
 def step_search_devops(ws_name, condition):
@@ -43,6 +45,7 @@ def step_search_devops(ws_name, condition):
     else:
         return r.json()['totalItems']
 
+
 @allure.step('获取devops工程的详细信息')
 def step_get_devopinfo(ws_name, devops_name):
     """
@@ -53,6 +56,7 @@ def step_get_devopinfo(ws_name, devops_name):
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/workspaces/' + ws_name + '/devops/' + devops_name
     r = requests.get(url=url, headers=get_header())
     return r.json()
+
 
 @allure.step('修改devops工程基本信息')
 def step_modify_devinfo(ws_name, devops_name, data):
@@ -67,6 +71,7 @@ def step_modify_devinfo(ws_name, devops_name, data):
 
     return r.json()['metadata']['annotations']['kubesphere.io/alias-name']
 
+
 @allure.step('查询凭证')
 def step_search_credential(devops_name, condition):
     """
@@ -75,12 +80,13 @@ def step_search_credential(devops_name, condition):
     :return: 查询结果
     """
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/credentials?' \
-                       'name=' + condition + '&limit=10&sortBy=createTime'
+                                                                                      'name=' + condition + '&limit=10&sortBy=createTime'
     r = requests.get(url=url, headers=get_header())
     if r.json()['totalItems'] != 0:
         return r.json()['items'][0]['metadata']['name']
     else:
         return r.json()['totalItems']
+
 
 @allure.step('获取所有凭证的名称')
 def step_get_credentials_name(devops_name):
@@ -90,13 +96,14 @@ def step_get_credentials_name(devops_name):
     """
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/credentials?limit=10&sortBy=createTime'
     r = requests.get(url=url, headers=get_header())
-    count = r.json()['totalItems']  #得到凭证的数量
-    credentials_name = []  #存放凭证名称的数组
+    count = r.json()['totalItems']  # 得到凭证的数量
+    credentials_name = []  # 存放凭证名称的数组
     for i in range(count):
         name = r.json()['items'][i]['metadata']['name']
         credentials_name.append(name)
 
     return credentials_name
+
 
 @allure.step('删除凭证')
 def step_delete_credential(devops_name, credential_name):
@@ -109,6 +116,7 @@ def step_delete_credential(devops_name, credential_name):
     r = requests.delete(url=url, headers=get_header())
     return r.json()['message']
 
+
 @allure.step('删除devops工程')
 def step_delete_devops(ws_name, devops_name):
     """
@@ -118,8 +126,9 @@ def step_delete_devops(ws_name, devops_name):
     """
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/workspaces/' + ws_name + '/devops/' + devops_name
     r = requests.delete(url=url, headers=get_header())
-    #返回删除结果
+    # 返回删除结果
     return r.json()['message']
+
 
 @allure.step('通过图形化的方式创建流水线')
 def step_create_pipline(devops_name, devops_name_new, pipline_name):
@@ -132,14 +141,15 @@ def step_create_pipline(devops_name, devops_name_new, pipline_name):
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name_new + '/pipelines'
     data = {"project_name": devops_name,
             "metadata": {"name": pipline_name, "namespace": devops_name_new,
-            "annotations": {"kubesphere.io/creator": "admin"}},
+                         "annotations": {"kubesphere.io/creator": "admin"}},
             "spec": {"pipeline": {"discarder": {"days_to_keep": "7", "num_to_keep": "10"},
-            "project_name": devops_name, "cluster": "default", "devops": devops_name_new,
-            "enable_timer_trigger": "true", "enable_discarder": "true", "name": pipline_name},
-            "type": "pipeline"}, "kind": "Pipeline", "apiVersion": "devops.kubesphere.io/v1alpha3"}
+                                  "project_name": devops_name, "cluster": "default", "devops": devops_name_new,
+                                  "enable_timer_trigger": "true", "enable_discarder": "true", "name": pipline_name},
+                     "type": "pipeline"}, "kind": "Pipeline", "apiVersion": "devops.kubesphere.io/v1alpha3"}
     r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     r.json()['metadata']['name']
     return r.json()['metadata']['name']
+
 
 @allure.step('获取指定流水线的uid、resourceVersion、creationTimestamp')
 def step_get_pipeline_data(devops_name_new, pipline_name):
@@ -150,7 +160,9 @@ def step_get_pipeline_data(devops_name_new, pipline_name):
     """
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name_new + '/pipelines/' + pipline_name
     r = requests.get(url=url, headers=get_header())
-    return r.json()['metadata']['resourceVersion'], r.json()['metadata']['uid'], r.json()['metadata']['creationTimestamp']
+    return r.json()['metadata']['resourceVersion'], r.json()['metadata']['uid'], r.json()['metadata'][
+        'creationTimestamp']
+
 
 @allure.step('checkScriptCompile')
 def step_pipeline_checkScriptCompile(devops_name_new, pipline_name, data):
@@ -161,6 +173,7 @@ def step_pipeline_checkScriptCompile(devops_name_new, pipline_name, data):
     }
     r = requests.post(url=url, headers=header, data=data)
     return r.json()['status']
+
 
 @allure.step('提交jenkinsfile')
 def step_edit_jenkinsfile(devops_name_new, pipline_name, data):
@@ -173,6 +186,7 @@ def step_edit_jenkinsfile(devops_name_new, pipline_name, data):
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name_new + '/pipelines/' + pipline_name
     r = requests.put(url=url, headers=get_header(), data=json.dumps(data))
     return r.json()['metadata']['name']
+
 
 @allure.step('tojson')
 def step_pipeline_tojson(data):
@@ -188,6 +202,7 @@ def step_pipeline_tojson(data):
     r = requests.post(url=url, headers=header, data=data)
     return r.json()['data']['result']
 
+
 @allure.step('运行流水线')
 def step_run_pipeline(devops_name_new, pipeline_name):
     """
@@ -198,8 +213,9 @@ def step_run_pipeline(devops_name_new, pipeline_name):
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha2/devops/' + devops_name_new + '/pipelines/' + pipeline_name + '/runs'
     data = {"parameters": []}
     r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
-    #返回运行结果中的某个字段
+    # 返回运行结果中的某个字段
     return r.json()['organization']
+
 
 @allure.step('验证流水线运行结果')
 def step_get_pipeline_status(devops_name_new, pipeline_name):
@@ -207,11 +223,13 @@ def step_get_pipeline_status(devops_name_new, pipeline_name):
     r = requests.get(url=url, headers=get_header())
     return r.json()['items'][0]['result']
 
+
 @allure.step('删除流水线')
 def step_delete_pipeline(devops_name_new, pipeline_name):
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name_new + '/pipelines/' + pipeline_name
     r = requests.delete(url=url, headers=get_header())
     return r.json()['message']
+
 
 @allure.feature('DevOps')
 class TestDevOps(object):
@@ -222,19 +240,19 @@ class TestDevOps(object):
     devops_name_new = ''
     ws_role_name = ws_name + '-viewer'
     devops_role_name = 'wx-devops-role'
-    log_format()  #配置日志格式
+    log_format()  # 配置日志格式
 
-    #所有用例执行之前执行该方法
+    # 所有用例执行之前执行该方法
     def setup_class(self):
-        commonFunction.create_user(self.user_name)  #创建一个用户
-        commonFunction.create_workspace(self.ws_name)  #创建一个企业空间
-        commonFunction.ws_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  #将创建的用户邀请到企业空间
+        commonFunction.create_user(self.user_name)  # 创建一个用户
+        commonFunction.create_workspace(self.ws_name)  # 创建一个企业空间
+        commonFunction.ws_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
         global devops_name_new
-        devops_name_new = step_create_devops(self.ws_name, self.devops_name)  #创建一个devops工程，并获取工程名称
+        devops_name_new = step_create_devops(self.ws_name, self.devops_name)  # 创建一个devops工程，并获取工程名称
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
-        step_delete_devops(ws_name=self.ws_name, devops_name=devops_name_new)  #删除创建的devops工程
+        step_delete_devops(ws_name=self.ws_name, devops_name=devops_name_new)  # 删除创建的devops工程
         commonFunction.delete_workspace(self.ws_name)  # 删除创建的工作空间
         commonFunction.delete_user(self.user_name)  # 删除创建的用户
 
@@ -247,13 +265,13 @@ class TestDevOps(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_devops(self):
         devops_name = 'test-devops'
-        #创建devops工程
+        # 创建devops工程
         result = step_create_devops(self.ws_name, devops_name)
-        #验证创建结果
+        # 验证创建结果
         assert devops_name in result
-        #删除创建的devops工程
+        # 删除创建的devops工程
         result1 = step_delete_devops(self.ws_name, devops_name=result)
-        #验证删除结果
+        # 验证删除结果
         assert result1 == 'success'
 
     @allure.story('devops项目')
@@ -285,19 +303,20 @@ class TestDevOps(object):
         # 验证查询结果
         assert result == 0
 
-
     @allure.story('流水线')
     @allure.title('通过图形界面创建、编辑、运行流水线,最后删除流水线')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_pipeline(self):
-        #创建流水线
-        result = step_create_pipline(devops_name=self.devops_name, devops_name_new=devops_name_new, pipline_name=self.pipline_name)
-        #验证创建成功
+        # 创建流水线
+        result = step_create_pipline(devops_name=self.devops_name, devops_name_new=devops_name_new,
+                                     pipline_name=self.pipline_name)
+        # 验证创建成功
         assert result == self.pipline_name
 
-        version, uid, creationTimestamp = step_get_pipeline_data(devops_name_new=devops_name_new, pipline_name=self.pipline_name)
+        version, uid, creationTimestamp = step_get_pipeline_data(devops_name_new=devops_name_new,
+                                                                 pipline_name=self.pipline_name)
 
-        #编辑jenkinsfile
+        # 编辑jenkinsfile
         """
         pipeline {
             agent any
@@ -312,36 +331,38 @@ class TestDevOps(object):
         """
         data = 'value=pipeline%20%7B%0A%20%20%20%20agent%20any%0A%20%20%20%20stages%20%7B%0A%20%20%20%20%20%20%20%20stage%28%27Example%27%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20steps%20%7B%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20echo%20%27Hello%20World%27%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D'
         data1 = {"metadata": {"name": self.pipline_name, "namespace": devops_name_new,
-                "selfLink":"/apis/devops.kubesphere.io/v1alpha3/namespaces/wx-devopshd5mq/pipelines/test-pipline",
-                "uid": uid, "resourceVersion": version, "generation": 2,
-                "creationTimestamp": creationTimestamp, "annotations": {"kubesphere.io/creator": "admin"},
-                "finalizers":["pipeline.finalizers.kubesphere.io"]},
-                "spec":{"type": "pipeline", "pipeline": {"name": self.pipline_name, "discarder": {"days_to_keep": "7","num_to_keep": "10"},
-                "jenkinsfile":"pipeline {\n    agent any\n    stages {\n        stage('Example') {\n            steps { \n                echo 'Hello World'\n            }\n        }\n    }\n}"}},
-                "status": {}, "kind": "Pipeline", "apiVersion": "devops.kubesphere.io/v1alpha3"}
+                              "selfLink": "/apis/devops.kubesphere.io/v1alpha3/namespaces/wx-devopshd5mq/pipelines/test-pipline",
+                              "uid": uid, "resourceVersion": version, "generation": 2,
+                              "creationTimestamp": creationTimestamp, "annotations": {"kubesphere.io/creator": "admin"},
+                              "finalizers": ["pipeline.finalizers.kubesphere.io"]},
+                 "spec": {"type": "pipeline", "pipeline": {"name": self.pipline_name,
+                                                           "discarder": {"days_to_keep": "7", "num_to_keep": "10"},
+                                                           "jenkinsfile": "pipeline {\n    agent any\n    stages {\n        stage('Example') {\n            steps { \n                echo 'Hello World'\n            }\n        }\n    }\n}"}},
+                 "status": {}, "kind": "Pipeline", "apiVersion": "devops.kubesphere.io/v1alpha3"}
         data2 = 'jenkinsfile=pipeline%20%7B%0A%20%20%20%20agent%20any%0A%20%20%20%20stages%20%7B%0A%20%20%20%20%20%20%20%20stage%28%27Example%27%29%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20steps%20%7B%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20echo%20%27Hello%20World%27%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%7D%0A%7D'
 
-        #checkScriptCompile
-        result = step_pipeline_checkScriptCompile(devops_name_new=devops_name_new, pipline_name=self.pipline_name, data=data)
-        #验证操作成功
+        # checkScriptCompile
+        result = step_pipeline_checkScriptCompile(devops_name_new=devops_name_new, pipline_name=self.pipline_name,
+                                                  data=data)
+        # 验证操作成功
         assert result == 'success'
-        #提交jenkinsfile
+        # 提交jenkinsfile
         result1 = step_edit_jenkinsfile(devops_name_new=devops_name_new, pipline_name=self.pipline_name, data=data1)
-        #验证操作成功
+        # 验证操作成功
         assert result1 == self.pipline_name
-        #tojson
+        # tojson
         result2 = step_pipeline_tojson(data=data2)
-        #验证操作结果
+        # 验证操作结果
         assert result2 == 'success'
-        #运行流水线
+        # 运行流水线
         result3 = step_run_pipeline(devops_name_new=devops_name_new, pipeline_name=self.pipline_name)
-        #验证操作结果
+        # 验证操作结果
         assert result3 == 'jenkins'
-        #验证流水线运行结果
-        time.sleep(20)  #等待流水线执行时间20s
+        # 验证流水线运行结果
+        time.sleep(20)  # 等待流水线执行时间20s
         result4 = step_get_pipeline_status(devops_name_new=devops_name_new, pipeline_name=self.pipline_name)
         assert result4 == 'SUCCESS'
-        #删除流水线
+        # 删除流水线
         result5 = step_delete_pipeline(devops_name_new=devops_name_new, pipeline_name=self.pipline_name)
         assert result5 == 'success'
 
@@ -349,14 +370,14 @@ class TestDevOps(object):
     @allure.title('编辑信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_modify_devopsinfo(self):
-        #获取devops的详细信息
+        # 获取devops的详细信息
         data = step_get_devopinfo(self.ws_name, devops_name_new)
         name = '我是别名'
         data['metadata']['annotations']['kubesphere.io/alias-name'] = name
         data['metadata']['annotations']['kubesphere.io/description'] = 'wobushi'
-        #修改devops的别名和描述信息
+        # 修改devops的别名和描述信息
         alias_name = step_modify_devinfo(self.ws_name, devops_name_new, data)
-        #校验修改后的别名
+        # 校验修改后的别名
         assert alias_name == name
 
     @allure.story('工程管理-凭证')
@@ -371,15 +392,16 @@ class TestDevOps(object):
 
         data = {"apiVersion": "v1", "kind": "Secret",
                 "metadata": {"namespace": devops_name_new,
-                "labels": {"app": name},
-                "annotations":{"kubesphere.io/description": description, "kubesphere.io/creator": "admin"},
-                "name": name},
+                             "labels": {"app": name},
+                             "annotations": {"kubesphere.io/description": description,
+                                             "kubesphere.io/creator": "admin"},
+                             "name": name},
                 "type": "credential.devops.kubesphere.io/basic-auth",
                 "data": {"username": username, "password": password
                          }
                 }
         r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
-        #验证新建的凭证的type
+        # 验证新建的凭证的type
         assert r.json()['type'] == 'credential.devops.kubesphere.io/basic-auth'
 
     @allure.story('工程管理-凭证')
@@ -393,7 +415,7 @@ class TestDevOps(object):
 
         data = {"apiVersion": "v1", "kind": "Secret",
                 "metadata": {"namespace": devops_name_new,
-                "labels": {"app": name}, "annotations": {"kubesphere.io/creator": "admin"}, "name":name},
+                             "labels": {"app": name}, "annotations": {"kubesphere.io/creator": "admin"}, "name": name},
                 "type": "credential.devops.kubesphere.io/ssh-auth",
                 "data": {"username": username, "private_key": private_key}}
         r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
@@ -410,7 +432,8 @@ class TestDevOps(object):
         secret = 'cXdlYXNk'
         data = {"apiVersion": "v1", "kind": "Secret",
                 "metadata": {"namespace": devops_name_new, "labels": {"app": name},
-                "annotations": {"kubesphere.io/description": description, "kubesphere.io/creator": "admin"}, "name": name},
+                             "annotations": {"kubesphere.io/description": description,
+                                             "kubesphere.io/creator": "admin"}, "name": name},
                 "type": "credential.devops.kubesphere.io/secret-text", "data": {"secret": secret}}
         r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
         # 验证新建的凭证的type
@@ -423,10 +446,13 @@ class TestDevOps(object):
         url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name_new + '/credentials'
         name = 'test3'
         description = '我是描述信息'
-        data = {"apiVersion": "v1", "kind": "Secret", "metadata": {"namespace": devops_name_new, "labels": {"app": name},
-                "annotations": {"kubesphere.io/description": description, "kubesphere.io/creator": "admin"}, "name": name},
+        data = {"apiVersion": "v1", "kind": "Secret",
+                "metadata": {"namespace": devops_name_new, "labels": {"app": name},
+                             "annotations": {"kubesphere.io/description": description,
+                                             "kubesphere.io/creator": "admin"}, "name": name},
                 "type": "credential.devops.kubesphere.io/kubeconfig",
-                "data": {"content": "YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIGNlcnRpZmljYXRlLWF1dGhvcml0eS1kYXRhOiBMUzB0TFMxQ1JVZEpUaUJEUlZKVVNVWkpRMEZVUlMwdExTMHRDazFKU1VONVJFTkRRV0pEWjBGM1NVSkJaMGxDUVVSQlRrSm5hM0ZvYTJsSE9YY3dRa0ZSYzBaQlJFRldUVkpOZDBWUldVUldVVkZFUlhkd2NtUlhTbXdLWTIwMWJHUkhWbnBOUWpSWVJGUkplRTFFUlhkT1ZFRjVUWHBKZVU1R2IxaEVWRTE0VFVSRmQwMTZRWGxOZWtsNVRrWnZkMFpVUlZSTlFrVkhRVEZWUlFwQmVFMUxZVE5XYVZwWVNuVmFXRkpzWTNwRFEwRlRTWGRFVVZsS1MyOWFTV2gyWTA1QlVVVkNRbEZCUkdkblJWQkJSRU5EUVZGdlEyZG5SVUpCUzBaaENuaEpVRFJOZWxoNksxRjBTMUYwT0hRNWRVRjNiR05hU1VSMFVXUjBRekl2TVdoRFIyWjZjVEpSTkN0VEwwSndiamxaVG1kblZFeDJXR3hVTjBkNmVGWUtkRk56TjFsRVNsbHFaak5pYUhsNmFHWjNXazVIWmtGU2MwUk9NazVRWVVaRE1XcEhNMmxCV2tOWUwwTldWblY2WXpsV1YzbzFRMjhyUlhsR0wxUjJlQXB2Y0RaMWIzUmhXR2syYlM5emVVWk5SMVExY1RablVIaDFSSE51YWpaaFNIaFJWRkEzVDB0S1dFcGhPRGdyUVVSVGFUTkhNMDFZVEd0YWRuWnZNVlpoQ2xKcVZtVnRhRTU1TDBSNWIxbE9ORWRKUkN0eE5sZzFLemRVUVZGNWRtTTBaV3BNZUdGVk5HSk9WRzl6ZEhCb1lUZEZjWE5XVHk5ak5qTkpRWGQ1VFhRS09YVkVUVUppYTJkbGRHWlJhVUp6Y0dKVWRVeEhSbWN5UW1OamMyVnFaalJ3V0haaFZtaG5WMnhTVXpOWWIyMDVXU3R0VW5oM2EwaFRZa3BoZEdwdk5ncFNZUzlXTkVWVVVEQjZXSE0xTjJSdmFVY3dRMEYzUlVGQllVMXFUVU5GZDBSbldVUldVakJRUVZGSUwwSkJVVVJCWjB0clRVRTRSMEV4VldSRmQwVkNDaTkzVVVaTlFVMUNRV1k0ZDBSUldVcExiMXBKYUhaalRrRlJSVXhDVVVGRVoyZEZRa0ZKSzFOcWIwOTVMMlpzVGpacVdtMWxRVWg2WlhOUmFuaG5NM01LZWpjMGNtaHZTMmswYVRFeVdDOVBORzFCY0hGc1RtRTBZV1pFVERKV1N6RTVjbVpIZDNaSVYwMW1TalJaU1d0ak5VczFjMHRzU21SblJuRXlaRnBFTVFwSU56WlZkakowVTAxdGNVOXJWVlZDY1RWQkwydHhPWFZ2YUhwMGNGTTJSM3BVUTFVNEwza3hZMHRWYWpoMWJETjZhVVpvSzJKSmMzaHRWa1pxWmpaVENsWjNZbWQ2WlRZd09XTTVaelJNVkZWUVJHWmFkVGxSTWpaaWJtWXdLM3BwWVZjMGVYTlBibWhzYXl0b1RGUm1UM0ZGT1UxSVRYVnVVbTh5SzJwVFdqRUtlWEF6WTNwbVRrRklSM3BDZUU1SFZUWmtja1I0ZVhZNVUzRTFaa1ZaVEhsS05FRTFiSEUxTlVaeFdVRlBWV1F4U3pkRlJXUmtSbFpPUmtaRVdtZE9SZ3BOYkhjMFMwWlRkVGxJTkVWNVFrMVVOa3BRVUUxaE1saG1WemwyU1ROUFZIbEJLeTlxYlhOS2MyaHFaMlJpU0dVcmJUaGtiVnBRZW00elVUMEtMUzB0TFMxRlRrUWdRMFZTVkVsR1NVTkJWRVV0TFMwdExRbz0KICAgIHNlcnZlcjogaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjCiAgbmFtZToga3ViZXJuZXRlcwpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3Rlcjoga3ViZXJuZXRlcwogICAgbmFtZXNwYWNlOiBkZWZhdWx0CiAgICB1c2VyOiBhZG1pbgogIG5hbWU6IGFkbWluQGt1YmVybmV0ZXMKY3VycmVudC1jb250ZXh0OiBhZG1pbkBrdWJlcm5ldGVzCmtpbmQ6IENvbmZpZwpwcmVmZXJlbmNlczoge30KdXNlcnM6Ci0gbmFtZTogYWRtaW4KICB1c2VyOgogICAgdG9rZW46IGV5SmhiR2NpT2lKU1V6STFOaUlzSW10cFpDSTZJblE1YmpoMlJqWlNhSEJpYm01QlZsQjBZVU10TWw4d04xTTVRMjFVZVd0ellqWXliMmxRU1ZWb2NVVWlmUS5leUpwYzNNaU9pSnJkV0psY201bGRHVnpMM05sY25acFkyVmhZMk52ZFc1MElpd2lhM1ZpWlhKdVpYUmxjeTVwYnk5elpYSjJhV05sWVdOamIzVnVkQzl1WVcxbGMzQmhZMlVpT2lKcmRXSmxjM0JvWlhKbExYTjVjM1JsYlNJc0ltdDFZbVZ5Ym1WMFpYTXVhVzh2YzJWeWRtbGpaV0ZqWTI5MWJuUXZjMlZqY21WMExtNWhiV1VpT2lKcmRXSmxjM0JvWlhKbExYUnZhMlZ1TFRSa2JqZHJJaXdpYTNWaVpYSnVaWFJsY3k1cGJ5OXpaWEoyYVdObFlXTmpiM1Z1ZEM5elpYSjJhV05sTFdGalkyOTFiblF1Ym1GdFpTSTZJbXQxWW1WemNHaGxjbVVpTENKcmRXSmxjbTVsZEdWekxtbHZMM05sY25acFkyVmhZMk52ZFc1MEwzTmxjblpwWTJVdFlXTmpiM1Z1ZEM1MWFXUWlPaUkzTm1JMFltWXpPQzAyTURoa0xUUmtPV1V0T1dZeU9DMHpaVE5rTm1ReFptSmtZekVpTENKemRXSWlPaUp6ZVhOMFpXMDZjMlZ5ZG1salpXRmpZMjkxYm5RNmEzVmlaWE53YUdWeVpTMXplWE4wWlcwNmEzVmlaWE53YUdWeVpTSjkuR1VGOW1GYzlkQWpLdm5MMDNOMHlLWlNtUk1IT2VWQlBhUTBpT0xBYTZ6Zl9ZbmN6TmpmTHJvU2txWVNGdU1WSDdXSTNYejQ2QWdLalBKZXA0NGtHbTVQbVE3MldHY2hwTkhuek82TGNWUkhQMV9TZDBqUDVKRDdKaktMN1ZyQ3lQb2l6b2VFMi1EM3V5QWxybXN1cGV0bnJWYVM1OVctcXkzZ1pWdGt1Z1BHQ2NBcGlMOHp0M2xsVC03dVlWN1RWcEFIUkFCTEQ2eFJSM3gxdnk5N3NUTXl4S2NoRjMxa3M3a0ZUdmJkRHZjeV93ZUtoWm5RTmRWWkllNDQwTktLYmFpRHotS3dzRks4UzZzMzZpRkowdWwyd1NTaWZCcG96aENmY2JIMGV4NTZkTFZyVFlMRWFoS2JWTEJSbUpDRGZUbTUzY2VndXExYXlNZUVuUTBkQU5nCg=="}}
+                "data": {
+                    "content": "YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIGNlcnRpZmljYXRlLWF1dGhvcml0eS1kYXRhOiBMUzB0TFMxQ1JVZEpUaUJEUlZKVVNVWkpRMEZVUlMwdExTMHRDazFKU1VONVJFTkRRV0pEWjBGM1NVSkJaMGxDUVVSQlRrSm5hM0ZvYTJsSE9YY3dRa0ZSYzBaQlJFRldUVkpOZDBWUldVUldVVkZFUlhkd2NtUlhTbXdLWTIwMWJHUkhWbnBOUWpSWVJGUkplRTFFUlhkT1ZFRjVUWHBKZVU1R2IxaEVWRTE0VFVSRmQwMTZRWGxOZWtsNVRrWnZkMFpVUlZSTlFrVkhRVEZWUlFwQmVFMUxZVE5XYVZwWVNuVmFXRkpzWTNwRFEwRlRTWGRFVVZsS1MyOWFTV2gyWTA1QlVVVkNRbEZCUkdkblJWQkJSRU5EUVZGdlEyZG5SVUpCUzBaaENuaEpVRFJOZWxoNksxRjBTMUYwT0hRNWRVRjNiR05hU1VSMFVXUjBRekl2TVdoRFIyWjZjVEpSTkN0VEwwSndiamxaVG1kblZFeDJXR3hVTjBkNmVGWUtkRk56TjFsRVNsbHFaak5pYUhsNmFHWjNXazVIWmtGU2MwUk9NazVRWVVaRE1XcEhNMmxCV2tOWUwwTldWblY2WXpsV1YzbzFRMjhyUlhsR0wxUjJlQXB2Y0RaMWIzUmhXR2syYlM5emVVWk5SMVExY1RablVIaDFSSE51YWpaaFNIaFJWRkEzVDB0S1dFcGhPRGdyUVVSVGFUTkhNMDFZVEd0YWRuWnZNVlpoQ2xKcVZtVnRhRTU1TDBSNWIxbE9ORWRKUkN0eE5sZzFLemRVUVZGNWRtTTBaV3BNZUdGVk5HSk9WRzl6ZEhCb1lUZEZjWE5XVHk5ak5qTkpRWGQ1VFhRS09YVkVUVUppYTJkbGRHWlJhVUp6Y0dKVWRVeEhSbWN5UW1OamMyVnFaalJ3V0haaFZtaG5WMnhTVXpOWWIyMDVXU3R0VW5oM2EwaFRZa3BoZEdwdk5ncFNZUzlXTkVWVVVEQjZXSE0xTjJSdmFVY3dRMEYzUlVGQllVMXFUVU5GZDBSbldVUldVakJRUVZGSUwwSkJVVVJCWjB0clRVRTRSMEV4VldSRmQwVkNDaTkzVVVaTlFVMUNRV1k0ZDBSUldVcExiMXBKYUhaalRrRlJSVXhDVVVGRVoyZEZRa0ZKSzFOcWIwOTVMMlpzVGpacVdtMWxRVWg2WlhOUmFuaG5NM01LZWpjMGNtaHZTMmswYVRFeVdDOVBORzFCY0hGc1RtRTBZV1pFVERKV1N6RTVjbVpIZDNaSVYwMW1TalJaU1d0ak5VczFjMHRzU21SblJuRXlaRnBFTVFwSU56WlZkakowVTAxdGNVOXJWVlZDY1RWQkwydHhPWFZ2YUhwMGNGTTJSM3BVUTFVNEwza3hZMHRWYWpoMWJETjZhVVpvSzJKSmMzaHRWa1pxWmpaVENsWjNZbWQ2WlRZd09XTTVaelJNVkZWUVJHWmFkVGxSTWpaaWJtWXdLM3BwWVZjMGVYTlBibWhzYXl0b1RGUm1UM0ZGT1UxSVRYVnVVbTh5SzJwVFdqRUtlWEF6WTNwbVRrRklSM3BDZUU1SFZUWmtja1I0ZVhZNVUzRTFaa1ZaVEhsS05FRTFiSEUxTlVaeFdVRlBWV1F4U3pkRlJXUmtSbFpPUmtaRVdtZE9SZ3BOYkhjMFMwWlRkVGxJTkVWNVFrMVVOa3BRVUUxaE1saG1WemwyU1ROUFZIbEJLeTlxYlhOS2MyaHFaMlJpU0dVcmJUaGtiVnBRZW00elVUMEtMUzB0TFMxRlRrUWdRMFZTVkVsR1NVTkJWRVV0TFMwdExRbz0KICAgIHNlcnZlcjogaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjCiAgbmFtZToga3ViZXJuZXRlcwpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3Rlcjoga3ViZXJuZXRlcwogICAgbmFtZXNwYWNlOiBkZWZhdWx0CiAgICB1c2VyOiBhZG1pbgogIG5hbWU6IGFkbWluQGt1YmVybmV0ZXMKY3VycmVudC1jb250ZXh0OiBhZG1pbkBrdWJlcm5ldGVzCmtpbmQ6IENvbmZpZwpwcmVmZXJlbmNlczoge30KdXNlcnM6Ci0gbmFtZTogYWRtaW4KICB1c2VyOgogICAgdG9rZW46IGV5SmhiR2NpT2lKU1V6STFOaUlzSW10cFpDSTZJblE1YmpoMlJqWlNhSEJpYm01QlZsQjBZVU10TWw4d04xTTVRMjFVZVd0ellqWXliMmxRU1ZWb2NVVWlmUS5leUpwYzNNaU9pSnJkV0psY201bGRHVnpMM05sY25acFkyVmhZMk52ZFc1MElpd2lhM1ZpWlhKdVpYUmxjeTVwYnk5elpYSjJhV05sWVdOamIzVnVkQzl1WVcxbGMzQmhZMlVpT2lKcmRXSmxjM0JvWlhKbExYTjVjM1JsYlNJc0ltdDFZbVZ5Ym1WMFpYTXVhVzh2YzJWeWRtbGpaV0ZqWTI5MWJuUXZjMlZqY21WMExtNWhiV1VpT2lKcmRXSmxjM0JvWlhKbExYUnZhMlZ1TFRSa2JqZHJJaXdpYTNWaVpYSnVaWFJsY3k1cGJ5OXpaWEoyYVdObFlXTmpiM1Z1ZEM5elpYSjJhV05sTFdGalkyOTFiblF1Ym1GdFpTSTZJbXQxWW1WemNHaGxjbVVpTENKcmRXSmxjbTVsZEdWekxtbHZMM05sY25acFkyVmhZMk52ZFc1MEwzTmxjblpwWTJVdFlXTmpiM1Z1ZEM1MWFXUWlPaUkzTm1JMFltWXpPQzAyTURoa0xUUmtPV1V0T1dZeU9DMHpaVE5rTm1ReFptSmtZekVpTENKemRXSWlPaUp6ZVhOMFpXMDZjMlZ5ZG1salpXRmpZMjkxYm5RNmEzVmlaWE53YUdWeVpTMXplWE4wWlcwNmEzVmlaWE53YUdWeVpTSjkuR1VGOW1GYzlkQWpLdm5MMDNOMHlLWlNtUk1IT2VWQlBhUTBpT0xBYTZ6Zl9ZbmN6TmpmTHJvU2txWVNGdU1WSDdXSTNYejQ2QWdLalBKZXA0NGtHbTVQbVE3MldHY2hwTkhuek82TGNWUkhQMV9TZDBqUDVKRDdKaktMN1ZyQ3lQb2l6b2VFMi1EM3V5QWxybXN1cGV0bnJWYVM1OVctcXkzZ1pWdGt1Z1BHQ2NBcGlMOHp0M2xsVC03dVlWN1RWcEFIUkFCTEQ2eFJSM3gxdnk5N3NUTXl4S2NoRjMxa3M3a0ZUdmJkRHZjeV93ZUtoWm5RTmRWWkllNDQwTktLYmFpRHotS3dzRks4UzZzMzZpRkowdWwyd1NTaWZCcG96aENmY2JIMGV4NTZkTFZyVFlMRWFoS2JWTEJSbUpDRGZUbTUzY2VndXExYXlNZUVuUTBkQU5nCg=="}}
 
         r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
         # 验证新建的凭证的type
@@ -436,10 +462,10 @@ class TestDevOps(object):
     @allure.title('精确查询存在的凭证')
     @allure.severity(allure.severity_level.NORMAL)
     def test_search_credential(self):
-        #查询之前用例创建的SSH凭证
+        # 查询之前用例创建的SSH凭证
         condition = 'test1'
         result = step_search_credential(devops_name=devops_name_new, condition=condition)
-        #校验查询结果
+        # 校验查询结果
         assert result == condition
 
     @allure.story('工程管理-凭证')
@@ -465,9 +491,9 @@ class TestDevOps(object):
     @allure.story('工程管理-凭证')
     @allure.title('删除凭证')
     def test_delete_credential(self):
-        #获取所有的凭证名称
+        # 获取所有的凭证名称
         names = step_get_credentials_name(devops_name=devops_name_new)
-        #删除所有的凭证
+        # 删除所有的凭证
         for i in names:
             result = step_delete_credential(devops_name=devops_name_new, credential_name=i)
             assert result == 'success'
@@ -479,7 +505,7 @@ class TestDevOps(object):
     def test_devops_role_all(self):
         url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new + '/roles?sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
         r = requests.get(url, headers=get_header())
-        assert r.json()['totalItems'] == 3  #验证初始的角色数量为3
+        assert r.json()['totalItems'] == 3  # 验证初始的角色数量为3
 
     @allure.story('工程管理-工程角色')
     @allure.title('查找devops工程指定的角色')
@@ -487,7 +513,7 @@ class TestDevOps(object):
     def test_devops_role_one(self):
         url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new + '/roles?name=viewer&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
         r = requests.get(url, headers=get_header())
-        assert r.json()['items'][0]['metadata']['name'] == 'viewer'  #验证查询的角色结果为viewer
+        assert r.json()['items'][0]['metadata']['name'] == 'viewer'  # 验证查询的角色结果为viewer
 
     @allure.story('工程管理-工程角色')
     @allure.title('查找devops工程中不存在的角色')
@@ -495,7 +521,7 @@ class TestDevOps(object):
     def test_devops_role_none(self):
         url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new + '/roles?name=wx-viewer&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
         r = requests.get(url, headers=get_header())
-        assert r.json()['totalItems'] == 0  #验证查询到的结果为空
+        assert r.json()['totalItems'] == 0  # 验证查询到的结果为空
 
     @allure.story('工程管理-工程角色')
     @allure.title('模糊查找devops工程中的角色')
@@ -503,8 +529,8 @@ class TestDevOps(object):
     def test_devops_role_fuzzy(self):
         url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new + '/roles?name=a&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
         r = requests.get(url, headers=get_header())
-        assert r.json()['totalItems'] == 2  #验证查询到的结果数量为2
-        #验证查找到的角色
+        assert r.json()['totalItems'] == 2  # 验证查询到的结果数量为2
+        # 验证查找到的角色
         assert r.json()['items'][0]['metadata']['name'] == 'operator'
         assert r.json()['items'][1]['metadata']['name'] == 'admin'
 
@@ -512,27 +538,25 @@ class TestDevOps(object):
     @allure.title('在devops工程中创建角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_role_create(self):
-
         url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + devops_name_new + '/roles'
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
                 "metadata": {"namespace": devops_name_new,
-                            "name": self.devops_role_name,
-                            "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
-                                                                                   "\"role-template-view-credentials\","
-                                                                                   "\"role-template-view-basic\"]",
-                                            "kubesphere.io/creator": "admin"}
+                             "name": self.devops_role_name,
+                             "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
+                                                                                    "\"role-template-view-credentials\","
+                                                                                    "\"role-template-view-basic\"]",
+                                             "kubesphere.io/creator": "admin"}
                              },
                 "rules": []
                 }
         r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        assert r.json()['metadata']['name'] == self.devops_role_name  #验证新建的角色名称
+        assert r.json()['metadata']['name'] == self.devops_role_name  # 验证新建的角色名称
 
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中创建角色-角色名称为空')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_role_create_name_none(self):
-
         url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + devops_name_new + '/roles'
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
@@ -546,10 +570,10 @@ class TestDevOps(object):
                 "rules": []
                 }
         r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        #验证创建角色失败的异常提示信息
+        # 验证创建角色失败的异常提示信息
         assert r.text.strip() == 'Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required'
 
-    #以下4条用例的执行结果应当为false。接口没有对角色的名称做限制
+    # 以下4条用例的执行结果应当为false。接口没有对角色的名称做限制
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中创建角色-名称中包含大写字母')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -637,40 +661,40 @@ class TestDevOps(object):
         url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + devops_name_new + '/roles/' + self.devops_role_name
         data = {"metadata":
                     {"name": "wx-devops-role",
-                            "namespace": devops_name_new,
-                            "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
-                                                                                 "\"role-template-view-credentials\","
-                                                                                 "\"role-template-view-basic\"]",
-                                           "kubesphere.io/creator": "admin",
-                                           "kubesphere.io/alias-name": "我是别名",
-                                           "kubesphere.io/description": "我是描述信息"}
-                    }
+                     "namespace": devops_name_new,
+                     "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
+                                                                            "\"role-template-view-credentials\","
+                                                                            "\"role-template-view-basic\"]",
+                                     "kubesphere.io/creator": "admin",
+                                     "kubesphere.io/alias-name": "我是别名",
+                                     "kubesphere.io/description": "我是描述信息"}
+                     }
                 }
         r = requests.patch(url, headers=get_header(), data=json.dumps(data))
-        assert r.json()['metadata']['annotations']['kubesphere.io/alias-name'] == '我是别名'  #验证修改后的别名
-        assert r.json()['metadata']['annotations']['kubesphere.io/description'] == '我是描述信息'  #验证修改后的描述信息
+        assert r.json()['metadata']['annotations']['kubesphere.io/alias-name'] == '我是别名'  # 验证修改后的别名
+        assert r.json()['metadata']['annotations']['kubesphere.io/description'] == '我是描述信息'  # 验证修改后的描述信息
 
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中编辑角色的权限信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_role_edit_authority(self):
-        #获取角色的resourceVersion
+        # 获取角色的resourceVersion
         resourceVersion = commonFunction.get_devops_resourceVersion(devops_name_new, 'wx-devops-role')
-        #编辑觉得的权限
+        # 编辑觉得的权限
         authority = '["role-template-view-pipelines","role-template-view-credentials","role-template-view-basic","role-template-manage-pipelines"]'
         url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + devops_name_new + '/roles/' + self.devops_role_name
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
                 "metadata": {"name": "wx-devops-role",
-                                          "namespace": devops_name_new,
+                             "namespace": devops_name_new,
                              "annotations": {"iam.kubesphere.io/aggregation-roles": authority,
-                                            "kubesphere.io/alias-name": "我是别名",
-                                            "kubesphere.io/creator": "admin",
-                                            "kubesphere.io/description": "我是描述信息"},
+                                             "kubesphere.io/alias-name": "我是别名",
+                                             "kubesphere.io/creator": "admin",
+                                             "kubesphere.io/description": "我是描述信息"},
                              "resourceVersion": resourceVersion}
                 }
         r = requests.put(url, headers=get_header(), data=json.dumps(data))
-        assert r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority  #验证修改后的权限信息
+        assert r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority  # 验证修改后的权限信息
 
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中删除角色')
@@ -684,36 +708,36 @@ class TestDevOps(object):
     @allure.title('查看devops工程默认的所有用户')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_user_all(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new +'/members?sortBy=createTime&limit=10'
+        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new + '/members?sortBy=createTime&limit=10'
         r = requests.get(url, headers=get_header())
-        assert r.json()['items'][0]['metadata']['name'] == 'admin'  #验证默认的用户仅有admin
+        assert r.json()['items'][0]['metadata']['name'] == 'admin'  # 验证默认的用户仅有admin
 
     @allure.story('工程管理-工程成员')
     @allure.title('查找devops工程指定的用户')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_user_one(self):
         user_condition = 'admin'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new +'/members?name=' + user_condition + '&sortBy=createTime&limit=10'
+        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new + '/members?name=' + user_condition + '&sortBy=createTime&limit=10'
         r = requests.get(url, headers=get_header())
-        assert r.json()['items'][0]['metadata']['name'] == 'admin'  #验证查找的结果为admin
+        assert r.json()['items'][0]['metadata']['name'] == 'admin'  # 验证查找的结果为admin
 
     @allure.story('工程管理-工程成员')
     @allure.title('模糊查找devops工程的用户')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_user_fuzzy(self):
         user_condition = 'ad'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new +'/members?name=' + user_condition + '&sortBy=createTime&limit=10'
+        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new + '/members?name=' + user_condition + '&sortBy=createTime&limit=10'
         r = requests.get(url, headers=get_header())
-        assert r.json()['items'][0]['metadata']['name'] == 'admin'  #验证查找的结果为admin
+        assert r.json()['items'][0]['metadata']['name'] == 'admin'  # 验证查找的结果为admin
 
     @allure.story('工程管理-工程成员')
     @allure.title('查找devops工程不存在的用户')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_user_none(self):
         user_condition = 'wx-ad'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new +'/members?name=' + user_condition + '&sortBy=createTime&limit=10'
+        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new + '/members?name=' + user_condition + '&sortBy=createTime&limit=10'
         r = requests.get(url, headers=get_header())
-        assert r.json()['totalItems'] == 0  #验证查找的结果为空
+        assert r.json()['totalItems'] == 0  # 验证查找的结果为空
 
     @allure.story('工程管理-工程成员')
     @allure.title('邀请用户到devops工程')
@@ -723,9 +747,9 @@ class TestDevOps(object):
         data = [{"username": self.user_name,
                  "roleRef": "viewer"}]
         r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        assert r.json()[0]['username'] == self.user_name  #验证邀请后的用户名称
+        assert r.json()[0]['username'] == self.user_name  # 验证邀请后的用户名称
 
-    #用例的执行结果应当为false。接口没有对不存在的用户做限制
+    # 用例的执行结果应当为false。接口没有对不存在的用户做限制
     @allure.story('工程管理-工程成员')
     @allure.title('邀请不存在的用户到devops工程')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -744,7 +768,7 @@ class TestDevOps(object):
         data = {"username": self.user_name,
                 "roleRef": "operator"}
         r = requests.put(url, headers=get_header(), data=json.dumps(data))
-        assert r.json()['roleRef'] == 'operator'  #验证修改后的用户角色
+        assert r.json()['roleRef'] == 'operator'  # 验证修改后的用户角色
 
     @allure.story('工程管理-工程成员')
     @allure.title('删除devops工程的成员')
@@ -752,10 +776,8 @@ class TestDevOps(object):
     def test_devops_delete_user(self):
         url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name_new + '/members/' + self.user_name
         r = requests.delete(url, headers=get_header())
-        assert r.json()['message'] == 'success'  #验证删除成功
+        assert r.json()['message'] == 'success'  # 验证删除成功
 
 
 if __name__ == "__main__":
     pytest.main(['-s', 'testDevops.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
-
-
