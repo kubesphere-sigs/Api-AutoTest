@@ -3,6 +3,8 @@ import json
 import random
 from config import config
 from common.getHeader import get_header
+import time
+import datetime
 
 
 # 创建系统用户
@@ -306,3 +308,34 @@ def get_app_category():
 def get_random():
     num = random.randint(1, 1000000)
     return num
+
+
+# 获取x分钟之前的10位时间戳
+def get_before_timestamp(minutes):
+    """
+    :return: 多少分钟之前的10位时间戳
+    :param minutes: 需要计算多少分钟之前的时间戳
+    """
+    # 获取当前时间
+    now = datetime.datetime.now()
+    now_reduce = now - datetime.timedelta(minutes=minutes)
+    # 转换成时间数组
+    timeArray = time.strptime(str(now_reduce)[0:19], "%Y-%m-%d %H:%M:%S")
+    # 转换成时间戳
+    before_timestamp = str(time.mktime(timeArray))[0:10]
+    return before_timestamp
+
+
+# 获取集群的所有服务组件
+def get_components_of_cluster():
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/components'
+    response = requests.get(url=url, headers=get_header())
+    namespaces = []
+    try:
+        for i in range(0, 100):
+            namespaces.append(response.json()[i]['namespace'])
+    except Exception as e:
+        print(e)
+    # 将list转换为set，以达到去重的目的，然后再转换为list。(ps：set是无序的，所以转换为list后的顺序和接口返回的namespaces的顺序不一致)
+    return list(set(namespaces))
+
