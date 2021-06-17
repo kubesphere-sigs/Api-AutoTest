@@ -88,8 +88,8 @@ def step_delete_app(ws_name, project_name, cluster_id):
 
 @allure.step('获取appstore中应用的app_id')
 def step_get_app_id():
-    url = config.url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D2&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
-    url2 = config.url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+    url = config.url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D2&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+    url2 = config.url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
     r = requests.get(url, headers=get_header())  # 获取app的id和name，将其组合成一个字典
     r2 = requests.get(url2, headers=get_header())  # 获取app的id和name，将其组合成一个字典
     item_name = []
@@ -282,3 +282,6 @@ class TestAppStore(object):
 
 if __name__ == "__main__":
     pytest.main(['-vs', 'testAppStore.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
+
+
+
