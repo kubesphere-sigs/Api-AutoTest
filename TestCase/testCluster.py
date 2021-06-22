@@ -310,6 +310,83 @@ def step_set_default_storage_class(name, set):
     return response
 
 
+@allure.step('获取集群组件的健康情况')
+def step_get_component_health():
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/componenthealth'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查询集群的监控的信息')
+def step_get_metrics_of_cluster(start_time, end_time, step, times):
+    url = config.url + '/kapis/monitoring.kubesphere.io/v1alpha3/cluster?start=' + start_time + '&end=' + end_time + \
+          '&step=' + step + '&times=' + times + '&metrics_filter=cluster_cpu_usage%7Ccluster_cpu_total' \
+                                                '%7Ccluster_cpu_utilisation%7Ccluster_memory_usage_wo_cache%7Ccluster_memory_total%7C' \
+                                                'cluster_memory_utilisation%7Ccluster_disk_size_usage%7Ccluster_disk_size_capacity%7C' \
+                                                'cluster_disk_size_utilisation%7Ccluster_pod_running_count%7Ccluster_pod_quota%24'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查询apiserver的监控信息')
+def step_get_metrics_of_apiserver(start_time, end_time, step, times):
+    url = config.url + '/kapis/monitoring.kubesphere.io/v1alpha3/components/apiserver?start=' + start_time + \
+          '&end=' + end_time + '&step=' + step + '&times=' + times + '&metrics_filter=apiserver_request_latencies%7C' \
+                                                                     'apiserver_request_by_verb_latencies%7Capiserver_request_rate%24'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查询scheduler的监控信息')
+def step_get_metrics_of_scheduler(start_time, end_time, step, times):
+    url = config.url + '/kapis/monitoring.kubesphere.io/v1alpha3/components/scheduler?start=' + start_time + \
+          '&end=' + end_time + '&step=' + step + '&times=' + times + '&metrics_filter=scheduler_schedule_attempts%7C' \
+                                                                     'scheduler_schedule_attempt_rate%24'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查询集群的 node usage ranking信息')
+def step_get_node_usage_rank(sort):
+    url = config.url + '/kapis/monitoring.kubesphere.io/v1alpha3/nodes?type=rank&' \
+                       'metrics_filter=node_cpu_utilisation%7Cnode_cpu_usage%7Cnode_cpu_total%7Cnode_memory_utilisation%7C' \
+                       'node_memory_usage_wo_cache%7Cnode_memory_total%7Cnode_disk_size_utilisation%7Cnode_disk_size_usage%7C' \
+                       'node_disk_size_capacity%7Cnode_pod_utilisation%7Cnode_pod_running_count%7Cnode_pod_quota%7C' \
+                       'node_disk_inode_utilisation%7Cnode_disk_inode_total%7Cnode_disk_inode_usage%7Cnode_load1%24&sort_type=desc&' \
+                       'sort_metric=' + sort
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查询集群资源使用情况')
+def step_get_resource_usage_of_cluster(start_time, end_time, step, times):
+    url = config.url + '/kapis/monitoring.kubesphere.io/v1alpha3/cluster?start=' + start_time + '&end=' + end_time + \
+          '&step=' + step + '&times=' + times + \
+          '&metrics_filter=cluster_cpu_usage%7Ccluster_memory_usage_wo_cache%7Ccluster_disk_size_usage%24'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查询集群应用资源用量')
+def step_get_app_usage_of_cluster(start_time, end_time, step, times):
+    url = config.url + '/kapis/monitoring.kubesphere.io/v1alpha3/cluster?start=' + start_time + '&end=' + end_time + \
+          '&step=' + step + '&times=' + times + \
+          '&metrics_filter=cluster_deployment_count%7Ccluster_statefulset_count%7Ccluster_daemonset_count%7C' \
+          'cluster_job_count%7Ccluster_cronjob_count%7Ccluster_pvc_count%7Ccluster_service_count%7C' \
+          'cluster_ingresses_extensions_count%7Ccluster_pod_running_count%24'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查询集群项目变化趋势')
+def step_get_project_trend_of_cluster(start_time, end_time, step, times):
+    url = config.url + '/kapis/monitoring.kubesphere.io/v1alpha3/cluster' \
+          '?start=' + start_time + '&end=' + end_time + '&step=' + step + '&times=' + times + \
+          '&metrics_filter=cluster_namespace_count%24'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
 @allure.feature('集群管理')
 class TestCluster(object):
     # 从文件中读取用例信息
@@ -1088,7 +1165,7 @@ class TestCluster(object):
         # 验证集群的容器数量等于每个项目的容器数之和
         assert count == pod_counts
 
-    @allure.title('{type}')
+    @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('story, type, title',
                              [('配置中心', 'secrets', '按名称精确查询存在的密钥'),
@@ -1360,3 +1437,167 @@ class TestCluster(object):
         result = r.json()['metadata']['annotations']['storageclass.kubernetes.io/is-default-class']
         # 验证结果为true
         assert result == 'true'
+
+    @allure.story('监控&告警')
+    @allure.title('查看组件的运行状态并验证组件均健康运行')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_component_health(self):
+        # 获取组件的健康状况
+        response = step_get_component_health()
+        for i in range(0, 25):
+            try:
+                # 获取每个组件的totalBackends
+                totalBackends = response.json()['kubesphereStatus'][i]['totalBackends']
+                # 获取每个组件的healthyBackends
+                healthyBackends = response.json()['kubesphereStatus'][i]['healthyBackends']
+                # 验证 totalBackends=healthyBackends
+                assert totalBackends == healthyBackends
+            except Exception as e:
+                print(e)
+
+    @allure.story('监控&告警')
+    @allure.title('查看组件的运行状态并验证组件均健康运行')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_node_health(self):
+        # 查询节点的健康状况
+        response = step_get_component_health()
+        # 获取集群的totalNodes
+        totalNodes = response.json()['nodeStatus']['totalNodes']
+        # 获取集群的healthyNodes
+        healthyNodes = response.json()['nodeStatus']['healthyNodes']
+        # 验证totalNodes = healthyNodes
+        assert totalNodes == healthyNodes
+
+    @allure.story('监控&告警')
+    @allure.title('查看集群的监控信息')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_cluster_metrics(self):
+        # 获取当前时间的10位时间戳
+        now_timestamp = str(time.time())[0:10]
+        # 获取210分钟之前的时间戳
+        before_timestamp = commonFunction.get_before_timestamp(210)
+        # 查询集群的最近210分钟的监控信息
+        response = step_get_metrics_of_cluster(before_timestamp, now_timestamp, '300s', '100')
+        # 获取查询结果的数据类型
+        for i in range(0, 10):
+            try:
+                result_type = response.json()['results'][i]['data']['resultType']
+                # 验证数据类型为matrix
+                assert result_type == 'matrix'
+            except Exception as e:
+                print(e)
+
+    @allure.story('监控&告警')
+    @allure.title('查看apiserver的监控信息')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_apiserver_metrics(self):
+        # 获取当前时间的10位时间戳
+        now_timestamp = str(time.time())[0:10]
+        # 获取240分钟之前的时间戳
+        before_timestamp = commonFunction.get_before_timestamp(240)
+        # 查询集群的最近240分钟的监控信息
+        response = step_get_metrics_of_apiserver(before_timestamp, now_timestamp, '300s', '100')
+        # 获取查询结果的数据类型
+        for i in range(0, 3):
+            try:
+                result_type = response.json()['results'][i]['data']['resultType']
+                # 验证数据类型为matrix
+                assert result_type == 'matrix'
+            except Exception as e:
+                print(e)
+
+    @allure.story('监控&告警')
+    @allure.title('查看schedule的监控信息')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_schedule_metrics(self):
+        # 获取当前时间的10位时间戳
+        now_timestamp = str(time.time())[0:10]
+        # 获取240分钟之前的时间
+        before_timestamp = commonFunction.get_before_timestamp(240)
+        # 查询集群的最近240分钟的监控信息
+        response = step_get_metrics_of_scheduler(before_timestamp, now_timestamp, '300s', '100')
+        # 获取查询结果的数据类型
+        for i in range(0, 2):
+            try:
+                result_type = response.json()['results'][i]['data']['resultType']
+                # 验证数据类型为matrix
+                assert result_type == 'matrix'
+            except Exception as e:
+                print(e)
+
+    @allure.story('监控&告警')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('sort, title',
+                             [('node_load1', 'Sort by Load Average查看Node Usage Ranking'),
+                              ('node_cpu_utilisation', 'Sort by CPU查看Node Usage Ranking'),
+                              ('node_memory_utilisation', 'Sort by Memory查看Node Usage Ranking'),
+                              ('node_disk_size_utilisation', 'Sort by Local Storage查看Node Usage Ranking'),
+                              ('node_disk_inode_utilisation', 'Sort by inode Utilization查看Node Usage Ranking'),
+                              ('node_pod_utilisation', 'Sort by Pod Utilization查看Node Usage Ranking')
+                              ])
+    def test_get_node_usage_rank(self, sort, title):
+        # 查询Node Usage Ranking
+        response = step_get_node_usage_rank(sort)
+        # 获取结果中的数据类型
+        for i in range(0, 15):
+            try:
+                result_type = response.json()['results'][i]['data']['resultType']
+                # 验证数据类型为vector
+                assert result_type == 'vector'
+            except Exception as e:
+                print(e)
+
+    @allure.story('监控&告警')
+    @allure.title('查看集群资源使用情况')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_cluster_resource_usage(self):
+        # 获取当前时间的10位时间戳
+        now_timestamp = str(time.time())[0:10]
+        # 获取1440分钟之前的时间
+        before_timestamp = commonFunction.get_before_timestamp(1440)
+        # 查询最近一天的集群应用资源使用情况
+        response = step_get_resource_usage_of_cluster(before_timestamp, now_timestamp, '3600s', '24')
+        # 获取结果中的数据类型
+        for i in range(0, 3):
+            try:
+                result_type = response.json()['results'][i]['data']['resultType']
+                # 验证数据类型为matrix
+                assert result_type == 'matrix'
+            except Exception as e:
+                print(e)
+
+    @allure.story('监控&告警')
+    @allure.title('查看集群应用资源用量')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_cluster_app_usage(self):
+        # 获取当前时间的10位时间戳
+        now_timestamp = str(time.time())[0:10]
+        # 获取1440分钟之前的时间
+        before_timestamp = commonFunction.get_before_timestamp(1440)
+        # 查询最近一天的集群应用资源使用情况
+        response = step_get_app_usage_of_cluster(before_timestamp, now_timestamp, '3600s', '24')
+        # 获取结果中的数据类型
+        for i in range(0, 8):
+            try:
+                result_type = response.json()['results'][i]['data']['resultType']
+                # 验证数据类型为matrix
+                assert result_type == 'matrix'
+            except Exception as e:
+                print(e)
+
+    @allure.story('监控&告警')
+    @allure.title('查看集群项目变化趋势')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_cluster_app_usage(self):
+        # 获取当前时间的10位时间戳
+        now_timestamp = str(time.time())[0:10]
+        # 获取1440分钟之前的时间
+        before_timestamp = commonFunction.get_before_timestamp(1440)
+        # 查询最近一天的集群应用资源使用情况
+        response = step_get_project_trend_of_cluster(before_timestamp, now_timestamp, '3600s', '24')
+        # 获取结果中的数据类型
+        result_type = response.json()['results'][0]['data']['resultType']
+        # 验证数据类型为matrix
+        assert result_type == 'matrix'
+

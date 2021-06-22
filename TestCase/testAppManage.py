@@ -287,7 +287,7 @@ def step_add_app_repository(ws_name, rpo_name, rpo_url):
 
 
 @allure.step('查询应用仓库列表指定仓库')
-def step_get_app_reposity(ws_name, rpo_name):
+def step_get_app_repository(ws_name, rpo_name):
     """
     :param ws_name: 企业空间
     :param rpo_name: 应用仓库名称
@@ -402,14 +402,14 @@ class TestAppTemplate(object):
         # 添加仓库
         step_add_app_repository(self.ws_name, repo_name, repo_url)
         # 查询列表，并获取查询到的仓库的id、名称
-        response = step_get_app_reposity(self.ws_name, repo_name)
+        response = step_get_app_repository(self.ws_name, repo_name)
         repo_id = response.json()['items'][0]['repo_id']
         name = response.json()['items'][0]['name']
         # 等待应用仓库同步成功，最长等待时间60s
         i = 0
         while i < 60:
             # 获取应用仓库的状态
-            re = step_get_app_reposity(self.ws_name, repo_name)
+            re = step_get_app_repository(self.ws_name, repo_name)
             status = re.json()['items'][0]['status']
             if status == 'successful':
                 print('应用仓库同步耗时：' + str(i))
@@ -429,7 +429,7 @@ class TestAppTemplate(object):
         # 添加仓库
         step_add_app_repository(self.ws_name, repo_name, repo_url)
         # 查询列表，并获取创建的仓库的名称和id
-        response = step_get_app_reposity(self.ws_name, repo_name)
+        response = step_get_app_repository(self.ws_name, repo_name)
         repo_id = response.json()['items'][0]['repo_id']
         name = response.json()['items'][0]['name']
         # 删除应用仓库
@@ -446,7 +446,7 @@ class TestAppTemplate(object):
         # 添加仓库
         step_add_app_repository(self.ws_name, repo_name, repo_url)
         # 查询列表，并获取查询到的仓库的repo_id
-        response = step_get_app_reposity(self.ws_name, repo_name)
+        response = step_get_app_repository(self.ws_name, repo_name)
         repo_id = response.json()['items'][0]['repo_id']
         # 等待仓库同步成功
         time.sleep(10)
@@ -454,7 +454,7 @@ class TestAppTemplate(object):
         step_delete_app_repo(self.ws_name, repo_id)
         # 查询列表，验证删除成功
         time.sleep(10)  # 等待删除成功
-        response = step_get_app_reposity(self.ws_name, repo_name)
+        response = step_get_app_repository(self.ws_name, repo_name)
         count = response.json()['total_count']
         # 验证仓库删除成功
         assert count == 0
@@ -476,7 +476,7 @@ class TestAppTemplate(object):
     def test_suspend_app_template(self):
         version = 'v0.1 [v1.0]'  # 部署的应用的版本名称
         update_log = 'test'  # 部署应用的更新日志
-        app_name = 'app' + str(commonFunction.get_random())  # 应用模版名称
+        app_name = 'test-app' + str(commonFunction.get_random())  # 应用模版名称
         # 创建应用模板
         step_create_app_template(self.ws_name, app_name)
         # 获取应用的app_id和version_id
@@ -512,7 +512,7 @@ class TestAppTemplate(object):
     def test_app_check_reject(self):
         version = 'v0.1 [v1.0]'  # 部署的应用的版本名称
         update_log = 'test'  # 部署应用的更新日志
-        app_name = 'app' + str(commonFunction.get_random())  # 应用模版名称
+        app_name = 'test-app' + str(commonFunction.get_random())  # 应用模版名称
         # 创建应用模板
         step_create_app_template(self.ws_name, app_name)
         # 获取应用的app_id和version_id
@@ -542,7 +542,7 @@ class TestAppTemplate(object):
     @allure.title('创建应用模板后添加版本')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_add_version(self):
-        app_name = 'app' + str(commonFunction.get_random())  # 应用模版名称
+        app_name = 'test-app' + str(commonFunction.get_random())  # 应用模版名称
         # 创建应用模板
         step_create_app_template(self.ws_name, app_name)
         # 获取应用的app_id和version_id
@@ -563,7 +563,7 @@ class TestAppTemplate(object):
     @allure.title('从应用模版部署新应用')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_deployment_app_form_template(self):
-        app_name = 'app' + str(commonFunction.get_random())
+        app_name = 'test-app' + str(commonFunction.get_random())
         # 创建应用模板
         step_create_app_template(self.ws_name, app_name)
         # 获取应用模版的app_id和version_id
@@ -571,7 +571,7 @@ class TestAppTemplate(object):
         app_id = response.json()['items'][0]['app_id']
         version_id = response.json()['items'][0]['latest_app_version']['version_id']
         # 部署应用模版
-        name = app_name + 'app'  # 应用名称
+        name = app_name + 'test-app'  # 应用名称
         re = step_deploy_template(self.ws_name, self.project_name, app_id, name, version_id)
         # 验证部署结果
         message = re.json()['message']
@@ -609,7 +609,7 @@ class TestAppTemplate(object):
     def test_deployment_app_form_appstore(self):
         version = 'v0.1 [v1.0]'  # 部署的应用的版本名称
         update_log = 'test'  # 部署应用的更新日志
-        app_name = 'app' + str(commonFunction.get_random())  # 应用模版名称
+        app_name = 'test-app' + str(commonFunction.get_random())  # 应用模版名称
         print(app_name)
         # 创建应用模板
         step_create_app_template(self.ws_name, app_name)
@@ -624,7 +624,7 @@ class TestAppTemplate(object):
         # 发布模板到应用商店
         step_release(app_id, version_id)
         # 部署应用
-        name = app_name + 'app'  # 应用名称
+        name = app_name + 'test-app'  # 应用名称
         res = step_deploy_template(self.ws_name, self.project_name, app_id, name, version_id)
         # 验证部署结果
         message = res.json()['message']
@@ -649,12 +649,14 @@ class TestAppTemplate(object):
         r = step_get_app(self.ws_name, self.project_name, app_name)
         count = r.json()['total_count']
         assert count == 0
+        # 下架应用
+        step_suspend_app(app_id)
 
     @allure.story('应用-应用模板')
     @allure.title('按名称精确查询部署的应用')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_app(self):
-        app_name = 'app' + str(commonFunction.get_random())
+        app_name = 'test-app' + str(commonFunction.get_random())
         # 创建应用模板
         step_create_app_template(self.ws_name, app_name)
         # 获取应用模版的app_id和version_id
@@ -662,7 +664,7 @@ class TestAppTemplate(object):
         app_id = response.json()['items'][0]['app_id']
         version_id = response.json()['items'][0]['latest_app_version']['version_id']
         # 部署应用模版
-        name = app_name + 'app'  # 应用名称
+        name = app_name + 'test-app'  # 应用名称
         res = step_deploy_template(self.ws_name, self.project_name, app_id, name, version_id)
         # 验证部署结果
         message = res.json()['message']
@@ -691,7 +693,7 @@ class TestAppTemplate(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_app_template(self):
         # 创建应用模版
-        app_name = 'app' + str(commonFunction.get_random())
+        app_name = 'test-app' + str(commonFunction.get_random())
         step_create_app_template(self.ws_name, app_name)
         # 查询指定的应用模版
         response = step_get_app_template(self.ws_name, app_name)
@@ -713,7 +715,7 @@ class TestAppTemplate(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_template_with_version(self):
         # 创建应用模版
-        app_name = 'app' + str(commonFunction.get_random())
+        app_name = 'test-app' + str(commonFunction.get_random())
         step_create_app_template(self.ws_name, app_name)
         # 查询创建的应用模版
         response = step_get_app_template(self.ws_name, app_name)
@@ -729,3 +731,5 @@ class TestAppTemplate(object):
 
 if __name__ == "__main__":
     pytest.main(['-s', 'testAppManage.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
+
+

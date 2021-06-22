@@ -2442,7 +2442,7 @@ class TestProject(object):
         assert hard_actual == hard
 
     @allure.story('项目设置-项目配额')
-    @allure.story('设置项目配额-输入错误的cpu信息(包含字母)')
+    @allure.title('设置项目配额-输入错误的cpu信息(包含字母)')
     def test_edit_project_quota_wrong_cpu(self):
         # 配额信息,错误的cpu信息
         hard = {"limits.cpu": "11www",
@@ -2458,8 +2458,8 @@ class TestProject(object):
         assert status == 'Failure'
 
     @allure.story('项目设置-项目配额')
-    @allure.story('设置项目配额-输入错误的cpu信息(包含负数)')
-    def test_edit_project_quota_wrong_cpu(self):
+    @allure.title('设置项目配额-输入错误的cpu信息(包含负数)')
+    def test_edit_project_quota_wrong_cpu_1(self):
         # 配额信息,错误的cpu信息
         hard = {"limits.cpu": "-11",
                 "requests.cpu": "1"
