@@ -326,6 +326,25 @@ def get_before_timestamp(minutes):
     return before_timestamp
 
 
+# 获取当前日期的时间戳
+def get_timestamp():
+    now = datetime.datetime.now()
+    timeArray = time.strptime(str(now)[0:10], "%Y-%m-%d")
+    # 转换成时间戳
+    timestamp = str(time.mktime(timeArray))[0:10]
+    return timestamp
+
+
+# 获取x天前日期的时间戳
+def get_before_timestamp_day(day):
+    before = (datetime.datetime.now() - datetime.timedelta(days=day))
+    # 转换为其他字符串格式
+    otherStyleTime = time.strptime(str(before)[0:10], "%Y-%m-%d")
+    # 转换成时间戳
+    timeStamp = str(time.mktime(otherStyleTime))[0:10]
+    return timeStamp
+
+
 # 获取集群的所有服务组件
 def get_components_of_cluster():
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/components'
