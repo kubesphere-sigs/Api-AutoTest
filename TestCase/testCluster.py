@@ -546,19 +546,14 @@ class TestCluster(object):
     @allure.story('节点')
     @allure.title('查看节点的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_events(self):
+    def test_get_monitoring(self):
         # 获取节点列表中第一个节点的名称
         response = step_get_nodes()
         node_name = response.json()['items'][0]['metadata']['name']
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
-        # 获取10分钟之前的时间
-        now = datetime.datetime.now()
-        now_reduce_10 = now - datetime.timedelta(minutes=10)
-        # 转换成时间数组
-        timeArray = time.strptime(str(now_reduce_10)[0:19], "%Y-%m-%d %H:%M:%S")
-        # 转换成时间戳
-        before_timestamp = str(time.mktime(timeArray))[0:10]
+        # 获取10分钟之前的戳
+        before_timestamp = commonFunction.get_before_timestamp(10)
         # 查看最近十分钟的监控信息
         r = step_get_metrics_of_node(node_name=node_name, start_time=before_timestamp, end_time=now_timestamp,
                                      step='60s', times='10')
@@ -1444,16 +1439,20 @@ class TestCluster(object):
     def test_get_component_health(self):
         # 获取组件的健康状况
         response = step_get_component_health()
-        for i in range(0, 25):
-            try:
-                # 获取每个组件的totalBackends
-                totalBackends = response.json()['kubesphereStatus'][i]['totalBackends']
-                # 获取每个组件的healthyBackends
-                healthyBackends = response.json()['kubesphereStatus'][i]['healthyBackends']
-                # 验证 totalBackends=healthyBackends
-                assert totalBackends == healthyBackends
-            except Exception as e:
-                print(e)
+        # 获取组件的数量
+        component_count = len(response.json()['kubesphereStatus'])
+        print(component_count)
+        for i in range(0, component_count):
+            # 获取每个组件的totalBackends
+            totalBackends = response.json()['kubesphereStatus'][i]['totalBackends']
+            # 获取每个组件的healthyBackends
+            healthyBackends = response.json()['kubesphereStatus'][i]['healthyBackends']
+            # 获取组件的名称
+            component_name = response.json()['kubesphereStatus'][i]['name']
+            # 验证 totalBackends=healthyBackends
+            if totalBackends != healthyBackends:
+                print('组件：' + component_name + ' 运行不正常')
+                pytest.assume(totalBackends == healthyBackends)
 
     @allure.story('监控&告警')
     @allure.title('查看组件的运行状态并验证组件均健康运行')
