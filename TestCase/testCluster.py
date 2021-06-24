@@ -759,8 +759,12 @@ class TestCluster(object):
             # 获取所有pod的状态
             for j in range(0, pod_count):
                 state = r.json()['items'][j]['status']['phase']
+                # 获取pod的名称
+                pod_name = r.json()['items'][j]['metadata']['name']
+                if state not in ['Running', 'Succeeded']:
+                    print(pod_name)
                 # 验证pod的运行状态
-                assert state in ['Running', 'Succeeded']
+                pytest.assume(state in ['Running', 'Succeeded'])
 
     @allure.story('项目')
     @allure.title('使用名称精确查询项目中存在的pod')
@@ -1113,7 +1117,7 @@ class TestCluster(object):
                              [('deployments', '按状态和名称查询存在的deployments'),
                               ('statefulsets', '按状态和名称查询存在的statefulSets'),
                               ('daemonsets', '按状态和名称查询存在的daemonSets')])
-    def test_query_app_workload_by_status(self, type, title):
+    def test_query_app_workload_by_status_and_name(self, type, title):
         # 查询集群中所有的资源
         response = step_get_resource_of_cluster(type)
         # 获取资源的数量
@@ -1128,7 +1132,6 @@ class TestCluster(object):
                 replicas = response.json()['items'][i]['status']['replicas']
             if readyReplicas == replicas:
                 running_resource.append(response.json()['items'][i]['metadata']['name'])
-
         # 使用名称和状态查询资源
         for name in running_resource:
             r = step_get_resource_of_cluster(type, 'name=' + name, 'status=running')
@@ -1337,13 +1340,8 @@ class TestCluster(object):
             namespace = response.json()['items'][i]['metadata']['namespace']
             # 获取当前时间的10位时间戳
             now_timestamp = str(time.time())[0:10]
-            # 获取60分钟之前的时间
-            now = datetime.datetime.now()
-            now_reduce_10 = now - datetime.timedelta(minutes=60)
-            # 转换成时间数组
-            timeArray = time.strptime(str(now_reduce_10)[0:19], "%Y-%m-%d %H:%M:%S")
-            # 转换成时间戳
-            before_timestamp = str(time.mktime(timeArray))[0:10]
+            # 获取60分钟之前的时间时间戳
+            before_timestamp = commonFunction.get_before_timestamp(60)
             # 查询每个pvc最近1个小时的监控信息
             r = step_get_metrics_of_pvc(namespace, name, before_timestamp, now_timestamp, '60s', '60')
             # 获取查询到的数据的结果类型
@@ -1452,6 +1450,7 @@ class TestCluster(object):
             # 验证 totalBackends=healthyBackends
             if totalBackends != healthyBackends:
                 print('组件：' + component_name + ' 运行不正常')
+                # 校验失败仍能继续运行
                 pytest.assume(totalBackends == healthyBackends)
 
     @allure.story('监控&告警')
