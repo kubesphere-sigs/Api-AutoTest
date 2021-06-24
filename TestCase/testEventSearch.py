@@ -18,7 +18,7 @@ def step_get_event(start_time, end_time):
     return response
 
 
-@allure.step('查询集群日志总数的变化趋势')
+@allure.step('查询集群事件总数的变化趋势')
 def step_get_events_trend(start_time, end_time, interval):
     url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/events?operation=histogram&interval=' + interval + \
                        's&start_time=' + start_time + '&end_time=' + end_time
@@ -53,11 +53,11 @@ class TestEventSearch(object):
         now_timestamp = str(time.time())[0:10]
         # 获取当前日期的时间戳
         day_timestamp = commonFunction.get_timestamp()
-        # 查询当天的日志总量信息
+        # 查询当天的事件总量信息
         response = step_get_event(day_timestamp, now_timestamp)
         # 获取收集事件的资源数量
         resources_count = response.json()['statistics']['resources']
-        # 获取收集到的日志数量
+        # 获取收集到的事件数量
         event_counts = response.json()['statistics']['events']
         # 验证资源数量数量大于0
         assert resources_count > 0
@@ -104,9 +104,9 @@ class TestEventSearch(object):
     def test_get_events_trend_by_search(self, search_rule, title):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
-        # 按不同条件查询日志
+        # 按不同条件查询事件
         response = step_get_events_trend_by_search(search_rule, now_timestamp)
-        # 获取查询结果中的总日志条数
+        # 获取查询结果中的总事件条数
         log_count = response.json()['histogram']['total']
         # 验证查询成功
         assert log_count >= 0
@@ -132,7 +132,7 @@ class TestEventSearch(object):
     def test_get_events_by_search(self, search_rule, title):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
-        # 按关键字查询日志详情信息
+        # 按关键字查询事件详情信息
         response = step_get_events_by_search(search_rule, now_timestamp)
         # 获取查询到的事件数量
         logs_count = response.json()['query']['total']
