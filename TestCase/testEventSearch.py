@@ -106,7 +106,6 @@ class TestEventSearch(object):
         now_timestamp = str(time.time())[0:10]
         # 按不同条件查询日志
         response = step_get_events_trend_by_search(search_rule, now_timestamp)
-        print(response.json())
         # 获取查询结果中的总日志条数
         log_count = response.json()['histogram']['total']
         # 验证查询成功
@@ -136,7 +135,6 @@ class TestEventSearch(object):
         # 按关键字查询日志详情信息
         response = step_get_events_by_search(search_rule, now_timestamp)
         # 获取查询到的事件数量
-        print(response.json())
         logs_count = response.json()['query']['total']
         # 验证查询成功
         assert logs_count >= 0
