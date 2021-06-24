@@ -233,6 +233,8 @@ def step_delete_pipeline(devops_name_new, pipeline_name):
 
 
 @allure.feature('DevOps')
+@pytest.mark.skipif(commonFunction.get_component_health_of_cluster('kubesphere-devops-system') is False, reason='集群devops功能未准备好')
+@pytest.mark.skipif(commonFunction.get_components_status_of_cluster('devops') is False, reason='集群未开启devops功能')
 class TestDevOps(object):
     user_name = 'wx-user'
     ws_name = 'ws-dev'

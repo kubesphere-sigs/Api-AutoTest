@@ -1271,7 +1271,7 @@ class TestProject(object):
     def test_fuzzy_query_pod(self):
         pod_name = self.job_name
         url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/pods?' \
-                                                                                                       'name=' + pod_name + '&sortBy=startTime&limit=10'
+                            'name=' + pod_name + '&sortBy=startTime&limit=10'
         r = requests.get(url=url, headers=get_header())
         # 验证查询到的容器名称
         print("actual_result:r.json()['totalItems'] = " + str(r.json()['totalItems']))
@@ -2836,4 +2836,4 @@ class TestProject(object):
 
 
 if __name__ == "__main__":
-    pytest.main(['-s', 'testProject.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
+    pytest.main(['-s', '--reruns=3', '--reruns-delay=10', 'testProject.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程

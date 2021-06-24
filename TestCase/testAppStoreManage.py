@@ -114,6 +114,8 @@ def step_get_app_detail(app_id):
 
 
 @allure.feature('应用商店管理')
+@pytest.mark.skipif(commonFunction.get_component_health_of_cluster('') is False, reason='')
+@pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
 class TestManageAppStore(object):
     ws_name = 'test-appstore-manage'  # 在excle中读取的用例此名称，不能修改。
     project_name = 'project-for-test-appstore-manage'  # 在excle中读取的用例此名称，不能修改。

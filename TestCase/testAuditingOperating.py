@@ -19,7 +19,7 @@ def step_get_audits(start_time, end_time):
 
 
 @allure.step('查询集群操作审计总数的变化趋势')
-def step_get_audits_trend(start_time, end_time, interval):
+def step_get_audits_trend(start_time, end_time):
     url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=histogram&' \
                        'start_time=' + start_time + '&end_time=' + end_time+ '&interval=30m'
     response = requests.get(url=url, headers=get_header())
@@ -43,6 +43,8 @@ def step_get_audits_by_search(search_rule, end_time):
 
 
 @allure.feature('操作审计')
+@pytest.mark.skipif(commonFunction.get_component_health_of_cluster('') is False, reason='')
+@pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
 class TestAuditingOperatingSearch(object):
 
     @allure.story('审计总量')

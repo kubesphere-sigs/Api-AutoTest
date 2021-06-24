@@ -122,6 +122,8 @@ def step_get_container_log(pod_name, container_name, start_time, end_time):
 
 
 @allure.feature('日志查询')
+@pytest.mark.skipif(commonFunction.get_component_health_of_cluster('') is False, reason='')
+@pytest.mark.skipif(commonFunction.get_components_status_of_cluster('logging') is False, reason='集群未开启logging功能')
 class TestLogSearch(object):
 
     @allure.story('日志总量')

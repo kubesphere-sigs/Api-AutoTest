@@ -311,6 +311,8 @@ def step_delete_app_repo(ws_name, repo_id):
 
 
 @allure.feature('应用管理')
+@pytest.mark.skipif(commonFunction.get_component_health_of_cluster('') is False, reason='')
+@pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
 class TestAppTemplate(object):
     ws_name = 'test-app'  # 在读取excle中的测试用例时，使用到了ws_name
     project_name = 'project-for-test-app'

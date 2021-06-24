@@ -140,6 +140,8 @@ def step_deploy_app_from_app_store(ws_name, project_name, app_id, name, version_
 
 
 @allure.feature('遍历部署AppStore的所有应用')
+@pytest.mark.skipif(commonFunction.get_component_health_of_cluster('') is False, reason='')
+@pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
 class TestAppStore(object):
     ws_name = 'test-deploy-from-appstore'  # 在excle中读取的用例此名称，不能修改。
     project_name = 'project-for-test-deploy-app-from-appstore'  # 在excle中读取的用例此名称，不能修改。

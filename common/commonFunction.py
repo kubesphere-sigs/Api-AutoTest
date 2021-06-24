@@ -345,16 +345,44 @@ def get_before_timestamp_day(day):
     return timeStamp
 
 
-# 获取集群的所有服务组件
-def get_components_of_cluster():
+# 获取集群所有服务组件的状态
+def get_component_health_of_cluster(namespace_actual):
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/components'
     response = requests.get(url=url, headers=get_header())
-    namespaces = []
-    try:
-        for i in range(0, 100):
-            namespaces.append(response.json()[i]['namespace'])
-    except Exception as e:
-        print(e)
-    # 将list转换为set，以达到去重的目的，然后再转换为list。(ps：set是无序的，所以转换为list后的顺序和接口返回的namespaces的顺序不一致)
-    return list(set(namespaces))
+    # 获取集群的组件数量
+    components_count = len(response.json())
+    print(components_count)
+    not_ready_namespace = []
+    for i in range(0, components_count):
 
+        # 获取组件的名称及namespace
+        component_name = response.json()[i]['name']
+        namespce = response.json()[i]['namespace']
+        # 获取组件的健康状态
+        healthyBackends = response.json()[i]['healthyBackends']
+        totalBackends = response.json()[i]['totalBackends']
+        if healthyBackends != totalBackends:
+            print('NameSpace: ' + namespce + '  组件：' + component_name + '状态异常！')
+            not_ready_namespace.append(namespce)
+    if namespace_actual in not_ready_namespace:
+        return False
+    else:
+        return True
+
+
+# 获取集群的组件开启情况
+def get_components_status_of_cluster(component):
+    url = config.url + '/apis/installer.kubesphere.io/v1alpha1/clusterconfigurations'
+    response = requests.get(url=url, headers=get_header())
+    # 获取组件的配置信息
+    spec = response.json()['items'][0]['spec']
+    # 获取组件信息
+    if component == 'openpitrix':
+        component_status = spec[component]['store']['enabled']
+    else:
+        component_status = spec[component]['enabled']
+    # print(component_status)
+    return component_status
+
+
+# get_components_status_of_cluster('openpitrix')
