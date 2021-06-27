@@ -381,8 +381,6 @@ def get_components_status_of_cluster(component):
         component_status = spec[component]['store']['enabled']
     else:
         component_status = spec[component]['enabled']
-    # print(component_status)
     return component_status
 
 
-# get_components_status_of_cluster('openpitrix')

@@ -1,5 +1,5 @@
 "Status","Name","Duration in ms","Description"
-"passed","testRole.TestRole#test_role[13-/kapis/iam.kubesphere.io/v1alpha2/globalroles/wx-nan-删除角色-删除角色wx-delete-critical-r.json()","311","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[9-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""wx-role"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-企业空间设置-企业角色-在企业空间auoto-wx-ws创建角色wx-role（该角色没有任何权限）-post-critical-r.json()['metadata']","302","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -9,22 +9,17 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testHelp.TestHelp#test_help","260","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[7-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles?name=admin--企业空间设置-企业角色-模糊查询企业空间ws1-for-test-ws的角色-get-normal-r.json()['items'][0]['metadata']","301","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
-        :param story: 用例模块
         :param title: 用例标题
         :param method: 用例的请求方式
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testAppManage.TestAppTemplate#test_deployment_app_form_template","49549",""
-"passed","testProject.TestProject#test_edit_project_quota_cpu","942",""
-"passed","testDevops.TestDevOps#test_devops_user_none","300",""
-"passed","testProject.TestProject#test_fuzzy_query_pod","399",""
-"passed","testRole.TestRole#test_role[10-/kapis/iam.kubesphere.io/v1alpha2/users?globalrole=wx-role-nan-查询角色-查看角色的授权用户-get-critical-r.json()","300","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[25-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces-{""apiVersion"":""v1"",""kind"":""Namespace"",""metadata"":{""name"":""wx-project"",""labels"":{""kubesphere.io/workspace"":""ws1-for-test-ws""},""annotations"":{""kubesphere.io/creator"":""admin""}}}-项目管理-在企业空间ws1-for-test-ws创建项目wx-project-post-critical-r.json()['metadata']","293","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -34,9 +29,7 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_query_work_by_status","368",""
-"passed","testDevops.TestDevOps#test_search_credential","301",""
-"passed","testWorkspace.TestWorkSpace#test_ws[30-/api/v1/namespaces/wx-project/resourcequotas-{""apiVersion"":""v1"",""kind"":""ResourceQuota"",""metadata"":{""name"":""wx-project"",""namespace"":""wx-project"",""cluster"":""default"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""hard"":{""limits.cpu"":""2"",""requests.cpu"":""1"",""requests.memory"":""2Gi""}}}-概览-设置项目wx-project配置-post-critical-r.json()['spec']['hard']","314","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[1-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws-{""metadata"":{""name"":""ws1-for-test-ws"",""annotations"":{""kubesphere.io/creator"":""admin"",""kubesphere.io/alias-name"":""我是别名"",""kubesphere.io/description"":""我是描述信息""}}}-企业空间列表-修改企业空间ws1-for-test-ws信息-patch-critical-r.json()['metadata']['annotations']","311","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -46,20 +39,19 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_project[23-/api/v1/namespaces/test-project/secrets-{""apiVersion"":""v1"",""kind"":""Secret"",""metadata"":{""namespace"":""test-project"",""labels"":{},""name"":""wx-secret1"",""annotations"":{""kubesphere.io/creator"":""admin""}},""type"":""kubernetes.io/tls"",""spec"":{""template"":{""metadata"":{""labels"":{}}}},""data"":{""tls.crt"":""cGluZ3poZW5n"",""tls.key"":""c2l5YW8=""}}-配置中心-秘钥-创建TLS类型的秘钥-post-critical-r.json()['data']","304","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_assign_user","1189",""
+"failed","TestCase.testWorkspace.TestWorkSpace#test_ws[13-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""WX"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-企业空间设置-企业角色-在企业空间auoto-wx-ws创建角色( 角色名包含大写字母）-post-critical-r.text-WorkspaceRole.iam.kubesphere.io ""WX"" is invalid: metadata.name: Invalid value: ""WX"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","291","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
-        :param story: 用例模块
         :param title: 用例标题
         :param method: 用例的请求方式
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_project_role_one","309",""
-"passed","testProject.TestProject#test_get_work_by_status","439",""
-"passed","testWorkspace.TestWorkSpace#test_ws[8-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles?name=admin123-nan-企业空间设置-企业角色-查询企业空间ws1-for-test-ws不存在的角色-get-normal-r.json()","339","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws_invite_user","294",""
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[32-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces/wx-project--项目管理-在企业空间ws1-for-test-ws删除项目wx-project-delete-critical-r.json()","298","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -69,48 +61,39 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_delete_project","24625",""
-"passed","testWorkspace.TestWorkSpace#test_create_rename_department","941",""
-"passed","testHelp.TestHelp#test_help","231","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[20-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=admin&sortBy=createTime&limit=10--企业空间设置-企业成员-在企业空间ws1-for-test-ws查看指定的企业成员-get-normal-r.json()['items'][0]['metadata']","341","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
-        :param story: 用例模块
         :param title: 用例标题
         :param method: 用例的请求方式
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_project[25-/api/v1/namespaces/test-project/secrets-{""apiVersion"":""v1"",""kind"":""Secret"",""metadata"":{""namespace"":""test-project"",""labels"":{},""name"":""wx-secret3"",""annotations"":{""kubesphere.io/creator"":""admin""}},""type"":""kubernetes.io/basic-auth"",""spec"":{""template"":{""metadata"":{""labels"":{}}}},""data"":{""username"":""cm9vdA=="",""password"":""YWRtaW5AMTIz""}}-配置中心-秘钥-创建账号密码秘钥-post-critical-r.json()['data']","307","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws_edit_invite_user","607",""
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[18-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role--企业空间设置-企业角色-在企业空间ws1-for-test-ws删除角色wx-role-delete-critical-r.json()","295","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
-        :param story: 用例模块
         :param title: 用例标题
         :param method: 用例的请求方式
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_project_role_edit_info","639",""
-"passed","testProject.TestProject#test_project_user_one","305",""
-"passed","testProject.TestProject#test_create_statefulsets","5922",""
-"passed","testProject.TestProject#test_project[3-/api/v1/namespaces/test-project/persistentvolumeclaims-{""apiVersion"":""v1"",""kind"":""PersistentVolumeClaim"",""metadata"":{""namespace"":""test-project"",""name"":""testvolume"",""labels"":{},""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""accessModes"":[""ReadWriteOnce""],""resources"":{""requests"":{""storage"":""10Gi""}},""storageClassName"":""csi-standard""},""create_way"":""storageclass""}-存储管理-存储卷-创建存储卷时输入已存在的存储卷名称-post-critical-r.json()","319","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws_delete_invite_user","602",""
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[22-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=ad&sortBy=createTime&limit=10--企业空间设置-企业成员-在企业空间ws1-for-test-ws模糊查询企业成员-get-normal-r.json()['items'][0]['metadata']","295","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
-        :param story: 用例模块
         :param title: 用例标题
         :param method: 用例的请求方式
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testRole.TestRole#test_edit_role","945",""
-"passed","testProject.TestProject#test_get_daemonsets_by_name","4310",""
-"passed","testWorkspace.TestWorkSpace#test_department","1217",""
-"passed","testWorkspace.TestWorkSpace#test_ws[31-/api/v1/namespaces/wx-project/limitranges-{""apiVersion"":""v1"",""kind"":""LimitRange"",""metadata"":{""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""limits"":[{""default"":{""cpu"":""2"",""memory"":""4000Mi""},""defaultRequest"":{""cpu"":""1"",""memory"":""500Mi""},""type"":""Container""}]}}-概览-设置项目wx-project容器资源默认配置-post-critical-r.json()['spec']['limits'][0]['default']","431","
+"failed","TestCase.testWorkspace.TestWorkSpace#test_ws[14-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""wx@wx"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-企业空间设置-企业角色-在企业空间auoto-wx-ws创建角色( 角色名包含符号，非分隔符）-post-critical-r.text-WorkspaceRole.iam.kubesphere.io ""wx@wx"" is invalid: metadata.name: Invalid value: ""wx@wx"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","302","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -120,8 +103,7 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testDevops.TestDevOps#test_create_ssh_credential","313",""
-"passed","testRole.TestRole#test_role[7-/kapis/iam.kubesphere.io/v1alpha2/globalroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""GlobalRole"",""rules"":[],""metadata"":{""name"":""wx-role"",""annotations"":{""kubesphere.io/description"":""新建角色"",""iam.kubesphere.io/aggregation-roles"":""[\""role-template-manage-clusters\"",\""role-template-view-clusters\"",\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-添加角色-增加角色wx-role-post-critical-r.json()['metadata']","315","
+"failed","TestCase.testWorkspace.TestWorkSpace#test_ws[15-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""-wx"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-企业空间设置-企业角色-在企业空间auoto-wx-ws创建角色( 角色名以分隔符开头）-post-critical-r.text-WorkspaceRole.iam.kubesphere.io ""-wx"" is invalid: metadata.name: Invalid value: ""-wx"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","289","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -131,19 +113,18 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_project[42-/api/v1/namespaces/test-project-{""metadata"":{""annotations"":{""kubesphere.io/network-isolate"":""enabled""}}}-项目设置-网络隔离-开启项目网络隔离-patch-critical-r.json()['status']","307","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[30-/api/v1/namespaces/wx-project/resourcequotas-{""apiVersion"":""v1"",""kind"":""ResourceQuota"",""metadata"":{""name"":""wx-project"",""namespace"":""wx-project"",""cluster"":""default"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""hard"":{""limits.cpu"":""2"",""requests.cpu"":""1"",""requests.memory"":""2Gi""}}}-概览-设置项目wx-project配置-post-critical-r.json()['spec']['hard']","281","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
-        :param story: 用例模块
         :param title: 用例标题
         :param method: 用例的请求方式
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_create_job","20632","创建一个计算圆周率的任务"
-"passed","testWorkspace.TestWorkSpace#test_ws[4-/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=wx-wx-nan-企业空间列表-查询不存在的企业空间-get-normal-r.json()","396","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_unbind_user","911",""
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[29-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx1--项目管理-在企业空间ws1-for-test-ws中查询不存在的项目-get-normal-r.json()","293","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -153,7 +134,7 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testAppStoreManage.TestManageApp#test_ws_role_user[6-/kapis/openpitrix.io/v1/reviews?&conditions=keyword%3Dwxwxwx-nan-应用审核-在应用审核页面已处理列表查询不存在的应用-get-normal-r.json()","309","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[12-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""wx-role1"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""","305","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -163,9 +144,8 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testDevops.TestDevOps#test_devops_role_fuzzy","296",""
-"passed","testProject.TestProject#test_create_sa","1867",""
-"passed","testRole.TestRole#test_role[6-/kapis/iam.kubesphere.io/v1alpha2/globalroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""GlobalRole"",""rules"":[],""metadata"":{""name"":""wx"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-添加角色-增加角色(不选择权限)-post-critical-r.json()['metadata']","364","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_edit_ws_role","1944",""
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[18-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role1--企业空间设置-企业角色-在企业空间ws1-for-test-ws删除角色wx-role1-delete-critical-r.json()","295","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -175,8 +155,7 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_delete_pod","1042",""
-"passed","testUser.TestUser#test_user[10-/kapis/iam.kubesphere.io/v1alpha2/users/wx-nan-查询用户-查看指定用户详情信息-get-critical-r.json()['metadata']","294","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[21-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=qweasd&sortBy=createTime&limit=10--企业空间设置-企业成员-在企业空间ws1-for-test-ws查看不存在的企业成员-get-normal-r.json()","290","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -186,29 +165,28 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_project[31-/api/v1/namespaces/test-project/configmaps-{""apiVersion"":""v1"",""kind"":""ConfigMap"",""metadata"":{""namespace"":""test-project"",""labels"":{},""name"":""wx-peizhi"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""template"":{""metadata"":{""labels"":{}}}},""data"":{""key"":""key""}}-配置中心-配置-创建配置-post-critical-r.json()['metadata']","325","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[11-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":"""",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""","326","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
-        :param story: 用例模块
         :param title: 用例标题
         :param method: 用例的请求方式
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testHelp.TestHelp#test_help","242","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_edit_quota","860",""
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[3-/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=test-ws--企业空间列表-模糊查询存在的企业空间-get-normal-r.json()['items'][0]['metadata']","292","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
-        :param story: 用例模块
         :param title: 用例标题
         :param method: 用例的请求方式
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testWorkspace.TestWorkSpace#test_ws[9-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""wx-role"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-企业空间设置-企业角色-在企业空间auoto-wx-ws创建角色wx-role（该角色没有任何权限）-post-critical-r.json()['metadata']","331","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[4-/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=wx-wx--企业空间列表-查询不存在的企业空间-get-normal-r.json()","300","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -218,7 +196,7 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testWorkspace.TestWorkSpace#test_ws[18-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role1-nan-企业空间设置-企业角色-在企业空间ws1-for-test-ws删除角色wx-role1-delete-critical-r.json()","328","
+"failed","TestCase.testWorkspace.TestWorkSpace#test_ws[16-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""wx-"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-企业空间设置-企业角色-在企业空间auoto-wx-ws创建角色( 角色名以分隔符结尾）-post-critical-r.text-WorkspaceRole.iam.kubesphere.io ""wx-"" is invalid: metadata.name: Invalid value: ""wx-"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","309","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -228,7 +206,7 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testWorkspace.TestWorkSpace#test_ws[5-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-nan-企业空间设置-企业角色-查询企业空间ws1-for-test-ws的所有角色-get-normal-r.json()","325","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws","295","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -238,43 +216,37 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_project[4-/api/v1/namespaces/test-project/persistentvolumeclaims-{""apiVersion"":""v1"",""kind"":""PersistentVolumeClaim"",""metadata"":{""namespace"":""test-project"",""name"":""test@volume1"",""labels"":{},""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""accessModes"":[""ReadWriteOnce""],""resources"":{""requests"":{""storage"":""10Gi""}},""storageClassName"":""csi-standard""},""create_way"":""storageclass""}-存储管理-存储卷-创建存储卷时输入不符合规则的存储卷名称(包含符号@)-post-normal-r.json()['message']-PersistentVolumeClaim ""test@volume1"" is invalid: metadata.name: Invalid value: ""test@volume1"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","336","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[2-/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=ws1-for-test-ws&sortBy=createTime&limit=10--企业空间列表-精确查询企业空间-get-normal-r.json()['items'][0]['metadata']","303","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
-        :param story: 用例模块
         :param title: 用例标题
         :param method: 用例的请求方式
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testHelp.TestHelp#test_help","239","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[19-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?sortBy=createTime&limit=10--企业空间设置-企业成员-在企业空间ws1-for-test-ws查看所有的企业成员-get-normal-r.json()['items'][0]['metadata']","293","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
-        :param story: 用例模块
         :param title: 用例标题
         :param method: 用例的请求方式
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testAppStoreManage.TestManageApp#test_delete_app_category","21658",""
-"passed","testDevops.TestDevOps#test_devops_delete_user","306",""
-"passed","testAppManage.TestAppTemplate#test_delete_app_repository_no","314",""
-"passed","testProject.TestProject#test_project[14-/apis/snapshot.storage.k8s.io/v1beta1/namespaces/test-project/volumesnapshots-{""apiVersion"":""snapshot.storage.k8s.io/v1beta1"",""kind"":""VolumeSnapshot"",""metadata"":{""name"":""wx@snapshot"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""volumeSnapshotClassName"":""csi-ssd-enterprise"",""source"":{""kind"":""PersistentVolumeClaim"",""persistentVolumeClaimName"":""test-project-volume""}}}-存储管理-存储卷快照-创建存储卷快照时输入不符合规则的快照名称(包含符号@)-post-normal-r.json()['message']-VolumeSnapshot.snapshot.storage.k8s.io ""wx@snapshot"" is invalid: metadata.name: Invalid value: ""wx@snapshot"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","319","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[8-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles?name=admin123--企业空间设置-企业角色-查询企业空间ws1-for-test-ws不存在的角色-get-normal-r.json()","296","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
-        :param story: 用例模块
         :param title: 用例标题
         :param method: 用例的请求方式
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testUser.TestUser#test_user[17-/kapis/iam.kubesphere.io/v1alpha2/users/wx1-nan-删除用户-删除用户wx1-delete-critical-r.json()","303","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[23-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws-{""spec"":{""template"":{""spec"":{""networkIsolation"":False}}}}-企业空间设置-基本信息-开启企业空间ws1-for-test-ws网络隔离-patch-critical-r.json()['spec']['template']['spec']","295","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -284,1150 +256,17 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_project[30-/api/v1/namespaces/test-project/secrets/wx-secret4-nan-配置中心-秘钥-删除秘钥-delete-critical-r.json()","323","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[24-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws-{""spec"":{""template"":{""spec"":{""networkIsolation"":True}}}}-企业空间设置-基本信息-关闭企业空间ws1-for-test-ws网络隔离-patch-critical-r.json()['spec']['template']['spec']","305","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
-        :param story: 用例模块
         :param title: 用例标题
         :param method: 用例的请求方式
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_project[51-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/deployments?status=stopped&sortBy=updateTime&limit=10-nan-应用负载-工作负载-按状态查询不存在的deployment-get-normal-r.json()","303","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_create_service","1801",""
-"passed","testWorkspace.TestWorkSpace#test_create_wrong_name_department","305",""
-"passed","testDevops.TestDevOps#test_create_secret_text_credential","340",""
-"passed","testProject.TestProject#test_project_user_all","292",""
-"passed","testDevops.TestDevOps#test_devops_role_edit_info","311",""
-"passed","testProject.TestProject#test_delete_work","314",""
-"passed","testHelp.TestHelp#test_help","264","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppManage.TestAppTemplate#test_deployment_app_form_appstore","50003",""
-"passed","testProject.TestProject#test_project[28-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/secrets?name=wx-secret-nan-配置中心-秘钥-模糊查询存在的秘钥-get-critical-r.json()","311","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_edit_container_quota_wrong_memory_1","597",""
-"passed","testDevops.TestDevOps#test_modify_devopsinfo","633",""
-"passed","testHelp.TestHelp#test_help","239","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_user[6-/kapis/iam.kubesphere.io/v1alpha2/users-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""User"",""metadata"":{""name"":""wx1"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""email"":"""",""password"":""P@88w1rd""}}-添加用户-增加用户(不输入邮箱)-post-critical-r.json()['metadata']","306","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[43-/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies-{""apiVersion"":""network.kubesphere.io/v1alpha1"",""kind"":""NamespaceNetworkPolicy"",""metadata"":{""namespace"":""test-project"",""name"":""policy-to-girf49"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""egress"":[{""to"":[{""namespace"":{""name"":""test-project""}}]}]}}-项目设置-网络隔离-添加集群内部白名单(出口)-post-critical-r.json()['metadata']","393","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testDevops.TestDevOps#test_devops_user_all","304",""
-"passed","testDevops.TestDevOps#test_create_kubeconfig_credential","339",""
-"passed","testProject.TestProject#test_create_volume_for_statefulsets","12210",""
-"passed","testUser.TestUser#test_user[8-/kapis/iam.kubesphere.io/v1alpha2/users-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""User"",""metadata"":{""name"":""wx"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""email"":""stevewen@yunify.com"",""password"":""P@88w0rd""}}-添加用户-增加用户wx-post-critical-r.json()['metadata']","337","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[15-/apis/snapshot.storage.k8s.io/v1beta1/namespaces/test-project/volumesnapshots-{""apiVersion"":""snapshot.storage.k8s.io/v1beta1"",""kind"":""VolumeSnapshot"",""metadata"":{""name"":""wxAsnapshot"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""volumeSnapshotClassName"":""csi-ssd-enterprise"",""source"":{""kind"":""PersistentVolumeClaim"",""persistentVolumeClaimName"":""test-project-volume""}}}-存储管理-存储卷快照-创建存储卷快照时输入不符合规则的快照名称(包含大写字母)-post-normal-r.json()['message']-VolumeSnapshot.snapshot.storage.k8s.io ""wxAsnapshot"" is invalid: metadata.name: Invalid value: ""wxAsnapshot"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","317","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[12-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""wx-role1"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""","321","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project_user_fuzzy","307",""
-"passed","testProject.TestProject#test_edit_project_quota_wrong_resource","621",""
-"passed","testRole.TestRole#test_role[9-/kapis/iam.kubesphere.io/v1alpha2/globalroles/wx-role-nan-查询角色-查看角色的详情-get-normal-r.json()['metadata']","321","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_user[13-/kapis/iam.kubesphere.io/v1alpha2/users-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""User"",""metadata"":{""name"":""Wqwe"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""email"":""stevewen@yunify.com"",""password"":""P@88w0rd""}}-添加用户-增加用户（用户名包含大写字母）-post-normal-r.text-User.iam.kubesphere.io ""Wqwe"" is invalid: metadata.name: Invalid value: ""Wqwe"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","332","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_check_pod","1041",""
-"passed","testRole.TestRole#test_role[12-/kapis/iam.kubesphere.io/v1alpha2/globalroles/wx-role-nan-删除角色-删除角色wx-role-delete-critical-r.json()","307","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_create_volume_for_service","6535",""
-"passed","testDevops.TestDevOps#test_search_devops","314",""
-"passed","testProject.TestProject#test_edit_project_quota_cpu_memory","979",""
-"passed","testProject.TestProject#test_edit_project_quota","930",""
-"passed","testAppManage.TestAppTemplate#test_app_repo[1-/kapis/openpitrix.io/v1/workspaces/test-app/repos-{""name"":"""",""repoType"":""Helm"",""type"":""https"",""visibility"":""public"",""credential"":""{}"",""providers"":","11045","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testDevops.TestDevOps#test_devops_invite_user","323",""
-"failed","testProject.TestProject#test_edit_project_quota_memory","910",""
-"passed","testRole.TestRole#test_role[1-/kapis/iam.kubesphere.io/v1alpha2/globalroles?sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator-nan-查询角色-查询所有角色信息-get-normal-r.json()['items'][0]['metadata']","797","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_edit_project","315",""
-"passed","testDevops.TestDevOps#test_create_devops","649",""
-"passed","testWorkspace.TestWorkSpace#test_ws[22-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=ad&sortBy=createTime&limit=10-nan-企业空间设置-企业成员-在企业空间ws1-for-test-ws模糊查询企业成员-get-normal-r.json()['items'][0]['metadata']","288","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testHelp.TestHelp#test_help","241","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_user","288","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testDevops.TestDevOps#test_devops_role_delete","325",""
-"passed","testProject.TestProject#test_project[17-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/volumesnapshots?name=testshot&sortBy=createTime&limit=10-nan-存储管理-存储卷快照-在存储卷快照列表精确查询存在的快照-get-normal-r.json()['items'][0]['metadata']","310","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_add_work_replica","6155",""
-"passed","testWorkspace.TestWorkSpace#test_edit_quota","954",""
-"passed","testWorkspace.TestWorkSpace#test_ws[7-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles?name=admin-nan-企业空间设置-企业角色-模糊查询企业空间ws1-for-test-ws的角色-get-normal-r.json()['items'][0]['metadata']","345","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project","317","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_get_statefulstes_by_name","2969",""
-"passed","testWorkspace.TestWorkSpace#test_ws[1-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws-{""metadata"":{""name"":""ws1-for-test-ws"",""annotations"":{""kubesphere.io/creator"":""admin"",""kubesphere.io/alias-name"":""我是别名"",""kubesphere.io/description"":""我是描述信息""}}}-企业空间列表-修改企业空间ws1-for-test-ws信息-patch-critical-r.json()['metadata']['annotations']","322","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_create_volume_for_deployment","11615",""
-"passed","testProject.TestProject#test_query_job_status_completed","307",""
-"passed","testProject.TestProject#test_project[9-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims?name=wx1-nan-存储管理-存储卷-按名称查询不存的存储卷-get-normal-r.json()","308","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[25-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces-{""apiVersion"":""v1"",""kind"":""Namespace"",""metadata"":{""name"":""wx-project"",""labels"":{""kubesphere.io/workspace"":""ws1-for-test-ws""},""annotations"":{""kubesphere.io/creator"":""admin""}}}-项目管理-在企业空间ws1-for-test-ws创建项目wx-project-post-critical-r.json()['metadata']","298","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_edit_container_quota_wrong_cpu_1","628",""
-"passed","testDevops.TestDevOps#test_devops_role_create","316",""
-"passed","testUser.TestUser#test_user[1-/kapis/iam.kubesphere.io/v1alpha2/users-nan-查询用户-查询所有用户信息-get-normal-r.json()['items'][0]['metadata']","355","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_fuzzy_query_work_by_name","368",""
-"passed","testProject.TestProject#test_query_job_status_running","1238",""
-"passed","testProject.TestProject#test_project[7-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims?name=testvolume-nan-存储管理-存储卷-按名称精确查询存在的存储卷-get-normal-r.json()['items'][0]['metadata']","310","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[38-/api/v1/namespaces/test-project/serviceaccounts-{""apiVersion"":""v1"",""kind"":""ServiceAccount"",""metadata"":{""namespace"":""test-project"",""labels"":{},""name"":""test-sa"",""annotations"":{""kubesphere.io/creator"":""admin""}}}-配置中心-服务账号-使用重复的名称创建sa-post-critical-r.json()","304","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"broken","testDevops.TestDevOps#test_create_pipeline","1072",""
-"passed","testWorkspace.TestWorkSpace#test_ws","315","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[11-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims?name=test-project-volume&status=lost-nan-存储管理-存储卷-按名称和状态组合查询不存在的存储卷-get-normal-r.json()","304","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[6-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles?name=ws1-for-test-ws-admin-nan-企业空间设置-企业角色-查询企业空间ws1-for-test-ws的指定角色-get-normal-r.json()['items'][0]['metadata']","340","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_user[9-/kapis/iam.kubesphere.io/v1alpha2/users/wx/password-{""password"":""P@88w0rd"",""rePassword"":""P@88w0rd""}-编辑用户-修改用户密码-put-critical-r.json()","326","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[11-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":"""",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""","313","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[45-/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies?workspace=ws-for-test-project&limit=-1-nan-项目设置-网络隔离-查看添加的集群内部白名单-get-critical-r.json()","302","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testHelp.TestHelp#test_help","246","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppStoreManage.TestManageApp#test_ws_role_user[3-/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm%2Ckeyword%3Dramq&reverse=true-nan-应用商店-在应用商店列表查询不存在的应用-get-normal-r.json()","314","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppStoreManage.TestManageApp#test_delete_category","938",""
-"passed","testWorkspace.TestWorkSpace#test_create_wrong_name_1_department","317",""
-"passed","testAppStoreManage.TestManageApp#test_ws_role_user[5-/kapis/openpitrix.io/v1/reviews?&conditions=keyword%3Dngin-nan-应用审核-在应用审核页面已处理列表模糊查询存在应用-get-normal-r.json()['items'][0]","307","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testDevops.TestDevOps#test_devops_role_one","321",""
-"passed","testDevops.TestDevOps#test_devops_edit_user","316",""
-"passed","testAppManage.TestAppTemplate#test_get_app_template","1674",""
-"passed","testAppManage.TestAppTemplate#test_add_version","1921",""
-"passed","testUser.TestUser#test_user","313","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws_invite_user","304",""
-"passed","testRole.TestRole#test_role[3-/kapis/iam.kubesphere.io/v1alpha2/globalroles?name=wx-role-nan-查询角色-查询不存在的角色信息-get-normal-r.json()","299","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws_edit_invite_user","612",""
-"passed","testProject.TestProject#test_delete_volume","734",""
-"passed","testProject.TestProject#test_delete_job","637",""
-"passed","testProject.TestProject#test_project[24-/api/v1/namespaces/test-project/secrets-{""apiVersion"":""v1"",""kind"":""Secret"",""metadata"":{""namespace"":""test-project"",""labels"":{},""name"":""wx-secret2"",""annotations"":{""kubesphere.io/creator"":""admin""}},""type"":""kubernetes.io/dockerconfigjson"",""spec"":{""template"":{""metadata"":{""labels"":{}}}},""data"":{"".dockerconfigjson"":""eyJhdXRocyI6eyJodHRwczovL3d4Ijp7InVzZXJuYW1lIjoicm9vdCIsInBhc3N3b3JkIjoiYWRtaW4iLCJlbWFpbCI6IiIsImF1dGgiOiJjbTl2ZERwaFpHMXBiZz09In19fQ==""}}-配置中心-秘钥-创建镜像仓库秘钥-post-critical-r.json()['data']","356","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[27-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx-project-nan-项目管理-在企业空间ws1-for-test-ws中精确查询存在的项目-get-normal-r.json()['items'][0]['metadata']","295","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_query_no_pod","335",""
-"passed","testProject.TestProject#test_get_deployment_by_status","4306",""
-"passed","testAppStoreManage.TestManageApp#test_ws_role_user[4-/kapis/openpitrix.io/v1/reviews?&conditions=keyword%3Dnginx-nan-应用审核-在应用审核页面已处理列表精确查询存在的应用-get-normal-r.json()['items'][0]","305","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_delete_job_no","309",""
-"passed","testProject.TestProject#test_project_user_none","314",""
-"passed","testProject.TestProject#test_project_role_edit_authority","982",""
-"passed","testProject.TestProject#test_get_statefulstes_by_status","6965",""
-"passed","testProject.TestProject#test_project[50-/kapis/resources.kubesphere.io/v1alpha3/namespaces/wx/deployments?name=wwwww&sortBy=updateTime&limit=10-nan-应用负载-工作负载-按名称查询不存在的deployment-get-normal-r.json()","300","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_user[3-/kapis/iam.kubesphere.io/v1alpha2/users?name=wx-nan-查询用户-查询不存在用户信息-get-normal-r.json()","299","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project_role_fuzzy","346",""
-"passed","testDevops.TestDevOps#test_devops_role_create_name_none","298",""
-"passed","testProject.TestProject#test_edit_project_quota_wrong_cpu","629",""
-"passed","testProject.TestProject#test_project_role_none","316",""
-"passed","testDevops.TestDevOps#test_search_devops_no","325",""
-"passed","testProject.TestProject#test_project[6-/api/v1/namespaces/test-project/persistentvolumeclaims-{""apiVersion"":""v1"",""kind"":""PersistentVolumeClaim"",""metadata"":{""namespace"":""test-project"",""name"":""-testvolume1"",""labels"":{},""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""accessModes"":[""ReadWriteOnce""],""resources"":{""requests"":{""storage"":""10Gi""}},""storageClassName"":""csi-standard""},""create_way"":""storageclass""}-存储管理-存储卷-创建存储卷时输入不符合规则的存储卷名称(以分隔符开头)-post-normal-r.json()['message']-PersistentVolumeClaim ""-testvolume1"" is invalid: metadata.name: Invalid value: ""-testvolume1"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","334","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_delete_running_job","1601",""
-"passed","testWorkspace.TestWorkSpace#test_unbind_user","939",""
-"passed","testProject.TestProject#test_project[29-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/secrets?name=wx-secret5-nan-配置中心-秘钥-查询不存在的秘钥-get-critical-r.json()","319","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppStoreManage.TestManageApp#test_ws_role_user[9-/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm%2Ccategory_id%3Dctg-uncategorized%2Ckeyword%3Dninx&reverse=true-nan-应用分类-在应用分类列表中查询不存在的应用nginx-get-normal-r.json()","315","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project_role_create_name_none","317",""
-"passed","testWorkspace.TestWorkSpace#test_ws[23-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws-{""spec"":{""template"":{""spec"":{""networkIsolation"":False}}}}-企业空间设置-基本信息-开启企业空间ws1-for-test-ws网络隔离-patch-critical-r.json()['spec']['template']['spec']","313","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_edit_project_quota_resource","908",""
-"passed","testAppManage.TestAppTemplate#test_delete_app_repository","36851",""
-"passed","testProject.TestProject#test_project_delete_user","301",""
-"passed","testProject.TestProject#test_project","297","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_edit_container_quota_wrong_cpu","621",""
-"passed","testProject.TestProject#test_project_role_all","323",""
-"passed","testProject.TestProject#test_project[47-/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies-{""apiVersion"":""network.kubesphere.io/v1alpha1"",""kind"":""NamespaceNetworkPolicy"",""metadata"":{""namespace"":""test-project"",""name"":""policy-from-sdf6k0"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""ingress"":[{""ports"":[{""port"":88,""protocol"":""TCP""}],""from"":[{""ipBlock"":{""cidr"":""192.168.0.12/34""}}]}]}}-项目设置-网络隔离-添加集群外部ip地址白名单(入口)-post-critical-r.json()['metadata']","308","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[18-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/volumesnapshots?name=tests&sortBy=createTime&limit=10-nan-存储管理-存储卷快照-在存储卷快照列表模糊查询存在的快照-get-normal-r.json()['items'][0]['metadata']","313","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_edit_project_quota_wrong_resource_1","608",""
-"passed","testWorkspace.TestWorkSpace#test_ws[18-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role-nan-企业空间设置-企业角色-在企业空间ws1-for-test-ws删除角色wx-role-delete-critical-r.json()","316","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_user","306","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_edit_project_quota_wrong_memory","615",""
-"passed","testProject.TestProject#test_fuzzy_query_job","314",""
-"passed","testWorkspace.TestWorkSpace#test_ws[3-/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=test-ws-nan-企业空间列表-模糊查询存在的企业空间-get-normal-r.json()['items'][0]['metadata']","348","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_user[16-/kapis/iam.kubesphere.io/v1alpha2/users/wx-nan-删除用户-删除用户wx-delete-critical-r.json()","308","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_edit_container_quota_wrong_memory","636",""
-"passed","testProject.TestProject#test_create_gateway","1330",""
-"passed","testHelp.TestHelp#test_help","240","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_query_work_by_name","310",""
-"passed","testUser.TestUser#test_user[14-/kapis/iam.kubesphere.io/v1alpha2/users-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""User"",""metadata"":{""name"":""wx@wx"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""email"":""stevewen@yunify.com"",""password"":""P@88w0rd""}}-添加用户-增加用户（用户名包含符号）-post-normal-r.text-User.iam.kubesphere.io ""wx@wx"" is invalid: metadata.name: Invalid value: ""wx@wx"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","339","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testHelp.TestHelp#test_help","1976","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testHelp.TestHelp#test_help","234","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_user","302","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testDevops.TestDevOps#test_devops_role_edit_authority","610",""
-"passed","testProject.TestProject#test_create_route","5374",""
-"passed","testProject.TestProject#test_edit_gateway","1527",""
-"passed","testProject.TestProject#test_project_invite_user","321",""
-"passed","testAppManage.TestAppTemplate#test_get_app","8042",""
-"passed","testAppStoreManage.TestManageApp#test_check_apps_detail","10730",""
-"passed","testAppManage.TestAppTemplate#test_app_repo[4-/kapis/openpitrix.io/v1/workspaces/test-app/repos?conditions=keyword%3Dtest-app'-nan-应用管理-应用仓库-查询不存在的应用仓库-get-normal-r.json()","304","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testRole.TestRole#test_role[2-/kapis/iam.kubesphere.io/v1alpha2/globalroles?name=users-manager-nan-查询角色-查询指定角色信息-get-normal-r.json()['items'][0]['metadata']","306","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testDevops.TestDevOps#test_fuzzy_search_credential","615",""
-"passed","testProject.TestProject#test_project_delete_role","1270",""
-"passed","testProject.TestProject#test_project[35-/api/v1/namespaces/test-project/configmaps/wx-peizhi-nan-配置中心-配置-删除配置-delete-critical-r.json()","312","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[36-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/serviceaccounts-nan-配置中心-服务账号-服务账号页面默认显示sa信息-get-normal-r.json()['items'][0]['metadata']","309","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppStoreManage.TestManageApp#test_ws_role_user[7-/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm%2Ccategory_id%3Dctg-uncategorized%2Ckeyword%3Dnginx&reverse=true-nan-应用分类-在应用分类列表中精确查询存在的应用nginx-get-normal-r.json()['items'][0]","311","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_create_workload","5126",""
-"passed","testRole.TestRole#test_role","305","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[2-/api/v1/namespaces/test-project/limitranges-{""apiVersion"":""v1"",""kind"":""LimitRange"",""metadata"":{""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""limits"":[{""default"":{""cpu"":""2"",""memory"":""4000Mi""},""defaultRequest"":{""cpu"":""1"",""memory"":""500Mi""},""type"":""Container""}]}}-项目设置-基本信息-设置项目test-project容器资源默认配置-post-critical-r.json()['spec']['limits'][0]['default']","334","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[44-/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies-{""apiVersion"":""network.kubesphere.io/v1alpha1"",""kind"":""NamespaceNetworkPolicy"",""metadata"":{""namespace"":""test-project"",""name"":""policy-from-tlsxjr"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""ingress"":[{""from"":[{""namespace"":{""name"":""test-project""}}]}]}}-项目设置-网络隔离-添加集群内部白名单(入口)-post-critical-r.json()['metadata']","305","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[2-/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=ws1-for-test-ws&sortBy=createTime&limit=10-nan-企业空间列表-精确查询企业空间-get-normal-r.json()['items'][0]['metadata']","318","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testDevops.TestDevOps#test_create_account_credential","324",""
-"passed","testWorkspace.TestWorkSpace#test_ws[13-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""WX"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-企业空间设置-企业角色-在企业空间auoto-wx-ws创建角色( 角色名包含大写字母）-post-critical-r.text-WorkspaceRole.iam.kubesphere.io ""WX"" is invalid: metadata.name: Invalid value: ""WX"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","327","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_user[7-/kapis/iam.kubesphere.io/v1alpha2/users-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""User"",""metadata"":{""name"":""wx2"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""email"":""stevewen9@yunify.com"",""password"":""""}}-添加用户-增加用户(不输入密码)-post-critical-r.json()['metadata']","307","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_precise_query_pod","1059",""
-"passed","testWorkspace.TestWorkSpace#test_ws[19-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?sortBy=createTime&limit=10-nan-企业空间设置-企业成员-在企业空间ws1-for-test-ws查看所有的企业成员-get-normal-r.json()['items'][0]['metadata']","314","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[21-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=qweasd&sortBy=createTime&limit=10-nan-企业空间设置-企业成员-在企业空间ws1-for-test-ws查看不存在的企业成员-get-normal-r.json()","317","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_user[18-/kapis/iam.kubesphere.io/v1alpha2/users/wx2-nan-删除用户-删除用户wx2-delete-critical-r.json()","330","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[10-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims?status=lost-nan-存储管理-存储卷-按状态查询不存在的存储卷-get-normal-r.json()","301","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[5-/api/v1/namespaces/test-project/persistentvolumeclaims-{""apiVersion"":""v1"",""kind"":""PersistentVolumeClaim"",""metadata"":{""namespace"":""test-project"",""name"":""testAvolume1"",""labels"":{},""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""accessModes"":[""ReadWriteOnce""],""resources"":{""requests"":{""storage"":""10Gi""}},""storageClassName"":""csi-standard""},""create_way"":""storageclass""}-存储管理-存储卷-创建存储卷时输入不符合规则的存储卷名称(包含大写字母)-post-normal-r.json()['message']-PersistentVolumeClaim ""testAvolume1"" is invalid: metadata.name: Invalid value: ""testAvolume1"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","338","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testHelp.TestHelp#test_help","239","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppManage.TestAppTemplate#test_delete_template_with_version","1077",""
-"passed","testProject.TestProject#test_project[8-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims?name=estvolume-nan-存储管理-存储卷-按名称模糊查询存在的存储卷-get-normal-r.json()['items'][0]['metadata']","315","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[22-/api/v1/namespaces/test-project/secrets-{""apiVersion"":""v1"",""kind"":""Secret"",""metadata"":{""namespace"":""test-project"",""labels"":{},""name"":""wx-secret"",""annotations"":{""kubesphere.io/creator"":""admin""}},""type"":""Opaque"",""spec"":{""template"":{""metadata"":{""labels"":{}}}},""data"":{""wx-key"":""d3gtdmFsdWU=""}}-配置中心-秘钥-创建默认类型秘钥-post-critical-r.json()['metadata']","311","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppManage.TestAppTemplate#test_app_repo[2-/kapis/openpitrix.io/v1/workspaces/test-app/repos-{""name"":""test-demo"",""repoType"":""Helm"",""type"":""https"",""visibility"":""public"",""credential"":""{}"",""providers"":","306","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_edit_container_quota_cpu","920",""
-"passed","testAppStoreManage.TestManageApp#test_ws_role_user[8-/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm%2Ccategory_id%3Dctg-uncategorized%2Ckeyword%3Dngin&reverse=true-nan-应用分类-在应用分类类表中模糊查询存在的应用-get-normal-r.json()['items'][0]","294","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_assign_user","1228",""
-"passed","testProject.TestProject#test_project[13-/apis/snapshot.storage.k8s.io/v1beta1/namespaces/test-project/volumesnapshots-{""apiVersion"":""snapshot.storage.k8s.io/v1beta1"",""kind"":""VolumeSnapshot"",""metadata"":{""name"":""testshot"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""volumeSnapshotClassName"":""csi-ssd-enterprise"",""source"":{""kind"":""PersistentVolumeClaim"",""persistentVolumeClaimName"":""testvolume""}}}-存储管理-存储卷快照-创建存储卷快照-post-normal-r.json()['spec']","310","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[16-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""wx-"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-企业空间设置-企业角色-在企业空间auoto-wx-ws创建角色( 角色名以分隔符结尾）-post-critical-r.text-WorkspaceRole.iam.kubesphere.io ""wx-"" is invalid: metadata.name: Invalid value: ""wx-"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","327","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[32-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces/wx-project-nan-项目管理-在企业空间ws1-for-test-ws删除项目wx-project-delete-critical-r.json()","329","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppStoreManage.TestManageApp#test_ws_role_user[1-/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm%2Ckeyword%3Drabbitmq&reverse=true-nan-应用商店-在应用商店列表精确查询存在的应用rabbitmq-get-normal-r.json()['items'][0]","298","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_user","317","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testDevops.TestDevOps#test_search_credential_no","336",""
-"passed","testDevops.TestDevOps#test_devops_role_all","303",""
-"passed","testAppManage.TestAppTemplate#test_app_check_reject","3907",""
-"passed","testWorkspace.TestWorkSpace#test_ws[29-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx1-nan-项目管理-在企业空间ws1-for-test-ws中查询不存在的项目-get-normal-r.json()","329","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[24-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws-{""spec"":{""template"":{""spec"":{""networkIsolation"":True}}}}-企业空间设置-基本信息-关闭企业空间ws1-for-test-ws网络隔离-patch-critical-r.json()['spec']['template']['spec']","315","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[19-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/volumesnapshots?name=whot&sortBy=createTime&limit=10-nan-存储管理-存储卷快照-在存储卷快照列表查询不存在的快照-get-normal-r.json()","303","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testDevops.TestDevOps#test_delete_credential","1561",""
-"passed","testHelp.TestHelp#test_help","240","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testRole.TestRole#test_role[5-/kapis/iam.kubesphere.io/v1alpha2/globalroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""GlobalRole"",""rules"":[],""metadata"":{""name"":"""",""annotations"":{""kubesphere.io/description"":""新建角色"",""iam.kubesphere.io/aggregation-roles"":""","323","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_user[2-/kapis/iam.kubesphere.io/v1alpha2/users?name=admin-nan-查询用户-查询指定用户信息-get-normal-r.json()['items'][0]['metadata']","318","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_edit_ws_role","1922",""
-"passed","testAppManage.TestAppTemplate#test_get_app_repository","11681",""
-"passed","testProject.TestProject#test_project[33-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/configmaps?name=wx-nan-配置中心-配置-模糊查询配置-get-critical-r.json()['items'][0]['metadata']","316","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws_delete_invite_user","638",""
-"passed","testProject.TestProject#test_project[34-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/configmaps?name=wx-peizhi2-nan-配置中心-配置-查询不存在的配置-get-critical-r.json()","301","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testDevops.TestDevOps#test_fuzzy_search_devops","338",""
-"passed","testProject.TestProject#test_project[32-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/configmaps?name=wx-peizhi-nan-配置中心-配置-精确查询存在的配置-get-critical-r.json()['items'][0]['metadata']","300","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[39-/api/v1/namespaces/test-project/serviceaccounts-{""apiVersion"":""v1"",""kind"":""ServiceAccount"",""metadata"":{""namespace"":""test-project"",""labels"":{},""name"":"""",""annotations"":{""kubesphere.io/creator"":""admin""}}}-配置中心-服务账号-不输入名称创建sa-post-critical-r.json()","304","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[40-/api/v1/namespaces/test-project/serviceaccounts-{""apiVersion"":""v1"",""kind"":""ServiceAccount"",""metadata"":{""namespace"":""test-project1"",""labels"":{},""name"":""111"",""annotations"":{""kubesphere.io/creator"":""admin""}}}-配置中心-服务账号-在编辑sa时修改namespace-post-critical-r.json()","317","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[20-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=admin&sortBy=createTime&limit=10-nan-企业空间设置-企业成员-在企业空间ws1-for-test-ws查看指定的企业成员-get-normal-r.json()['items'][0]['metadata']","316","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testDevops.TestDevOps#test_devops_user_fuzzy","291",""
-"passed","testWorkspace.TestWorkSpace#test_ws[15-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""-wx"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-企业空间设置-企业角色-在企业空间auoto-wx-ws创建角色( 角色名以分隔符开头）-post-critical-r.text-WorkspaceRole.iam.kubesphere.io ""-wx"" is invalid: metadata.name: Invalid value: ""-wx"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","379","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppStoreManage.TestManageApp#test_ws_role_user[2-/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm%2Ckeyword%3Drabbit&reverse=true-nan-应用商店-在应用商店列表模糊查询存在的应用-get-normal-r.json()['items'][0]","349","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppStoreManage.TestManageApp#test_change_category","1241",""
-"passed","testProject.TestProject#test_project[48-/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies/policy-to-girf49-nan-项目设置-网络隔离-删除集群内部白名单-delete-critical-r.json()","306","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[17-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role-{""metadata"": {""name"": ""wx-role"",
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[17-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role-{""metadata"": {""name"": ""wx-role"",
              ""labels"": {""kubesphere.io/workspace"":""ws1-for-test-ws""},
              ""annotations"": {""iam.kubesphere.io/aggregation-roles"": ""[\""role-template-create-projects\"",""
                                                                     ""\""role-template-view-basic\""]"",
@@ -1436,7 +275,7 @@
                             ""kubesphere.io/description"": ""我是描述""
                              }
              },
-}-企业空间设置-企业角色-在企业空间ws1-for-test-ws修改角色wx-role的基本信息-patch-critical-r.json()['metadata']['annotations']","328","
+}-企业空间设置-企业角色-在企业空间ws1-for-test-ws修改角色wx-role的基本信息-patch-critical-r.json()['metadata']['annotations']","316","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -1446,33 +285,7 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_edit_container_quota_memory","912",""
-"passed","testProject.TestProject#test_project","324","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testDevops.TestDevOps#test_devops_role_none","319",""
-"passed","testProject.TestProject#test_delete_pod_no","308",""
-"passed","testProject.TestProject#test_project[12-/api/v1/namespaces/test-project/persistentvolumeclaims/testvolume-nan-存储管理-存储卷快照-查看存储卷testvolume详情-get-critical-r.json()['spec']['accessModes']","322","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_get_deployment_by_name","4380",""
-"passed","testRole.TestRole#test_role[4-/kapis/iam.kubesphere.io/v1alpha2/globalroles?name=manager-nan-查询角色-模糊查询角色信息-get-normal-r.json()","307","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[28-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=w--项目管理-在企业空间ws1-for-test-ws中模糊查询存在的项目-get-normal-r.json()['items'][0]['metadata']","301","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -1482,18 +295,7 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testHelp.TestHelp#test_help","236","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[28-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=w-nan-项目管理-在企业空间ws1-for-test-ws中模糊查询存在的项目-get-normal-r.json()['items'][0]['metadata']","312","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[6-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles?name=ws1-for-test-ws-admin--企业空间设置-企业角色-查询企业空间ws1-for-test-ws的指定角色-get-normal-r.json()['items'][0]['metadata']","278","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -1503,97 +305,7 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testHelp.TestHelp#test_help","250","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[1-/api/v1/namespaces/test-project/resourcequotas-{""apiVersion"":""v1"",""kind"":""ResourceQuota"",""metadata"":{""name"":""test-project"",""namespace"":""test-project"",""cluster"":""default"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""hard"":{""limits.cpu"":""2"",""requests.cpu"":""1"",""requests.memory"":""2Gi""}}}-项目设置-基本信息-设置项目test-project配额-post-critical-r.json()['spec']['hard']","336","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[26-/api/v1/namespaces/test-project/secrets-{""apiVersion"":""v1"",""kind"":""Secret"",""metadata"":{""namespace"":""test-project"",""labels"":{},""name"":""wx-secret4"",""annotations"":{""kubesphere.io/creator"":""admin""}},""type"":"""",""spec"":{""template"":{""metadata"":{""labels"":{}}}},""data"":{""wx-key"":""d3gtdmFsdWU=""}}-配置中心-秘钥-创建自定义类型秘钥-post-critical-r.json()['data']","321","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppManage.TestAppTemplate#test_app_repo[5-/kapis/openpitrix.io/v1/workspaces/test-app/apps?conditions=keyword%3Dtest-app' -nan-应用管理-应用模版-查询不存在的应用模版-get-normal-r.json()","310","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppManage.TestAppTemplate#test_app_repo[3-/kapis/openpitrix.io/v1/workspaces/test-app/repos-{""name"":""test-demo"",""repoType"":""Helm"",""type"":""https"",""visibility"":""public"",""credential"":""{}"",""providers"":","318","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[27-/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/secrets?name=wx-secret4-nan-配置中心-秘钥-精确查询存在的秘钥-get-critical-r.json()['items'][0]['metadata']","305","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_project[20-/api/v1/namespaces/test-project/persistentvolumeclaims/test-project-vol-nan-存储管理-存储卷-在项目test-project中删除不存在的存储卷test-project-vol-delete-critical-r.json()","296","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testHelp.TestHelp#test_help","244","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testWorkspace.TestWorkSpace#test_ws[14-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""wx@wx"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-企业空间设置-企业角色-在企业空间auoto-wx-ws创建角色( 角色名包含符号，非分隔符）-post-critical-r.text-WorkspaceRole.iam.kubesphere.io ""wx@wx"" is invalid: metadata.name: Invalid value: ""wx@wx"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","457","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[10-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""wx-role1"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-create-projects\"",\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-企业空间设置-企业角色-在企业空间auoto-wx-ws创建角色wx-role1（该角色有项目创建的权限）-post-critical-r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']-","289","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -1603,56 +315,8 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_project_edit_user","322",""
-"passed","testHelp.TestHelp#test_help","256","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_create_volume_for_daemonsets","11686",""
-"passed","testProject.TestProject#test_project[46-/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies-{""apiVersion"":""network.kubesphere.io/v1alpha1"",""kind"":""NamespaceNetworkPolicy"",""metadata"":{""namespace"":""test-project"",""name"":""policy-to-7gmirw"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""egress"":[{""ports"":[{""port"":80,""protocol"":""TCP""}],""to"":[{""ipBlock"":{""cidr"":""192.168.1.1/24""}}]}]}}-项目设置-网络隔离-添加集群外部ip地址白名单(出口)-post-critical-r.json()['metadata']","295","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testHelp.TestHelp#test_help","5147","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testAppManage.TestAppTemplate#test_suspend_app_template","8882",""
-"passed","testAppManage.TestAppTemplate#test_add_app_repository","23888",""
-"passed","testProject.TestProject#test_project[37-/api/v1/namespaces/test-project/serviceaccounts-{""apiVersion"":""v1"",""kind"":""ServiceAccount"",""metadata"":{""namespace"":""test-project"",""labels"":{},""name"":""test-sa"",""annotations"":{""kubesphere.io/creator"":""admin""}}}-配置中心-服务账号-创建sa 'test-sa'-post-critical-r.json()['metadata']","314","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testUser.TestUser#test_edit_user","4290",""
-"passed","testUser.TestUser#test_user[4-/kapis/iam.kubesphere.io/v1alpha2/users?name=a-nan-查询用户-模糊查询用户信息-get-normal-r.json()['items'][0]['metadata']","324","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_create_rename_department","906",""
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[27-/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx-project--项目管理-在企业空间ws1-for-test-ws中精确查询存在的项目-get-normal-r.json()['items'][0]['metadata']","300","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -1662,21 +326,7 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testDevops.TestDevOps#test_devops_user_one","302",""
-"passed","testProject.TestProject#test_project_role_create","338",""
-"passed","testProject.TestProject#test_project[16-/apis/snapshot.storage.k8s.io/v1beta1/namespaces/test-project/volumesnapshots-{""apiVersion"":""snapshot.storage.k8s.io/v1beta1"",""kind"":""VolumeSnapshot"",""metadata"":{""name"":""-snapshot"",""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""volumeSnapshotClassName"":""csi-ssd-enterprise"",""source"":{""kind"":""PersistentVolumeClaim"",""persistentVolumeClaimName"":""test-project-volume""}}}-存储管理-存储卷快照-创建存储卷快照时输入不符合规则的快照名称(已分隔符开头)-post-normal-r.json()['message']-VolumeSnapshot.snapshot.storage.k8s.io ""-snapshot"" is invalid: metadata.name: Invalid value: ""-snapshot"": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*","328","
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        "
-"passed","testProject.TestProject#test_delete_volume_snapshot","642",""
-"passed","testWorkspace.TestWorkSpace#test_ws[10-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles-{""apiVersion"":""iam.kubesphere.io/v1alpha2"",""kind"":""WorkspaceRole"",""rules"":[],""metadata"":{""name"":""wx-role1"",""annotations"":{""iam.kubesphere.io/aggregation-roles"":""[\""role-template-create-projects\"",\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin""}}}-企业空间设置-企业角色-在企业空间auoto-wx-ws创建角色wx-role1（该角色有项目创建的权限）-post-critical-r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']-","332","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[5-/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles--企业空间设置-企业角色-查询企业空间ws1-for-test-ws的所有角色-get-normal-r.json()","323","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -1686,8 +336,8 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
-"passed","testProject.TestProject#test_create_daemonsets","4153",""
-"passed","testRole.TestRole#test_role[8-/kapis/iam.kubesphere.io/v1alpha2/globalroles/wx-role-{""metadata"": {""name"": ""wx-role"", ""annotations"": {""iam.kubesphere.io/aggregation-roles"": ""[\""role-template-manage-clusters\"",""""\""role-template-view-clusters\"",""""\""role-template-view-basic\""]"",""kubesphere.io/creator"":""admin"",""kubesphere.io/description"":""新建角色"",""kubesphere.io/alias-name"":""eait-role123""}}}-添加角色-编辑角色非权限信息-patch-critical-r.json()['metadata']['annotations']","308","
+"passed","TestCase.testWorkspace.TestWorkSpace#test_department","1198",""
+"passed","TestCase.testWorkspace.TestWorkSpace#test_ws[31-/api/v1/namespaces/wx-project/limitranges-{""apiVersion"":""v1"",""kind"":""LimitRange"",""metadata"":{""annotations"":{""kubesphere.io/creator"":""admin""}},""spec"":{""limits"":[{""default"":{""cpu"":""2"",""memory"":""4000Mi""},""defaultRequest"":{""cpu"":""1"",""memory"":""500Mi""},""type"":""Container""}]}}-概览-设置项目wx-project容器资源默认配置-post-critical-r.json()['spec']['limits'][0]['default']","305","
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -1697,3 +347,5 @@
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
         "
+"passed","TestCase.testWorkspace.TestWorkSpace#test_create_wrong_name_department","300",""
+"passed","TestCase.testWorkspace.TestWorkSpace#test_create_wrong_name_1_department","289",""

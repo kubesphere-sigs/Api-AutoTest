@@ -1,3405 +1,545 @@
 {
   "uid" : "98d3104e051c652961429bf95fa0b5d6",
   "children" : [ {
-    "name" : "testProject",
+    "name" : "TestCase",
     "children" : [ {
-      "name" : "TestProject",
+      "name" : "testWorkspace",
       "children" : [ {
-        "name" : "创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常",
-        "uid" : "17124c544caceb5c",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528477419,
-          "stop" : 1622528489034,
-          "duration" : 11615
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建存储卷，然后将存储卷绑定到新建的statefulsets上，最后验证资源和存储卷的状态正常",
-        "uid" : "864e7780f2d43877",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528489044,
-          "stop" : 1622528501254,
-          "duration" : 12210
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建存储卷，然后将存储卷绑定到新建的daemonsets上，最后验证资源和存储卷的状态正常",
-        "uid" : "f0d9de7f6cd87802",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528501259,
-          "stop" : 1622528512945,
-          "duration" : 11686
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建存储卷，然后将存储卷绑定到新建的service上，最后验证资源和存储卷的状态正常",
-        "uid" : "16ba582ba603d63",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528512951,
-          "stop" : 1622528519486,
-          "duration" : 6535
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查看project工程默认的所有角色",
-        "uid" : "ecac577a9985d18f",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528519489,
-          "stop" : 1622528519812,
-          "duration" : 323
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查找project工程中指定的角色",
-        "uid" : "59d1ee5c83dafaf6",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528519818,
-          "stop" : 1622528520127,
-          "duration" : 309
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查找project工程中不存在的角色",
-        "uid" : "5e26d1945fa0e49a",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528520132,
-          "stop" : 1622528520448,
-          "duration" : 316
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "模糊查找project工程中的角色",
-        "uid" : "dca7c240048ee89",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528520452,
-          "stop" : 1622528520798,
-          "duration" : 346
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在project工程中创建角色",
-        "uid" : "7ca59053de891a0c",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528520801,
-          "stop" : 1622528521139,
-          "duration" : 338
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在project工程中创建角色-角色名称为空",
-        "uid" : "5b3e83871bbfca60",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528521141,
-          "stop" : 1622528521458,
-          "duration" : 317
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在project工程中编辑角色基本信息",
-        "uid" : "5ee10442052d7e5a",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528521461,
-          "stop" : 1622528522100,
-          "duration" : 639
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在project工程中编辑角色的权限信息",
-        "uid" : "3f11bf809c72491c",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528522102,
-          "stop" : 1622528523084,
-          "duration" : 982
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在project工程中删除角色",
-        "uid" : "65e15a3a98e504ae",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528523087,
-          "stop" : 1622528524357,
-          "duration" : 1270
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查看project默认的所有用户",
-        "uid" : "a307232e17bea7a4",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528524359,
-          "stop" : 1622528524651,
-          "duration" : 292
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查找project指定的用户",
-        "uid" : "817e1396ba99582d",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528524654,
-          "stop" : 1622528524959,
-          "duration" : 305
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "模糊查找project的用户",
-        "uid" : "53835f0aa51f84a5",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528524962,
-          "stop" : 1622528525269,
-          "duration" : 307
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查找project工程不存在的用户",
-        "uid" : "971f03bc23ff17b2",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528525272,
-          "stop" : 1622528525586,
-          "duration" : 314
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "邀请用户到project",
-        "uid" : "1180a08edb12281f",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528525589,
-          "stop" : 1622528525910,
-          "duration" : 321
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "编辑project成员的角色",
-        "uid" : "8f29138d9c50d527",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528525913,
-          "stop" : 1622528526235,
-          "duration" : 322
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除project的成员",
-        "uid" : "21159d20dded141e",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528526238,
-          "stop" : 1622528526539,
-          "duration" : 301
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建任务，并验证运行正常",
-        "uid" : "671f1816081de16a",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528526542,
-          "stop" : 1622528547174,
-          "duration" : 20632
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按名称模糊查询存在的任务",
-        "uid" : "d097331b9a6bb4f9",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528547179,
-          "stop" : 1622528547493,
-          "duration" : 314
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按状态查询已完成的任务",
-        "uid" : "d954516bc72303d5",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528547496,
-          "stop" : 1622528547803,
-          "duration" : 307
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按状态查询运行中的任务",
-        "uid" : "a6b7918a879f9907",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528547806,
-          "stop" : 1622528549044,
-          "duration" : 1238
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按名称精确查询存在的容器组",
-        "uid" : "5ee4881204fb60d3",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528549047,
-          "stop" : 1622528550106,
-          "duration" : 1059
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按名称模糊查询存在的容器组",
-        "uid" : "f077004874d2dd0c",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528550109,
-          "stop" : 1622528550508,
-          "duration" : 399
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按名称查询不存在的容器组",
-        "uid" : "1c11a6a9f581a671",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528550512,
-          "stop" : 1622528550847,
-          "duration" : 335
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查看容器组详情",
-        "uid" : "b2aafc01c77f022c",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528550849,
-          "stop" : 1622528551890,
-          "duration" : 1041
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除状态为已完成的容器组",
-        "uid" : "5bbbce6550c3fd7a",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528551893,
-          "stop" : 1622528552935,
-          "duration" : 1042
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除不存在的容器组",
-        "uid" : "99df445a9e6852c9",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528552939,
-          "stop" : 1622528553247,
-          "duration" : 308
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除状态为运行中的任务",
-        "uid" : "910e8bc29fefdcc7",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528553250,
-          "stop" : 1622528554851,
-          "duration" : 1601
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除状态为已完成的任务",
-        "uid" : "eb9e5d0315220d00",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528554853,
-          "stop" : 1622528555490,
-          "duration" : 637
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除不存在的任务",
-        "uid" : "79de778f7e5423c7",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528555492,
-          "stop" : 1622528555801,
-          "duration" : 309
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建未绑定存储卷的deployment，并验证运行成功",
-        "uid" : "cdf08f1f7647d9e7",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528555804,
-          "stop" : 1622528560930,
-          "duration" : 5126
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按状态查询存在的deployment",
-        "uid" : "61df9b4c780961df",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528560934,
-          "stop" : 1622528565240,
-          "duration" : 4306
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按名称查询存在的deployment",
-        "uid" : "96a7e2537adb29e3",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528565243,
-          "stop" : 1622528569623,
-          "duration" : 4380
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建未绑定存储卷的StatefulSets，并验证运行成功",
-        "uid" : "cbe93fb996dcb998",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528569627,
-          "stop" : 1622528575549,
-          "duration" : 5922
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按名称查询存在的StatefulSets",
-        "uid" : "689d754b33d660db",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528575555,
-          "stop" : 1622528578524,
-          "duration" : 2969
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按状态查询存在的StatefulSets",
-        "uid" : "794f7b71d1b59312",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528578527,
-          "stop" : 1622528585492,
-          "duration" : 6965
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建未绑定存储卷的DaemonSets，并验证运行成功",
-        "uid" : "b65ca6fa407e7638",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528585498,
-          "stop" : 1622528589651,
-          "duration" : 4153
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按状态查询存在的DaemonSets",
-        "uid" : "73f80f792f7bd790",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528589655,
-          "stop" : 1622528593965,
-          "duration" : 4310
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除service，并验证删除成功",
-        "uid" : "fa49fe44742e34a2",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528593968,
-          "stop" : 1622528595769,
-          "duration" : 1801
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "为服务创建应用路由",
-        "uid" : "62d27041123b0a84",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528595772,
-          "stop" : 1622528601146,
-          "duration" : 5374
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "设置网关-LoadBalancer",
-        "uid" : "dbb447c367102e09",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528601152,
-          "stop" : 1622528602482,
-          "duration" : 1330
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "编辑网关",
-        "uid" : "2024d4209c278b9",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528602487,
-          "stop" : 1622528604014,
-          "duration" : 1527
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "修改工作负载副本并验证运行正常",
-        "uid" : "64721169282776dc",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528604018,
-          "stop" : 1622528610173,
-          "duration" : 6155
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按状态查询存在的工作负载",
-        "uid" : "964fb0b802d93e9e",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528610176,
-          "stop" : 1622528610544,
-          "duration" : 368
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按名称精确查询存在的工作负载",
-        "uid" : "2ca376d9ae63f655",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528610549,
-          "stop" : 1622528610859,
-          "duration" : 310
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按名称查询不存在的工作负载",
-        "uid" : "86d35d1d3d631ee8",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528610862,
-          "stop" : 1622528611230,
-          "duration" : 368
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "工作负载设置弹性伸缩",
-        "uid" : "cff2c0dba2ac954a",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528611235,
-          "stop" : 1622528611674,
-          "duration" : 439
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除工作负载",
-        "uid" : "d0b791735e658b7d",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528611679,
-          "stop" : 1622528611993,
-          "duration" : 314
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建sa并验证sa内容正确、生成的密钥正确、然后删除sa",
-        "uid" : "f1314453adef4473",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528611996,
-          "stop" : 1622528613863,
-          "duration" : 1867
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "设置项目test-project配额",
-        "uid" : "5b02985d4677687b",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528613867,
-          "stop" : 1622528614203,
-          "duration" : 336
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['spec']['hard']['requests.memory']'", "'{\"apiVersion\":\"v1\",\"kind\":\"ResourceQuota\",\"metadata\":{\"name\":\"test-project\",\"namespace\":\"test-project\",\"cluster\":\"default\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"hard\":{\"limits.cpu\":\"2\",\"requests.cpu\":\"1\",\"requests.memory\":\"2Gi\"}}}'", "'2Gi'", "1", "'post'", "'critical'", "'项目设置-基本信息'", "'设置项目test-project配额'", "'/api/v1/namespaces/test-project/resourcequotas'" ]
-      }, {
-        "name" : "设置项目test-project容器资源默认配置",
-        "uid" : "a09ee0f504cbe04f",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528614213,
-          "stop" : 1622528614547,
-          "duration" : 334
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['spec']['limits'][0]['default']['memory']'", "'{\"apiVersion\":\"v1\",\"kind\":\"LimitRange\",\"metadata\":{\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"limits\":[{\"default\":{\"cpu\":\"2\",\"memory\":\"4000Mi\"},\"defaultRequest\":{\"cpu\":\"1\",\"memory\":\"500Mi\"},\"type\":\"Container\"}]}}'", "'4000Mi'", "2", "'post'", "'critical'", "'项目设置-基本信息'", "'设置项目test-project容器资源默认配置'", "'/api/v1/namespaces/test-project/limitranges'" ]
-      }, {
-        "name" : "创建存储卷时输入已存在的存储卷名称",
-        "uid" : "7a80d5db57531d89",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528614558,
-          "stop" : 1622528614877,
-          "duration" : 319
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "'{\"apiVersion\":\"v1\",\"kind\":\"PersistentVolumeClaim\",\"metadata\":{\"namespace\":\"test-project\",\"name\":\"testvolume\",\"labels\":{},\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"accessModes\":[\"ReadWriteOnce\"],\"resources\":{\"requests\":{\"storage\":\"10Gi\"}},\"storageClassName\":\"csi-standard\"},\"create_way\":\"storageclass\"}'", "'persistentvolumeclaims \"testvolume\" already exists'", "3", "'post'", "'critical'", "'存储管理-存储卷'", "'创建存储卷时输入已存在的存储卷名称'", "'/api/v1/namespaces/test-project/persistentvolumeclaims'" ]
-      }, {
-        "name" : "创建存储卷时输入不符合规则的存储卷名称(包含符号@)",
-        "uid" : "b7aba1cf5d245d57",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528614889,
-          "stop" : 1622528615225,
-          "duration" : 336
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "'{\"apiVersion\":\"v1\",\"kind\":\"PersistentVolumeClaim\",\"metadata\":{\"namespace\":\"test-project\",\"name\":\"test@volume1\",\"labels\":{},\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"accessModes\":[\"ReadWriteOnce\"],\"resources\":{\"requests\":{\"storage\":\"10Gi\"}},\"storageClassName\":\"csi-standard\"},\"create_way\":\"storageclass\"}'", "'PersistentVolumeClaim \"test@volume1\" is invalid: metadata.name: Invalid value: \"test@volume1\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "4", "'post'", "'normal'", "'存储管理-存储卷'", "'创建存储卷时输入不符合规则的存储卷名称(包含符号@)'", "'/api/v1/namespaces/test-project/persistentvolumeclaims'" ]
-      }, {
-        "name" : "创建存储卷时输入不符合规则的存储卷名称(包含大写字母)",
-        "uid" : "d35c22cac4bc526e",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528615239,
-          "stop" : 1622528615577,
-          "duration" : 338
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "'{\"apiVersion\":\"v1\",\"kind\":\"PersistentVolumeClaim\",\"metadata\":{\"namespace\":\"test-project\",\"name\":\"testAvolume1\",\"labels\":{},\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"accessModes\":[\"ReadWriteOnce\"],\"resources\":{\"requests\":{\"storage\":\"10Gi\"}},\"storageClassName\":\"csi-standard\"},\"create_way\":\"storageclass\"}'", "'PersistentVolumeClaim \"testAvolume1\" is invalid: metadata.name: Invalid value: \"testAvolume1\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "5", "'post'", "'normal'", "'存储管理-存储卷'", "'创建存储卷时输入不符合规则的存储卷名称(包含大写字母)'", "'/api/v1/namespaces/test-project/persistentvolumeclaims'" ]
-      }, {
-        "name" : "创建存储卷时输入不符合规则的存储卷名称(以分隔符开头)",
-        "uid" : "ed72d02e0c0c234b",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528615588,
-          "stop" : 1622528615922,
-          "duration" : 334
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "'{\"apiVersion\":\"v1\",\"kind\":\"PersistentVolumeClaim\",\"metadata\":{\"namespace\":\"test-project\",\"name\":\"-testvolume1\",\"labels\":{},\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"accessModes\":[\"ReadWriteOnce\"],\"resources\":{\"requests\":{\"storage\":\"10Gi\"}},\"storageClassName\":\"csi-standard\"},\"create_way\":\"storageclass\"}'", "'PersistentVolumeClaim \"-testvolume1\" is invalid: metadata.name: Invalid value: \"-testvolume1\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "6", "'post'", "'normal'", "'存储管理-存储卷'", "'创建存储卷时输入不符合规则的存储卷名称(以分隔符开头)'", "'/api/v1/namespaces/test-project/persistentvolumeclaims'" ]
-      }, {
-        "name" : "按名称精确查询存在的存储卷",
-        "uid" : "6af67be55083449f",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528615933,
-          "stop" : 1622528616243,
-          "duration" : 310
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'testvolume'", "7", "'get'", "'normal'", "'存储管理-存储卷'", "'按名称精确查询存在的存储卷'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims?name=testvolume'" ]
-      }, {
-        "name" : "按名称模糊查询存在的存储卷",
-        "uid" : "475508944616d232",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528616252,
-          "stop" : 1622528616567,
-          "duration" : 315
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'testvolume'", "8", "'get'", "'normal'", "'存储管理-存储卷'", "'按名称模糊查询存在的存储卷'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims?name=estvolume'" ]
-      }, {
-        "name" : "按名称查询不存的存储卷",
-        "uid" : "5e4ef2ca9ea4bdd6",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528616579,
-          "stop" : 1622528616887,
-          "duration" : 308
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "9", "'get'", "'normal'", "'存储管理-存储卷'", "'按名称查询不存的存储卷'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims?name=wx1'" ]
-      }, {
-        "name" : "按状态查询不存在的存储卷",
-        "uid" : "d9ead75481ea4f86",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528616901,
-          "stop" : 1622528617202,
-          "duration" : 301
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "10", "'get'", "'normal'", "'存储管理-存储卷'", "'按状态查询不存在的存储卷'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims?status=lost'" ]
-      }, {
-        "name" : "按名称和状态组合查询不存在的存储卷",
-        "uid" : "cb892aa91636bb97",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528617212,
-          "stop" : 1622528617516,
-          "duration" : 304
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "11", "'get'", "'normal'", "'存储管理-存储卷'", "'按名称和状态组合查询不存在的存储卷'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims?name=test-project-volume&status=lost'" ]
-      }, {
-        "name" : "查看存储卷testvolume详情",
-        "uid" : "969fbfd484f00aca",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528617555,
-          "stop" : 1622528617877,
-          "duration" : 322
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['spec']['accessModes'][0]'", "nan", "'ReadWriteOnce'", "12", "'get'", "'critical'", "'存储管理-存储卷快照'", "'查看存储卷testvolume详情'", "'/api/v1/namespaces/test-project/persistentvolumeclaims/testvolume'" ]
-      }, {
-        "name" : "创建存储卷快照",
-        "uid" : "78715c6ee240d211",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528617890,
-          "stop" : 1622528618200,
-          "duration" : 310
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['spec']['volumeSnapshotClassName']'", "'{\"apiVersion\":\"snapshot.storage.k8s.io/v1beta1\",\"kind\":\"VolumeSnapshot\",\"metadata\":{\"name\":\"testshot\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"volumeSnapshotClassName\":\"csi-ssd-enterprise\",\"source\":{\"kind\":\"PersistentVolumeClaim\",\"persistentVolumeClaimName\":\"testvolume\"}}}'", "'csi-ssd-enterprise'", "13", "'post'", "'normal'", "'存储管理-存储卷快照'", "'创建存储卷快照'", "'/apis/snapshot.storage.k8s.io/v1beta1/namespaces/test-project/volumesnapshots'" ]
-      }, {
-        "name" : "创建存储卷快照时输入不符合规则的快照名称(包含符号@)",
-        "uid" : "fd5f7709e4d238ec",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528618211,
-          "stop" : 1622528618530,
-          "duration" : 319
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "'{\"apiVersion\":\"snapshot.storage.k8s.io/v1beta1\",\"kind\":\"VolumeSnapshot\",\"metadata\":{\"name\":\"wx@snapshot\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"volumeSnapshotClassName\":\"csi-ssd-enterprise\",\"source\":{\"kind\":\"PersistentVolumeClaim\",\"persistentVolumeClaimName\":\"test-project-volume\"}}}'", "'VolumeSnapshot.snapshot.storage.k8s.io \"wx@snapshot\" is invalid: metadata.name: Invalid value: \"wx@snapshot\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "14", "'post'", "'normal'", "'存储管理-存储卷快照'", "'创建存储卷快照时输入不符合规则的快照名称(包含符号@)'", "'/apis/snapshot.storage.k8s.io/v1beta1/namespaces/test-project/volumesnapshots'" ]
-      }, {
-        "name" : "创建存储卷快照时输入不符合规则的快照名称(包含大写字母)",
-        "uid" : "c60b8a31cfe15235",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528618567,
-          "stop" : 1622528618884,
-          "duration" : 317
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "'{\"apiVersion\":\"snapshot.storage.k8s.io/v1beta1\",\"kind\":\"VolumeSnapshot\",\"metadata\":{\"name\":\"wxAsnapshot\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"volumeSnapshotClassName\":\"csi-ssd-enterprise\",\"source\":{\"kind\":\"PersistentVolumeClaim\",\"persistentVolumeClaimName\":\"test-project-volume\"}}}'", "'VolumeSnapshot.snapshot.storage.k8s.io \"wxAsnapshot\" is invalid: metadata.name: Invalid value: \"wxAsnapshot\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "15", "'post'", "'normal'", "'存储管理-存储卷快照'", "'创建存储卷快照时输入不符合规则的快照名称(包含大写字母)'", "'/apis/snapshot.storage.k8s.io/v1beta1/namespaces/test-project/volumesnapshots'" ]
-      }, {
-        "name" : "创建存储卷快照时输入不符合规则的快照名称(已分隔符开头)",
-        "uid" : "e01b9f83c2b66473",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528618893,
-          "stop" : 1622528619221,
-          "duration" : 328
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "'{\"apiVersion\":\"snapshot.storage.k8s.io/v1beta1\",\"kind\":\"VolumeSnapshot\",\"metadata\":{\"name\":\"-snapshot\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"volumeSnapshotClassName\":\"csi-ssd-enterprise\",\"source\":{\"kind\":\"PersistentVolumeClaim\",\"persistentVolumeClaimName\":\"test-project-volume\"}}}'", "'VolumeSnapshot.snapshot.storage.k8s.io \"-snapshot\" is invalid: metadata.name: Invalid value: \"-snapshot\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "16", "'post'", "'normal'", "'存储管理-存储卷快照'", "'创建存储卷快照时输入不符合规则的快照名称(已分隔符开头)'", "'/apis/snapshot.storage.k8s.io/v1beta1/namespaces/test-project/volumesnapshots'" ]
-      }, {
-        "name" : "在存储卷快照列表精确查询存在的快照",
-        "uid" : "8b2de31cf99c7c00",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528619232,
-          "stop" : 1622528619542,
-          "duration" : 310
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'testshot'", "17", "'get'", "'normal'", "'存储管理-存储卷快照'", "'在存储卷快照列表精确查询存在的快照'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/volumesnapshots?name=testshot&sortBy=createTime&limit=10'" ]
-      }, {
-        "name" : "在存储卷快照列表模糊查询存在的快照",
-        "uid" : "d8ee49903e4b8532",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528619552,
-          "stop" : 1622528619865,
-          "duration" : 313
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'testshot'", "18", "'get'", "'normal'", "'存储管理-存储卷快照'", "'在存储卷快照列表模糊查询存在的快照'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/volumesnapshots?name=tests&sortBy=createTime&limit=10'" ]
-      }, {
-        "name" : "在存储卷快照列表查询不存在的快照",
-        "uid" : "a96208c4e4670ec4",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528619875,
-          "stop" : 1622528620178,
-          "duration" : 303
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "19", "'get'", "'normal'", "'存储管理-存储卷快照'", "'在存储卷快照列表查询不存在的快照'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/volumesnapshots?name=whot&sortBy=createTime&limit=10'" ]
-      }, {
-        "name" : "在项目test-project中删除不存在的存储卷test-project-vol",
-        "uid" : "aae20818cccda996",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528620189,
-          "stop" : 1622528620485,
-          "duration" : 296
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "nan", "'persistentvolumeclaims \"test-project-vol\" not found'", "20", "'delete'", "'critical'", "'存储管理-存储卷'", "'在项目test-project中删除不存在的存储卷test-project-vol'", "'/api/v1/namespaces/test-project/persistentvolumeclaims/test-project-vol'" ]
-      }, {
-        "name" : "在企业空间ws-for-test-project删除不存在的项目wx-pro",
-        "uid" : "a62aa999422f189f",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528620495,
-          "stop" : 1622528620819,
-          "duration" : 324
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "nan", "'namespace \"wx-pro\" not found'", "21", "'delete'", "'critical'", "'项目设置-基本信息'", "'在企业空间ws-for-test-project删除不存在的项目wx-pro'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws-for-test-project/namespaces/wx-pro'" ]
-      }, {
-        "name" : "创建默认类型秘钥",
-        "uid" : "418647b63b41b4c3",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528620830,
-          "stop" : 1622528621141,
-          "duration" : 311
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"v1\",\"kind\":\"Secret\",\"metadata\":{\"namespace\":\"test-project\",\"labels\":{},\"name\":\"wx-secret\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"type\":\"Opaque\",\"spec\":{\"template\":{\"metadata\":{\"labels\":{}}}},\"data\":{\"wx-key\":\"d3gtdmFsdWU=\"}}'", "'wx-secret'", "22", "'post'", "'critical'", "'配置中心-秘钥'", "'创建默认类型秘钥'", "'/api/v1/namespaces/test-project/secrets'" ]
-      }, {
-        "name" : "创建TLS类型的秘钥",
-        "uid" : "1a9d83890cdffa85",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528621149,
-          "stop" : 1622528621453,
-          "duration" : 304
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['data']['tls.crt']'", "'{\"apiVersion\":\"v1\",\"kind\":\"Secret\",\"metadata\":{\"namespace\":\"test-project\",\"labels\":{},\"name\":\"wx-secret1\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"type\":\"kubernetes.io/tls\",\"spec\":{\"template\":{\"metadata\":{\"labels\":{}}}},\"data\":{\"tls.crt\":\"cGluZ3poZW5n\",\"tls.key\":\"c2l5YW8=\"}}'", "'cGluZ3poZW5n'", "23", "'post'", "'critical'", "'配置中心-秘钥'", "'创建TLS类型的秘钥'", "'/api/v1/namespaces/test-project/secrets'" ]
-      }, {
-        "name" : "创建镜像仓库秘钥",
-        "uid" : "b9bf6382b802d837",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528621465,
-          "stop" : 1622528621821,
-          "duration" : 356
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['data']['.dockerconfigjson']'", "'{\"apiVersion\":\"v1\",\"kind\":\"Secret\",\"metadata\":{\"namespace\":\"test-project\",\"labels\":{},\"name\":\"wx-secret2\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"type\":\"kubernetes.io/dockerconfigjson\",\"spec\":{\"template\":{\"metadata\":{\"labels\":{}}}},\"data\":{\".dockerconfigjson\":\"eyJhdXRocyI6eyJodHRwczovL3d4Ijp7InVzZXJuYW1lIjoicm9vdCIsInBhc3N3b3JkIjoiYWRtaW4iLCJlbWFpbCI6IiIsImF1dGgiOiJjbTl2ZERwaFpHMXBiZz09In19fQ==\"}}'", "'eyJhdXRocyI6eyJodHRwczovL3d4Ijp7InVzZXJuYW1lIjoicm9vdCIsInBhc3N3b3JkIjoiYWRtaW4iLCJlbWFpbCI6IiIsImF1dGgiOiJjbTl2ZERwaFpHMXBiZz09In19fQ=='", "24", "'post'", "'critical'", "'配置中心-秘钥'", "'创建镜像仓库秘钥'", "'/api/v1/namespaces/test-project/secrets'" ]
-      }, {
-        "name" : "创建账号密码秘钥",
-        "uid" : "8b3943d62938feb5",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528621835,
-          "stop" : 1622528622142,
-          "duration" : 307
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['data']['username']'", "'{\"apiVersion\":\"v1\",\"kind\":\"Secret\",\"metadata\":{\"namespace\":\"test-project\",\"labels\":{},\"name\":\"wx-secret3\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"type\":\"kubernetes.io/basic-auth\",\"spec\":{\"template\":{\"metadata\":{\"labels\":{}}}},\"data\":{\"username\":\"cm9vdA==\",\"password\":\"YWRtaW5AMTIz\"}}'", "'cm9vdA=='", "25", "'post'", "'critical'", "'配置中心-秘钥'", "'创建账号密码秘钥'", "'/api/v1/namespaces/test-project/secrets'" ]
-      }, {
-        "name" : "创建自定义类型秘钥",
-        "uid" : "7fd9eb954e28a104",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528622151,
-          "stop" : 1622528622472,
-          "duration" : 321
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['data']['wx-key']'", "'{\"apiVersion\":\"v1\",\"kind\":\"Secret\",\"metadata\":{\"namespace\":\"test-project\",\"labels\":{},\"name\":\"wx-secret4\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"type\":\"\",\"spec\":{\"template\":{\"metadata\":{\"labels\":{}}}},\"data\":{\"wx-key\":\"d3gtdmFsdWU=\"}}'", "'d3gtdmFsdWU='", "26", "'post'", "'critical'", "'配置中心-秘钥'", "'创建自定义类型秘钥'", "'/api/v1/namespaces/test-project/secrets'" ]
-      }, {
-        "name" : "精确查询存在的秘钥",
-        "uid" : "34db219d21fb26b6",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528622482,
-          "stop" : 1622528622787,
-          "duration" : 305
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'wx-secret4'", "27", "'get'", "'critical'", "'配置中心-秘钥'", "'精确查询存在的秘钥'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/secrets?name=wx-secret4'" ]
-      }, {
-        "name" : "模糊查询存在的秘钥",
-        "uid" : "f346df3f99c6ec32",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528622796,
-          "stop" : 1622528623107,
-          "duration" : 311
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "5", "28", "'get'", "'critical'", "'配置中心-秘钥'", "'模糊查询存在的秘钥'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/secrets?name=wx-secret'" ]
-      }, {
-        "name" : "查询不存在的秘钥",
-        "uid" : "9b4f147eecc0ca88",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528623115,
-          "stop" : 1622528623434,
-          "duration" : 319
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "29", "'get'", "'critical'", "'配置中心-秘钥'", "'查询不存在的秘钥'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/secrets?name=wx-secret5'" ]
-      }, {
-        "name" : "删除秘钥",
-        "uid" : "c747135bbce77627",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528623445,
-          "stop" : 1622528623768,
-          "duration" : 323
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['status']'", "nan", "'Success'", "30", "'delete'", "'critical'", "'配置中心-秘钥'", "'删除秘钥'", "'/api/v1/namespaces/test-project/secrets/wx-secret4'" ]
-      }, {
-        "name" : "创建配置",
-        "uid" : "85d3795fb5f48201",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528623780,
-          "stop" : 1622528624105,
-          "duration" : 325
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"namespace\":\"test-project\",\"labels\":{},\"name\":\"wx-peizhi\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"template\":{\"metadata\":{\"labels\":{}}}},\"data\":{\"key\":\"key\"}}'", "'wx-peizhi'", "31", "'post'", "'critical'", "'配置中心-配置'", "'创建配置'", "'/api/v1/namespaces/test-project/configmaps'" ]
-      }, {
-        "name" : "精确查询存在的配置",
-        "uid" : "a74267a0939f37f2",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528624117,
-          "stop" : 1622528624417,
-          "duration" : 300
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'wx-peizhi'", "32", "'get'", "'critical'", "'配置中心-配置'", "'精确查询存在的配置'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/configmaps?name=wx-peizhi'" ]
-      }, {
-        "name" : "模糊查询配置",
-        "uid" : "1016e640ffc8c077",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528624428,
-          "stop" : 1622528624744,
-          "duration" : 316
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'wx-peizhi'", "33", "'get'", "'critical'", "'配置中心-配置'", "'模糊查询配置'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/configmaps?name=wx'" ]
-      }, {
-        "name" : "查询不存在的配置",
-        "uid" : "9b3b5761bec2399d",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528624753,
-          "stop" : 1622528625054,
-          "duration" : 301
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "34", "'get'", "'critical'", "'配置中心-配置'", "'查询不存在的配置'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/configmaps?name=wx-peizhi2'" ]
-      }, {
-        "name" : "删除配置",
-        "uid" : "f8bc339df6586f0e",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528625064,
-          "stop" : 1622528625376,
-          "duration" : 312
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['status']'", "nan", "'Success'", "35", "'delete'", "'critical'", "'配置中心-配置'", "'删除配置'", "'/api/v1/namespaces/test-project/configmaps/wx-peizhi'" ]
-      }, {
-        "name" : "服务账号页面默认显示sa信息",
-        "uid" : "835fb47eb5a4840e",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528625389,
-          "stop" : 1622528625698,
-          "duration" : 309
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'default'", "36", "'get'", "'normal'", "'配置中心-服务账号'", "'服务账号页面默认显示sa信息'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/serviceaccounts'" ]
-      }, {
-        "name" : "创建sa 'test-sa'",
-        "uid" : "74b1a4a0ad584c4a",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528625735,
-          "stop" : 1622528626049,
-          "duration" : 314
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"namespace\":\"test-project\",\"labels\":{},\"name\":\"test-sa\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}}}'", "'test-sa'", "37", "'post'", "'critical'", "'配置中心-服务账号'", "'创建sa 'test-sa''", "'/api/v1/namespaces/test-project/serviceaccounts'" ]
-      }, {
-        "name" : "使用重复的名称创建sa",
-        "uid" : "289cc2fe52a027b6",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528626059,
-          "stop" : 1622528626363,
-          "duration" : 304
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "'{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"namespace\":\"test-project\",\"labels\":{},\"name\":\"test-sa\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}}}'", "'serviceaccounts \"test-sa\" already exists'", "38", "'post'", "'critical'", "'配置中心-服务账号'", "'使用重复的名称创建sa'", "'/api/v1/namespaces/test-project/serviceaccounts'" ]
-      }, {
-        "name" : "不输入名称创建sa",
-        "uid" : "664c72eb3f7b54c4",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528626373,
-          "stop" : 1622528626677,
-          "duration" : 304
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "'{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"namespace\":\"test-project\",\"labels\":{},\"name\":\"\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}}}'", "'ServiceAccount \"\" is invalid: metadata.name: Required value: name or generateName is required'", "39", "'post'", "'critical'", "'配置中心-服务账号'", "'不输入名称创建sa'", "'/api/v1/namespaces/test-project/serviceaccounts'" ]
-      }, {
-        "name" : "在编辑sa时修改namespace",
-        "uid" : "a26d7fdbded160cc",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528626687,
-          "stop" : 1622528627004,
-          "duration" : 317
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "'{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"namespace\":\"test-project1\",\"labels\":{},\"name\":\"111\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}}}'", "'the namespace of the provided object does not match the namespace sent on the request'", "40", "'post'", "'critical'", "'配置中心-服务账号'", "'在编辑sa时修改namespace'", "'/api/v1/namespaces/test-project/serviceaccounts'" ]
-      }, {
-        "name" : "删除sa test-sa",
-        "uid" : "34d7687e9d110da1",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528627017,
-          "stop" : 1622528627314,
-          "duration" : 297
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "41", "'delete'", "'critical'", "'配置中心-服务账号'", "'删除sa test-sa'", "'/api/v1/namespaces/test-project/serviceaccounts/test-sa'" ]
-      }, {
-        "name" : "开启项目网络隔离",
-        "uid" : "94b1a3d7d6d9969a",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528627323,
-          "stop" : 1622528627630,
-          "duration" : 307
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['status']['phase']'", "'{\"metadata\":{\"annotations\":{\"kubesphere.io/network-isolate\":\"enabled\"}}}'", "'Active'", "42", "'patch'", "'critical'", "'项目设置-网络隔离'", "'开启项目网络隔离'", "'/api/v1/namespaces/test-project'" ]
-      }, {
-        "name" : "添加集群内部白名单(出口)",
-        "uid" : "5c7e8e1bfeac82c3",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528627639,
-          "stop" : 1622528628032,
-          "duration" : 393
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"network.kubesphere.io/v1alpha1\",\"kind\":\"NamespaceNetworkPolicy\",\"metadata\":{\"namespace\":\"test-project\",\"name\":\"policy-to-girf49\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"egress\":[{\"to\":[{\"namespace\":{\"name\":\"test-project\"}}]}]}}'", "'policy-to-girf49'", "43", "'post'", "'critical'", "'项目设置-网络隔离'", "'添加集群内部白名单(出口)'", "'/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies'" ]
-      }, {
-        "name" : "添加集群内部白名单(入口)",
-        "uid" : "3dcf654c2cf2cdd4",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528628042,
-          "stop" : 1622528628347,
-          "duration" : 305
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"network.kubesphere.io/v1alpha1\",\"kind\":\"NamespaceNetworkPolicy\",\"metadata\":{\"namespace\":\"test-project\",\"name\":\"policy-from-tlsxjr\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"ingress\":[{\"from\":[{\"namespace\":{\"name\":\"test-project\"}}]}]}}'", "'policy-from-tlsxjr'", "44", "'post'", "'critical'", "'项目设置-网络隔离'", "'添加集群内部白名单(入口)'", "'/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies'" ]
-      }, {
-        "name" : "查看添加的集群内部白名单",
-        "uid" : "9e77c350862846b7",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528628356,
-          "stop" : 1622528628658,
-          "duration" : 302
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['kind']'", "nan", "'NamespaceNetworkPolicyList'", "45", "'get'", "'critical'", "'项目设置-网络隔离'", "'查看添加的集群内部白名单'", "'/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies?workspace=ws-for-test-project&limit=-1'" ]
-      }, {
-        "name" : "添加集群外部ip地址白名单(出口)",
-        "uid" : "2ecb33f4ca8f683c",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528628668,
-          "stop" : 1622528628963,
-          "duration" : 295
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"network.kubesphere.io/v1alpha1\",\"kind\":\"NamespaceNetworkPolicy\",\"metadata\":{\"namespace\":\"test-project\",\"name\":\"policy-to-7gmirw\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"egress\":[{\"ports\":[{\"port\":80,\"protocol\":\"TCP\"}],\"to\":[{\"ipBlock\":{\"cidr\":\"192.168.1.1/24\"}}]}]}}'", "'policy-to-7gmirw'", "46", "'post'", "'critical'", "'项目设置-网络隔离'", "'添加集群外部ip地址白名单(出口)'", "'/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies'" ]
-      }, {
-        "name" : "添加集群外部ip地址白名单(入口)",
-        "uid" : "894e29d5bfefe092",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528628973,
-          "stop" : 1622528629281,
-          "duration" : 308
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"network.kubesphere.io/v1alpha1\",\"kind\":\"NamespaceNetworkPolicy\",\"metadata\":{\"namespace\":\"test-project\",\"name\":\"policy-from-sdf6k0\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"ingress\":[{\"ports\":[{\"port\":88,\"protocol\":\"TCP\"}],\"from\":[{\"ipBlock\":{\"cidr\":\"192.168.0.12/34\"}}]}]}}'", "'policy-from-sdf6k0'", "47", "'post'", "'critical'", "'项目设置-网络隔离'", "'添加集群外部ip地址白名单(入口)'", "'/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies'" ]
-      }, {
-        "name" : "删除集群内部白名单",
-        "uid" : "518542a1eb12f73d",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528629293,
-          "stop" : 1622528629599,
-          "duration" : 306
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['status']'", "nan", "'Success'", "48", "'delete'", "'critical'", "'项目设置-网络隔离'", "'删除集群内部白名单'", "'/apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies/policy-to-girf49'" ]
-      }, {
-        "name" : "关闭项目网络隔离",
-        "uid" : "689d32d6f11026fe",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528629608,
-          "stop" : 1622528629925,
-          "duration" : 317
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "'{\"metadata\":{\"annotations\":{\"kubesphere.io/network-isolate\":\"\"}}}'", "200", "49", "'patch'", "'critical'", "'项目设置-网络隔离'", "'关闭项目网络隔离'", "'/api/v1/namespaces/test-project'" ]
-      }, {
-        "name" : "按名称查询不存在的deployment",
-        "uid" : "375d3202e38e25d2",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528629937,
-          "stop" : 1622528630237,
-          "duration" : 300
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "50", "'get'", "'normal'", "'应用负载-工作负载'", "'按名称查询不存在的deployment'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/wx/deployments?name=wwwww&sortBy=updateTime&limit=10'" ]
-      }, {
-        "name" : "按状态查询不存在的deployment",
-        "uid" : "3fcc5432ac2140f5",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528630247,
-          "stop" : 1622528630550,
-          "duration" : 303
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "51", "'get'", "'normal'", "'应用负载-工作负载'", "'按状态查询不存在的deployment'", "'/kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/deployments?status=stopped&sortBy=updateTime&limit=10'" ]
-      }, {
-        "name" : "删除创建的存储卷快照，并验证删除成功",
-        "uid" : "29e2dbadac1e8931",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528630558,
-          "stop" : 1622528631200,
-          "duration" : 642
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除存在的存储卷，并验证删除成功",
-        "uid" : "55d636db8b9285b0",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528631205,
-          "stop" : 1622528631939,
-          "duration" : 734
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "编辑项目信息",
-        "uid" : "7cdb38e169172baa",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528631941,
-          "stop" : 1622528632256,
-          "duration" : 315
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "只设置项目配额-CPU",
-        "uid" : "c727e70b318266a8",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528632261,
-          "stop" : 1622528633203,
-          "duration" : 942
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "test_edit_project_quota_wrong_cpu",
-        "uid" : "ede0eae25435f99e",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528633206,
-          "stop" : 1622528633835,
-          "duration" : 629
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "只设置项目配额-内存",
-        "uid" : "1940993105dfb6bf",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "failed",
-        "time" : {
-          "start" : 1622528633839,
-          "stop" : 1622528634749,
-          "duration" : 910
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "设置项目配额-输入错误的内存(包含负数)",
-        "uid" : "4af079e02c444eec",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528635006,
-          "stop" : 1622528635621,
-          "duration" : 615
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "设置项目配额-CPU、内存",
-        "uid" : "21bf739bc01a84aa",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528635624,
-          "stop" : 1622528636603,
-          "duration" : 979
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "只设置项目配额-资源配额",
-        "uid" : "1ab7553ef543dc1c",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528636606,
-          "stop" : 1622528637514,
-          "duration" : 908
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "只设置项目配额-输入错误的资源配额信息(包含字母)",
-        "uid" : "7a6ad24c7eda1ef7",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528637517,
-          "stop" : 1622528638138,
-          "duration" : 621
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "只设置项目配额-输入错误的资源配额信息(包含负数)",
-        "uid" : "f2e43f982a6ea394",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528638143,
-          "stop" : 1622528638751,
-          "duration" : 608
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "设置项目配额-cpu、memory、资源配额",
-        "uid" : "6c04f667384fb145",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528638754,
-          "stop" : 1622528639684,
-          "duration" : 930
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "只设置资源默认请求-cpu",
-        "uid" : "53b4d1a902c602ff",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528639686,
-          "stop" : 1622528640606,
-          "duration" : 920
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "只设置资源默认请求-输入错误的cpu信息(包含字母)",
-        "uid" : "cf2d035e7f0a8a33",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528640609,
-          "stop" : 1622528641230,
-          "duration" : 621
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "只设置资源默认请求-输入错误的cpu信息(包含负数)",
-        "uid" : "a7a9473c566b40bf",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528641232,
-          "stop" : 1622528641860,
-          "duration" : 628
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "只设置资源默认请求-输入错误的内存信息(包含非单位字母)",
-        "uid" : "e8f555309caf9826",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528641863,
-          "stop" : 1622528642499,
-          "duration" : 636
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "只设置资源默认请求-输入错误的内存信息(包含负数)",
-        "uid" : "ff675d1a85bf4888",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528642502,
-          "stop" : 1622528643099,
-          "duration" : 597
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "只设置资源默认请求-内存、cpu",
-        "uid" : "94a65142d9b54bde",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528643102,
-          "stop" : 1622528644014,
-          "duration" : 912
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除项目，并验证删除成功",
-        "uid" : "4043f1ec5a40d7e8",
-        "parentUid" : "9825f4d11a99d70c483f291e56575d5a",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528644019,
-          "stop" : 1622528668644,
-          "duration" : 24625
-        },
-        "flaky" : false,
-        "parameters" : [ ]
+        "name" : "TestWorkSpace",
+        "children" : [ {
+          "name" : "修改企业空间ws1-for-test-ws信息",
+          "uid" : "4b6cbcee1d929851",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530273228,
+            "stop" : 1624530273539,
+            "duration" : 311
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['metadata']['annotations']['kubesphere.io/alias-name']'", "'{\"metadata\":{\"name\":\"ws1-for-test-ws\",\"annotations\":{\"kubesphere.io/creator\":\"admin\",\"kubesphere.io/alias-name\":\"我是别名\",\"kubesphere.io/description\":\"我是描述信息\"}}}'", "'我是别名'", "1", "'patch'", "'critical'", "'企业空间列表'", "'修改企业空间ws1-for-test-ws信息'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws'" ]
+        }, {
+          "name" : "精确查询企业空间",
+          "uid" : "9ef8608dcf03f8b2",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530273550,
+            "stop" : 1624530273853,
+            "duration" : 303
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "''", "'ws1-for-test-ws'", "2", "'get'", "'normal'", "'企业空间列表'", "'精确查询企业空间'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=ws1-for-test-ws&sortBy=createTime&limit=10'" ]
+        }, {
+          "name" : "模糊查询存在的企业空间",
+          "uid" : "38aaf74b503c352e",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530273864,
+            "stop" : 1624530274156,
+            "duration" : 292
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "''", "'ws1-for-test-ws'", "3", "'get'", "'normal'", "'企业空间列表'", "'模糊查询存在的企业空间'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=test-ws'" ]
+        }, {
+          "name" : "查询不存在的企业空间",
+          "uid" : "783fc7b91e6d661c",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530274174,
+            "stop" : 1624530274474,
+            "duration" : 300
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['totalItems']'", "''", "0", "4", "'get'", "'normal'", "'企业空间列表'", "'查询不存在的企业空间'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=wx-wx'" ]
+        }, {
+          "name" : "查询企业空间ws1-for-test-ws的所有角色",
+          "uid" : "76d7e7e56cc5fcd0",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530274483,
+            "stop" : 1624530274806,
+            "duration" : 323
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['totalItems']'", "''", "4", "5", "'get'", "'normal'", "'企业空间设置-企业角色'", "'查询企业空间ws1-for-test-ws的所有角色'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
+        }, {
+          "name" : "查询企业空间ws1-for-test-ws的指定角色",
+          "uid" : "a76d67671f3fdf89",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530274818,
+            "stop" : 1624530275096,
+            "duration" : 278
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "''", "'ws1-for-test-ws-admin'", "6", "'get'", "'normal'", "'企业空间设置-企业角色'", "'查询企业空间ws1-for-test-ws的指定角色'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles?name=ws1-for-test-ws-admin'" ]
+        }, {
+          "name" : "模糊查询企业空间ws1-for-test-ws的角色",
+          "uid" : "7b492a43ebfb80b6",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530275111,
+            "stop" : 1624530275412,
+            "duration" : 301
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "''", "'ws1-for-test-ws-admin'", "7", "'get'", "'normal'", "'企业空间设置-企业角色'", "'模糊查询企业空间ws1-for-test-ws的角色'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles?name=admin'" ]
+        }, {
+          "name" : "查询企业空间ws1-for-test-ws不存在的角色",
+          "uid" : "d4c3a8659d836be2",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530275423,
+            "stop" : 1624530275719,
+            "duration" : 296
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['totalItems']'", "''", "0", "8", "'get'", "'normal'", "'企业空间设置-企业角色'", "'查询企业空间ws1-for-test-ws不存在的角色'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles?name=admin123'" ]
+        }, {
+          "name" : "在企业空间auoto-wx-ws创建角色wx-role（该角色没有任何权限）",
+          "uid" : "c49be114d07932d9",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530275730,
+            "stop" : 1624530276032,
+            "duration" : 302
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"wx-role\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'wx-role'", "9", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色wx-role（该角色没有任何权限）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
+        }, {
+          "name" : "在企业空间auoto-wx-ws创建角色wx-role1（该角色有项目创建的权限）",
+          "uid" : "db7b27c7cb59025f",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530276041,
+            "stop" : 1624530276330,
+            "duration" : 289
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"wx-role1\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-create-projects\\\",\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'[\"role-template-create-projects\",\"role-template-view-basic\"]'", "10", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色wx-role1（该角色有项目创建的权限）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
+        }, {
+          "name" : "在企业空间auoto-wx-ws创建角色( 不输入角色名）",
+          "uid" : "f42b96847b5dccaa",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530276342,
+            "stop" : 1624530276668,
+            "duration" : 326
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'WorkspaceRole.iam.kubesphere.io \"\" is invalid: metadata.name: Required value: name or generateName is required'", "11", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色( 不输入角色名）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws创建角色（输入已存在的角色名wx-role）",
+          "uid" : "c0de06b1e1237c59",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530276702,
+            "stop" : 1624530277007,
+            "duration" : 305
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"wx-role1\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-create-projects\\\",\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'workspaceroles.iam.kubesphere.io \"wx-role1\" already exists'", "12", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间ws1-for-test-ws创建角色（输入已存在的角色名wx-role）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
+        }, {
+          "name" : "在企业空间auoto-wx-ws创建角色( 角色名包含大写字母）",
+          "uid" : "9cd4c718c71d3e3",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "failed",
+          "time" : {
+            "start" : 1624530308162,
+            "stop" : 1624530308453,
+            "duration" : 291
+          },
+          "flaky" : true,
+          "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"WX\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'WorkspaceRole.iam.kubesphere.io \"WX\" is invalid: metadata.name: Invalid value: \"WX\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "13", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色( 角色名包含大写字母）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
+        }, {
+          "name" : "在企业空间auoto-wx-ws创建角色( 角色名包含符号，非分隔符）",
+          "uid" : "2c8003f2b9858b22",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "failed",
+          "time" : {
+            "start" : 1624530339474,
+            "stop" : 1624530339776,
+            "duration" : 302
+          },
+          "flaky" : true,
+          "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"wx@wx\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'WorkspaceRole.iam.kubesphere.io \"wx@wx\" is invalid: metadata.name: Invalid value: \"wx@wx\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "14", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色( 角色名包含符号，非分隔符）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
+        }, {
+          "name" : "在企业空间auoto-wx-ws创建角色( 角色名以分隔符开头）",
+          "uid" : "542d47c1394cbdc8",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "failed",
+          "time" : {
+            "start" : 1624530370779,
+            "stop" : 1624530371068,
+            "duration" : 289
+          },
+          "flaky" : true,
+          "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"-wx\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'WorkspaceRole.iam.kubesphere.io \"-wx\" is invalid: metadata.name: Invalid value: \"-wx\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "15", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色( 角色名以分隔符开头）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
+        }, {
+          "name" : "在企业空间auoto-wx-ws创建角色( 角色名以分隔符结尾）",
+          "uid" : "551016d33938f6e1",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "failed",
+          "time" : {
+            "start" : 1624530402063,
+            "stop" : 1624530402372,
+            "duration" : 309
+          },
+          "flaky" : true,
+          "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"wx-\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'WorkspaceRole.iam.kubesphere.io \"wx-\" is invalid: metadata.name: Invalid value: \"wx-\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "16", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色( 角色名以分隔符结尾）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws修改角色wx-role的基本信息",
+          "uid" : "8428eb7d4dc7207f",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530402394,
+            "stop" : 1624530402710,
+            "duration" : 316
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['metadata']['annotations']['kubesphere.io/description']'", "'{\"metadata\": {\"name\": \"wx-role\",\n             \"labels\": {\"kubesphere.io/workspace\":\"ws1-for-test-ws\"},\n             \"annotations\": {\"iam.kubesphere.io/aggregation-roles\": \"[\\\"role-template-create-projects\\\",\"\n                                                                    \"\\\"role-template-view-basic\\\"]\",\n                            \"kubesphere.io/creator\": \"admin\",\n                            \"kubesphere.io/alias-name\": \"我是别名\",\n                            \"kubesphere.io/description\": \"我是描述\"\n                             }\n             },\n}'", "'我是描述'", "17", "'patch'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间ws1-for-test-ws修改角色wx-role的基本信息'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws删除角色wx-role",
+          "uid" : "e0bdd06327d8086",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530402721,
+            "stop" : 1624530403016,
+            "duration" : 295
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['message']'", "''", "'success'", "18", "'delete'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间ws1-for-test-ws删除角色wx-role'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws删除角色wx-role1",
+          "uid" : "851c2c5af90a1a8a",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530403026,
+            "stop" : 1624530403321,
+            "duration" : 295
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['message']'", "''", "'success'", "18", "'delete'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间ws1-for-test-ws删除角色wx-role1'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role1'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws查看所有的企业成员",
+          "uid" : "d601b820a464d5df",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530403331,
+            "stop" : 1624530403624,
+            "duration" : 293
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "''", "'admin'", "19", "'get'", "'normal'", "'企业空间设置-企业成员'", "'在企业空间ws1-for-test-ws查看所有的企业成员'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?sortBy=createTime&limit=10'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws查看指定的企业成员",
+          "uid" : "a9b2eff18d090fd",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530403633,
+            "stop" : 1624530403974,
+            "duration" : 341
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "''", "'admin'", "20", "'get'", "'normal'", "'企业空间设置-企业成员'", "'在企业空间ws1-for-test-ws查看指定的企业成员'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=admin&sortBy=createTime&limit=10'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws查看不存在的企业成员",
+          "uid" : "b7bd33d484f82c9d",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530403984,
+            "stop" : 1624530404274,
+            "duration" : 290
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['totalItems']'", "''", "0", "21", "'get'", "'normal'", "'企业空间设置-企业成员'", "'在企业空间ws1-for-test-ws查看不存在的企业成员'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=qweasd&sortBy=createTime&limit=10'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws模糊查询企业成员",
+          "uid" : "c2a0a8aa24a82aed",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530404287,
+            "stop" : 1624530404582,
+            "duration" : 295
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "''", "'admin'", "22", "'get'", "'normal'", "'企业空间设置-企业成员'", "'在企业空间ws1-for-test-ws模糊查询企业成员'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=ad&sortBy=createTime&limit=10'" ]
+        }, {
+          "name" : "开启企业空间ws1-for-test-ws网络隔离",
+          "uid" : "c357bc583b45f62d",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530404594,
+            "stop" : 1624530404889,
+            "duration" : 295
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['spec']['template']['spec']['networkIsolation']'", "'{\"spec\":{\"template\":{\"spec\":{\"networkIsolation\":False}}}}'", "0", "23", "'patch'", "'critical'", "'企业空间设置-基本信息'", "'开启企业空间ws1-for-test-ws网络隔离'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws'" ]
+        }, {
+          "name" : "关闭企业空间ws1-for-test-ws网络隔离",
+          "uid" : "b3cf536baba24fa8",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530404901,
+            "stop" : 1624530405206,
+            "duration" : 305
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['spec']['template']['spec']['networkIsolation']'", "'{\"spec\":{\"template\":{\"spec\":{\"networkIsolation\":True}}}}'", "True", "24", "'patch'", "'critical'", "'企业空间设置-基本信息'", "'关闭企业空间ws1-for-test-ws网络隔离'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws创建项目wx-project",
+          "uid" : "194e6f686e5509f2",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530405219,
+            "stop" : 1624530405512,
+            "duration" : 293
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"wx-project\",\"labels\":{\"kubesphere.io/workspace\":\"ws1-for-test-ws\"},\"annotations\":{\"kubesphere.io/creator\":\"admin\"}}}'", "'wx-project'", "25", "'post'", "'critical'", "'项目管理'", "'在企业空间ws1-for-test-ws创建项目wx-project'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws创建重复的项目wx-project",
+          "uid" : "3efa2a8d11607b5e",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530405523,
+            "stop" : 1624530405818,
+            "duration" : 295
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.text'", "'{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"wx-project\",\"labels\":{\"kubesphere.io/workspace\":\"ws1-for-test-ws\"},\"annotations\":{\"kubesphere.io/creator\":\"admin\"}}}'", "'namespaces \"wx-project\" already exists'", "26", "'post'", "'critical'", "'项目管理'", "'在企业空间ws1-for-test-ws创建重复的项目wx-project'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws中精确查询存在的项目",
+          "uid" : "26289948b8e63925",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530405826,
+            "stop" : 1624530406126,
+            "duration" : 300
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "''", "'wx-project'", "27", "'get'", "'normal'", "'项目管理'", "'在企业空间ws1-for-test-ws中精确查询存在的项目'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx-project'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws中模糊查询存在的项目",
+          "uid" : "33becd59db3747d1",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530406138,
+            "stop" : 1624530406439,
+            "duration" : 301
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "''", "'wx-project'", "28", "'get'", "'normal'", "'项目管理'", "'在企业空间ws1-for-test-ws中模糊查询存在的项目'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=w'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws中查询不存在的项目",
+          "uid" : "176d2f5049e2cea4",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530406452,
+            "stop" : 1624530406745,
+            "duration" : 293
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['totalItems']'", "''", "0", "29", "'get'", "'normal'", "'项目管理'", "'在企业空间ws1-for-test-ws中查询不存在的项目'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx1'" ]
+        }, {
+          "name" : "设置项目wx-project配置",
+          "uid" : "e97e283be371d56",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530406757,
+            "stop" : 1624530407038,
+            "duration" : 281
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['spec']['hard']['requests.memory']'", "'{\"apiVersion\":\"v1\",\"kind\":\"ResourceQuota\",\"metadata\":{\"name\":\"wx-project\",\"namespace\":\"wx-project\",\"cluster\":\"default\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"hard\":{\"limits.cpu\":\"2\",\"requests.cpu\":\"1\",\"requests.memory\":\"2Gi\"}}}'", "'2Gi'", "30", "'post'", "'critical'", "'概览'", "'设置项目wx-project配置'", "'/api/v1/namespaces/wx-project/resourcequotas'" ]
+        }, {
+          "name" : "设置项目wx-project容器资源默认配置",
+          "uid" : "d163ecbf9088ef54",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530407049,
+            "stop" : 1624530407354,
+            "duration" : 305
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['spec']['limits'][0]['default']['memory']'", "'{\"apiVersion\":\"v1\",\"kind\":\"LimitRange\",\"metadata\":{\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"limits\":[{\"default\":{\"cpu\":\"2\",\"memory\":\"4000Mi\"},\"defaultRequest\":{\"cpu\":\"1\",\"memory\":\"500Mi\"},\"type\":\"Container\"}]}}'", "'4000Mi'", "31", "'post'", "'critical'", "'概览'", "'设置项目wx-project容器资源默认配置'", "'/api/v1/namespaces/wx-project/limitranges'" ]
+        }, {
+          "name" : "在企业空间ws1-for-test-ws删除项目wx-project",
+          "uid" : "b1c536a3a974a6bc",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530407365,
+            "stop" : 1624530407663,
+            "duration" : 298
+          },
+          "flaky" : false,
+          "parameters" : [ "'r.json()['message']'", "''", "'success'", "32", "'delete'", "'critical'", "'项目管理'", "'在企业空间ws1-for-test-ws删除项目wx-project'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces/wx-project'" ]
+        }, {
+          "name" : "在企业空间编辑角色的权限信息",
+          "uid" : "ff8108041bde3c11",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530407673,
+            "stop" : 1624530409617,
+            "duration" : 1944
+          },
+          "flaky" : false,
+          "parameters" : [ ]
+        }, {
+          "name" : "在企业空间邀请存在的新成员",
+          "uid" : "3ac43c4b77f4e480",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530409620,
+            "stop" : 1624530409914,
+            "duration" : 294
+          },
+          "flaky" : false,
+          "parameters" : [ ]
+        }, {
+          "name" : "在企业空间编辑邀请成员的角色",
+          "uid" : "3e8c06e3cb54e40f",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530409917,
+            "stop" : 1624530410524,
+            "duration" : 607
+          },
+          "flaky" : false,
+          "parameters" : [ ]
+        }, {
+          "name" : "在企业空间删除邀请的成员",
+          "uid" : "cc00c0e3300a58f6",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530410527,
+            "stop" : 1624530411129,
+            "duration" : 602
+          },
+          "flaky" : false,
+          "parameters" : [ ]
+        }, {
+          "name" : "创建、编辑、删除企业组织",
+          "uid" : "2db384de9f0057db",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530411131,
+            "stop" : 1624530412329,
+            "duration" : 1198
+          },
+          "flaky" : false,
+          "parameters" : [ ]
+        }, {
+          "name" : "创建重名的企业组织",
+          "uid" : "3ccdaf3dd2390b16",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530412332,
+            "stop" : 1624530413238,
+            "duration" : 906
+          },
+          "flaky" : false,
+          "parameters" : [ ]
+        }, {
+          "name" : "创建的企业组织名称中包含大写字母",
+          "uid" : "7e57a7110b5fdbd2",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530413241,
+            "stop" : 1624530413541,
+            "duration" : 300
+          },
+          "flaky" : false,
+          "parameters" : [ ]
+        }, {
+          "name" : "创建的企业组织名称中包含特殊字符",
+          "uid" : "b58034a414d5dd04",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530413544,
+            "stop" : 1624530413833,
+            "duration" : 289
+          },
+          "flaky" : false,
+          "parameters" : [ ]
+        }, {
+          "name" : "为用户分配企业组织",
+          "uid" : "a7691304fe8ec3bc",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530413836,
+            "stop" : 1624530415025,
+            "duration" : 1189
+          },
+          "flaky" : false,
+          "parameters" : [ ]
+        }, {
+          "name" : "将用户从企业组织解绑",
+          "uid" : "64c7d4e6052932a6",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530415029,
+            "stop" : 1624530415940,
+            "duration" : 911
+          },
+          "flaky" : false,
+          "parameters" : [ ]
+        }, {
+          "name" : "编辑配额",
+          "uid" : "6d8f7cf67e1925a3",
+          "parentUid" : "4b5e03028329b0654a5712a27f546352",
+          "status" : "passed",
+          "time" : {
+            "start" : 1624530415943,
+            "stop" : 1624530416803,
+            "duration" : 860
+          },
+          "flaky" : false,
+          "parameters" : [ ]
+        } ],
+        "uid" : "4b5e03028329b0654a5712a27f546352"
       } ],
-      "uid" : "9825f4d11a99d70c483f291e56575d5a"
+      "uid" : "6b744052f29ee30021d48a9f34bcb173"
     } ],
-    "uid" : "d3cbc2c4a8ff943b643112a72b352b40"
-  }, {
-    "name" : "testUser",
-    "children" : [ {
-      "name" : "TestUser",
-      "children" : [ {
-        "name" : "查询所有用户信息",
-        "uid" : "60b41f0c020e052f",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528674576,
-          "stop" : 1622528674931,
-          "duration" : 355
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'admin'", "1", "'get'", "'normal'", "'查询用户'", "'查询所有用户信息'", "'/kapis/iam.kubesphere.io/v1alpha2/users'" ]
-      }, {
-        "name" : "查询指定用户信息",
-        "uid" : "1011f256450ebb97",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528674965,
-          "stop" : 1622528675283,
-          "duration" : 318
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'admin'", "2", "'get'", "'normal'", "'查询用户'", "'查询指定用户信息'", "'/kapis/iam.kubesphere.io/v1alpha2/users?name=admin'" ]
-      }, {
-        "name" : "查询不存在用户信息",
-        "uid" : "a680f817bd5fd187",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528675295,
-          "stop" : 1622528675594,
-          "duration" : 299
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "3", "'get'", "'normal'", "'查询用户'", "'查询不存在用户信息'", "'/kapis/iam.kubesphere.io/v1alpha2/users?name=wx'" ]
-      }, {
-        "name" : "模糊查询用户信息",
-        "uid" : "1569dd25602142f0",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528675604,
-          "stop" : 1622528675928,
-          "duration" : 324
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'admin'", "4", "'get'", "'normal'", "'查询用户'", "'模糊查询用户信息'", "'/kapis/iam.kubesphere.io/v1alpha2/users?name=a'" ]
-      }, {
-        "name" : "增加用户(不输入用户名)",
-        "uid" : "3cbfae2b57adab3f",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528675971,
-          "stop" : 1622528676288,
-          "duration" : 317
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"User\",\"metadata\":{\"name\":\"\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"email\":\"stevewen9@yunify.com\",\"password\":\"P@88w0rd\"}}'", "'User.iam.kubesphere.io \"\" is invalid: metadata.name: Required value: name or generateName is required'", "5", "'post'", "'critical'", "'添加用户'", "'增加用户(不输入用户名)'", "'/kapis/iam.kubesphere.io/v1alpha2/users'" ]
-      }, {
-        "name" : "增加用户(不输入邮箱)",
-        "uid" : "c2d07d9d19d1d50a",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528676305,
-          "stop" : 1622528676611,
-          "duration" : 306
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"User\",\"metadata\":{\"name\":\"wx1\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"email\":\"\",\"password\":\"P@88w1rd\"}}'", "'wx1'", "6", "'post'", "'critical'", "'添加用户'", "'增加用户(不输入邮箱)'", "'/kapis/iam.kubesphere.io/v1alpha2/users'" ]
-      }, {
-        "name" : "增加用户(不输入密码)",
-        "uid" : "37fcc10e877ea528",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528676628,
-          "stop" : 1622528676935,
-          "duration" : 307
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"User\",\"metadata\":{\"name\":\"wx2\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"email\":\"stevewen9@yunify.com\",\"password\":\"\"}}'", "'wx2'", "7", "'post'", "'critical'", "'添加用户'", "'增加用户(不输入密码)'", "'/kapis/iam.kubesphere.io/v1alpha2/users'" ]
-      }, {
-        "name" : "增加用户wx",
-        "uid" : "997087f90a8705b",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528676967,
-          "stop" : 1622528677304,
-          "duration" : 337
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"User\",\"metadata\":{\"name\":\"wx\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"email\":\"stevewen@yunify.com\",\"password\":\"P@88w0rd\"}}'", "'wx'", "8", "'post'", "'critical'", "'添加用户'", "'增加用户wx'", "'/kapis/iam.kubesphere.io/v1alpha2/users'" ]
-      }, {
-        "name" : "修改用户密码",
-        "uid" : "74bd308124d73ab2",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528677314,
-          "stop" : 1622528677640,
-          "duration" : 326
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "'{\"password\":\"P@88w0rd\",\"rePassword\":\"P@88w0rd\"}'", "'success'", "9", "'put'", "'critical'", "'编辑用户'", "'修改用户密码'", "'/kapis/iam.kubesphere.io/v1alpha2/users/wx/password'" ]
-      }, {
-        "name" : "查看指定用户详情信息",
-        "uid" : "d693ba3645573430",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528677651,
-          "stop" : 1622528677945,
-          "duration" : 294
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "nan", "'wx'", "10", "'get'", "'critical'", "'查询用户'", "'查看指定用户详情信息'", "'/kapis/iam.kubesphere.io/v1alpha2/users/wx'" ]
-      }, {
-        "name" : "增加已经存在的用户",
-        "uid" : "9d4fbb39864da6fa",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528677954,
-          "stop" : 1622528678267,
-          "duration" : 313
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"User\",\"metadata\":{\"name\":\"wx\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"email\":\"stevewen2@yunify.com\",\"password\":\"P@88w0rd\"}}'", "'users.iam.kubesphere.io \"wx\" already exists'", "11", "'post'", "'critical'", "'添加用户'", "'增加已经存在的用户'", "'/kapis/iam.kubesphere.io/v1alpha2/users'" ]
-      }, {
-        "name" : "增加用户(使用其它用户的邮箱)",
-        "uid" : "25daf128f059328b",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528678278,
-          "stop" : 1622528678580,
-          "duration" : 302
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"User\",\"metadata\":{\"name\":\"wx\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"email\":\"stevewen9@yunify.com\",\"password\":\"P@88w0rd\"}}'", "'admission webhook \"users.iam.kubesphere.io\" denied the request: user email: stevewen9@yunify.com already exists'", "12", "'post'", "'critical'", "'添加用户'", "'增加用户(使用其它用户的邮箱)'", "'/kapis/iam.kubesphere.io/v1alpha2/users'" ]
-      }, {
-        "name" : "增加用户（用户名包含大写字母）",
-        "uid" : "159980f99f32b0b5",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528678590,
-          "stop" : 1622528678922,
-          "duration" : 332
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"User\",\"metadata\":{\"name\":\"Wqwe\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"email\":\"stevewen@yunify.com\",\"password\":\"P@88w0rd\"}}'", "'User.iam.kubesphere.io \"Wqwe\" is invalid: metadata.name: Invalid value: \"Wqwe\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "13", "'post'", "'normal'", "'添加用户'", "'增加用户（用户名包含大写字母）'", "'/kapis/iam.kubesphere.io/v1alpha2/users'" ]
-      }, {
-        "name" : "增加用户（用户名包含符号）",
-        "uid" : "d8ca0a86a26628f2",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528678934,
-          "stop" : 1622528679273,
-          "duration" : 339
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"User\",\"metadata\":{\"name\":\"wx@wx\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"email\":\"stevewen@yunify.com\",\"password\":\"P@88w0rd\"}}'", "'User.iam.kubesphere.io \"wx@wx\" is invalid: metadata.name: Invalid value: \"wx@wx\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "14", "'post'", "'normal'", "'添加用户'", "'增加用户（用户名包含符号）'", "'/kapis/iam.kubesphere.io/v1alpha2/users'" ]
-      }, {
-        "name" : "增加用户（邮箱不合法）",
-        "uid" : "c5681aeb3b67e741",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528679285,
-          "stop" : 1622528679573,
-          "duration" : 288
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"User\",\"metadata\":{\"name\":\"wx\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"email\":\"stevewen@.com\",\"password\":\"P@88w0rd\"}}'", "'admission webhook \"users.iam.kubesphere.io\" denied the request: invalid email address:stevewen@.com'", "15", "'post'", "'normal'", "'添加用户'", "'增加用户（邮箱不合法）'", "'/kapis/iam.kubesphere.io/v1alpha2/users'" ]
-      }, {
-        "name" : "删除用户wx",
-        "uid" : "8146e57e32312a58",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528679584,
-          "stop" : 1622528679892,
-          "duration" : 308
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "nan", "'success'", "16", "'delete'", "'critical'", "'删除用户'", "'删除用户wx'", "'/kapis/iam.kubesphere.io/v1alpha2/users/wx'" ]
-      }, {
-        "name" : "删除用户wx1",
-        "uid" : "d629ac5b1004912d",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528679901,
-          "stop" : 1622528680204,
-          "duration" : 303
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "nan", "'success'", "17", "'delete'", "'critical'", "'删除用户'", "'删除用户wx1'", "'/kapis/iam.kubesphere.io/v1alpha2/users/wx1'" ]
-      }, {
-        "name" : "删除用户wx2",
-        "uid" : "388212d6a87f5258",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528680212,
-          "stop" : 1622528680542,
-          "duration" : 330
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "nan", "'success'", "18", "'delete'", "'critical'", "'删除用户'", "'删除用户wx2'", "'/kapis/iam.kubesphere.io/v1alpha2/users/wx2'" ]
-      }, {
-        "name" : "删除用户wx（输入不正确的用户名）",
-        "uid" : "224565d7ac1c41a5",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528680552,
-          "stop" : 1622528680858,
-          "duration" : 306
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "nan", "'users.iam.kubesphere.io \"w\" not found'", "19", "'delete'", "'critical'", "'删除用户'", "'删除用户wx（输入不正确的用户名）'", "'/kapis/iam.kubesphere.io/v1alpha2/users/w'" ]
-      }, {
-        "name" : "测试修改用户信息",
-        "uid" : "ff7c5fc7ae80e045",
-        "parentUid" : "6b3d0997874e73b520c935419f3813af",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528680867,
-          "stop" : 1622528685157,
-          "duration" : 4290
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      } ],
-      "uid" : "6b3d0997874e73b520c935419f3813af"
-    } ],
-    "uid" : "402d3633bd05bab587b6431a62283628"
-  }, {
-    "name" : "testAppManage",
-    "children" : [ {
-      "name" : "TestAppTemplate",
-      "children" : [ {
-        "name" : "添加仓库时不输入应用仓库名称",
-        "uid" : "dab0e0e71ccab310",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528685799,
-          "stop" : 1622528696844,
-          "duration" : 11045
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"name\":\"\",\"repoType\":\"Helm\",\"type\":\"https\",\"visibility\":\"public\",\"credential\":\"{}\",\"providers\":[\"kubernetes\"],\"url\":\"https://helm-chart-repo.pek3a.qingstor.com/kubernetes-charts/\",\"app_default_status\":\"active\"}'", "'repo name is empty'", "1", "'post'", "'critical'", "'应用管理-应用仓库'", "'添加仓库时不输入应用仓库名称'", "'/kapis/openpitrix.io/v1/workspaces/test-app/repos'" ]
-      }, {
-        "name" : "添加仓库时不输入URL地址",
-        "uid" : "a39bf2652e3da88a",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528696856,
-          "stop" : 1622528697162,
-          "duration" : 306
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"name\":\"test-demo\",\"repoType\":\"Helm\",\"type\":\"https\",\"visibility\":\"public\",\"credential\":\"{}\",\"providers\":[\"kubernetes\"],\"url\":\"\",\"app_default_status\":\"active\"}'", "'Get /index.yaml: unsupported protocol scheme \"\"'", "2", "'post'", "'critical'", "'应用管理-应用仓库'", "'添加仓库时不输入URL地址'", "'/kapis/openpitrix.io/v1/workspaces/test-app/repos'" ]
-      }, {
-        "name" : "添加仓库时输入错误的URL地址",
-        "uid" : "81c8b9f9c35d1b3",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528697172,
-          "stop" : 1622528697490,
-          "duration" : 318
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"name\":\"test-demo\",\"repoType\":\"Helm\",\"type\":\"https\",\"visibility\":\"public\",\"credential\":\"{}\",\"providers\":[\"kubernetes\"],\"url\":\"http://www.baidu.com\",\"app_default_status\":\"active\"}'", "'failed to fetch http://www.baidu.com/index.yaml : 404 Not Found'", "3", "'post'", "'critical'", "'应用管理-应用仓库'", "'添加仓库时输入错误的URL地址'", "'/kapis/openpitrix.io/v1/workspaces/test-app/repos'" ]
-      }, {
-        "name" : "查询不存在的应用仓库",
-        "uid" : "8cb66e7ac1cfa1c1",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528697499,
-          "stop" : 1622528697803,
-          "duration" : 304
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['total_count']'", "nan", "0", "4", "'get'", "'normal'", "'应用管理-应用仓库'", "'查询不存在的应用仓库'", "'/kapis/openpitrix.io/v1/workspaces/test-app/repos?conditions=keyword%3Dtest-app''" ]
-      }, {
-        "name" : "查询不存在的应用模版",
-        "uid" : "dc01c62b63adcb0c",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528697819,
-          "stop" : 1622528698129,
-          "duration" : 310
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['total_count']'", "nan", "0", "5", "'get'", "'normal'", "'应用管理-应用模版'", "'查询不存在的应用模版'", "'/kapis/openpitrix.io/v1/workspaces/test-app/apps?conditions=keyword%3Dtest-app' '" ]
-      }, {
-        "name" : "使用正确的信息新建应用仓库",
-        "uid" : "be0dea13e8682ac4",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528698141,
-          "stop" : 1622528722029,
-          "duration" : 23888
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按名称精确查询应用仓库",
-        "uid" : "6da99294e43d21ed",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528722033,
-          "stop" : 1622528733714,
-          "duration" : 11681
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除应用仓库并验证删除成功",
-        "uid" : "4cee83e0de4904b6",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528733718,
-          "stop" : 1622528770569,
-          "duration" : 36851
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除不存在的应用仓库",
-        "uid" : "8c257a73591f1a08",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528770583,
-          "stop" : 1622528770897,
-          "duration" : 314
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "发布应用模板到商店，然后将应用下架，再重新上架，最后下架应用",
-        "uid" : "5fb073a903298fb3",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528770899,
-          "stop" : 1622528779781,
-          "duration" : 8882
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "应用审核不通过,然后重新提交审核，最后审核通过",
-        "uid" : "b731eef158489fca",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528779789,
-          "stop" : 1622528783696,
-          "duration" : 3907
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建应用模板后添加版本",
-        "uid" : "f391415cc951cb8b",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528783711,
-          "stop" : 1622528785632,
-          "duration" : 1921
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "从应用模版部署新应用",
-        "uid" : "b89c2f6f0c8915f4",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528785636,
-          "stop" : 1622528835185,
-          "duration" : 49549
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "从应用商店部署新应用",
-        "uid" : "20e203e76be86754",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528835191,
-          "stop" : 1622528885194,
-          "duration" : 50003
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "按名称精确查询部署的应用",
-        "uid" : "e15dc2d535b11baa",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528885215,
-          "stop" : 1622528893257,
-          "duration" : 8042
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在应用模版中精确查询存在的模版",
-        "uid" : "4b6973693d220c8e",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528893260,
-          "stop" : 1622528894934,
-          "duration" : 1674
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在不删除应用版本的情况下删除应用模版",
-        "uid" : "47c160f2bfbc3a1c",
-        "parentUid" : "9dbc2cf4397f115a9cc321a20b420efb",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528894937,
-          "stop" : 1622528896014,
-          "duration" : 1077
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      } ],
-      "uid" : "9dbc2cf4397f115a9cc321a20b420efb"
-    } ],
-    "uid" : "cd022304053fd00dd9401ba8aa6e9d78"
-  }, {
-    "name" : "testWorkspace",
-    "children" : [ {
-      "name" : "TestWorkSpace",
-      "children" : [ {
-        "name" : "修改企业空间ws1-for-test-ws信息",
-        "uid" : "d573516d37b199da",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528900644,
-          "stop" : 1622528900966,
-          "duration" : 322
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['annotations']['kubesphere.io/alias-name']'", "'{\"metadata\":{\"name\":\"ws1-for-test-ws\",\"annotations\":{\"kubesphere.io/creator\":\"admin\",\"kubesphere.io/alias-name\":\"我是别名\",\"kubesphere.io/description\":\"我是描述信息\"}}}'", "'我是别名'", "1", "'patch'", "'critical'", "'企业空间列表'", "'修改企业空间ws1-for-test-ws信息'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws'" ]
-      }, {
-        "name" : "精确查询企业空间",
-        "uid" : "2a07a0a0cde1ab65",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528900987,
-          "stop" : 1622528901305,
-          "duration" : 318
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'ws1-for-test-ws'", "2", "'get'", "'normal'", "'企业空间列表'", "'精确查询企业空间'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=ws1-for-test-ws&sortBy=createTime&limit=10'" ]
-      }, {
-        "name" : "模糊查询存在的企业空间",
-        "uid" : "d82e76cc0c3e3d16",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528901318,
-          "stop" : 1622528901666,
-          "duration" : 348
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'ws1-for-test-ws'", "3", "'get'", "'normal'", "'企业空间列表'", "'模糊查询存在的企业空间'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=test-ws'" ]
-      }, {
-        "name" : "查询不存在的企业空间",
-        "uid" : "212ff8991c5cd2b5",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528901680,
-          "stop" : 1622528902076,
-          "duration" : 396
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "4", "'get'", "'normal'", "'企业空间列表'", "'查询不存在的企业空间'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=wx-wx'" ]
-      }, {
-        "name" : "查询企业空间ws1-for-test-ws的所有角色",
-        "uid" : "dc750d1372188a9d",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528902091,
-          "stop" : 1622528902416,
-          "duration" : 325
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "4", "5", "'get'", "'normal'", "'企业空间设置-企业角色'", "'查询企业空间ws1-for-test-ws的所有角色'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
-      }, {
-        "name" : "查询企业空间ws1-for-test-ws的指定角色",
-        "uid" : "724c4e8a2a1b3336",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528902429,
-          "stop" : 1622528902769,
-          "duration" : 340
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'ws1-for-test-ws-admin'", "6", "'get'", "'normal'", "'企业空间设置-企业角色'", "'查询企业空间ws1-for-test-ws的指定角色'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles?name=ws1-for-test-ws-admin'" ]
-      }, {
-        "name" : "模糊查询企业空间ws1-for-test-ws的角色",
-        "uid" : "f230297e20c64f23",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528902784,
-          "stop" : 1622528903129,
-          "duration" : 345
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'ws1-for-test-ws-admin'", "7", "'get'", "'normal'", "'企业空间设置-企业角色'", "'模糊查询企业空间ws1-for-test-ws的角色'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles?name=admin'" ]
-      }, {
-        "name" : "查询企业空间ws1-for-test-ws不存在的角色",
-        "uid" : "cb491e5e0047820d",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528903152,
-          "stop" : 1622528903491,
-          "duration" : 339
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "8", "'get'", "'normal'", "'企业空间设置-企业角色'", "'查询企业空间ws1-for-test-ws不存在的角色'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles?name=admin123'" ]
-      }, {
-        "name" : "在企业空间auoto-wx-ws创建角色wx-role（该角色没有任何权限）",
-        "uid" : "d5b946bc91e2b61c",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528903509,
-          "stop" : 1622528903840,
-          "duration" : 331
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"wx-role\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'wx-role'", "9", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色wx-role（该角色没有任何权限）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
-      }, {
-        "name" : "在企业空间auoto-wx-ws创建角色wx-role1（该角色有项目创建的权限）",
-        "uid" : "ca47beedfacd70e3",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528903855,
-          "stop" : 1622528904187,
-          "duration" : 332
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"wx-role1\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-create-projects\\\",\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'[\"role-template-create-projects\",\"role-template-view-basic\"]'", "10", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色wx-role1（该角色有项目创建的权限）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
-      }, {
-        "name" : "在企业空间auoto-wx-ws创建角色( 不输入角色名）",
-        "uid" : "eda49ec53c254fd4",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528904203,
-          "stop" : 1622528904516,
-          "duration" : 313
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'WorkspaceRole.iam.kubesphere.io \"\" is invalid: metadata.name: Required value: name or generateName is required'", "11", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色( 不输入角色名）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws创建角色（输入已存在的角色名wx-role）",
-        "uid" : "fdf96e8ea14d131a",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528904534,
-          "stop" : 1622528904855,
-          "duration" : 321
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"wx-role1\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-create-projects\\\",\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'workspaceroles.iam.kubesphere.io \"wx-role1\" already exists'", "12", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间ws1-for-test-ws创建角色（输入已存在的角色名wx-role）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
-      }, {
-        "name" : "在企业空间auoto-wx-ws创建角色( 角色名包含大写字母）",
-        "uid" : "732fad9fa804b09f",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528904872,
-          "stop" : 1622528905199,
-          "duration" : 327
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"WX\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'WorkspaceRole.iam.kubesphere.io \"WX\" is invalid: metadata.name: Invalid value: \"WX\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "13", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色( 角色名包含大写字母）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
-      }, {
-        "name" : "在企业空间auoto-wx-ws创建角色( 角色名包含符号，非分隔符）",
-        "uid" : "3ae093ee9a943c89",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528905209,
-          "stop" : 1622528905666,
-          "duration" : 457
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"wx@wx\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'WorkspaceRole.iam.kubesphere.io \"wx@wx\" is invalid: metadata.name: Invalid value: \"wx@wx\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "14", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色( 角色名包含符号，非分隔符）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
-      }, {
-        "name" : "在企业空间auoto-wx-ws创建角色( 角色名以分隔符开头）",
-        "uid" : "f3319defa3765639",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528905677,
-          "stop" : 1622528906056,
-          "duration" : 379
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"-wx\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'WorkspaceRole.iam.kubesphere.io \"-wx\" is invalid: metadata.name: Invalid value: \"-wx\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "15", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色( 角色名以分隔符开头）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
-      }, {
-        "name" : "在企业空间auoto-wx-ws创建角色( 角色名以分隔符结尾）",
-        "uid" : "e565d51ab9f4c979",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528906074,
-          "stop" : 1622528906401,
-          "duration" : 327
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"WorkspaceRole\",\"rules\":[],\"metadata\":{\"name\":\"wx-\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'WorkspaceRole.iam.kubesphere.io \"wx-\" is invalid: metadata.name: Invalid value: \"wx-\": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')'", "16", "'post'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间auoto-wx-ws创建角色( 角色名以分隔符结尾）'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws修改角色wx-role的基本信息",
-        "uid" : "6dcc0ce633705012",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528906422,
-          "stop" : 1622528906750,
-          "duration" : 328
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['annotations']['kubesphere.io/description']'", "'{\"metadata\": {\"name\": \"wx-role\",\n             \"labels\": {\"kubesphere.io/workspace\":\"ws1-for-test-ws\"},\n             \"annotations\": {\"iam.kubesphere.io/aggregation-roles\": \"[\\\"role-template-create-projects\\\",\"\n                                                                    \"\\\"role-template-view-basic\\\"]\",\n                            \"kubesphere.io/creator\": \"admin\",\n                            \"kubesphere.io/alias-name\": \"我是别名\",\n                            \"kubesphere.io/description\": \"我是描述\"\n                             }\n             },\n}'", "'我是描述'", "17", "'patch'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间ws1-for-test-ws修改角色wx-role的基本信息'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws删除角色wx-role",
-        "uid" : "46ddac48aaa15b4b",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528906777,
-          "stop" : 1622528907093,
-          "duration" : 316
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "nan", "'success'", "18", "'delete'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间ws1-for-test-ws删除角色wx-role'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws删除角色wx-role1",
-        "uid" : "da5b572bb49c4022",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528907107,
-          "stop" : 1622528907435,
-          "duration" : 328
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "nan", "'success'", "18", "'delete'", "'critical'", "'企业空间设置-企业角色'", "'在企业空间ws1-for-test-ws删除角色wx-role1'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role1'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws查看所有的企业成员",
-        "uid" : "9c0b25edf26d4a80",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528907444,
-          "stop" : 1622528907758,
-          "duration" : 314
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'admin'", "19", "'get'", "'normal'", "'企业空间设置-企业成员'", "'在企业空间ws1-for-test-ws查看所有的企业成员'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?sortBy=createTime&limit=10'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws查看指定的企业成员",
-        "uid" : "7a253216c7cdc378",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528907796,
-          "stop" : 1622528908112,
-          "duration" : 316
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'admin'", "20", "'get'", "'normal'", "'企业空间设置-企业成员'", "'在企业空间ws1-for-test-ws查看指定的企业成员'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=admin&sortBy=createTime&limit=10'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws查看不存在的企业成员",
-        "uid" : "6652a929ff9bdcdf",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528908123,
-          "stop" : 1622528908440,
-          "duration" : 317
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "21", "'get'", "'normal'", "'企业空间设置-企业成员'", "'在企业空间ws1-for-test-ws查看不存在的企业成员'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=qweasd&sortBy=createTime&limit=10'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws模糊查询企业成员",
-        "uid" : "98434d7a440da3d2",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528908450,
-          "stop" : 1622528908738,
-          "duration" : 288
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'admin'", "22", "'get'", "'normal'", "'企业空间设置-企业成员'", "'在企业空间ws1-for-test-ws模糊查询企业成员'", "'/kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=ad&sortBy=createTime&limit=10'" ]
-      }, {
-        "name" : "开启企业空间ws1-for-test-ws网络隔离",
-        "uid" : "6dbff030d6c4c03",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528908748,
-          "stop" : 1622528909061,
-          "duration" : 313
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['spec']['template']['spec']['networkIsolation']'", "'{\"spec\":{\"template\":{\"spec\":{\"networkIsolation\":False}}}}'", "0", "23", "'patch'", "'critical'", "'企业空间设置-基本信息'", "'开启企业空间ws1-for-test-ws网络隔离'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws'" ]
-      }, {
-        "name" : "关闭企业空间ws1-for-test-ws网络隔离",
-        "uid" : "c15fb09fcbd22bdf",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528909074,
-          "stop" : 1622528909389,
-          "duration" : 315
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['spec']['template']['spec']['networkIsolation']'", "'{\"spec\":{\"template\":{\"spec\":{\"networkIsolation\":True}}}}'", "True", "24", "'patch'", "'critical'", "'企业空间设置-基本信息'", "'关闭企业空间ws1-for-test-ws网络隔离'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws创建项目wx-project",
-        "uid" : "c4e1efa04749afb6",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528909400,
-          "stop" : 1622528909698,
-          "duration" : 298
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"wx-project\",\"labels\":{\"kubesphere.io/workspace\":\"ws1-for-test-ws\"},\"annotations\":{\"kubesphere.io/creator\":\"admin\"}}}'", "'wx-project'", "25", "'post'", "'critical'", "'项目管理'", "'在企业空间ws1-for-test-ws创建项目wx-project'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws创建重复的项目wx-project",
-        "uid" : "8efa6062bbced38c",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528909709,
-          "stop" : 1622528910024,
-          "duration" : 315
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"wx-project\",\"labels\":{\"kubesphere.io/workspace\":\"ws1-for-test-ws\"},\"annotations\":{\"kubesphere.io/creator\":\"admin\"}}}'", "'namespaces \"wx-project\" already exists'", "26", "'post'", "'critical'", "'项目管理'", "'在企业空间ws1-for-test-ws创建重复的项目wx-project'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws中精确查询存在的项目",
-        "uid" : "4e8de95096cb82b8",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528910040,
-          "stop" : 1622528910335,
-          "duration" : 295
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'wx-project'", "27", "'get'", "'normal'", "'项目管理'", "'在企业空间ws1-for-test-ws中精确查询存在的项目'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx-project'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws中模糊查询存在的项目",
-        "uid" : "5b136fda893cea17",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528910357,
-          "stop" : 1622528910669,
-          "duration" : 312
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'wx-project'", "28", "'get'", "'normal'", "'项目管理'", "'在企业空间ws1-for-test-ws中模糊查询存在的项目'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=w'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws中查询不存在的项目",
-        "uid" : "617eb15cc6dfa2ec",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528910678,
-          "stop" : 1622528911007,
-          "duration" : 329
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "29", "'get'", "'normal'", "'项目管理'", "'在企业空间ws1-for-test-ws中查询不存在的项目'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx1'" ]
-      }, {
-        "name" : "设置项目wx-project配置",
-        "uid" : "8baff3f6c8e88327",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528911031,
-          "stop" : 1622528911345,
-          "duration" : 314
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['spec']['hard']['requests.memory']'", "'{\"apiVersion\":\"v1\",\"kind\":\"ResourceQuota\",\"metadata\":{\"name\":\"wx-project\",\"namespace\":\"wx-project\",\"cluster\":\"default\",\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"hard\":{\"limits.cpu\":\"2\",\"requests.cpu\":\"1\",\"requests.memory\":\"2Gi\"}}}'", "'2Gi'", "30", "'post'", "'critical'", "'概览'", "'设置项目wx-project配置'", "'/api/v1/namespaces/wx-project/resourcequotas'" ]
-      }, {
-        "name" : "设置项目wx-project容器资源默认配置",
-        "uid" : "fa494398f3b5f162",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528911358,
-          "stop" : 1622528911789,
-          "duration" : 431
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['spec']['limits'][0]['default']['memory']'", "'{\"apiVersion\":\"v1\",\"kind\":\"LimitRange\",\"metadata\":{\"annotations\":{\"kubesphere.io/creator\":\"admin\"}},\"spec\":{\"limits\":[{\"default\":{\"cpu\":\"2\",\"memory\":\"4000Mi\"},\"defaultRequest\":{\"cpu\":\"1\",\"memory\":\"500Mi\"},\"type\":\"Container\"}]}}'", "'4000Mi'", "31", "'post'", "'critical'", "'概览'", "'设置项目wx-project容器资源默认配置'", "'/api/v1/namespaces/wx-project/limitranges'" ]
-      }, {
-        "name" : "在企业空间ws1-for-test-ws删除项目wx-project",
-        "uid" : "c4b6f278e3547cbf",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528911822,
-          "stop" : 1622528912151,
-          "duration" : 329
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "nan", "'success'", "32", "'delete'", "'critical'", "'项目管理'", "'在企业空间ws1-for-test-ws删除项目wx-project'", "'/kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces/wx-project'" ]
-      }, {
-        "name" : "在企业空间编辑角色的权限信息",
-        "uid" : "35f1aad54a86e8c5",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528912164,
-          "stop" : 1622528914086,
-          "duration" : 1922
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在企业空间邀请存在的新成员",
-        "uid" : "6faf64ad6109c03",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528914089,
-          "stop" : 1622528914393,
-          "duration" : 304
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在企业空间编辑邀请成员的角色",
-        "uid" : "226d6a09b65f01d2",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528914396,
-          "stop" : 1622528915008,
-          "duration" : 612
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在企业空间删除邀请的成员",
-        "uid" : "ef3a79d23a8a8f8f",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528915011,
-          "stop" : 1622528915649,
-          "duration" : 638
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建、编辑、删除企业组织",
-        "uid" : "e5308b020f0b03b3",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528915652,
-          "stop" : 1622528916869,
-          "duration" : 1217
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建重名的企业组织",
-        "uid" : "ff0f9cf9b2a7b5e3",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528916874,
-          "stop" : 1622528917815,
-          "duration" : 941
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建的企业组织名称中包含大写字母",
-        "uid" : "f75b46714c8952d",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528917818,
-          "stop" : 1622528918123,
-          "duration" : 305
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建的企业组织名称中包含特殊字符",
-        "uid" : "6da77646d453649a",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528918126,
-          "stop" : 1622528918443,
-          "duration" : 317
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "为用户分配企业组织",
-        "uid" : "af61969985543ce4",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528918447,
-          "stop" : 1622528919675,
-          "duration" : 1228
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "将用户从企业组织解绑",
-        "uid" : "79ef7a0a50cda915",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528919678,
-          "stop" : 1622528920617,
-          "duration" : 939
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "编辑配额",
-        "uid" : "346d0c31979bc8c3",
-        "parentUid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528920625,
-          "stop" : 1622528921579,
-          "duration" : 954
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      } ],
-      "uid" : "bdfaf8a8c4c3e7833e281e2b3eb2fb5c"
-    } ],
-    "uid" : "453c0f6c3a9d393b06ee49fd6735ce69"
-  }, {
-    "name" : "testRole",
-    "children" : [ {
-      "name" : "TestRole",
-      "children" : [ {
-        "name" : "查询所有角色信息",
-        "uid" : "4a31e8393c3b218a",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528932552,
-          "stop" : 1622528933349,
-          "duration" : 797
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'workspaces-manager'", "1", "'get'", "'normal'", "'查询角色'", "'查询所有角色信息'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles?sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'" ]
-      }, {
-        "name" : "查询指定角色信息",
-        "uid" : "6bd8e7b97dcddf89",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528933363,
-          "stop" : 1622528933669,
-          "duration" : 306
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['metadata']['name']'", "nan", "'users-manager'", "2", "'get'", "'normal'", "'查询角色'", "'查询指定角色信息'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles?name=users-manager'" ]
-      }, {
-        "name" : "查询不存在的角色信息",
-        "uid" : "c256c39f4948cd25",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528933681,
-          "stop" : 1622528933980,
-          "duration" : 299
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "3", "'get'", "'normal'", "'查询角色'", "'查询不存在的角色信息'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles?name=wx-role'" ]
-      }, {
-        "name" : "模糊查询角色信息",
-        "uid" : "bb9adbbe4a428b2e",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528933990,
-          "stop" : 1622528934297,
-          "duration" : 307
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "2", "4", "'get'", "'normal'", "'查询角色'", "'模糊查询角色信息'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles?name=manager'" ]
-      }, {
-        "name" : "增加角色(不输入角色名称)",
-        "uid" : "ae9bb35c08733046",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528934307,
-          "stop" : 1622528934630,
-          "duration" : 323
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"GlobalRole\",\"rules\":[],\"metadata\":{\"name\":\"\",\"annotations\":{\"kubesphere.io/description\":\"新建角色\",\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-manage-clusters\\\",\\\"role-template-view-clusters\\\",\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'GlobalRole.iam.kubesphere.io \"\" is invalid: metadata.name: Required value: name or generateName is required'", "5", "'post'", "'critical'", "'添加角色'", "'增加角色(不输入角色名称)'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles'" ]
-      }, {
-        "name" : "增加角色(不选择权限)",
-        "uid" : "6448828d5fca899",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528934646,
-          "stop" : 1622528935010,
-          "duration" : 364
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"GlobalRole\",\"rules\":[],\"metadata\":{\"name\":\"wx\",\"annotations\":{\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'wx'", "6", "'post'", "'critical'", "'添加角色'", "'增加角色(不选择权限)'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles'" ]
-      }, {
-        "name" : "增加角色wx-role",
-        "uid" : "dd6d647d1307b000",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528935030,
-          "stop" : 1622528935345,
-          "duration" : 315
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "'{\"apiVersion\":\"iam.kubesphere.io/v1alpha2\",\"kind\":\"GlobalRole\",\"rules\":[],\"metadata\":{\"name\":\"wx-role\",\"annotations\":{\"kubesphere.io/description\":\"新建角色\",\"iam.kubesphere.io/aggregation-roles\":\"[\\\"role-template-manage-clusters\\\",\\\"role-template-view-clusters\\\",\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\"}}}'", "'wx-role'", "7", "'post'", "'critical'", "'添加角色'", "'增加角色wx-role'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles'" ]
-      }, {
-        "name" : "编辑角色非权限信息",
-        "uid" : "e7878ff4eb1a2636",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528935354,
-          "stop" : 1622528935662,
-          "duration" : 308
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['annotations']['kubesphere.io/alias-name']'", "'{\"metadata\": {\"name\": \"wx-role\", \"annotations\": {\"iam.kubesphere.io/aggregation-roles\": \"[\\\"role-template-manage-clusters\\\",\"\"\\\"role-template-view-clusters\\\",\"\"\\\"role-template-view-basic\\\"]\",\"kubesphere.io/creator\":\"admin\",\"kubesphere.io/description\":\"新建角色\",\"kubesphere.io/alias-name\":\"eait-role123\"}}}'", "'eait-role123'", "8", "'patch'", "'critical'", "'添加角色'", "'编辑角色非权限信息'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles/wx-role'" ]
-      }, {
-        "name" : "查看角色的详情",
-        "uid" : "4e12dcc2643620bc",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528935675,
-          "stop" : 1622528935996,
-          "duration" : 321
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['metadata']['name']'", "nan", "'wx-role'", "9", "'get'", "'normal'", "'查询角色'", "'查看角色的详情'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles/wx-role'" ]
-      }, {
-        "name" : "查看角色的授权用户",
-        "uid" : "572abef169d5e5e2",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528936009,
-          "stop" : 1622528936309,
-          "duration" : 300
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['totalItems']'", "nan", "0", "10", "'get'", "'critical'", "'查询角色'", "'查看角色的授权用户'", "'/kapis/iam.kubesphere.io/v1alpha2/users?globalrole=wx-role'" ]
-      }, {
-        "name" : "删除角色wx-role(输入错误的角色名)",
-        "uid" : "6a0f3b18ec14c448",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528936321,
-          "stop" : 1622528936626,
-          "duration" : 305
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.text'", "nan", "'globalroles.iam.kubesphere.io \"wx-rol\" not found'", "11", "'delete'", "'critical'", "'删除角色'", "'删除角色wx-role(输入错误的角色名)'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles/wx-rol'" ]
-      }, {
-        "name" : "删除角色wx-role",
-        "uid" : "2a0e914f17814d28",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528936637,
-          "stop" : 1622528936944,
-          "duration" : 307
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "nan", "'success'", "12", "'delete'", "'critical'", "'删除角色'", "'删除角色wx-role'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles/wx-role'" ]
-      }, {
-        "name" : "删除角色wx",
-        "uid" : "828456354c7cfbed",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528936957,
-          "stop" : 1622528937268,
-          "duration" : 311
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['message']'", "nan", "'success'", "13", "'delete'", "'critical'", "'删除角色'", "'删除角色wx'", "'/kapis/iam.kubesphere.io/v1alpha2/globalroles/wx'" ]
-      }, {
-        "name" : "测试编辑角色权限",
-        "uid" : "3bcc72c218b42958",
-        "parentUid" : "fd6516e0b2e6d526dd8ae02eaa4dd106",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528937278,
-          "stop" : 1622528938223,
-          "duration" : 945
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      } ],
-      "uid" : "fd6516e0b2e6d526dd8ae02eaa4dd106"
-    } ],
-    "uid" : "4aec85388cda4340b3775896abd8b942"
-  }, {
-    "name" : "testDevops",
-    "children" : [ {
-      "name" : "TestDevOps",
-      "children" : [ {
-        "name" : "创建devops工程,然后将其删除",
-        "uid" : "c118a3f051c98730",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528939474,
-          "stop" : 1622528940123,
-          "duration" : 649
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "精确查询存在的devops工程",
-        "uid" : "c3998c66fa25671",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528940129,
-          "stop" : 1622528940443,
-          "duration" : 314
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "模糊查询存在的devops工程",
-        "uid" : "f85e16a206576cc3",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528940447,
-          "stop" : 1622528940785,
-          "duration" : 338
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查询不存在的devops工程",
-        "uid" : "db2e4e93c43cbb9b",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528940790,
-          "stop" : 1622528941115,
-          "duration" : 325
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "通过图形界面创建、编辑、运行流水线,最后删除流水线",
-        "uid" : "d122b772cc690564",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "broken",
-        "time" : {
-          "start" : 1622528941121,
-          "stop" : 1622528942193,
-          "duration" : 1072
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "编辑信息",
-        "uid" : "257a94671780324b",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528942490,
-          "stop" : 1622528943123,
-          "duration" : 633
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建账户凭证",
-        "uid" : "61a240b6f17f0e7b",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528943127,
-          "stop" : 1622528943451,
-          "duration" : 324
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建SSH凭证",
-        "uid" : "6545c6f053ba59ed",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528943455,
-          "stop" : 1622528943768,
-          "duration" : 313
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建secret_text凭证",
-        "uid" : "875e19077682a55a",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528943773,
-          "stop" : 1622528944113,
-          "duration" : 340
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "创建kubeconfig凭证",
-        "uid" : "1cf3e5d2a462542b",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528944115,
-          "stop" : 1622528944454,
-          "duration" : 339
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "精确查询存在的凭证",
-        "uid" : "50813357640aaec8",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528944459,
-          "stop" : 1622528944760,
-          "duration" : 301
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "模糊查询存在的凭证",
-        "uid" : "f3df0121bf071407",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528944770,
-          "stop" : 1622528945385,
-          "duration" : 615
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查询不存在的凭证",
-        "uid" : "f0cbcd774352c7fa",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528945388,
-          "stop" : 1622528945724,
-          "duration" : 336
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除凭证",
-        "uid" : "a8a9636a2946ba03",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528945730,
-          "stop" : 1622528947291,
-          "duration" : 1561
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查看devops工程默认的所有角色",
-        "uid" : "7601f034eef185d1",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528947296,
-          "stop" : 1622528947599,
-          "duration" : 303
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查找devops工程指定的角色",
-        "uid" : "621f8404e4336839",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528947602,
-          "stop" : 1622528947923,
-          "duration" : 321
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查找devops工程中不存在的角色",
-        "uid" : "dd2a215486c92a97",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528947926,
-          "stop" : 1622528948245,
-          "duration" : 319
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "模糊查找devops工程中的角色",
-        "uid" : "e1863d18160e364f",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528948248,
-          "stop" : 1622528948544,
-          "duration" : 296
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在devops工程中创建角色",
-        "uid" : "89a7f2a0c88311f0",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528948548,
-          "stop" : 1622528948864,
-          "duration" : 316
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在devops工程中创建角色-角色名称为空",
-        "uid" : "5e5a305a10ec79d7",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528948866,
-          "stop" : 1622528949164,
-          "duration" : 298
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在devops工程中编辑角色基本信息",
-        "uid" : "ad374555f276c11c",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528949167,
-          "stop" : 1622528949478,
-          "duration" : 311
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在devops工程中编辑角色的权限信息",
-        "uid" : "8256a52cf5f7cdbe",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528949483,
-          "stop" : 1622528950093,
-          "duration" : 610
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "在devops工程中删除角色",
-        "uid" : "842a3f1473481b65",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528950097,
-          "stop" : 1622528950422,
-          "duration" : 325
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查看devops工程默认的所有用户",
-        "uid" : "f6e019e9c1e13f94",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528950427,
-          "stop" : 1622528950731,
-          "duration" : 304
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查找devops工程指定的用户",
-        "uid" : "f7888441df03c6e0",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528950737,
-          "stop" : 1622528951039,
-          "duration" : 302
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "模糊查找devops工程的用户",
-        "uid" : "8e2d00dc0abf1712",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528951041,
-          "stop" : 1622528951332,
-          "duration" : 291
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查找devops工程不存在的用户",
-        "uid" : "c957ff3815e8c410",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528951335,
-          "stop" : 1622528951635,
-          "duration" : 300
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "邀请用户到devops工程",
-        "uid" : "b1ca490d7fdd66a0",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528951638,
-          "stop" : 1622528951961,
-          "duration" : 323
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "编辑devops工程成员的角色",
-        "uid" : "6580bf7f7faaf5c4",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528951963,
-          "stop" : 1622528952279,
-          "duration" : 316
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除devops工程的成员",
-        "uid" : "50948b8b52af5ceb",
-        "parentUid" : "2f9b3e1e5074da7a659b297ac99bb9c7",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528952282,
-          "stop" : 1622528952588,
-          "duration" : 306
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      } ],
-      "uid" : "2f9b3e1e5074da7a659b297ac99bb9c7"
-    } ],
-    "uid" : "9d8d4311049c019a269994c68abc3c07"
-  }, {
-    "name" : "testAppStoreManage",
-    "children" : [ {
-      "name" : "TestManageApp",
-      "children" : [ {
-        "name" : "在应用商店列表精确查询存在的应用rabbitmq",
-        "uid" : "f50c7fd057e2dd63",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528953555,
-          "stop" : 1622528953853,
-          "duration" : 298
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['name']'", "nan", "'RabbitMQ'", "1", "'get'", "'normal'", "'应用商店'", "'在应用商店列表精确查询存在的应用rabbitmq'", "'/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm%2Ckeyword%3Drabbitmq&reverse=true'" ]
-      }, {
-        "name" : "在应用商店列表模糊查询存在的应用",
-        "uid" : "9cf0fb0b447281d",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528953867,
-          "stop" : 1622528954216,
-          "duration" : 349
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['name']'", "nan", "'RabbitMQ'", "2", "'get'", "'normal'", "'应用商店'", "'在应用商店列表模糊查询存在的应用'", "'/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm%2Ckeyword%3Drabbit&reverse=true'" ]
-      }, {
-        "name" : "在应用商店列表查询不存在的应用",
-        "uid" : "7cf3af5eac7b3aed",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528954232,
-          "stop" : 1622528954546,
-          "duration" : 314
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['total_count']'", "nan", "0", "3", "'get'", "'normal'", "'应用商店'", "'在应用商店列表查询不存在的应用'", "'/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm%2Ckeyword%3Dramq&reverse=true'" ]
-      }, {
-        "name" : "在应用审核页面已处理列表精确查询存在的应用",
-        "uid" : "45f2ce6aa9132511",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528954558,
-          "stop" : 1622528954863,
-          "duration" : 305
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['app_name']'", "nan", "'NGINX'", "4", "'get'", "'normal'", "'应用审核'", "'在应用审核页面已处理列表精确查询存在的应用'", "'/kapis/openpitrix.io/v1/reviews?&conditions=keyword%3Dnginx'" ]
-      }, {
-        "name" : "在应用审核页面已处理列表模糊查询存在应用",
-        "uid" : "a25a9c6297daed73",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528954874,
-          "stop" : 1622528955181,
-          "duration" : 307
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['app_name']'", "nan", "'NGINX'", "5", "'get'", "'normal'", "'应用审核'", "'在应用审核页面已处理列表模糊查询存在应用'", "'/kapis/openpitrix.io/v1/reviews?&conditions=keyword%3Dngin'" ]
-      }, {
-        "name" : "在应用审核页面已处理列表查询不存在的应用",
-        "uid" : "d41f718ea5639900",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528955212,
-          "stop" : 1622528955521,
-          "duration" : 309
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['total_count']'", "nan", "0", "6", "'get'", "'normal'", "'应用审核'", "'在应用审核页面已处理列表查询不存在的应用'", "'/kapis/openpitrix.io/v1/reviews?&conditions=keyword%3Dwxwxwx'" ]
-      }, {
-        "name" : "在应用分类列表中精确查询存在的应用nginx",
-        "uid" : "674dda27950594da",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528955532,
-          "stop" : 1622528955843,
-          "duration" : 311
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['name']'", "nan", "'NGINX'", "7", "'get'", "'normal'", "'应用分类'", "'在应用分类列表中精确查询存在的应用nginx'", "'/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm%2Ccategory_id%3Dctg-uncategorized%2Ckeyword%3Dnginx&reverse=true'" ]
-      }, {
-        "name" : "在应用分类类表中模糊查询存在的应用",
-        "uid" : "8e16cb88f6892a6d",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528955852,
-          "stop" : 1622528956146,
-          "duration" : 294
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['items'][0]['name']'", "nan", "'NGINX'", "8", "'get'", "'normal'", "'应用分类'", "'在应用分类类表中模糊查询存在的应用'", "'/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm%2Ccategory_id%3Dctg-uncategorized%2Ckeyword%3Dngin&reverse=true'" ]
-      }, {
-        "name" : "在应用分类列表中查询不存在的应用nginx",
-        "uid" : "a46235eecf11bca3",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528956156,
-          "stop" : 1622528956471,
-          "duration" : 315
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.json()['total_count']'", "nan", "0", "9", "'get'", "'normal'", "'应用分类'", "'在应用分类列表中查询不存在的应用nginx'", "'/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm%2Ccategory_id%3Dctg-uncategorized%2Ckeyword%3Dninx&reverse=true'" ]
-      }, {
-        "name" : "删除不包含应用的分类",
-        "uid" : "c6c465a390d91317",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528956479,
-          "stop" : 1622528957417,
-          "duration" : 938
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "修改分类信息",
-        "uid" : "552911d3d9d93a63",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528957420,
-          "stop" : 1622528958661,
-          "duration" : 1241
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "查看所有内置应用的详情信息",
-        "uid" : "4b3d44166b2b47e4",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528958664,
-          "stop" : 1622528969394,
-          "duration" : 10730
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      }, {
-        "name" : "删除包含应用的分类",
-        "uid" : "7ab662ce7f213d2f",
-        "parentUid" : "29c386771272ce4c2b3889d3199f3090",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528969400,
-          "stop" : 1622528991058,
-          "duration" : 21658
-        },
-        "flaky" : false,
-        "parameters" : [ ]
-      } ],
-      "uid" : "29c386771272ce4c2b3889d3199f3090"
-    } ],
-    "uid" : "0a045bc25cfeacee2725c4caf343984f"
-  }, {
-    "name" : "testHelp",
-    "children" : [ {
-      "name" : "TestHelp",
-      "children" : [ {
-        "name" : "项目-邀请其他成员到当前项目中",
-        "uid" : "33683502e81b7156",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528991065,
-          "stop" : 1622528996212,
-          "duration" : 5147
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "1", "'get'", "'normal'", "'官网文档'", "'项目-邀请其他成员到当前项目中'", "'https://v3-1.docs.kubesphere.io/docs/project-administration/role-and-member-management/'" ]
-      }, {
-        "name" : "项目-如何设置项目网关",
-        "uid" : "ffa7ed567b0d6198",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528996223,
-          "stop" : 1622528996462,
-          "duration" : 239
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "2", "'get'", "'normal'", "'官网文档'", "'项目-如何设置项目网关'", "'https://v3-1.docs.kubesphere.io/docs/project-administration/project-gateway/'" ]
-      }, {
-        "name" : "项目-应用负载-应用-了解更多",
-        "uid" : "5a8e2798d3a9cece",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528996485,
-          "stop" : 1622528996741,
-          "duration" : 256
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "3", "'get'", "'normal'", "'官网文档'", "'项目-应用负载-应用-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/project-user-guide/application/app-template/'" ]
-      }, {
-        "name" : "项目-应用负载-服务-了解更多",
-        "uid" : "814663ad96683055",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528996749,
-          "stop" : 1622528997013,
-          "duration" : 264
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "4", "'get'", "'normal'", "'官网文档'", "'项目-应用负载-服务-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/project-user-guide/application-workloads/services/'" ]
-      }, {
-        "name" : "项目-应用负载-工作负载-了解更多",
-        "uid" : "9b1fe7a0c8df15f",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528997025,
-          "stop" : 1622528997275,
-          "duration" : 250
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "5", "'get'", "'normal'", "'官网文档'", "'项目-应用负载-工作负载-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/project-user-guide/application-workloads/deployments/'" ]
-      }, {
-        "name" : "项目-应用负载-任务-了解更多",
-        "uid" : "feaa6b948e900e19",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528997287,
-          "stop" : 1622528997523,
-          "duration" : 236
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "6", "'get'", "'normal'", "'官网文档'", "'项目-应用负载-任务-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/project-user-guide/application-workloads/jobs/'" ]
-      }, {
-        "name" : "项目-应用负载-应用路由-了解更多",
-        "uid" : "30128cc8d0b83c41",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528997534,
-          "stop" : 1622528997768,
-          "duration" : 234
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "7", "'get'", "'normal'", "'官网文档'", "'项目-应用负载-应用路由-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/project-user-guide/application-workloads/routes/'" ]
-      }, {
-        "name" : "项目-应用负载-使用应用路由的前提-了解更多",
-        "uid" : "779f6db92c7fec4a",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528997778,
-          "stop" : 1622528998017,
-          "duration" : 239
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "8", "'get'", "'normal'", "'官网文档'", "'项目-应用负载-使用应用路由的前提-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/project-administration/project-gateway/'" ]
-      }, {
-        "name" : "项目-配置中心-密钥-了解更多",
-        "uid" : "3dbb90b4b7d0cd2a",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528998028,
-          "stop" : 1622528998268,
-          "duration" : 240
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "9", "'get'", "'normal'", "'官网文档'", "'项目-配置中心-密钥-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/project-user-guide/configuration/secrets/'" ]
-      }, {
-        "name" : "项目-配置中心-配置-了解更多",
-        "uid" : "2126d12f8d82e4f4",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528998283,
-          "stop" : 1622528998524,
-          "duration" : 241
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "10", "'get'", "'normal'", "'官网文档'", "'项目-配置中心-配置-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/project-user-guide/configuration/configmaps/'" ]
-      }, {
-        "name" : "项目-配置中心-服务账号-了解更多",
-        "uid" : "c2cbe8abde246909",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528998540,
-          "stop" : 1622528998771,
-          "duration" : 231
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "11", "'get'", "'normal'", "'官网文档'", "'项目-配置中心-服务账号-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/project-user-guide/configuration/serviceaccounts/'" ]
-      }, {
-        "name" : "项目-灰度发布-了解更多",
-        "uid" : "a9f250029300be80",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528998781,
-          "stop" : 1622528999020,
-          "duration" : 239
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "12", "'get'", "'normal'", "'官网文档'", "'项目-灰度发布-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/project-user-guide/grayscale-release/overview/'" ]
-      }, {
-        "name" : "项目-使用灰度发布的前提条件-了解更多",
-        "uid" : "a37f801b0c90c912",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528999032,
-          "stop" : 1622528999278,
-          "duration" : 246
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "13", "'get'", "'normal'", "'官网文档'", "'项目-使用灰度发布的前提条件-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/project-user-guide/application/compose-app/'" ]
-      }, {
-        "name" : "项目-存储管理-存储类型-了解更多",
-        "uid" : "3e4fa253309c7c7b",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528999302,
-          "stop" : 1622528999562,
-          "duration" : 260
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "14", "'get'", "'normal'", "'官网文档'", "'项目-存储管理-存储类型-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/cluster-administration/persistent-volume-and-storage-class/'" ]
-      }, {
-        "name" : "项目-基本信息-了解更多",
-        "uid" : "70964a1d0ef8685e",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528999578,
-          "stop" : 1622528999818,
-          "duration" : 240
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "15", "'get'", "'normal'", "'官网文档'", "'项目-基本信息-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/workspace-administration/project-quotas/'" ]
-      }, {
-        "name" : "集群-集群节点-了解更多",
-        "uid" : "682f358ba5176172",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622528999829,
-          "stop" : 1622529000073,
-          "duration" : 244
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "16", "'get'", "'normal'", "'官网文档'", "'集群-集群节点-了解更多'", "'https://v3-1.docs.kubesphere.io/docs/cluster-administration/nodes/'" ]
-      }, {
-        "name" : "平台设置-如何修改平台信息",
-        "uid" : "cf53ad4957a06aad",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622529000085,
-          "stop" : 1622529000327,
-          "duration" : 242
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "17", "'get'", "'normal'", "'官网文档'", "'平台设置-如何修改平台信息'", "'https://v3-1.docs.kubesphere.io/docs/cluster-administration/platform-settings/customize-basic-information/'" ]
-      }, {
-        "name" : "项目-应用治理-了解更多",
-        "uid" : "2953e113cca65b5",
-        "parentUid" : "4e07de39684072f9bf6d94af94fdff42",
-        "status" : "passed",
-        "time" : {
-          "start" : 1622529000341,
-          "stop" : 1622529002317,
-          "duration" : 1976
-        },
-        "flaky" : false,
-        "parameters" : [ "'r.status_code'", "nan", "200", "18", "'get'", "'normal'", "'官网文档'", "'项目-应用治理-了解更多'", "'https://istio.io/latest/docs/setup/additional-setup/sidecar-injection/'" ]
-      } ],
-      "uid" : "4e07de39684072f9bf6d94af94fdff42"
-    } ],
-    "uid" : "d5b764273ac47550b56e9c5293610455"
+    "uid" : "ee79ae265a842e48c4df30f006daaf4e"
   } ],
   "name" : "suites"
 }

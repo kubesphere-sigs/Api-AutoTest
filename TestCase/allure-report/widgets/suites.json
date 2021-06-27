@@ -1,92 +1,15 @@
 {
-  "total" : 8,
+  "total" : 1,
   "items" : [ {
-    "uid" : "d3cbc2c4a8ff943b643112a72b352b40",
-    "name" : "testProject",
+    "uid" : "ee79ae265a842e48c4df30f006daaf4e",
+    "name" : "TestCase",
     "statistic" : {
-      "failed" : 1,
+      "failed" : 4,
       "broken" : 0,
       "skipped" : 0,
-      "passed" : 121,
-      "unknown" : 0,
-      "total" : 122
-    }
-  }, {
-    "uid" : "9d8d4311049c019a269994c68abc3c07",
-    "name" : "testDevops",
-    "statistic" : {
-      "failed" : 0,
-      "broken" : 1,
-      "skipped" : 0,
-      "passed" : 29,
-      "unknown" : 0,
-      "total" : 30
-    }
-  }, {
-    "uid" : "453c0f6c3a9d393b06ee49fd6735ce69",
-    "name" : "testWorkspace",
-    "statistic" : {
-      "failed" : 0,
-      "broken" : 0,
-      "skipped" : 0,
-      "passed" : 44,
+      "passed" : 40,
       "unknown" : 0,
       "total" : 44
-    }
-  }, {
-    "uid" : "402d3633bd05bab587b6431a62283628",
-    "name" : "testUser",
-    "statistic" : {
-      "failed" : 0,
-      "broken" : 0,
-      "skipped" : 0,
-      "passed" : 20,
-      "unknown" : 0,
-      "total" : 20
-    }
-  }, {
-    "uid" : "d5b764273ac47550b56e9c5293610455",
-    "name" : "testHelp",
-    "statistic" : {
-      "failed" : 0,
-      "broken" : 0,
-      "skipped" : 0,
-      "passed" : 18,
-      "unknown" : 0,
-      "total" : 18
-    }
-  }, {
-    "uid" : "cd022304053fd00dd9401ba8aa6e9d78",
-    "name" : "testAppManage",
-    "statistic" : {
-      "failed" : 0,
-      "broken" : 0,
-      "skipped" : 0,
-      "passed" : 17,
-      "unknown" : 0,
-      "total" : 17
-    }
-  }, {
-    "uid" : "4aec85388cda4340b3775896abd8b942",
-    "name" : "testRole",
-    "statistic" : {
-      "failed" : 0,
-      "broken" : 0,
-      "skipped" : 0,
-      "passed" : 14,
-      "unknown" : 0,
-      "total" : 14
-    }
-  }, {
-    "uid" : "0a045bc25cfeacee2725c4caf343984f",
-    "name" : "testAppStoreManage",
-    "statistic" : {
-      "failed" : 0,
-      "broken" : 0,
-      "skipped" : 0,
-      "passed" : 13,
-      "unknown" : 0,
-      "total" : 13
     }
   } ]
 }
