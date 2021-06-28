@@ -110,9 +110,13 @@ class TestWorkbench(object):
         # 查询工作台的基本信息
         response = step_get_base_info(before_timestamp, now_timestamp, '600', '20')
         # 获取平台的应用模版数量
-        template_count = response.json()['results'][3]['data']['result'][0]['value'][1]
-        # 查询集群的应用模版信息，并获取用户数量
-        r = step_get_app_info()
-        template_count_actual = r.json()['total_count']
-        # 验证用户数量正确
-        assert int(template_count) == template_count_actual
+        try:
+            template_count = response.json()['results'][3]['data']['result'][0]['value'][1]
+            # 查询集群的应用模版信息，并获取用户数量
+            r = step_get_app_info()
+            template_count_actual = r.json()['total_count']
+            # 验证用户数量正确
+            assert int(template_count) == template_count_actual
+        except IndexError as e:
+            print(e)
+            print('集群未开启openpitrix')
