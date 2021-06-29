@@ -6,7 +6,6 @@ import sys
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
-import logging
 from config import config
 from common.getData import DoexcleByPandas
 from common.getHeader import get_header
@@ -14,9 +13,63 @@ from common.logFormat import log_format
 from common import commonFunction
 
 
+@allure.step('新建角色')
+def step_create_role(role_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles'
+    data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
+            "kind": "GlobalRole",
+            "rules": [],
+            "metadata":
+                {
+                    "name": role_name,
+                    "annotations": {
+                        "iam.kubesphere.io/aggregation-roles":
+                            "[\"role-template-manage-clusters\",\"role-template-view-clusters\","
+                            "\"role-template-view-basic\"]",
+                        "kubesphere.io/creator": "admin"
+                    }
+                }
+            }
+    r = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return r
+
+
+@allure.step('编辑角色权限')
+def step_edit_role_authority(role_name, version, authority):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles/' + role_name
+    data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
+            "kind": "GlobalRole",
+            "rules": [{"verbs": ["*"], "apiGroups": ["*"], "resources": ["globalroles"]},
+                      {"verbs": ["get", "list", "watch"], "apiGroups": ["iam.kubesphere.io"],
+                       "resources": ["globalroles"]}, {"verbs": ["get", "list", "watch"], "apiGroups": ["*"],
+                                                       "resources": ["users", "users/loginrecords"]}],
+            "metadata": {"name": role_name, "labels": {"kubefed.io/managed": "false"}, "annotations": {
+                "iam.kubesphere.io/aggregation-roles": authority,
+                "kubesphere.io/creator": "admin"}, "resourceVersion": version}}
+    r = requests.put(url, headers=get_header(), data=json.dumps(data))
+    return r
+
+
+@allure.step('查询角色信息')
+def step_get_role_info(role_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles?name=' + role_name + \
+                       '&annotation=kubesphere.io%2Fcreator'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('删除角色')
+def step_delete_role(role_name):
+    """
+    :param role_name: 系统角色的名称
+    """
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles/' + role_name
+    response = requests.delete(url, headers=get_header())
+    return response
+
+
 @allure.feature('系统角色管理')
 class TestRole(object):
-    log_format()  # 配置日志格式
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='system_role')
 
@@ -92,31 +145,29 @@ class TestRole(object):
     @allure.severity('critical')
     @allure.title('测试编辑角色权限')
     def test_edit_role(self):
-
-        role_name = 'wx-role1'
+        role_name = 'role' + str(commonFunction.get_random())
         authority = '["role-template-view-clusters","role-template-view-basic"]'
-        version = commonFunction.create_role(role_name)  # 创建角色并获取角色的resourceVersion
-        # 编辑角色权限的URL地址
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles/' + role_name
-        # 编辑的角色数据
-        data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
-                "kind": "GlobalRole",
-                "metadata": {"name": "wx-role1",
-                             "annotations": {"iam.kubesphere.io/aggregation-roles": authority,
-                                             "kubesphere.io/creator": "admin",
-                                             "kubesphere.io/description": "新建角色"},
-                             "resourceVersion": version}
-                }
-        # 编辑角色信息
-        r = requests.put(url, headers=get_header(), data=json.dumps(data))
+        step_create_role(role_name)  # 创建角色
+        # 查询角色并获取version
+        response = step_get_role_info(role_name)
+        version = response.json()['items'][0]['metadata']['resourceVersion']
+        r = step_edit_role_authority(role_name, version, authority)
         try:
             # 验证编辑后的角色权限
             assert r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority
-            # 在日志中输入实际结果
-            logging.info(
-                'reality_result:' + str(r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']))
         finally:
-            commonFunction.delete_role(role_name)  # 删除新建的角色
+            step_delete_role(role_name)  # 删除新建的角色
+
+    @allure.story('编辑角色')
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.title('查询不存在的角色')
+    def test_query_not_exist_role(self):
+        # 构建角色名称
+        role_name = 'role' + str(commonFunction.get_random())
+        # 查询角色
+        response = step_get_role_info(role_name)
+        # 验证查询结果为空
+        assert response.json()['totalItems'] == 0
 
 
 if __name__ == "__main__":
