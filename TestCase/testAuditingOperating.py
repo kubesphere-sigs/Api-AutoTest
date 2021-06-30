@@ -78,7 +78,7 @@ class TestAuditingOperatingSearch(object):
         # 获取12小时之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp(720)
         # 查询最近 12 小时审计总数变化趋势
-        response = step_get_audits_trend(before_timestamp, now_timestamp, interval)
+        response = step_get_audits_trend(before_timestamp, now_timestamp)
         print(response.json())
         # 获取查询结果数据中的时间间隔
         time_1 = response.json()['histogram']['buckets'][0]['time']

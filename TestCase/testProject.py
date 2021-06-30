@@ -1311,7 +1311,6 @@ class TestProject(object):
         uid = step_get_job_status(self.project_name, self.job_name)  # 验证任务的运行状态为完成,并获取uid
         pod_name = step_get_job_pods(self.project_name, uid)  # 查看任务的资源状态，并获取容器组名称
         url = config.url + '/api/v1/namespaces/' + self.project_name + '/pods/' + pod_name
-
         r = requests.delete(url=url, headers=get_header())
         # 验证删除操作成功
         print("actual_result:r.json()['status']['phase'] = " + r.json()['status']['phase'])
