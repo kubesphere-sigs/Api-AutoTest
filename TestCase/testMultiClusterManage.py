@@ -272,7 +272,9 @@ def step_get_crd_detail(cluster_name, crd_name):
 def step_get_crd_federated_group_list(cluster_name, group, version, kind):
     if kind[-1] == 's':
         url = config.url + '/apis/clusters/' + cluster_name + '/' + group + '/' + version + '/' + kind + 'es'
-    elif kind[-1] == 'y':
+    elif kind[-2:] == 'ay':
+        url = config.url + '/apis/clusters/' + cluster_name + '/' + group + '/' + version + '/' + kind + 's'
+    elif kind[-1] == 'y' and kind[-2:] != 'ay':
         kind = kind.replace(kind[-1], 'i')
         url = config.url + '/apis/clusters/' + cluster_name + '/' + group + '/' + version + '/' + kind + 'es'
     else:
