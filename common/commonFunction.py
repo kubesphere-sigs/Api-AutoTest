@@ -135,17 +135,6 @@ def delete_ws_role(ws_name, ws_role_name):
     requests.delete(url, headers=get_header())
 
 
-# 获取企业空间的角色的resourceversion
-def get_ws_role_version(ws_name):
-    """
-    :param ws_name: 企业空间的名称
-    :return: 企业空间中第一个角色的resourceversion
-    """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles'
-    r = requests.get(url, headers=get_header())
-    return r.json()['items'][0]['metadata']['resourceVersion']
-
-
 # 邀请用户到企业空间
 def ws_invite_user(ws_name, user_name, ws_role):
     """

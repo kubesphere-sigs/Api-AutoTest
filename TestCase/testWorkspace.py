@@ -15,6 +15,109 @@ from common.logFormat import log_format
 from common import commonFunction
 
 
+@allure.step('修改角色权限')
+def step_edit_role_authory(ws_name, role_name, version, authory):
+    # 修改角色的url地址
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles/' + role_name
+    # 修改目标角色的数据
+    data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
+            "kind": "WorkspaceRole",
+            "metadata": {"name": role_name,
+                         "labels": {"kubesphere.io/workspace": ws_name},
+                         "annotations": {"iam.kubesphere.io/aggregation-roles": authory,
+                                         "kubesphere.io/creator": "admin"},
+                         "resourceVersion": version
+                         }
+            }
+    response = requests.put(url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('创建企业空间的角色')
+def step_create_ws_role(ws_name, ws_role_name, authory):
+    """
+    :param ws_name: 企业空间的名称
+    :param ws_role_name: 企业空间的角色的名称
+    """
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles'
+    data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
+            "kind": "WorkspaceRole",
+            "rules": [],
+            "metadata": {"name": ws_role_name,
+                         "annotations": {"iam.kubesphere.io/aggregation-roles": authory,
+                                         "kubesphere.io/creator": "admin"}
+                         }
+            }
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('查询企业空间指定角色')
+def step_get_ws_role(ws_name, role_name):
+    """
+    :param role_name:
+    :param ws_name: 企业空间的名称
+    :return: 企业空间中第一个角色的resourceversion
+    """
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles?name=' + role_name \
+          + '&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
+
+    response = requests.get(url, headers=get_header())
+    return response
+
+
+@allure.step('查询企业空间指定成员')
+def step_get_ws_user(ws_name, user_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers?name=' + user_name
+    response = requests.get(url, headers=get_header())
+    return response
+
+
+@allure.step('删除企业空间角色')
+def step_delete_role(ws_name, role_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles/' + role_name
+    response = requests.delete(url, headers=get_header())
+    return response
+
+
+@allure.step('邀请用户到企业空间')
+def step_invite_user(ws_name, user_name, role_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers'
+    # 邀请成员的信息
+    data = [{"username": user_name, "roleRef": role_name}]
+    # 邀请成员
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('修改企业成员的角色')
+def step_edit_ws_user_role(ws_name, user_name, role_name):
+    # 修改企业空间成员角色的url地址
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers/' + user_name
+    # 修改的目标数据
+    data = {"username": user_name,
+            "roleRef": role_name}
+    # 修改成员角色
+    response = requests.put(url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('将用户从企业空间移除')
+def step_delete_ws_user(ws_name, user_name):
+    # 删除邀请成员的url地址
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers/' + user_name
+    # 删除邀请成员
+    response = requests.delete(url, headers=get_header())
+    return response
+
+
+@allure.step('在企业空间中查询指定用户')
+def step_get_ws_user(ws_name, user_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers?name=' + user_name
+    response = requests.get(url, headers=get_header())
+    return response
+
+
 @allure.step('创建企业组织')
 # 创建企业组织并返回name
 def step_create_department(ws_name, group_name, data):
@@ -134,7 +237,7 @@ def step_edit_quota(ws_name, hard_data, cluster, resource_version):
     return response
 
 
-@allure.feature('企业空间角色&用户管理')
+@allure.feature('企业空间')
 class TestWorkSpace(object):
     user_name = 'user-for-test-ws'
     ws_name = 'ws-for-test-ws'
@@ -227,85 +330,75 @@ class TestWorkSpace(object):
     以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
     '''
 
+    @allure.story('企业空间设置-企业角色')
     @allure.title('在企业空间编辑角色的权限信息')
     @allure.severity('critical')
     def test_edit_ws_role(self):
-
-        authority = '["role-template-view-basic","role-template-create-projects"]'  # 修改目标角色的权限信息
+        authority_create = '["role-template-view-basic"]'  # 创建角色的权限信息
+        authority_edit = '["role-template-view-basic","role-template-create-projects"]'  # 修改目标角色的权限信息
         time.sleep(1)  # 由于新建的角色和系统自动生成的角色的生成时间是一致。后面获取角色的resourceversion是按时间排序获取的。因此在创建企业空间后sleep 1s
-        commonFunction.create_ws_role(self.ws_name, self.ws_role_name)  # 在企业空间创建角色
-        version = commonFunction.get_ws_role_version(self.ws_name)  # 获取该角色的resourceversion
-        # 修改角色的url地址
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + self.ws_name + '/workspaceroles/' + self.ws_role_name
-        # 修改目标角色的数据
-        data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
-                "kind": "WorkspaceRole",
-                "metadata": {"name": self.ws_role_name,
-                             "labels": {"kubesphere.io/workspace": self.ws_name},
-                             "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-basic\","
-                                                                                    "\"role-template-create-projects\"]",
-                                             "kubesphere.io/creator": "admin"},
-                             "resourceVersion": version
-                             }
-                }
+        # 在企业空间创建角色
+        step_create_ws_role(self.ws_name, self.ws_role_name, authority_create)
+        # 查询并获取该角色的resourceversion
+        response = step_get_ws_role(self.ws_name, self.ws_role_name)
+        version = response.json()['items'][0]['metadata']['resourceVersion']
         # 修改角色权限
-        r = requests.put(url, headers=get_header(), data=json.dumps(data))
+        step_edit_role_authory(self.ws_name, self.ws_role_name, version, authority_edit)
+        # 查询并获取该角色的权限信息
+        re = step_get_ws_role(self.ws_name, self.ws_role_name)
+        authority_actual = re.json()['items'][0]['metadata']['annotations']["iam.kubesphere.io/aggregation-roles"]
         # 验证修改角色权限后的权限信息
-        assert r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority
-        # 在日志中打印出实际结果
-        logging.info(
-            'reality_result:' + str(r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']))
+        assert authority_actual == authority_edit
+        # 删除创建的角色
+        step_delete_role(self.ws_name, self.ws_role_name)
 
+    @allure.story('企业空间设置-企业成员')
     @allure.title('在企业空间邀请存在的新成员')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_ws_invite_user(self):
-
-        # 邀请企业空间成员的URL地址
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + self.ws_name + '/workspacemembers'
-        # 邀请成员的信息
-        data = [{"username": self.user_name, "roleRef": self.ws_role_name}]
-        # 邀请成员
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
+        # 将用户邀请到企业空间
+        step_invite_user(self.ws_name, self.user_name, 'ws-for-test-multi-ws-viewer')
+        # 在企业空间中查询邀请的用户
+        response = step_get_ws_user(self.ws_name, self.user_name)
         # 验证邀请后的成员名称
-        assert r.json()[0]['username'] == self.user_name
-        # 在日志中打印出实际结果
-        logging.info('reality_result:' + str(r.json()[0]['username']))
+        assert response.json()['items'][0]['metadata']['name'] == self.user_name
+        # 将邀请的用户移除企业空间
+        step_delete_ws_user(self.ws_name, self.user_name)
 
+    @allure.story('企业空间设置-企业角色')
     @allure.title('在企业空间编辑邀请成员的角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_ws_edit_invite_user(self):
-
+        ws_role_create = self.ws_name + '-viewer'  # 邀请用户是赋予的角色
         ws_role_new = self.ws_name + '-admin'  # 修改的新角色
-        commonFunction.ws_invite_user(self.ws_name, self.user_name, self.ws_role_name)  # 将创建的用户邀请到创建的企业空间
-        # 修改企业空间成员角色的url地址
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + self.ws_name + '/workspacemembers/' + self.user_name
-        # 修改的目标数据
-        data = {"username": self.user_name,
-                "roleRef": ws_role_new}
+        # 将创建的用户邀请到创建的企业空间
+        step_invite_user(self.ws_name, self.user_name, ws_role_create)
         # 修改成员角色
-        r = requests.put(url, headers=get_header(), data=json.dumps(data))
+        step_edit_ws_user_role(self.ws_name, self.user_name, ws_role_new)
+        # 查询该企业空间成员的信息
+        r = step_get_ws_user(self.ws_name, self.user_name)
+        # 获取该成员的角色信息
+        user_role = r.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/workspacerole']
         # 验证修改后的角色名称
-        assert r.json()['roleRef'] == ws_role_new
-        # 在日志中打印出实际结果
-        logging.info('actual_result:' + str(r.json()['roleRef']))
+        assert user_role == ws_role_new
+        # 将邀请的用户移除企业空间
+        step_delete_ws_user(self.ws_name, self.user_name)
 
-    @allure.title('在企业空间删除邀请的成员')
+    @allure.story('企业空间设置-企业成员')
+    @allure.title('在企业空间删除邀请的成员并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_ws_delete_invite_user(self):
+        ws_role_create = self.ws_name + '-viewer'  # 邀请用户是赋予的角色
+        # 将创建的用户邀请到创建的企业空间
+        step_invite_user(self.ws_name, self.user_name, ws_role_create)
+        # 将邀请的用户移除企业空间
+        step_delete_ws_user(self.ws_name, self.user_name)
+        # 查询该企业空间成员的信息
+        response = step_get_ws_user(self.ws_name, self.user_name)
+        # 验证删除成功
+        assert response.json()['totalItems'] == 0
 
-        commonFunction.ws_invite_user(self.ws_name, self.user_name, self.ws_role_name)  # 将创建的用户邀请到创建的企业空间
-        # 删除邀请成员的url地址
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + self.ws_name + '/workspacemembers/' + self.user_name
-        # 删除邀请成员
-        r = requests.delete(url, headers=get_header())
-
-        # 验证实际结果为'success
-        assert r.json()['message'] == 'success'
-
-        # 在日志中打印出实际结果
-        logging.info('actual_result:' + str(r.json()['message']))
-
-    @allure.story('企业组织')
+    @allure.story('企业空间设置-企业组织')
     @allure.title('创建、编辑、删除企业组织')
     def test_department(self):
         group_name = 'test-group'
@@ -336,7 +429,7 @@ class TestWorkSpace(object):
         # 验证删除成功
         assert response.json()['message'] == 'success'
 
-    @allure.story('企业组织')
+    @allure.story('企业空间设置-企业组织')
     @allure.title('创建重名的企业组织')
     def test_create_rename_department(self):
         # 创建企业组织
@@ -360,7 +453,7 @@ class TestWorkSpace(object):
         # 验证删除成功
         res.json()['message'] == 'success'
 
-    @allure.story('企业组织')
+    @allure.story('企业空间设置-企业组织')
     @allure.title('创建的企业组织名称中包含大写字母')
     def test_create_wrong_name_department(self):
         # 创建组织
@@ -377,7 +470,7 @@ class TestWorkSpace(object):
         # 校验接口返回信息
         assert assert_message in response.text
 
-    @allure.story('企业组织')
+    @allure.story('企业空间设置-企业组织')
     @allure.title('创建的企业组织名称中包含特殊字符')
     def test_create_wrong_name_1_department(self):
         # 创建组织
@@ -394,7 +487,7 @@ class TestWorkSpace(object):
         # 校验接口返回信息
         assert assert_message in response.text
 
-    @allure.story('企业组织')
+    @allure.story('企业空间设置-企业组织')
     @allure.title('创建企业组织时绑定不存在的项目')
     # 接口没有校验企业空间的角色、项目和角色是否存在
     def wx_test_create_wrong_pro_department(self):
@@ -409,7 +502,7 @@ class TestWorkSpace(object):
         response = step_create_department(self.ws_name, group_name, data)
         print(response.text)
 
-    @allure.story('企业组织')
+    @allure.story('企业空间设置-企业组织')
     @allure.title('为用户分配企业组织')
     def test_assign_user(self):
         group_name = 'test1'
@@ -457,7 +550,7 @@ class TestWorkSpace(object):
         response = step_binding_user(self.ws_name, name, self.user_name)
         print(response.text)
 
-    @allure.story('企业组织')
+    @allure.story('企业空间设置-企业组织')
     @allure.title('将用户从企业组织解绑')
     def test_unbind_user(self):
         group_name = 'test2'
@@ -479,7 +572,7 @@ class TestWorkSpace(object):
         # 校验解绑结果
         assert response.json()['message'] == 'success'
 
-    @allure.story('配额管理')
+    @allure.story('企业空间设置-配额管理')
     @allure.title('编辑配额')
     def test_edit_quota(self):
         # 初始化企业配额
