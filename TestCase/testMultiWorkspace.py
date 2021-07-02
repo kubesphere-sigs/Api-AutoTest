@@ -420,6 +420,19 @@ def step_get_ws_info(ws_name):
     return response
 
 
+@allure.step('开关企业空间网络隔离')
+def step_set_network_lsolation(ws_name, status):
+    """
+
+    :param ws_name:
+    :param status: True or False
+    """
+    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
+    data = {"spec": {"template": {"spec": {"networkIsolation": status}}}}
+    response = requests.patch(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
 @allure.feature('多集群企业空间')
 class TestWorkSpace(object):
     user_name = 'user-for-test-ws'
@@ -987,6 +1000,34 @@ class TestWorkSpace(object):
                     assert re.json()['totalItems'] == 1
                     # 删除多集群项目
                     step_delete_multi_project(multi_project_name)
+
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('network') is False,
+                        reason='集群未开启networkpolicy功能')
+    @allure.story('企业空间设置-网络策略')
+    @allure.title('关闭企业空间网络隔离')
+    def wx_test_off_network_lsolation(self):
+        # 关闭企业空间网络隔离
+        step_set_network_lsolation(self.ws_name, False)
+        # 验证企业空间信息
+        response = step_get_ws_info(self.ws_name)
+        # 获取企业空间的网络隔离状态
+        network_lsolation = response.json()['spec']['template']['spec']['networkIsolation']
+        # 验证设置成功
+        assert network_lsolation is False
+
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('network') is False,
+                        reason='集群未开启networkpolicy功能')
+    @allure.story('企业空间设置-网络策略')
+    @allure.title('开启企业空间网络隔离')
+    def wx_test_enable_network_lsolation(self):
+        # 关闭企业空间网络隔离
+        step_set_network_lsolation(self.ws_name, True)
+        # 验证企业空间信息
+        response = step_get_ws_info(self.ws_name)
+        # 获取企业空间的网络隔离状态
+        network_lsolation = response.json()['spec']['template']['spec']['networkIsolation']
+        # 验证设置成功
+        assert network_lsolation is True
 
 
 if __name__ == "__main__":
