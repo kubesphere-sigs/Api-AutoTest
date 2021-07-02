@@ -368,6 +368,8 @@ def get_components_status_of_cluster(component):
     # 获取组件信息
     if component == 'openpitrix':
         component_status = spec[component]['store']['enabled']
+    elif component == 'network':
+        component_status = spec[component]['networkpolicy']['enabled']
     else:
         component_status = spec[component]['enabled']
     return component_status
