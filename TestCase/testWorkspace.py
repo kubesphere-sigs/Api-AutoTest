@@ -305,6 +305,7 @@ def step_get_ws_info(ws_name):
 
 
 @allure.feature('企业空间')
+@pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 class TestWorkSpace(object):
     user_name = 'user-for-test-ws'
     ws_name = 'ws-for-test-ws'
