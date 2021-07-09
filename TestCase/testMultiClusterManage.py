@@ -1438,7 +1438,8 @@ class TestCluster(object):
                               ('statefulsets', '在每个集群按名称模糊查询存在的statefulSets'),
                               ('daemonsets', '在每个集群按名称模糊查询存在的daemonSets'),
                               ('pods', '在每个集群按名称模糊查询存在的pod'),
-                              ('services', '在每个集群按名称模糊查询存在的service')])
+                              ('services', '在每个集群按名称模糊查询存在的service')
+                              ])
     def test_fuzzy_query_app_workload_by_name(self, type, title):
         # 获取多集群环境的集群名称
         response = step_get_cluster()
