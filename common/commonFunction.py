@@ -375,3 +375,17 @@ def get_components_status_of_cluster(component):
     return component_status
 
 
+# 判断环境是否开启多集群功能
+def check_multi_cluster():
+    url = config.url + '/apis/installer.kubesphere.io/v1alpha1/clusterconfigurations'
+    response = requests.get(url=url, headers=get_header())
+    # 查询多集群功能是否启用
+    multicluster_status = response.json()['items'][0]['status']['multicluster']['status']
+    print(multicluster_status)
+    if multicluster_status == 'enabled':
+        return True
+    else:
+        return False
+
+
+check_multi_cluster()
