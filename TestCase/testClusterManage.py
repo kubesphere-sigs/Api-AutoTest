@@ -388,6 +388,7 @@ def step_get_project_trend_of_cluster(start_time, end_time, step, times):
 
 
 @allure.feature('集群管理')
+@pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 class TestCluster(object):
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='cluster')

@@ -388,4 +388,10 @@ def check_multi_cluster():
         return False
 
 
-check_multi_cluster()
+def wx_test():
+    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/federatednamespaces?sortBy=createTime'
+    response = requests.get(url=url, headers=get_header())
+    for i in range(0, response.json()['totalItems']):
+        print(response.json()['items'][i]['metadata']['name'])
+
+wx_test()

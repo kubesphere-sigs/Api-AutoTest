@@ -138,6 +138,7 @@ def step_get_hierarchy_consumption_history(project_name, start_time, end_time, s
 
 
 @allure.feature('计量计费')
+@pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 class TestMetering(object):
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='metering')

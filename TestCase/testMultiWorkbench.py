@@ -45,7 +45,8 @@ def step_get_app_info():
     return response
 
 
-@allure.feature('工作台')
+@allure.feature('多集群环境工作台')
+@pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='未开启多集群功能')
 class TestWorkbench(object):
 
     @allure.story('平台信息')

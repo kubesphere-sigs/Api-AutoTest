@@ -469,6 +469,7 @@ def step_get_cluster_scheduler(cluster_name):
 
 
 @allure.feature('多集群环境集群管理')
+@pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='未开启多集群功能')
 class TestCluster(object):
     @allure.story("概览")
     @allure.title('查看每个集群的版本信息')
