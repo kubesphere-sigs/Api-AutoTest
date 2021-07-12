@@ -52,8 +52,13 @@ def step_deploy_template(ws_name, project_name, app_id, name, version_id):
     :param version_id: 应用的版本号
     :return:
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + \
-          '/clusters/default/namespaces/' + project_name + '/applications'
+    if commonFunction.check_multi_cluster() is False:
+        url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + \
+                           '/clusters/default/namespaces/' + project_name + '/applications'
+    else:
+        url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + \
+                           '/clusters/host/namespaces/' + project_name + '/applications'
+
     data = {"app_id": app_id,
             "name": name,
             "version_id": version_id,
@@ -218,7 +223,7 @@ def step_add_version(ws_name, app_id):
     # 获取应用的app_id和version_id
     url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/apps/' + app_id + '/versions'
     data = {"type": "helm",
-            "package": "H4sIFAAAAAAA/ykAK2FIUjBjSE02THk5NWIzVjBkUzVpWlM5Nk9WVjZNV2xqYW5keVRRbz1IZWxtAOwba2/jNnI/61cMjBZoe7As5w0B/ZA6bhs0yfqsdLdFURi0NLZ5S1EKSXnjZve/H0g9LDlSbGfdpIfzfFhrqRHnxXlwyCiUisTxQac3I0LZCxKyN7sGx3Gc0+Nj8+s4zuqv0z0+eNM9PDk8ck5ODpzuG6d7cHp4/AacnXNSA4lURLxxvpjWqnD/I0Bi+g6FpBF3Yd61SByX/ms7VoDSFzRWZiRfLDBDFoKvVwyUECxOQlxiWfNiJsc+tV5b0j3UQeH/c8ISlH9LAFjn/6fHzor/H3ZPT/f+/xJAJhPKqVq48PDZIjGVKOYoXJgpFUu30/mQjFFwVCjtACckYcqWc989Ojq0MLy7Pw8CgVLeLmJ0gcZmrBfxCZ26FkD/+t+/ja7Pb85/6l/3b25Ho6tL77Z/0x+ORj/f3g5caJ05Z07LfHVFfY4SPfQFqhsTSHjCmEVDMkUXNEpH/+MyotdsOj5IGBtEjPoLFy4nN5EaCJTIlUX5VPOlmSCcR4ro+CSNkADIyZhh4MKEMIkWwCySyuC206DWxnsSxgxtFvmEWQAxUTMXOhaAYtKFP/40oU7GxEcXMr1YPArQQ4a+ioShFOv4JxVyHw0jvo9SXkcBujBEErwXVOFb7mMdS5L+hS4cONfUEhgz6hPpwqElUEaJ8DEVRRuLppMrY4EeS6RCcTmwVMRQ5FL/8Wdj9C38X2EYG9V2PEUUThLm4Y7qgaf9v9s9do5X/P+ke9Td+/9LQDn/kziWnXnX+kB54EJpGVghKhIQRfRKS5P8wwNQ7rMkQGhpt7QnCWP6VQts+Pw5w8s85OEB7CEyJBLtm3w4xWJkjMz4Hmj6dine0KjTQKtCB0w1YstZx/huDboZL+E/pkO5VITXsdr8TUg4mWLQHi+qX3mpU+oPZYy+Fi3z05tNNNeeIQkYSmkBPDy0gU6A8ADsd2l+LsUUOwsa8A2PVD3CPZWK8mmPERp+m4oyj1gSohm5zV0+VX8bymZOITWAZrOtX1TG1xs3hbKJU3iuoVPY1txNNNcbvenLDUxffFzKPsVgZtc6k0kVCTLV9pGyykZqOHuMiqywk33T9vVHKUfrZv4Ed0mkKpxqppBJrKVKWDxbQzZPg5X5eLCcLveGTDFFNqwsjXYT+0v8OuaXeXE5l8C7BLPEXkDGdLOW6F8rBCpyJHFAFHpKEIXTRTpzmnqHEWOUT381CJamnmftEqV8MJ1M5sWCmSYkyp9dVXzl+X6y/WrP83/GzEokWPXhL/Hg53hiee2kS7JgJnOmxhiYBcmCgXZjUMMwVosLKrIyseIUDe5aibCb0Cg+Vu+WgbgaGT5SNduGmAZfDxX5RcUMbPjqkXeXvbF2oCRlbU0ODSIy6iM3dWvmZeaLsuPJUl1fcoh6Ks1MZpn03PejhGfTbVCLZBwkgqpFL+IK70vMTeRPIkpiF7qO42SjfsQVoRxFac2XJS5Jlm1QSkKZkYp5Hm1WVrGX76p2jSOhVuJjwdogytJfWZnp5ss2O6/lbuu2NxiN+r/d9oc351fwKY/V0D07O6wSfN78nndVO//ZF83fvHMsk3DOnF2I8N6rl8DZjYbee43zHz1//otz7+cf3p4PL55QUPexCMjnP4oorCTGlO6ETq9JPMRJ9R3AhnV/G/kcqpSqqzedxTB/c37dr1AxLajaHABNc/SufvVutdC/nHmj0flgsNtZLy693tt3/eHvdTN+OJMb8uX1h+8ue/2neNt0S7CRFi41wf6wSQ3ZYiq6PZsrWAvgDc57G2n40Ubgaa4vLoZ9zxvd/j5onL3kBaXGU5VElsbwDhrxW7NIqlS9m3Ln/frjj5e/1fEl577tp22Xol1U5iWvHvCumZ+Ay12wEkfB06yUMylUq2ZdNUS/k5CVatXsJXwCygPkCroHdZuDa52KZZ2bPy5/NIQaf2A6aq1OFCvT1utotE7IUVLSqvC9TVHyiPhqYdJMH5VvHmxG/VYFXybjDLv+vUASvOVs4YISCVZ5r1E5CShHKQciGmM1ys6Uin+qlk0asuajVEQlcvWdyRA6B1ZeUE4VJewCGVl46Ec8kC4cV1BiFDQKVl4+Kj/LPc2lIJVOZ6XEzNcQfAKeLZqzxnLuEbW8GV3ax+Tt6Y2prKNRaowuyZS7pc+g9NpNvC+Amv7vaIZMbztsFe/mKGjN+c+B0z1a6f8eHx7sz39eBB4eOt/BnIYuSFQwoQzVIsbvQ60Wf4YufNf5/NnSWFb/PiY8ADVDE2Ehmphn026zrQyvretOyqvb//bylSlJ7fSygQneRaQhIb6doxDUdHiUSLgPJ4fmkYZeMpnQe2i1l5Np19PPKXM9gUQhkIKGLqEWcJcQRicUAyBxbNi2rfeYzm7wlaahRZAwRp8kEkFGIcIvRYMiFXZCkQUSiEBgNKQKA1ARqBmV8M14YRRxceNpXMqnpl3xrW1dTkCkBVE6SVbYy+zo3IxRBR8pYzBGSKTmUwIxzGfc1ut1WSDm6ihlyfxloc4cpxFhI33rQib/z1eGd/f7zU1a4rNQQzpLtSwveK2Mbs1gLChXE2h9Ldtfy9bKbCndbRZZ03Nl8ZWsqh0lu/6gLWosmy2TFMs01Jqsm3Wwm2Qpqzp9zo5w4JNpO+qyu/WvFrRGra2EfO1YtIeXh5r8n7YBQhLv6jLIuvsfJ92T1fx/cnSwz/8vASv3v9Kj317eCNr+4LeNfL4//NUf5morbyMetfFK+4qDV9lI1Pi/GBN/p/fA1vh/9/Cou+L/RyfO3v9fBGr936ucsjwKAusde7M7Iu12OyM4jBhaZVbMGiSJmkWC/mU25vaHM+N58+4YFen+bUyJhKF0rTaQmJpzoexiWKtlrRwzm8IpjihXpg88RzGWLpgXU1Tm9yNR/sw8MSrVisA/UB5QPv2HyC2T8X/Qz6/B1a4D2PQUoMBcx5yIGGaHDaWFsDmV3EZPKO61HewfDjXxPztj3V0KWBP/T05q+j9Hh/v4/xLwVPzfX/v7smt/6cWg0sFV7lkqPbXSuaI44M+PLcI7lUbaeLfH+7GIVORHzIXb3iC9t0TEFNVObxGUhZCSbSvHJtcIdiDHejKFHNNwQ2NsfVfh2XJsSSkX5SOOZeR/wK0X1wYXI3Zgk7VUCjmyY/CtJFh/92InIqwjk8sQEDkbR0QEm0my9S2PZwuzJaXqBcbnxvFt47Ipo3ebt8o3LPYJbCWBLf+oRFtcap2fF381dBNxXbD7OU4xsk9s+8S2T2z7xLZPbBvH69feC+5hD3v4/4L/BgAA//+P9tAeAEQAAA=="}
+            "package": "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"}
     response = requests.post(url, headers=get_header(), data=json.dumps(data))
     return response
 
@@ -310,23 +315,144 @@ def step_delete_app_repo(ws_name, repo_id):
     return response
 
 
+@allure.step('在单集群环境创建企业空间')
+def step_create_workspace(ws_name):
+    """
+    :param ws_name: 企业空间的名称
+    """
+    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
+    data = {"apiVersion": "tenant.kubesphere.io/v1alpha2",
+            "kind": "WorkspaceTemplate",
+            "metadata": {"name": ws_name,
+                         "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": {"template": {"spec": {"manager": "admin"}}}}
+    requests.post(url, headers=get_header(), data=json.dumps(data))
+
+
+@allure.step('获取集群的名称')
+def step_get_cluster_name():
+    clusters = []
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/clusters'
+    response = requests.get(url=url, headers=get_header())
+    for i in range(response.json()['totalItems']):
+        clusters.append(response.json()['items'][i]['metadata']['name'])
+    return clusters
+
+
+@allure.step('创建多集群企业空间')
+def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
+    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
+    clusters = []
+    if isinstance(cluster_names, str):
+        clusters.append({'name': cluster_names})
+    else:
+        for cluster_name in cluster_names:
+            clusters.append({'name': cluster_name})
+    data = {"apiVersion": "tenant.kubesphere.io/v1alpha2",
+            "kind": "WorkspaceTemplate",
+            "metadata":
+                {"name": ws_name,
+                 "annotations": {
+                     "kubesphere.io/alias-name": alias_name,
+                     "kubesphere.io/description": description,
+                     "kubesphere.io/creator": "admin"}
+                 },
+            "spec": {"template": {"spec": {"manager": "admin"}},
+                     "placement": {"clusters": clusters}}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('在指定集群创建项目')
+def step_create_project_for_cluster(cluster_name, ws_name, project_name):
+    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+          ws_name + '/namespaces'
+    data = {"apiVersion": "v1", "kind": "Namespace",
+            "metadata": {"name": project_name, "labels": {"kubesphere.io/workspace": ws_name},
+                         "annotations": {"kubesphere.io/creator": "admin"}}, "cluster": cluster_name}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('从指定集群删除项目')
+def step_delete_project_from_cluster(cluster_name, ws_name, project_name):
+    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+                        ws_name + '/namespaces/' + project_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('删除企业空间')
+def step_delete_workspace(ws_name):
+    """
+    :param ws_name: 企业空间的名称
+    """
+    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
+    response = requests.delete(url, headers=get_header())
+    return response
+
+
+@allure.step('在单集群环境创建项目')
+def step_create_project(ws_name, project_name):
+    """
+    :param ws_name: 企业空间名称
+    :param project_name: 项目名称
+    """
+    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces'
+    data = {"apiVersion": "v1",
+            "kind": "Namespace",
+            "metadata": {"name": project_name,
+                         "labels": {"kubesphere.io/workspace": "wx-ws"},
+                         "annotations": {"kubesphere.io/creator": "admin"}
+                         }
+            }
+    requests.post(url, headers=get_header(), data=json.dumps(data))
+
+
+@allure.step('在单集群环境删除项目')
+def step_delete_project(ws_name, project_name):
+    """
+
+    :param ws_name: 企业空间名称
+    :param project_name: 项目名称
+    """
+    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
+    requests.delete(url=url, headers=get_header())
+
+
 @allure.feature('应用管理')
 @pytest.mark.skipif(commonFunction.get_component_health_of_cluster('') is False, reason='')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
-@pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 class TestAppTemplate(object):
     ws_name = 'test-app'  # 在读取excle中的测试用例时，使用到了ws_name
     project_name = 'project-for-test-app'
+    alias_name = 'for app store'
+    description = '在多集群企业空间部署app store 中的应用'
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
-        commonFunction.create_workspace(self.ws_name)  # 创建一个企业空间
-        commonFunction.create_project(ws_name=self.ws_name, project_name=self.project_name)  # 创建一个项目
+        if commonFunction.check_multi_cluster() is False:
+            step_create_workspace(self.ws_name)  # 创建一个企业空间
+            step_create_project(ws_name=self.ws_name, project_name=self.project_name)  # 创建一个项目
+        else:
+            # 获取集群名称
+            clusters = step_get_cluster_name()
+            # 创建一个多集群企业空间（包含所有的集群）
+            step_create_multi_ws(self.ws_name, self.alias_name, self.description,
+                                 clusters)
+            # 在企业空间的host集群上创建一个项目
+            step_create_project_for_cluster(cluster_name='host', ws_name=self.ws_name, project_name=self.project_name)
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
-        commonFunction.delete_project(self.ws_name, self.project_name)  # 删除创建的项目
-        commonFunction.delete_workspace(self.ws_name)  # 删除创建的企业空间
+        if commonFunction.check_multi_cluster() is False:
+            step_delete_project(self.ws_name, self.project_name)  # 删除创建的项目
+            step_delete_workspace(self.ws_name)  # 删除创建的企业空间
+        else:
+            # 删除创建的项目
+            step_delete_project_from_cluster(cluster_name='host', ws_name=self.ws_name, project_name=self.project_name)
+            # 删除创建的企业空间
+            step_delete_workspace(self.ws_name)
 
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='appmanage')
 
@@ -436,7 +562,7 @@ class TestAppTemplate(object):
         repo_id = response.json()['items'][0]['repo_id']
         name = response.json()['items'][0]['name']
         # 删除应用仓库
-        step_delete_app_repo(self.ws_name, repo_id)
+        # step_delete_app_repo(self.ws_name, repo_id)
         # 验证查询的结果正确
         assert name == repo_name
 
@@ -505,7 +631,6 @@ class TestAppTemplate(object):
         time.sleep(5)  # 等待版本删除完成后，再删除模版
         # 删除应用模板
         re = step_delete_app_template(self.ws_name, app_id)
-        print(re.text)
         # 验证删除成功
         assert re.json()['message'] == 'success'
 
@@ -552,7 +677,7 @@ class TestAppTemplate(object):
         response = step_get_app_template(self.ws_name, app_name)
         app_id = response.json()['items'][0]['app_id']
         # 添加应用版本
-        step_add_version(self.ws_name, app_name)
+        step_add_version(self.ws_name, app_id)
         # 获取应用模版中所有的版本version
         versions = step_get_app_versions(self.ws_name, app_id)
         # 删除应用版本
