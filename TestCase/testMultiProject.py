@@ -1031,6 +1031,7 @@ def step_get_project_workloads(cluster_name, project_name):
 
 @allure.feature('多集群项目管理')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='未开启多集群功能')
+@pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 class TestProject(object):
     volume_name = 'testvolume'  # 存储卷名称，在创建、删除存储卷和创建存储卷快照时使用,excle中的用例也用到了这个存储卷
     snapshot_name = 'testshot'  # 存储卷快照的名称,在创建和删除存储卷快照时使用，在excle中的用例也用到了这个快照
@@ -1047,64 +1048,57 @@ class TestProject(object):
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='project')
 
     # 所有用例执行之前执行该方法
-    # def setup_class(self):
-    #     step_create_user(self.user_name)  # 创建一个用户
-    #     # 获取集群名称
-    #     clusters = step_get_cluster_name()
-    #     # 创建一个多集群企业空间（包含所有的集群）
-    #     step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name, self.description,
-    #                          clusters)
-    #     # 创建若干个多集群企业空间（只部署在单个集群）
-    #     for i in range(len(clusters)):
-    #         step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name,
-    #                              self.description, clusters[i])
-    #     # 在每个企业空间创建多集群项目,且将其部署在所有和单个集群上
-    #     response = step_get_ws_info('')
-    #     ws_count = response.json()['totalItems']
-    #     for k in range(0, ws_count):
-    #         # 获取每个企业空间的名称
-    #         ws_name = response.json()['items'][k]['metadata']['name']
-    #         # 获取企业空间的集群信息
-    #         if ws_name != 'system-workspace':
-    #             clusters_name = []
-    #             re = step_get_ws_info(ws_name)
-    #             clusters = re.json()['items'][0]['spec']['placement']['clusters']
-    #             for i in range(0, len(clusters)):
-    #                 clusters_name.append(clusters[i]['name'])
-    #             if len(clusters_name) > 1:
-    #                 # 创建多集群项目,但是项目部署在单个集群上
-    #                 for j in range(0, len(clusters_name)):
-    #                     multi_project_name = 'multi-pro' + str(commonFunction.get_random())
-    #                     step_create_multi_project(ws_name, multi_project_name, clusters_name[j])
-    #             else:
-    #                 multi_project_name = 'multi-pro' + str(commonFunction.get_random())
-    #                 step_create_multi_project(ws_name, multi_project_name, clusters_name)
-    #
-    #     commonFunction.ws_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
+    def setup_class(self):
+        step_create_user(self.user_name)  # 创建一个用户
+        # 获取集群名称
+        clusters = step_get_cluster_name()
+        # 创建一个多集群企业空间（包含所有的集群）
+        step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name, self.description,
+                             clusters)
+        # 创建若干个多集群企业空间（只部署在单个集群）
+        for i in range(len(clusters)):
+            step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name,
+                                 self.description, clusters[i])
+        # 在每个企业空间创建多集群项目,且将其部署在所有和单个集群上
+        response = step_get_ws_info('')
+        ws_count = response.json()['totalItems']
+        for k in range(0, ws_count):
+            # 获取每个企业空间的名称
+            ws_name = response.json()['items'][k]['metadata']['name']
+            # 获取企业空间的集群信息
+            if ws_name != 'system-workspace':
+                clusters_name = []
+                re = step_get_ws_info(ws_name)
+                clusters = re.json()['items'][0]['spec']['placement']['clusters']
+                for i in range(0, len(clusters)):
+                    clusters_name.append(clusters[i]['name'])
+                if len(clusters_name) > 1:
+                    # 创建多集群项目,但是项目部署在单个集群上
+                    for j in range(0, len(clusters_name)):
+                        multi_project_name = 'multi-pro' + str(commonFunction.get_random())
+                        step_create_multi_project(ws_name, multi_project_name, clusters_name[j])
+                else:
+                    multi_project_name = 'multi-pro' + str(commonFunction.get_random())
+                    step_create_multi_project(ws_name, multi_project_name, clusters_name)
 
     # 所有用例执行完之后执行该方法
-    # def teardown_class(self):
-    #     # 获取环境中所有的多集群项目
-    #     multi_project_name = step_get_multi_projects_name()
-    #     for multi_project in multi_project_name:
-    #         if 'multi-pro' in multi_project:
-    #             # 删除创建的多集群项目
-    #             step_delete_project_by_name(multi_project)
-    #     time.sleep(5)
-    #     # 获取环境中所有的企业空间
-    #     response = step_get_ws_info('')
-    #     ws_count = response.json()['totalItems']
-    #     for k in range(0, ws_count):
-    #         # 获取每个企业空间的名称
-    #         ws_name = response.json()['items'][k]['metadata']['name']
-    #         # 获取企业空间的集群信息
-    #         if ws_name != 'system-workspace':
-    #             commonFunction.delete_workspace(ws_name)  # 删除创建的工作空间
-    #     commonFunction.delete_user(self.user_name)  # 删除创建的用户
-
-    '''
-    以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
-    '''
+    def teardown_class(self):
+        # 获取环境中所有的多集群项目
+        multi_project_name = step_get_multi_projects_name()
+        for multi_project in multi_project_name:
+            if 'multi-pro' in multi_project:
+                # 删除创建的多集群项目
+                step_delete_project_by_name(multi_project)
+        time.sleep(5)
+        # 获取环境中所有的企业空间
+        response = step_get_ws_info('')
+        ws_count = response.json()['totalItems']
+        for k in range(0, ws_count):
+            # 获取每个企业空间的名称
+            ws_name = response.json()['items'][k]['metadata']['name']
+            # 获取企业空间的集群信息
+            if ws_name != 'system-workspace':
+                commonFunction.delete_workspace(ws_name)  # 删除创建的工作空间
 
     @allure.story('存储管理-存储卷')
     @allure.title('在多集群项目创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常')

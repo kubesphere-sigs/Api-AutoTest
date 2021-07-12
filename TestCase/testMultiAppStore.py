@@ -216,21 +216,21 @@ class TestAppStore(object):
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='appstore')
 
     # 所有用例执行之前执行该方法
-    # def setup_class(self):
-    #     # 获取集群名称
-    #     clusters = step_get_cluster_name()
-    #     # 创建一个多集群企业空间（包含所有的集群）
-    #     step_create_multi_ws(self.ws_name, self.alias_name, self.description,
-    #                          clusters)
-    #     # 在企业空间的host集群上创建一个项目
-    #     step_create_project_for_cluster(cluster_name='host', ws_name=self.ws_name, project_name=self.project_name)
+    def setup_class(self):
+        # 获取集群名称
+        clusters = step_get_cluster_name()
+        # 创建一个多集群企业空间（包含所有的集群）
+        step_create_multi_ws(self.ws_name, self.alias_name, self.description,
+                             clusters)
+        # 在企业空间的host集群上创建一个项目
+        step_create_project_for_cluster(cluster_name='host', ws_name=self.ws_name, project_name=self.project_name)
 
-    # # 所有用例执行完之后执行该方法
-    # def teardown_class(self):
-    #     # 删除创建的项目
-    #     step_delete_project_from_cluster(cluster_name='host', ws_name=self.ws_name, project_name=self.project_name)
-    #     # 删除创建的企业空间
-    #     step_delete_workspace(self.ws_name)
+    # 所有用例执行完之后执行该方法
+    def teardown_class(self):
+        # 删除创建的项目
+        step_delete_project_from_cluster(cluster_name='host', ws_name=self.ws_name, project_name=self.project_name)
+        # 删除创建的企业空间
+        step_delete_workspace(self.ws_name)
 
     @allure.title('从应用商店部署应用时使用已经存在的名称')
     @allure.severity(allure.severity_level.NORMAL)

@@ -169,6 +169,7 @@ def step_get_hierarchy_consumption_history(cluster_name, project_name, start_tim
 
 
 @allure.feature('计量计费')
+@pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 class TestMetering(object):
     @allure.story('集群资源消费情况')
     @allure.title('{title}')

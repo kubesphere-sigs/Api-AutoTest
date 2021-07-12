@@ -435,6 +435,7 @@ def step_set_network_lsolation(ws_name, status):
 
 @allure.feature('多集群环境企业空间')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='未开启多集群功能')
+@pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 class TestWorkSpace(object):
     user_name = 'user-for-test-ws'
     alias_name = '我是别名'
