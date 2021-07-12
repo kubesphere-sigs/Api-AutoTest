@@ -173,7 +173,7 @@ def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
     return response
 
 
-@allure.step('在执行集群创建项目')
+@allure.step('在指定集群创建项目')
 def step_create_project_for_cluster(cluster_name, ws_name, project_name):
     url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
           ws_name + '/namespaces'
