@@ -967,6 +967,68 @@ def step_create_config_map(cluster_name, project_name, config_name, key, value):
     return response
 
 
+@allure.step('在多集群环境设置落盘日志收集功能')
+def step_set_disk_log_collection(project_name, set):
+    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
+                       '/federatednamespaces/' + project_name
+    data = {"metadata":
+                {"labels":
+                     {"logging.kubesphere.io/logsidecar-injection": set}},
+            "spec":
+                {"template":
+                     {"metadata":
+                          {"labels":
+                               {"logging.kubesphere.io/logsidecar-injection": set}}}}}
+    response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    return response
+
+
+@allure.step('在多集群环境查询落盘日志收集功能')
+def step_check_disk_log_collection(project_name):
+    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
+                       '/federatednamespaces/' + project_name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在多集群环境查询项目的监控信息')
+def step_get_project_metrics(cluster_name, project_name, start_time, end_time, step, times):
+    url = config.url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/namespaces/' + \
+          project_name + '?namespace=' + project_name + '&start=' + start_time + '&end=' + end_time + \
+          '&step=' + step + '&times=' + times + '&metrics_filter=namespace_pod_count%7C' \
+          'namespace_deployment_count%7Cnamespace_statefulset_count%7C' \
+          'namespace_daemonset_count%7Cnamespace_job_count%7Cnamespace_cronjob_count%7Cnamespace_pvc_count%7C' \
+          'namespace_service_count%7Cnamespace_secret_count%7Cnamespace_configmap_count%7C' \
+          'namespace_ingresses_extensions_count%7Cnamespace_s2ibuilder_count%24'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在多集群环境查询项目的abnormalworkloads')
+def step_get_project_abnormalworkloads(cluster_name, project_name):
+    url = config.url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha2/namespaces/' + \
+          project_name + '/abnormalworkloads'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在多集群环境查询项目的federatedlimitranges')
+def step_get_project_federatedlimitranges(project_name):
+    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedlimitranges'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在多集群环境查询项目的workloads')
+def step_get_project_workloads(cluster_name, project_name):
+    url = config.url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/namespaces/' + \
+          project_name+ '/workloads?type=rank&metrics_filter=workload_cpu_usage%7Cworkload_memory_usage_wo_cache%7C' \
+                        'workload_net_bytes_transmitted%7Cworkload_net_bytes_received%7Creplica&page=1&limit=10' \
+                        '&sort_type=desc&sort_metric=workload_cpu_usage'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
 @allure.feature('多集群项目管理')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='未开启多集群功能')
 class TestProject(object):
@@ -985,60 +1047,60 @@ class TestProject(object):
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='project')
 
     # 所有用例执行之前执行该方法
-    def setup_class(self):
-        step_create_user(self.user_name)  # 创建一个用户
-        # 获取集群名称
-        clusters = step_get_cluster_name()
-        # 创建一个多集群企业空间（包含所有的集群）
-        step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name, self.description,
-                             clusters)
-        # 创建若干个多集群企业空间（只部署在单个集群）
-        for i in range(len(clusters)):
-            step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name,
-                                 self.description, clusters[i])
-        # 在每个企业空间创建多集群项目,且将其部署在所有和单个集群上
-        response = step_get_ws_info('')
-        ws_count = response.json()['totalItems']
-        for k in range(0, ws_count):
-            # 获取每个企业空间的名称
-            ws_name = response.json()['items'][k]['metadata']['name']
-            # 获取企业空间的集群信息
-            if ws_name != 'system-workspace':
-                clusters_name = []
-                re = step_get_ws_info(ws_name)
-                clusters = re.json()['items'][0]['spec']['placement']['clusters']
-                for i in range(0, len(clusters)):
-                    clusters_name.append(clusters[i]['name'])
-                if len(clusters_name) > 1:
-                    # 创建多集群项目,但是项目部署在单个集群上
-                    for j in range(0, len(clusters_name)):
-                        multi_project_name = 'multi-pro' + str(commonFunction.get_random())
-                        step_create_multi_project(ws_name, multi_project_name, clusters_name[j])
-                else:
-                    multi_project_name = 'multi-pro' + str(commonFunction.get_random())
-                    step_create_multi_project(ws_name, multi_project_name, clusters_name)
+    # def setup_class(self):
+    #     step_create_user(self.user_name)  # 创建一个用户
+    #     # 获取集群名称
+    #     clusters = step_get_cluster_name()
+    #     # 创建一个多集群企业空间（包含所有的集群）
+    #     step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name, self.description,
+    #                          clusters)
+    #     # 创建若干个多集群企业空间（只部署在单个集群）
+    #     for i in range(len(clusters)):
+    #         step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name,
+    #                              self.description, clusters[i])
+    #     # 在每个企业空间创建多集群项目,且将其部署在所有和单个集群上
+    #     response = step_get_ws_info('')
+    #     ws_count = response.json()['totalItems']
+    #     for k in range(0, ws_count):
+    #         # 获取每个企业空间的名称
+    #         ws_name = response.json()['items'][k]['metadata']['name']
+    #         # 获取企业空间的集群信息
+    #         if ws_name != 'system-workspace':
+    #             clusters_name = []
+    #             re = step_get_ws_info(ws_name)
+    #             clusters = re.json()['items'][0]['spec']['placement']['clusters']
+    #             for i in range(0, len(clusters)):
+    #                 clusters_name.append(clusters[i]['name'])
+    #             if len(clusters_name) > 1:
+    #                 # 创建多集群项目,但是项目部署在单个集群上
+    #                 for j in range(0, len(clusters_name)):
+    #                     multi_project_name = 'multi-pro' + str(commonFunction.get_random())
+    #                     step_create_multi_project(ws_name, multi_project_name, clusters_name[j])
+    #             else:
+    #                 multi_project_name = 'multi-pro' + str(commonFunction.get_random())
+    #                 step_create_multi_project(ws_name, multi_project_name, clusters_name)
     #
     #     commonFunction.ws_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
 
     # 所有用例执行完之后执行该方法
-    def teardown_class(self):
-        # 获取环境中所有的多集群项目
-        multi_project_name = step_get_multi_projects_name()
-        for multi_project in multi_project_name:
-            if 'multi-pro' in multi_project:
-                # 删除创建的多集群项目
-                step_delete_project_by_name(multi_project)
-        time.sleep(5)
-        # 获取环境中所有的企业空间
-        response = step_get_ws_info('')
-        ws_count = response.json()['totalItems']
-        for k in range(0, ws_count):
-            # 获取每个企业空间的名称
-            ws_name = response.json()['items'][k]['metadata']['name']
-            # 获取企业空间的集群信息
-            if ws_name != 'system-workspace':
-                commonFunction.delete_workspace(ws_name)  # 删除创建的工作空间
-        commonFunction.delete_user(self.user_name)  # 删除创建的用户
+    # def teardown_class(self):
+    #     # 获取环境中所有的多集群项目
+    #     multi_project_name = step_get_multi_projects_name()
+    #     for multi_project in multi_project_name:
+    #         if 'multi-pro' in multi_project:
+    #             # 删除创建的多集群项目
+    #             step_delete_project_by_name(multi_project)
+    #     time.sleep(5)
+    #     # 获取环境中所有的企业空间
+    #     response = step_get_ws_info('')
+    #     ws_count = response.json()['totalItems']
+    #     for k in range(0, ws_count):
+    #         # 获取每个企业空间的名称
+    #         ws_name = response.json()['items'][k]['metadata']['name']
+    #         # 获取企业空间的集群信息
+    #         if ws_name != 'system-workspace':
+    #             commonFunction.delete_workspace(ws_name)  # 删除创建的工作空间
+    #     commonFunction.delete_user(self.user_name)  # 删除创建的用户
 
     '''
     以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
@@ -1758,7 +1820,7 @@ class TestProject(object):
     def test_edit_project_quota_cpu(self):
         # 配额信息
         hard = {"limits.cpu": "40",
-                "requests.cpu": "1"
+                "requests.cpu": "40"
                 }
         # 获取环境中所有的多集群项目
         multi_projects = step_get_multi_project_all()
@@ -1868,7 +1930,7 @@ class TestProject(object):
     def test_edit_project_quota_cpu_memory(self):
         # 配额信息
         hard = {"limits.memory": "1000Gi", "requests.memory": "1Gi",
-                "limits.cpu": "100", "requests.cpu": "1"}
+                "limits.cpu": "100", "requests.cpu": "100"}
         # 获取环境中所有的多集群项目
         multi_projects = step_get_multi_project_all()
         for project_info in multi_projects:
@@ -1980,7 +2042,7 @@ class TestProject(object):
                 "count/statefulsets.apps": "6",
                 "persistentvolumeclaims": "6",
                 "limits.cpu": "200", "limits.memory": "1000Gi",
-                "requests.cpu": "2", "requests.memory": "3Gi"}
+                "requests.cpu": "200", "requests.memory": "3Gi"}
         # 获取环境中所有的多集群项目
         multi_projects = step_get_multi_project_all()
         for project_info in multi_projects:
@@ -2311,6 +2373,91 @@ class TestProject(object):
             assert secret_status == 'True'
             # 删除创建的配置
             step_delete_config_map(project_name=project_info[0], config_name=config_name)
+
+    @allure.story('项目设置-高级设置')
+    @allure.title('落盘日志收集-开启')
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('logging') is False, reason='集群未开启logging功能')
+    def test_disk_log_collection_open(self):
+        # 获取环境中所有的多集群项目
+        multi_projects = step_get_multi_project_all()
+        for project_info in multi_projects:
+            # 开启落盘日志收集功能
+            step_set_disk_log_collection(project_name=project_info[0], set='enabled')
+            # 查看落盘日志收集功能
+            response = step_check_disk_log_collection(project_name=project_info[0])
+            # 获取功能状态
+            status = response.json()['metadata']['labels']['logging.kubesphere.io/logsidecar-injection']
+            # 验证功能开启成功
+            assert status == 'enabled'
+
+    @allure.story('项目设置-高级设置')
+    @allure.title('落盘日志收集-关闭')
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('logging') is False, reason='集群未开启logging功能')
+    def test_disk_log_collection_close(self):
+        # 获取环境中所有的多集群项目
+        multi_projects = step_get_multi_project_all()
+        for project_info in multi_projects:
+            # 关闭落盘日志收集功能
+            step_set_disk_log_collection(project_name=project_info[0], set='disabled')
+            # 查看落盘日志收集功能
+            response = step_check_disk_log_collection(project_name=project_info[0])
+            # 获取功能状态
+            status = response.json()['metadata']['labels']['logging.kubesphere.io/logsidecar-injection']
+            # 验证功能开启成功
+            assert status == 'disabled'
+
+    @allure.story('概览')
+    @allure.title('查询多集群项目的监控信息')
+    def test_get_project_metrics(self):
+        # 获取环境中所有的多集群项目
+        multi_projects = step_get_multi_project_all()
+        for project_info in multi_projects:
+            # 获取当前时间的10位时间戳
+            now_timestamp = str(time.time())[0:10]
+            # 获取720分钟之前的戳
+            before_timestamp = commonFunction.get_before_timestamp(720)
+            # 查询每个项目最近12h的监控信息
+            response = step_get_project_metrics(cluster_name=project_info[1], project_name=project_info[0],
+                                                start_time=before_timestamp, end_time=now_timestamp,
+                                                step='4320s', times=str(10))
+            # 获取结果中的数据类型
+            type = response.json()['results'][0]['data']['resultType']
+            # 验证数据类型正确
+            assert type == 'matrix'
+
+    @allure.story('概览')
+    @allure.title('查询多集群项目的abnormalworkloads')
+    def test_get_project_abnormalworkloads(self):
+        # 获取环境中所有的多集群项目
+        multi_projects = step_get_multi_project_all()
+        for project_info in multi_projects:
+            # 查询多集群项目的abnormalworkloads
+            response =step_get_project_abnormalworkloads(cluster_name=project_info[1], project_name=project_info[0])
+            # 验证查询成功
+            assert 'persistentvolumeclaims' in response.json()['data']
+
+    @allure.story('概览')
+    @allure.title('查询多集群项目的federatedlimitranges')
+    def test_get_project_federatedlimitranges(self):
+        # 获取环境中所有的多集群项目
+        multi_projects = step_get_multi_project_all()
+        for project_info in multi_projects:
+            # 查询多集群项目的federatedlimitranges
+            response = step_get_project_federatedlimitranges(project_name=project_info[0])
+            # 获取查询结果中的kind
+            kind = response.json()['kind']
+            # 验证kind正确
+            assert kind == 'FederatedLimitRangeList'
+            
+    @allure.story('概览')
+    @allure.title('查询多集群项目的workloads')
+    def test_get_project_workloads(self):
+        # 获取环境中所有的多集群项目
+        multi_projects = step_get_multi_project_all()
+        for project_info in multi_projects:
+            response = step_get_project_workloads(cluster_name=project_info[1], project_name=project_info[0])
+            # 验证查询成功
+            assert response.json()['total_item'] >= 0
 
 
 if __name__ == "__main__":
