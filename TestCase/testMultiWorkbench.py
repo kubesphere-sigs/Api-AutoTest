@@ -63,7 +63,7 @@ class TestWorkbench(object):
         # 获取平台的集群数量
         cluster_count = response.json()['results'][0]['data']['result'][0]['value'][1]
         # 验证集群数量大于1
-        assert int(cluster_count) > 1
+        assert int(cluster_count) >= 1
 
     @allure.story('平台信息')
     @allure.title('查询平台的企业空间数量')

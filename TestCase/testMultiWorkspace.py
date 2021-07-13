@@ -289,16 +289,18 @@ def step_create_user(user_name):
     """
     :param user_name: 系统用户的名称
     """
+    email = 'stevewen' + str(commonFunction.get_random()) + '@yunify.com'
     url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users'
     data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
             "kind": "User",
             "metadata": {"name": user_name,
                          "annotations": {"kubesphere.io/creator": "admin"}
                          },
-            "spec": {"email": "stevewen@yunify.com",
+            "spec": {"email": email,
                      "password": "P@88w0rd"}
             }
-    requests.post(url, headers=get_header(), data=json.dumps(data))
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
 
 
 @allure.step('删除企业空间')
@@ -572,6 +574,9 @@ class TestWorkSpace(object):
     @allure.title('在企业空间邀请存在的新成员')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_ws_invite_user(self):
+        # 创建用户
+        user_name = 'test' + str(commonFunction.get_random())
+        step_create_user(user_name)
         # 查询企业空间
         response = step_get_ws_info('')
         ws_count = response.json()['totalItems']
@@ -581,18 +586,23 @@ class TestWorkSpace(object):
             if ws_name != 'system-workspace':
                 # 将用户邀请到企业空间
                 ws_role_invite = ws_name + '-viewer'  # 邀请用户时赋予的角色
-                step_invite_user(ws_name, self.user_name, ws_role_invite)
+                step_invite_user(ws_name, user_name, ws_role_invite)
                 # 在企业空间中查询邀请的用户
-                re = step_get_ws_user(ws_name, self.user_name)
+                re = step_get_ws_user(ws_name, user_name)
                 # 验证邀请后的成员名称
-                assert re.json()['items'][0]['metadata']['name'] == self.user_name
+                assert re.json()['items'][0]['metadata']['name'] == user_name
                 # 将邀请的用户移除企业空间
-                step_delete_ws_user(ws_name, self.user_name)
+                step_delete_ws_user(ws_name, user_name)
+        # 删除用户
+        step_delete_user(user_name)
 
     @allure.story('企业空间设置-企业角色')
     @allure.title('在企业空间编辑邀请成员的角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_ws_edit_invite_user(self):
+        # 创建用户
+        user_name = 'test' + str(commonFunction.get_random())
+        step_create_user(user_name)
         # 查询企业空间
         response = step_get_ws_info('')
         ws_count = response.json()['totalItems']
@@ -603,17 +613,19 @@ class TestWorkSpace(object):
                 ws_role_create = ws_name + '-viewer'  # 邀请用户时赋予的角色
                 ws_role_new = ws_name + '-admin'  # 修改的新角色
                 # 将创建的用户邀请到创建的企业空间
-                step_invite_user(ws_name, self.user_name, ws_role_create)
+                step_invite_user(ws_name, user_name, ws_role_create)
                 # 修改成员角色
-                step_edit_ws_user_role(ws_name, self.user_name, ws_role_new)
+                step_edit_ws_user_role(ws_name, user_name, ws_role_new)
                 # 查询该企业空间成员的信息
-                r = step_get_ws_user(ws_name, self.user_name)
+                r = step_get_ws_user(ws_name, user_name)
                 # 获取该成员的角色信息
                 user_role = r.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/workspacerole']
                 # 验证修改后的角色名称
                 assert user_role == ws_role_new
                 # 将邀请的用户移除企业空间
-                step_delete_ws_user(ws_name, self.user_name)
+                # step_delete_ws_user(ws_name, self.user_name)
+        # 删除创建的用户
+        step_delete_user(user_name)
 
     @allure.story('企业空间设置-企业成员')
     @allure.title('在企业空间删除邀请的成员并验证删除成功')
@@ -810,11 +822,14 @@ class TestWorkSpace(object):
                 binding_user = re.json()[0]['users'][0]
                 # 校验绑定的用户名称
                 assert binding_user == self.user_name
-                # 重新获取企业组织可分配的用户数量
+                # 重新获取企业组织可分配的用户名称
                 r = step_get_user_for_department(name)
                 counts_new = r.json()['totalItems']
-                # 验证可绑定的用户数量
-                assert counts_new == counts - 1
+                user_name = []
+                for i in range(0, counts_new):
+                    user_name.append(r.json()['items'][i]['metadata']['name'])
+                # 验证已分配的用户不在可分配的用户列表中
+                assert binding_user not in user_name
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('将已绑定企业组织的用户再次绑定该企业组织')
