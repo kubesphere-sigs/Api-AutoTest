@@ -26,7 +26,7 @@ def step_get_category_id_by_name(category_name):
     count = r.json()['total_count']
     name = []
     id = []
-    for i in range(count):
+    for i in range(0, count):
         name.append(r.json()['items'][i]['category_id'])
         id.append(r.json()['items'][i]['name'])
     name_id = dict(zip(id, name))
@@ -116,13 +116,85 @@ def step_get_app_detail(app_id):
 @allure.feature('应用商店管理')
 @pytest.mark.skipif(commonFunction.get_component_health_of_cluster('') is False, reason='')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
-@pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 class TestManageAppStore(object):
     ws_name = 'test-appstore-manage'  # 在excle中读取的用例此名称，不能修改。
     project_name = 'project-for-test-appstore-manage'  # 在excle中读取的用例此名称，不能修改。
     log_format()  # 配置日志格式
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='manageapps')
+
+    @allure.story('应用分类')
+    @allure.title('删除不包含应用的分类')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_delete_category(self):
+        # 新建应用分类
+        category_name = 'category' + str(commonFunction.get_random())
+        response = step_create_category(category_name)
+        # 获取创建分类的category_id
+        category_id = response.json()['category_id']
+        # 删除分类
+        step_delete_category(category_id)
+        # 查询所有分类的category_id
+        categories_id = step_get_categories_id()
+        # 验证被删除分类的category_id不存在
+        assert category_id not in categories_id
+
+    @allure.story('应用分类')
+    @allure.title('修改分类信息')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_change_category(self):
+        old_name = 'category' + str(commonFunction.get_random())
+        new_name = 'category' + str(commonFunction.get_random())
+        # 新建应用分类
+        response = step_create_category(old_name)
+        # 获取新建分类的category_id
+        category_id = response.json()['category_id']
+        # 修改分类名称
+        step_change_category(category_id, new_name)
+        # 验证修改成功，使用修改后的名称查询category_id
+        category_id_new = step_get_category_id_by_name(new_name)
+        assert category_id == category_id_new
+        # 删除分类
+        step_delete_category(category_id)
+
+    @allure.story('应用商店')
+    @allure.title('查看所有内置应用的详情信息')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_check_apps_detail(self):
+        # 获取应用商店管理/应用商店页面，所有应用的app_id
+        apps_id = step_get_apps_id()
+        # 查看所有应用的详情信息，并验证查询成功
+        for app_id in apps_id:
+            print(app_id)
+            response = step_get_app_detail(app_id)
+            assert response.json()['app_id'] == app_id
+
+    @allure.story('应用分类')
+    @allure.title('删除包含应用的分类')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_delete_app_category(self):
+        category_name = 'category' + str(commonFunction.get_random())
+        # 新建应用分类
+        response = step_create_category(category_name)
+        # 获取新建分类的category_id
+        category_id = response.json()['category_id']
+        # 获取应用商店页面所有应用的app_id
+        apps_id = step_get_apps_id()
+        # print(apps_id)
+        # 向分类中添加所有内置应用
+        for app_id in apps_id:
+            step_app_to_category(app_id, category_id)
+        # 删除分类
+        result = step_delete_app_category(category_id)
+        # 验证删除结果
+        assert result == 'category ' + category_name + ' owns application'
+        # 获取未分类的category_id
+        uncategorized_id = step_get_category_id_by_name('uncategorized')
+        # 将所有的内置应用移动到未分类中
+        for app_id in apps_id:
+            step_app_to_category(app_id, uncategorized_id)
+        # 删除新建的分类
+        step_delete_category(category_id)
 
     @allure.title('{title}')  # 设置用例标题
     @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
@@ -187,78 +259,6 @@ class TestManageAppStore(object):
                              '用例的实际结果: ' + str(condition_new) + '\n'
                                                                 '用例的预期结果: ' + str(except_result)
         )
-
-    @allure.story('应用分类')
-    @allure.title('删除不包含应用的分类')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def test_delete_category(self):
-        # 新建应用分类
-        category_name = 'category' + str(commonFunction.get_random())
-        response = step_create_category(category_name)
-        # 获取创建分类的category_id
-        category_id = response.json()['category_id']
-        # 删除分类
-        step_delete_category(category_id)
-        # 查询所有分类的category_id
-        categories_id = step_get_categories_id()
-        # 验证被删除分类的category_id不存在
-        assert category_id not in categories_id
-
-    @allure.story('应用分类')
-    @allure.title('修改分类信息')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def test_change_category(self):
-        old_name = 'category' + str(commonFunction.get_random())
-        new_name = 'category' + str(commonFunction.get_random())
-        # 新建应用分类
-        response = step_create_category(old_name)
-        # 获取新建分类的category_id
-        category_id = response.json()['category_id']
-        # 修改分类名称为test-wx3
-        step_change_category(category_id, new_name)
-        # 验证修改成功，使用修改后的名称查询category_id
-        category_id_new = step_get_category_id_by_name(new_name)
-        assert category_id == category_id_new
-        # 删除分类
-        step_delete_category(category_id)
-
-    @allure.story('应用商店')
-    @allure.title('查看所有内置应用的详情信息')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def test_check_apps_detail(self):
-        # 获取应用商店管理/应用商店页面，所有应用的app_id
-        apps_id = step_get_apps_id()
-        # 查看所有应用的详情信息，并验证查询成功
-        for app_id in apps_id:
-            response = step_get_app_detail(app_id)
-            assert response.json()['app_id'] == app_id
-
-    @allure.story('应用分类')
-    @allure.title('删除包含应用的分类')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def test_delete_app_category(self):
-        category_name = 'category' + str(commonFunction.get_random())
-        # 新建应用分类
-        response = step_create_category(category_name)
-        # 获取新建分类的category_id
-        category_id = response.json()['category_id']
-        # 获取应用商店页面所有应用的app_id
-        apps_id = step_get_apps_id()
-        # print(apps_id)
-        # 向分类test-wx中添加所有内置应用
-        for app_id in apps_id:
-            step_app_to_category(app_id, category_id)
-        # 删除分类
-        result = step_delete_app_category(category_id)
-        # 验证删除结果
-        assert result == 'category ' + category_name + ' owns application'
-        # 获取未分类的category_id
-        uncategorized_id = step_get_category_id_by_name('uncategorized')
-        # 将所有的内置应用移动到未分类中
-        for app_id in apps_id:
-            step_app_to_category(app_id, uncategorized_id)
-        # 删除新建的分类
-        step_delete_category(category_id)
 
 
 if __name__ == "__main__":
