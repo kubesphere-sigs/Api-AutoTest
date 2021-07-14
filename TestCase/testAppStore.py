@@ -234,7 +234,7 @@ class TestAppStore(object):
     @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
     # 将用例信息以参数化的方式传入测试方法
     @pytest.mark.parametrize('id,app_name,conf, story, title,severity,except_result', parametrize)
-    def test_ws_role_user(self, id, app_name, conf, story, title, severity, except_result):
+    def test_deploy_app(self, id, app_name, conf, story, title, severity, except_result):
 
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
