@@ -15,6 +15,52 @@ from common.logFormat import log_format
 from common import commonFunction
 
 
+@allure.step('创建用户')
+def step_create_user(user_name, role):
+    email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users'
+    data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
+            "kind": "User",
+            "metadata": {"name": user_name,
+                         "annotations":
+                             {"iam.kubesphere.io/globalrole": role,
+                              "iam.kubesphere.io/uninitialized": "true",
+                              "kubesphere.io/creator": "admin"}},
+            "spec": {"email": email, "password": "P@88w0rd"}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('查看用户详情')
+def step_get_user_info(user_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users/' + user_name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('删除用户')
+def step_delete_user(user_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users/' + user_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('获取ks的token')
+def step_get_token(user_name):
+    header = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "
+                            "Chrome/90.0.4430.212 Safari/537.36",
+              "connection": "close",
+              "verify": "false"}
+    data = {
+        'username': user_name,
+        'password': 'P@88w0rd',
+        'grant_type': 'password'
+    }
+    url = config.url + '/oauth/token'
+    response = requests.post(url=url, headers=header, data=data)
+    return response
+
+
 @allure.feature('系统账户管理')
 class TestUser(object):
     log_format()  # 配置日志格式
@@ -118,6 +164,34 @@ class TestUser(object):
             logging.info('reality_result:' + str(r.json()['spec']['email']))
         finally:
             commonFunction.delete_user(user_name)  # 删除新建的用户
+
+    @allure.story('用户')
+    @allure.severity('critical')
+    @allure.title('遍历使用系统所有的内置角色创建用户，查看用户详情，然后使用新用户登陆ks,最后然后用户')
+    def test_login_with_new_user(self):
+        roles = ['workspaces-manager', 'users-manager', 'platform-regular', 'platform-admin']
+        for role in roles:
+            user_name = 'test' + str(commonFunction.get_random())
+            # 创建用户
+            step_create_user(user_name, role)
+            # 等待创建的用户被激活
+            time.sleep(3)
+            # 查看用户详情
+            re = step_get_user_info(user_name)
+            # 验证用户的状态为active
+            status = re.json()['status']['state']
+            assert status == 'Active'
+            # 获取并校验用户的角色
+            user_role = re.json()['metadata']['annotations']['iam.kubesphere.io/globalrole']
+            assert user_role == role
+            # 登陆ks
+            response = step_get_token(user_name)
+            # 获取access_token
+            access_token = response.json()['access_token']
+            # 验证access_token获取成功
+            assert access_token
+            # 删除用户
+            step_delete_user(user_name)
 
 
 if __name__ == "__main__":
