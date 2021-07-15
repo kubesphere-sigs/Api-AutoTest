@@ -268,6 +268,21 @@ def step_create_account_credential(devops_name, name):
     return response
 
 
+@allure.step('创建ssh凭证')
+def step_create_ssh_credential(devops_name, name):
+    url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/credentials'
+    username = 'cXdl'
+    private_key = 'YXNk'
+
+    data = {"apiVersion": "v1", "kind": "Secret",
+            "metadata": {"namespace": devops_name,
+                         "labels": {"app": name}, "annotations": {"kubesphere.io/creator": "admin"}, "name": name},
+            "type": "credential.devops.kubesphere.io/ssh-auth",
+            "data": {"username": username, "private_key": private_key}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
 @allure.step('基于github创建多分支流水线')
 def step_create_pipeline_base_github(devops, devops_name, pipeline_name, credential_name, tags):
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/pipelines'
@@ -308,10 +323,10 @@ def step_create_pipeline_base_github(devops, devops_name, pipeline_name, credent
 
 @allure.step('查询指定的流水线')
 def step_get_pipeline(devops_name, pipeline_name):
-    url = config.url + '/kapis/devops.kubesphere.io/v1alpha2/search?' \
-                      'start=0&limit=10&q=type%3Apipeline%3Borganization%3Ajenkins%3Bpipeline%3A' + devops_name + \
-                      '6km29%2F%2A' + pipeline_name + '%2A%3BexcludedFromFlattening%3Ajenkins.branch.MultiBranchProject%2C' \
-                      'hudson.matrix.MatrixProject&filter=no-folders'
+    url = config.url + '/kapis/devops.kubesphere.io/v1alpha2/search?start=0&limit=10&q=type%3Apipeline%3Borganization' \
+                       '%3Ajenkins%3Bpipeline%3A' + devops_name + '%2F%2A' + pipeline_name + \
+                       '%2A%3BexcludedFromFlattening%3Ajenkins.branch.MultiBranchProject' \
+                       '%2Chudson.matrix.MatrixProject&filter=no-folders'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -337,17 +352,20 @@ class TestDevOps(object):
     log_format()  # 配置日志格式
 
     # 所有用例执行之前执行该方法
-    # def setup_class(self):
-    #     commonFunction.create_user(self.user_name)  # 创建一个用户
-    #     commonFunction.create_workspace(self.ws_name)  # 创建一个企业空间
-    #     commonFunction.ws_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
-    #     step_create_devops(self.ws_name, self.dev_name)  # 创建一个devops工程，并获取工程名称
+    def setup_class(self):
+        commonFunction.create_user(self.user_name)  # 创建一个用户
+        commonFunction.create_workspace(self.ws_name)  # 创建一个企业空间
+        commonFunction.ws_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
+        step_create_devops(self.ws_name, self.dev_name)  # 创建一个devops工程，并获取工程名称
 
     # 所有用例执行完之后执行该方法
-    # def teardown_class(self):
-    #     step_delete_devops(ws_name=self.ws_name, devops_name=dev_name_new)  # 删除创建的devops工程
-    #     commonFunction.delete_workspace(self.ws_name)  # 删除创建的工作空间
-    #     commonFunction.delete_user(self.user_name)  # 删除创建的用户
+    def teardown_class(self):
+        # 获取devops工程的id
+        response = step_get_devopinfo(self.ws_name, self.dev_name)
+        dev_name_new = response.json()['items'][0]['metadata']['name']
+        step_delete_devops(ws_name=self.ws_name, devops_name=dev_name_new)  # 删除创建的devops工程
+        commonFunction.delete_workspace(self.ws_name)  # 删除创建的工作空间
+        commonFunction.delete_user(self.user_name)  # 删除创建的用户
 
     '''
     以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
@@ -533,11 +551,16 @@ class TestDevOps(object):
         # 获取创建的devops工程的别名
         response = step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
+        # 创建ssh凭证
+        credential_name = 'ssh' + str(commonFunction.get_random())
+        step_create_ssh_credential(dev_name_new, credential_name)
         # 查询之前用例创建的SSH凭证
-        condition = 'test1'
+        condition = credential_name
         result = step_search_credential(devops_name=dev_name_new, condition=condition)
         # 校验查询结果
         assert result == condition
+        # 删除凭证
+        step_delete_credential(dev_name_new, credential_name)
 
     @allure.story('工程管理-凭证')
     @allure.title('模糊查询存在的凭证')
@@ -546,11 +569,16 @@ class TestDevOps(object):
         # 获取创建的devops工程的别名
         response = step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
-        # 查询之前用例创建的凭证
-        condition = 'test'
+        # 创建ssh凭证
+        credential_name = 'ssh' + str(commonFunction.get_random())
+        step_create_ssh_credential(dev_name_new, credential_name)
+        # 查询之前创建的凭证
+        condition = credential_name
         result = step_search_credential(devops_name=dev_name_new, condition=condition)
         # 校验查询结果
         assert condition in result
+        # 删除凭证
+        step_delete_credential(dev_name_new, credential_name)
 
     @allure.story('工程管理-凭证')
     @allure.title('查询不存在的凭证')
@@ -946,9 +974,9 @@ class TestDevOps(object):
         # 创建流水线
         step_create_pipeline_base_github(self.dev_name, dev_name_new, pipeline_name, credential_name, True)
         # 等待流水线分支拉取成功
-        time.sleep(60)
+        time.sleep(40)
         # 查询创建的流水线
-        r = step_get_pipeline(self.dev_name, pipeline_name)
+        r = step_get_pipeline(dev_name_new, pipeline_name)
         # 获取流水线的健康状态
         health = r.json()['items'][0]['weatherScore']
         # 获取流水线的分支数量
@@ -977,7 +1005,7 @@ class TestDevOps(object):
         # 等待流水线分支拉取成功
         time.sleep(30)
         # 查询创建的流水线
-        r = step_get_pipeline(self.dev_name, pipeline_name)
+        r = step_get_pipeline(dev_name_new, pipeline_name)
         # 获取流水线的健康状态
         health = r.json()['items'][0]['weatherScore']
         # 获取流水线的分支数量
@@ -993,3 +1021,7 @@ class TestDevOps(object):
 
 if __name__ == "__main__":
     pytest.main(['-s', 'testDevops.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
+
+
+'/kapis/devops.kubesphere.io/v1alpha2/search?start=0&limit=10&q=type%3Apipeline%3Borganization%3Ajenkins%3Bpipeline%3A devx642k     %2F%2A fst    %2A%3BexcludedFromFlattening%3Ajenkins.branch.MultiBranchProject%2Chudson.matrix.MatrixProject&filter=no-folders'
+'/kapis/devops.kubesphere.io/v1alpha2/search?start=0&limit=10&q=type%3Apipeline%3Borganization%3Ajenkins%3Bpipeline%3A test-wx976j2 %2F%2A fsefs  %2A%3BexcludedFromFlattening%3Ajenkins.branch.MultiBranchProject%2Chudson.matrix.MatrixProject&filter=no-folders'
