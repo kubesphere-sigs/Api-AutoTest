@@ -8,6 +8,6 @@
 # 2、修改apiserver deployment的配置文件中的hostPort
 # kubectl edit deployment ks-apiserver -n kubesphere-system
 
-url = 'http://139.198.112.136:31415'
+url = 'http://139.198.14.13:30058'
 
 
