@@ -316,17 +316,17 @@ class TestWorkSpace(object):
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='workspace')
 
     # 所有用例执行之前执行该方法
-    # def setup_class(self):
-    #     step_create_user(self.user_name)  # 创建一个用户
-    #     step_create_workspace(self.ws_name)  # 创建一个企业空间
-    #     step_create_workspace(self.ws_name1)  # 创建一个企业空间,供excle文件中的用例使用
-    #     time.sleep(3)
+    def setup_class(self):
+        step_create_user(self.user_name)  # 创建一个用户
+        step_create_workspace(self.ws_name)  # 创建一个企业空间
+        step_create_workspace(self.ws_name1)  # 创建一个企业空间,供excle文件中的用例使用
+        time.sleep(3)
 
-    # def teardown_class(self):
-    #     time.sleep(10)
-    #     step_delete_workspace(self.ws_name)  # 删除创建的企业空间
-    #     step_delete_workspace(self.ws_name1)  # 删除供excle中用例使用的企业空间
-    #     step_delete_user(self.user_name)  # 删除创建的用户
+    def teardown_class(self):
+        time.sleep(10)
+        step_delete_workspace(self.ws_name)  # 删除创建的企业空间
+        step_delete_workspace(self.ws_name1)  # 删除供excle中用例使用的企业空间
+        step_delete_user(self.user_name)  # 删除创建的用户
 
     @allure.title('{title}')  # 设置用例标题
     @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
