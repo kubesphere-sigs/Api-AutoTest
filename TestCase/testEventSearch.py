@@ -48,7 +48,7 @@ def step_get_events_by_search(search_rule, end_time):
 class TestEventSearch(object):
 
     @allure.story('事件总量')
-    @allure.title('查询当天的事件总量信息')
+    @allure.title('验证当天的事件总量正确')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_total_events(self):
         # 获取当前时间的10位时间戳
@@ -61,10 +61,44 @@ class TestEventSearch(object):
         resources_count = response.json()['statistics']['resources']
         # 获取收集到的事件数量
         event_counts = response.json()['statistics']['events']
-        # 验证资源数量数量大于0
-        assert resources_count > 0
         # 验证事件数量大于0
-        assert event_counts > 0
+        assert resources_count > 0
+        # 获取当天的事件趋势图
+        interval = '1800'   # 时间间隔,单位是秒
+        re = step_get_events_trend(day_timestamp, now_timestamp, interval)
+        # 获取趋势图的横坐标数量
+        count = len(re.json()['histogram']['buckets'])
+        # 获取每个时间段的事件数量之和
+        events_count_actual = 0
+        for i in range(0, count):
+            number = re.json()['histogram']['buckets'][i]['count']
+            events_count_actual += number
+        # 验证接口返回的事件数量和趋势图中的事件之和一致
+        assert events_count_actual == event_counts
+
+    @allure.story('事件总量')
+    @allure.title('验证最近 12 小时事件总数正确')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_events_12h(self):
+        # 时间间隔,单位是秒
+        interval = '1800'
+        # 获取当前时间的10位时间戳
+        now_timestamp = str(time.time())[0:10]
+        # 获取12小时之前的时间戳
+        before_timestamp = commonFunction.get_before_timestamp(720)
+        # 查询最近 12 小时事件总数变化趋势
+        response = step_get_events_trend(before_timestamp, now_timestamp, interval)
+        # 获取事件总量
+        events_count = response.json()['histogram']['total']
+        # 获取趋势图的横坐标数量
+        count = len(response.json()['histogram']['buckets'])
+        # 获取每个时间段的事件数量之和
+        events_count_actual = 0
+        for i in range(0, count):
+            number = response.json()['histogram']['buckets'][i]['count']
+            events_count_actual += number
+        # 验证接口返回的事件数量和趋势图中的事件之和一致
+        assert events_count_actual == events_count
 
     @allure.story('事件总量')
     @allure.title('查询最近 12 小时事件总数变化趋势')

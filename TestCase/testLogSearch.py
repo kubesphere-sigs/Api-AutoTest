@@ -127,7 +127,7 @@ def step_get_container_log(pod_name, container_name, start_time, end_time):
 class TestLogSearch(object):
 
     @allure.story('日志总量')
-    @allure.title('查询当天的日志总量信息')
+    @allure.title('验证当天的日志总量信息正确')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_total_logs(self):
         # 获取当前时间的10位时间戳
@@ -140,13 +140,49 @@ class TestLogSearch(object):
         pod_count = response.json()['statistics']['containers']
         # 获取收集到的日志数量
         log_counts = response.json()['statistics']['logs']
-        # 验证日志数量大于0
-        assert log_counts > 0
         # 验证容器数量大于0
         assert pod_count > 0
+        # 查询当天的日志变化趋势
+        interval = '1800'   # 时间间隔,单位是秒
+        re = step_get_logs_trend(day_timestamp, now_timestamp, interval)
+        # 获取日志总量
+        logs_count = re.json()['histogram']['total']
+        # 获取日志趋势图中的横坐标数量
+        count = len(re.json()['histogram']['histograms'])
+        # 获取日志趋势图中的每个时间段的日志数量
+        logs_count_actual = 0
+        for i in range(0, count):
+            number = re.json()['histogram']['histograms'][i]['count']
+            logs_count_actual += number
+        # 验证接口返回的日志总量和趋势图中的日志数量之和一致
+        assert log_counts == logs_count_actual == logs_count
 
     @allure.story('日志总量')
-    @allure.title('查询最近 12 小时日志总数变化趋势')
+    @allure.title('验证最近 12 小时日志总量正确')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_logs_12h(self):
+        # 时间间隔,单位是秒
+        interval = '1800'
+        # 获取当前时间的10位时间戳
+        now_timestamp = str(time.time())[0:10]
+        # 获取12小时之前的时间戳
+        before_timestamp = commonFunction.get_before_timestamp(720)
+        # 查询最近 12 小时日志总数变化趋势
+        response = step_get_logs_trend(before_timestamp, now_timestamp, interval)
+        # 获取日志总量
+        logs_count = response.json()['histogram']['total']
+        # 获取日志趋势图中的横坐标数量
+        count = len(response.json()['histogram']['histograms'])
+        # 获取日志趋势图中的每个时间段的日志数量之和
+        logs_count_actual = 0
+        for i in range(0, count):
+            number = response.json()['histogram']['histograms'][i]['count']
+            logs_count_actual += number
+        # 验证接口返回的日志总数和趋势图中日志的总数一致
+        assert logs_count == logs_count_actual
+
+    @allure.story('日志总量')
+    @allure.title('查询最近 12 小时日志总数变化趋势,验证时间间隔正确')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_logs_trend(self):
         # 时间间隔,单位是秒

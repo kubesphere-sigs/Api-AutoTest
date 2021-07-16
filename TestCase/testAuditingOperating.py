@@ -21,7 +21,7 @@ def step_get_audits(start_time, end_time):
 @allure.step('查询集群操作审计总数的变化趋势')
 def step_get_audits_trend(start_time, end_time):
     url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=histogram&' \
-                       'start_time=' + start_time + '&end_time=' + end_time+ '&interval=30m'
+                       'start_time=' + start_time + '&end_time=' + end_time + '&interval=30m'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -48,7 +48,7 @@ def step_get_audits_by_search(search_rule, end_time):
 class TestAuditingOperatingSearch(object):
 
     @allure.story('审计总量')
-    @allure.title('查询当天的操作审计总量信息')
+    @allure.title('验证当天的操作审计总量正确')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_total_audits(self):
         # 获取当前时间的10位时间戳
@@ -61,11 +61,41 @@ class TestAuditingOperatingSearch(object):
         resources_count = response.json()['statistics']['resources']
         # 获取收集到的日志数量
         event_counts = response.json()['statistics']['events']
-        print(resources_count, event_counts)
         # 验证资源数量数量大于0
         assert resources_count > 0
-        # 验证审计数量大于0
-        assert event_counts > 0
+        # 查询最近当天审计总数变化趋势
+        re = step_get_audits_trend(day_timestamp, now_timestamp)
+        # 获取趋势图的横坐标数量
+        count = len(re.json()['histogram']['buckets'])
+        # 获取每个时间段的操作审计数量之和
+        audit_count_actual = 0
+        for i in range(0, count):
+            number = re.json()['histogram']['buckets'][i]['count']
+            audit_count_actual += number
+        # 验证接口返回的总量信息和趋势图中的数量之和一致
+        assert event_counts == audit_count_actual
+
+    @allure.story('审计总量')
+    @allure.title('验证最近 12 小时操作审计总数正确')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_audits_12h(self):
+        # 获取当前时间的10位时间戳
+        now_timestamp = str(time.time())[0:10]
+        # 获取12小时之前的时间戳
+        before_timestamp = commonFunction.get_before_timestamp(720)
+        # 查询最近 12 小时审计总数变化趋势
+        response = step_get_audits_trend(before_timestamp, now_timestamp)
+        # 获取操作审计总量
+        audit_count = response.json()['histogram']['total']
+        # 获取趋势图的横坐标数量
+        count = len(response.json()['histogram']['buckets'])
+        # 获取每个时间段的操作审计数量之和
+        audit_count_actual = 0
+        for i in range(0, count):
+            number = response.json()['histogram']['buckets'][i]['count']
+            audit_count_actual += number
+        # 验证接口返回的总量信息和趋势图中的数量之和一致
+        assert audit_count == audit_count_actual
 
     @allure.story('审计总量')
     @allure.title('查询最近 12 小时操作审计总数变化趋势')
@@ -79,7 +109,6 @@ class TestAuditingOperatingSearch(object):
         before_timestamp = commonFunction.get_before_timestamp(720)
         # 查询最近 12 小时审计总数变化趋势
         response = step_get_audits_trend(before_timestamp, now_timestamp)
-        print(response.json())
         # 获取查询结果数据中的时间间隔
         time_1 = response.json()['histogram']['buckets'][0]['time']
         time_2 = response.json()['histogram']['buckets'][1]['time']
