@@ -895,9 +895,14 @@ class TestProject(object):
         # 按状态精确查询statefulsets
         time.sleep(5)
         response = project_steps.step_get_workload(self.project_name, type=type, condition=condition)
-        # 获取并验证deployment的名称正确
-        name = response.json()['items'][0]['metadata']['name']
-        assert name == workload_name
+        # 获取工作负载的数量
+        count = response.json()['totalItems']
+        names = []
+        for i in range(0, count):
+            name = response.json()['items'][i]['metadata']['name']
+            names.append(name)
+        # 验证deployment的名称正确
+        assert name in workload_name
         # 删除创建的statefulsets
         re = project_steps.step_delete_workload(project_name=self.project_name, type=type, work_name=workload_name)
         assert re.json()['status'] == 'Success'
