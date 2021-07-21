@@ -1,45 +1,11 @@
-import requests
 import pytest
 import allure
 import sys
-from config import config
-from common.getHeader import get_header
 from common import commonFunction
+from step import toolbox_steps
 import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
-
-
-@allure.step('查询集群的事件总量')
-def step_get_event(start_time, end_time):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/events?operation=statistics&start_time=' + start_time + \
-                       '&end_time=' + end_time
-    response = requests.get(url=url, headers=get_header())
-    return response
-
-
-@allure.step('查询集群事件总数的变化趋势')
-def step_get_events_trend(start_time, end_time, interval):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/events?operation=histogram&interval=' + interval + \
-                       's&start_time=' + start_time + '&end_time=' + end_time
-    response = requests.get(url=url, headers=get_header())
-    return response
-
-
-@allure.step('按不同条件查询集群事件总数的变化趋势')
-def step_get_events_trend_by_search(search_rule, end_time):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/events?operation=histogram' \
-                       '&start_time=0&end_time=' + end_time + '&interval=1d&' + search_rule
-    response = requests.get(url=url, headers=get_header())
-    return response
-
-
-@allure.step('按不同条件查询事件的信息')
-def step_get_events_by_search(search_rule, end_time):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/events?operation=query&from=0&size=50&' + search_rule + \
-                       '&start_time=0&end_time=' + end_time + '&interval=1d'
-    response = requests.get(url=url, headers=get_header())
-    return response
 
 
 @allure.feature('事件查询')
@@ -56,7 +22,7 @@ class TestEventSearch(object):
         # 获取当前日期的时间戳
         day_timestamp = commonFunction.get_timestamp()
         # 查询当天的事件总量信息
-        response = step_get_event(day_timestamp, now_timestamp)
+        response = toolbox_steps.step_get_event(day_timestamp, now_timestamp)
         # 获取收集事件的资源数量
         resources_count = response.json()['statistics']['resources']
         # 获取收集到的事件数量
@@ -65,7 +31,7 @@ class TestEventSearch(object):
         assert resources_count > 0
         # 获取当天的事件趋势图
         interval = '1800'   # 时间间隔,单位是秒
-        re = step_get_events_trend(day_timestamp, now_timestamp, interval)
+        re = toolbox_steps.step_get_events_trend(day_timestamp, now_timestamp, interval)
         # 获取趋势图的横坐标数量
         count = len(re.json()['histogram']['buckets'])
         # 获取每个时间段的事件数量之和
@@ -87,7 +53,7 @@ class TestEventSearch(object):
         # 获取12小时之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp(720)
         # 查询最近 12 小时事件总数变化趋势
-        response = step_get_events_trend(before_timestamp, now_timestamp, interval)
+        response = toolbox_steps.step_get_events_trend(before_timestamp, now_timestamp, interval)
         # 获取事件总量
         events_count = response.json()['histogram']['total']
         # 获取趋势图的横坐标数量
@@ -111,7 +77,7 @@ class TestEventSearch(object):
         # 获取12小时之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp(720)
         # 查询最近 12 小时事件总数变化趋势
-        response = step_get_events_trend(before_timestamp, now_timestamp, interval)
+        response = toolbox_steps.step_get_events_trend(before_timestamp, now_timestamp, interval)
         # 获取查询结果数据中的时间间隔
         time_1 = response.json()['histogram']['buckets'][0]['time']
         time_2 = response.json()['histogram']['buckets'][1]['time']
@@ -141,7 +107,7 @@ class TestEventSearch(object):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
         # 按不同条件查询事件
-        response = step_get_events_trend_by_search(search_rule, now_timestamp)
+        response = toolbox_steps.step_get_events_trend_by_search(search_rule, now_timestamp)
         # 获取查询结果中的总事件条数
         log_count = response.json()['histogram']['total']
         # 验证查询成功
@@ -169,7 +135,7 @@ class TestEventSearch(object):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
         # 按关键字查询事件详情信息
-        response = step_get_events_by_search(search_rule, now_timestamp)
+        response = toolbox_steps.step_get_events_by_search(search_rule, now_timestamp)
         # 获取查询到的事件数量
         logs_count = response.json()['query']['total']
         # 验证查询成功

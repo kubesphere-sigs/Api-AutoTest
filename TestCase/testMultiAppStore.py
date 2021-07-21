@@ -23,7 +23,8 @@ def step_deployment_app(project_name, app_id, app_version_id, name, conf):
     :param name: 部署时的应用名称
     :param conf: 应用的镜像信息
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/undefined/clusters/host/namespaces/' + project_name + '/applications'
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/undefined/clusters/host/namespaces/' + \
+          project_name + '/applications'
     data = {"app_id": app_id,
             "name": name,
             "version_id": app_version_id,
@@ -42,7 +43,8 @@ def step_get_app_status(ws_name, project_name, app_name):
     :param app_name: 应用名称
     :return: 应用状态
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + project_name + '/applications?conditions=keyword%3D' + app_name
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+          project_name + '/applications?conditions=keyword%3D' + app_name
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -55,8 +57,9 @@ def step_get_app_count(ws_name, project_name, app_name):
     :param app_name: 应用名称
     :return:
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + project_name + '/applications' \
-                                                                                                                          '?conditions=status%3Dactive%7Cstopped%7Cpending%7Csuspended%2Ckeyword%3D' + app_name + '&paging=limit%3D10%2Cpage%3D1&orderBy=status_time&reverse=true'
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+          project_name + '/applications?conditions=status%3Dactive%7Cstopped%7Cpending%7Csuspended%2Ckeyword%3D' + \
+          app_name + '&paging=limit%3D10%2Cpage%3D1&orderBy=status_time&reverse=true'
     r = requests.get(url=url, headers=get_header())
     return r.json()['total_count']
 
@@ -69,7 +72,8 @@ def step_get_deployed_app(ws_name, project_name, app_name):
     :param app_name: 应用名称
     :return: 应用的cluster_id
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + project_name + '/applications?conditions=keyword%3D' + app_name
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+          project_name + '/applications?conditions=keyword%3D' + app_name
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -81,15 +85,18 @@ def step_delete_app(ws_name, project_name, cluster_id):
     :param project_name: 项目名称
     :param cluster_id: 部署后的应用的id
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + project_name + '/applications/' + cluster_id
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+          project_name + '/applications/' + cluster_id
     response = requests.delete(url=url, headers=get_header())
     return response
 
 
 @allure.step('获取appstore中应用的app_id')
 def step_get_app_id():
-    url = config.url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D2&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
-    url2 = config.url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+    url = config.url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D2&' \
+                       'conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+    url2 = config.url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D1&' \
+                        'conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
     r = requests.get(url, headers=get_header())  # 获取app的id和name，将其组合成一个字典
     r2 = requests.get(url2, headers=get_header())  # 获取app的id和name，将其组合成一个字典
     item_name = []
@@ -108,8 +115,10 @@ def step_get_app_id():
 
 @allure.step('获取appstore中所有应用的name, app_id, version_id')
 def step_get_app_version():
-    url = config.url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D2&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
-    url2 = config.url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+    url = config.url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D2&' \
+                       'conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+    url2 = config.url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D1&' \
+                        'conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
     r = requests.get(url, headers=get_header())  # 获取app的id和name，将其组合成一个字典
     r2 = requests.get(url2, headers=get_header())  # 获取app的id和name，将其组合成一个字典
     item_name = []
@@ -128,7 +137,8 @@ def step_get_app_version():
 
 @allure.step('从应用商店部署应用')
 def step_deploy_app_from_app_store(ws_name, project_name, app_id, name, version_id, conf):
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + project_name + '/applications'
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+          project_name + '/applications'
     data = {
         "app_id": app_id,
         "name": name,

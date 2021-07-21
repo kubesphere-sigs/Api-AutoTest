@@ -260,14 +260,16 @@ def step_init_quota(cluster_name, ws_name):
     data = {"apiVersion": "quota.kubesphere.io/v1alpha2", "kind": "ResourceQuota",
             "metadata": {"name": ws_name, "workspace": ws_name, "cluster": cluster_name,
                          "annotations": {"kubesphere.io/creator": "admin"}}, "spec": {"quota": {"hard": {}}}}
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/resourcequotas'
+    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+          ws_name + '/resourcequotas'
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
 
 @allure.step('获取企业配额的信息')
 def step_get_quota_resource_version(cluster_name, ws_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/resourcequotas/' + ws_name
+    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+          ws_name + '/resourcequotas/' + ws_name
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -279,7 +281,8 @@ def step_edit_quota(ws_name, hard_data, cluster_name, resource_version):
                          "resourceVersion": resource_version},
             "spec": {"quota": {"hard": hard_data}}}
 
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/resourcequotas/' + ws_name
+    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+          ws_name + '/resourcequotas/' + ws_name
     response = requests.put(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
@@ -323,7 +326,8 @@ def step_delete_user(user_name):
 
 @allure.step('在多集群企业空间创建项目')
 def step_create_project(cluster_name, ws_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces'
+    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+          ws_name + '/namespaces'
     data = {"apiVersion": "v1",
             "kind": "Namespace",
             "metadata": {
@@ -348,7 +352,8 @@ def step_get_project(cluster_name, ws_name, project_name):
 
 @allure.step('在多集群企业空间删除项目')
 def step_delete_project(cluster_name, ws_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
+    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+          ws_name + '/namespaces/' + project_name
     response = requests.delete(url=url, headers=get_header())
     return response
 
@@ -455,7 +460,8 @@ class TestWorkSpace(object):
         # 获取集群名称
         clusters = step_get_cluster_name()
         # 创建一个多集群企业空间（包含所有的集群）
-        step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name, self.description, clusters)
+        step_create_multi_ws(self.ws_name + str(commonFunction.get_random()),
+                             self.alias_name, self.description, clusters)
         # 创建若干个多集群企业空间（只部署在单个集群）
         for i in range(len(clusters)):
             step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name,
@@ -474,8 +480,8 @@ class TestWorkSpace(object):
     @allure.title('{title}')  # 设置用例标题
     @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
     # 将用例信息以参数化的方式传入测试方法
-    @pytest.mark.parametrize('id,url,data,story,title,method,severity,condition,except_result', parametrize)
-    def test_ws(self, id, url, data, story, title, method, severity, condition, except_result):
+    @pytest.mark.parametrize('id,url,params,data,story,title,method,severity,condition,except_result', parametrize)
+    def test_ws(self, id, url, params, data, story, title, method, severity, condition, except_result):
 
         '''
         :param id: 用例编号
@@ -491,50 +497,7 @@ class TestWorkSpace(object):
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
 
-        # test开头的测试函数
-        url = config.url + url
-        if method == 'get':
-            # 测试get方法
-            r = requests.get(url, headers=get_header())
-
-        elif method == 'post':
-            # 测试post方法
-            data = eval(data)
-            r = requests.post(url, headers=get_header(), data=json.dumps(data))
-
-        elif method == 'patch':
-            # 测试patch方法
-            data = eval(data)
-            print(data)
-            r = requests.patch(url, headers=get_header_for_patch(), data=json.dumps(data))
-
-        elif method == 'delete':
-            # 测试delete方法
-            r = requests.delete(url, headers=get_header())
-
-        # 将校验条件和预期结果参数化
-        if condition != '':
-            condition_new = eval(condition)  # 将字符串转化为表达式
-            if isinstance(condition_new, str):
-                # 判断表达式的结果是否为字符串，如果为字符串格式，则去掉其首尾的空格
-                assert condition_new.strip() == except_result
-            else:
-                assert condition_new == except_result
-
-            # 将用例中的内容打印在报告中
-            print(
-                '用例编号: ' + str(id) + '\n'
-                                     '用例请求的URL地址: ' + str(url) + '\n'
-                                                                 '用例使用的请求数据: ' + str(data) + '\n'
-                                                                                             '用例模块: ' + story + '\n'
-                                                                                                                '用例标题: ' + title + '\n'
-                                                                                                                                   '用例的请求方式: ' + method + '\n'
-                                                                                                                                                          '用例优先级: ' + severity + '\n'
-                                                                                                                                                                                 '用例的校验条件: ' + str(
-                    condition) + '\n'
-                                 '用例的实际结果: ' + str(condition_new) + '\n'
-                                                                    '用例的预期结果: ' + str(except_result)
-            )
+        commonFunction.request_resource(url, params, data, story, title, method, severity, condition, except_result)
 
     '''
     以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式

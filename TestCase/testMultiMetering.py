@@ -62,7 +62,8 @@ def step_get_cluster_consumption_history(cluster_name, type, start_time, end_tim
 
 @allure.step('查看pod的资源消费历史')
 def step_get_pod_consumption_history(cluster_name, node_name, start_time, end_time, step, pod_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/nodes/' + node_name + '/pods?start=' + start_time + \
+    url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/nodes/' + \
+          node_name + '/pods?start=' + start_time + \
           '&end=' + end_time + '&step=' + step + 's&metrics_filter=meter_pod_cpu_usage%7C' \
           'meter_pod_memory_usage_wo_cache%7Cmeter_pod_net_bytes_transmitted%7C' \
           'meter_pod_net_bytes_received&resources_filter=' + pod_name
@@ -72,7 +73,8 @@ def step_get_pod_consumption_history(cluster_name, node_name, start_time, end_ti
 
 @allure.step('查看项目的资源消费历史')
 def step_get_project_consumption_history(cluster_name, project_name, start_time, end_time, step):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/metering?start=' + start_time + '&end=' + end_time + \
+    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/metering?start=' + \
+          start_time + '&end=' + end_time + \
           '&step=' + step + 's&metrics_filter=meter_namespace_cpu_usage%7Cmeter_namespace_memory_usage_wo_cache%7C' \
                             'meter_namespace_net_bytes_transmitted%7Cmeter_namespace_net_bytes_received%7C' \
                             'meter_namespace_pvc_bytes_total&resources_filter=' + project_name + '&level=LevelNamespace'
@@ -82,7 +84,8 @@ def step_get_project_consumption_history(cluster_name, project_name, start_time,
 
 @allure.step('查看企业空间的资源消费历史')
 def step_get_workspace_consumption_history(cluster_name, ws_name, start_time, end_time, step):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/workspaces/' + ws_name + '?start=' + start_time + \
+    url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/workspaces/' + \
+          ws_name + '?start=' + start_time + \
           '&end=' + end_time + '&step=' + step + \
           's&metrics_filter=meter_workspace_cpu_usage%7C' \
           'meter_workspace_memory_usage%7Cmeter_workspace_net_bytes_transmitted%7C' \
@@ -132,7 +135,8 @@ def step_get_workspace_info():
 
 @allure.step('查询企业空间的项目信息')
 def step_get_project_info(cluster_name, ws_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces?' \
+    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+          ws_name + '/namespaces?' \
           'sortBy=createTime&labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -151,7 +155,8 @@ def step_get_project_consumption(metric, project):
 
 @allure.step('查询项目下最近1h消费的资源')
 def step_get_hierarchy_consumption(cluster_name, ws_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/namespaces/' + project_name + \
+    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/namespaces/' + \
+          project_name + \
                        '/metering/hierarchy?workspace=' + ws_name
     response = requests.get(url=url, headers=get_header())
     return response
@@ -159,7 +164,8 @@ def step_get_hierarchy_consumption(cluster_name, ws_name, project_name):
 
 @allure.step('查询项目下资源的历史消费信息')
 def step_get_hierarchy_consumption_history(cluster_name, project_name, start_time, end_time, step, name, kind):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/namespaces/' + project_name + \
+    url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/namespaces/' + \
+          project_name + \
           '/workloads?start=' + start_time + '&end=' + end_time + '&step=' + step + \
           's&metrics_filter=meter_workload_cpu_usage%7Cmeter_workload_memory_usage_wo_cache%7C' \
           'meter_workload_net_bytes_transmitted%7Cmeter_workload_net_bytes_received&' \

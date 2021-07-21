@@ -1,15 +1,11 @@
 import requests
 import pytest
-import json
 import allure
 import sys
 from config import config
-from common.getData import DoexcleByPandas
 from common.getHeader import get_header
 from common import commonFunction
-import random
 import time
-import datetime
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 

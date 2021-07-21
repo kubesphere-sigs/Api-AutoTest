@@ -62,7 +62,8 @@ def step_get_pod_of_node(node_name):
 
 @allure.step('查询指定的pod')
 def step_query_pod(node_name, pod_name):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/pods?nodeName=' + node_name + '&name=' + pod_name + '&sortBy=startTime'
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/pods?nodeName=' + node_name + '&name=' + \
+          pod_name + '&sortBy=startTime'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -244,7 +245,8 @@ def step_get_resource_of_cluster_by_project(type, project_name, *name):
     name_actual = ''
     for i in name:
         name_actual += str(i) + '&'
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/' + type + '?' + name_actual + 'sortBy=createTime'
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/' + type + '?' + \
+          name_actual + 'sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -321,9 +323,9 @@ def step_get_component_health():
 def step_get_metrics_of_cluster(start_time, end_time, step, times):
     url = config.url + '/kapis/monitoring.kubesphere.io/v1alpha3/cluster?start=' + start_time + '&end=' + end_time + \
           '&step=' + step + '&times=' + times + '&metrics_filter=cluster_cpu_usage%7Ccluster_cpu_total' \
-                                                '%7Ccluster_cpu_utilisation%7Ccluster_memory_usage_wo_cache%7Ccluster_memory_total%7C' \
-                                                'cluster_memory_utilisation%7Ccluster_disk_size_usage%7Ccluster_disk_size_capacity%7C' \
-                                                'cluster_disk_size_utilisation%7Ccluster_pod_running_count%7Ccluster_pod_quota%24'
+                            '%7Ccluster_cpu_utilisation%7Ccluster_memory_usage_wo_cache%7Ccluster_memory_total%7C' \
+                            'cluster_memory_utilisation%7Ccluster_disk_size_usage%7Ccluster_disk_size_capacity%7C' \
+                            'cluster_disk_size_utilisation%7Ccluster_pod_running_count%7Ccluster_pod_quota%24'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -332,7 +334,7 @@ def step_get_metrics_of_cluster(start_time, end_time, step, times):
 def step_get_metrics_of_apiserver(start_time, end_time, step, times):
     url = config.url + '/kapis/monitoring.kubesphere.io/v1alpha3/components/apiserver?start=' + start_time + \
           '&end=' + end_time + '&step=' + step + '&times=' + times + '&metrics_filter=apiserver_request_latencies%7C' \
-                                                                     'apiserver_request_by_verb_latencies%7Capiserver_request_rate%24'
+                                                'apiserver_request_by_verb_latencies%7Capiserver_request_rate%24'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -349,11 +351,11 @@ def step_get_metrics_of_scheduler(start_time, end_time, step, times):
 @allure.step('查询集群的 node usage ranking信息')
 def step_get_node_usage_rank(sort):
     url = config.url + '/kapis/monitoring.kubesphere.io/v1alpha3/nodes?type=rank&' \
-                       'metrics_filter=node_cpu_utilisation%7Cnode_cpu_usage%7Cnode_cpu_total%7Cnode_memory_utilisation%7C' \
-                       'node_memory_usage_wo_cache%7Cnode_memory_total%7Cnode_disk_size_utilisation%7Cnode_disk_size_usage%7C' \
-                       'node_disk_size_capacity%7Cnode_pod_utilisation%7Cnode_pod_running_count%7Cnode_pod_quota%7C' \
-                       'node_disk_inode_utilisation%7Cnode_disk_inode_total%7Cnode_disk_inode_usage%7Cnode_load1%24&sort_type=desc&' \
-                       'sort_metric=' + sort
+            'metrics_filter=node_cpu_utilisation%7Cnode_cpu_usage%7Cnode_cpu_total%7Cnode_memory_utilisation%7C' \
+            'node_memory_usage_wo_cache%7Cnode_memory_total%7Cnode_disk_size_utilisation%7Cnode_disk_size_usage%7C' \
+            'node_disk_size_capacity%7Cnode_pod_utilisation%7Cnode_pod_running_count%7Cnode_pod_quota%7C' \
+            'node_disk_inode_utilisation%7Cnode_disk_inode_total%7Cnode_disk_inode_usage%7C' \
+            'node_load1%24&sort_type=desc&sort_metric=' + sort
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -412,51 +414,7 @@ class TestCluster(object):
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
 
-        # test开头的测试函数
-        if params != '':
-            url = config.url + url + '?' + params
-        else:
-            url = config.url + url
-        if method == 'get':
-            # 测试get方法
-            r = requests.get(url, headers=get_header())
-
-        elif method == 'post':
-            # 测试post方法
-            data = eval(data)
-            r = requests.post(url, headers=get_header(), data=json.dumps(data))
-
-        elif method == 'put':
-            # 测试put方法
-            data = eval(data)
-            r = requests.put(url, headers=get_header(), data=json.dumps(data))
-
-        elif method == 'delete':
-            # 测试delete方法
-            r = requests.delete(url, headers=get_header())
-
-        # 将校验条件和预期结果参数化
-        if condition != '':
-            condition_new = eval(condition)  # 将字符串转化为表达式
-            if isinstance(condition_new, str):
-                # 判断表达式的结果是否为字符串，如果为字符串格式，则去掉其首尾的空格
-                assert condition_new.strip() == except_result
-            else:
-                assert condition_new == except_result
-            # 将用例中的内容打印在报告中
-        print(
-            '用例编号: ' + str(id) + '\n'
-                                 '用例请求的URL地址: ' + str(url) + '\n'
-                                                             '用例使用的请求数据: ' + str(data) + '\n'
-                                                                                         '用例模块: ' + story + '\n'
-                                                                                                            '用例标题: ' + title + '\n'
-                                                                                                                               '用例的请求方式: ' + method + '\n '
-                                                                                                                                                      '用例优先级: ' + severity + '\n'
-                                                                                                                                                                             '用例的校验条件: ' + str(
-                condition) + '\n'
-                             '用例的实际结果: ' + str(condition_new) + '\n'
-                                                                '用例的预期结果: ' + str(except_result)
-        )
+        commonFunction.request_resource(url, params, data, story, title, method, severity, condition, except_result)
 
     @allure.story("节点")
     @allure.title('为节点设置污点')

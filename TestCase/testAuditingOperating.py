@@ -1,45 +1,11 @@
-import requests
 import pytest
 import allure
 import sys
-from config import config
-from common.getHeader import get_header
 from common import commonFunction
+from step import toolbox_steps
 import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
-
-
-@allure.step('查询集群的操作审计总量')
-def step_get_audits(start_time, end_time):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=statistics' \
-                       '&start_time=' + start_time + '&end_time=' + end_time + '&interval=30m'
-    response = requests.get(url=url, headers=get_header())
-    return response
-
-
-@allure.step('查询集群操作审计总数的变化趋势')
-def step_get_audits_trend(start_time, end_time):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=histogram&' \
-                       'start_time=' + start_time + '&end_time=' + end_time + '&interval=30m'
-    response = requests.get(url=url, headers=get_header())
-    return response
-
-
-@allure.step('按不同条件查询集群审计总数的变化趋势')
-def step_get_events_trend_by_search(search_rule, end_time):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=histogram&' \
-                       'start_time=0&end_time=' + end_time + '&interval=1d&' + search_rule
-    response = requests.get(url=url, headers=get_header())
-    return response
-
-
-@allure.step('按不同条件查询审计的信息')
-def step_get_audits_by_search(search_rule, end_time):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=query&from=0&size=50&' \
-                       '' + search_rule + '&start_time=0&end_time=' + end_time + '&interval=1d'
-    response = requests.get(url=url, headers=get_header())
-    return response
 
 
 @allure.feature('操作审计')
@@ -56,7 +22,7 @@ class TestAuditingOperatingSearch(object):
         # 获取当前日期的时间戳
         day_timestamp = commonFunction.get_timestamp()
         # 查询当天的操作审计总量信息
-        response = step_get_audits(day_timestamp, now_timestamp)
+        response = toolbox_steps.step_get_audits(day_timestamp, now_timestamp)
         # 获取收集审计的资源数量
         resources_count = response.json()['statistics']['resources']
         # 获取收集到的日志数量
@@ -64,7 +30,7 @@ class TestAuditingOperatingSearch(object):
         # 验证资源数量数量大于0
         assert resources_count > 0
         # 查询最近当天审计总数变化趋势
-        re = step_get_audits_trend(day_timestamp, now_timestamp)
+        re = toolbox_steps.step_get_audits_trend(day_timestamp, now_timestamp)
         # 获取趋势图的横坐标数量
         count = len(re.json()['histogram']['buckets'])
         # 获取每个时间段的操作审计数量之和
@@ -84,7 +50,7 @@ class TestAuditingOperatingSearch(object):
         # 获取12小时之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp(720)
         # 查询最近 12 小时审计总数变化趋势
-        response = step_get_audits_trend(before_timestamp, now_timestamp)
+        response = toolbox_steps.step_get_audits_trend(before_timestamp, now_timestamp)
         # 获取操作审计总量
         audit_count = response.json()['histogram']['total']
         # 获取趋势图的横坐标数量
@@ -108,7 +74,7 @@ class TestAuditingOperatingSearch(object):
         # 获取12小时之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp(720)
         # 查询最近 12 小时审计总数变化趋势
-        response = step_get_audits_trend(before_timestamp, now_timestamp)
+        response = toolbox_steps.step_get_audits_trend(before_timestamp, now_timestamp)
         # 获取查询结果数据中的时间间隔
         time_1 = response.json()['histogram']['buckets'][0]['time']
         time_2 = response.json()['histogram']['buckets'][1]['time']
@@ -138,7 +104,7 @@ class TestAuditingOperatingSearch(object):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
         # 按不同条件查询审计
-        response = step_get_events_trend_by_search(search_rule, now_timestamp)
+        response = toolbox_steps.step_get_events_trend_by_search(search_rule, now_timestamp)
         # 获取查询结果中的总审计条数
         log_count = response.json()['histogram']['total']
         # 验证查询成功
@@ -166,7 +132,7 @@ class TestAuditingOperatingSearch(object):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
         # 按关键字查询日志详情信息
-        response = step_get_audits_by_search(search_rule, now_timestamp)
+        response = toolbox_steps.step_get_audits_by_search(search_rule, now_timestamp)
         # 获取查询到的审计数量
         logs_count = response.json()['query']['total']
         # 验证查询成功

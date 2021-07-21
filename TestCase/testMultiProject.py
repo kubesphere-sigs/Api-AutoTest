@@ -901,7 +901,9 @@ def step_create_secret_image(cluster_name, project_name, secret_name):
                                   "type": "kubernetes.io/dockerconfigjson",
                                   "spec": {"template": {"metadata": {"labels": {}}}},
                                   "data": {
-                                      ".dockerconfigjson": "eyJhdXRocyI6eyJodHRwczovL3NzIjp7InVzZXJuYW1lIjoic2FzYSIsInBhc3N3b3JkIjoic2FzYSIsImVtYWlsIjoiIiwiYXV0aCI6ImMyRnpZVHB6WVhOaCJ9fX0="}},
+                                      ".dockerconfigjson": "eyJhdXRocyI6eyJodHRwczovL3NzIjp7InVzZXJuYW1lIjoic2FzYSIs"
+                                                           "InBhc3N3b3JkIjoic2FzYSIsImVtYWlsIjoiIiwiYXV0aCI6ImMyRnpZ"
+                                                           "VHB6WVhOaCJ9fX0="}},
                      "overrides": [{"clusterName": cluster_name, "clusterOverrides": []}]}}
 
     requests.post(url=url1, headers=get_header(), data=json.dumps(data))
@@ -1044,8 +1046,6 @@ class TestProject(object):
     project_role_name = 'test-project-role'  # 项目角色名称
     job_name = 'demo-job'  # 任务名称,在创建和删除任务时使用
     work_name = 'workload-demo'  # 工作负载名称，在创建、编辑、删除工作负载时使用
-    # 从文件中读取用例信息
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='project')
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
@@ -2455,4 +2455,4 @@ class TestProject(object):
 
 
 if __name__ == "__main__":
-    pytest.main(['-s', '--reruns=3', '--reruns-delay=10', 'testProject.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
+    pytest.main(['-s', 'testProject.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程

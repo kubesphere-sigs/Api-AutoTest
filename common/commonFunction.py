@@ -2,13 +2,15 @@ import requests
 import json
 import random
 from config import config
-from common.getHeader import get_header
 import time
 import datetime
+from common.getHeader import get_header, get_header_for_patch
+import allure
 
 
 # 创建系统用户
-def create_user(user_name):
+@allure.step('创建系统用户')
+def step_create_user(user_name):
     """
     :param user_name: 系统用户的名称
     """
@@ -391,8 +393,59 @@ def check_multi_cluster():
         return False
 
 
-def wx_test():
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/federatednamespaces?sortBy=createTime'
-    response = requests.get(url=url, headers=get_header())
-    for i in range(0, response.json()['totalItems']):
-        print(response.json()['items'][i]['metadata']['name'])
+# 测试方法、发起请求、结果校验
+def request_resource(url, params, data, story, title, method, severity, condition, except_result):
+    if 'http' not in url:
+        if params != '':
+            url_new = config.url + url + '?' + params
+        else:
+            url_new = config.url + url
+        print(url_new)
+    else:
+        if params != '':
+            url_new = url + '?' + params
+        else:
+            url_new = url
+        print(url_new)
+    if method == 'get':
+        # 测试get方法
+        r = requests.get(url_new, headers=get_header())
+
+    elif method == 'post':
+        # 测试post方法
+        data = eval(data)
+        r = requests.post(url_new, headers=get_header(), data=json.dumps(data))
+
+    elif method == 'patch':
+        # 测试patch方法
+        data = eval(data)
+        print(data)
+        r = requests.patch(url_new, headers=get_header_for_patch(), data=json.dumps(data))
+
+    elif method == 'delete':
+        # 测试delete方法
+        r = requests.delete(url_new, headers=get_header())
+
+    # 将校验条件和预期结果参数化
+    if condition != '':
+        condition_new = eval(condition)  # 将字符串转化为表达式
+        if isinstance(condition_new, str):
+            # 判断表达式的结果是否为字符串，如果为字符串格式，则去掉其首尾的空格
+            assert condition_new.strip() == except_result
+        else:
+            assert condition_new == except_result
+
+    # 将用例中的内容打印在报告中
+    print(
+        '用例编号: ' + str(id) + '\n'
+                             '用例请求的URL地址: ' + str(url_new) + '\n'
+                                                             '用例使用的请求数据: ' + str(data) + '\n'
+                                                                                         '用例模块: ' + story + '\n'
+                                                                                                            '用例标题: ' + title + '\n'
+                                                                                                                               '用例的请求方式: ' + method + '\n '
+                                                                                                                                                      '用例优先级: ' + severity + '\n'
+                                                                                                                                                                             '用例的校验条件: ' + str(
+            condition) + '\n'
+                         '用例的实际结果: ' + str(condition_new) + '\n'
+                                                            '用例的预期结果: ' + str(except_result)
+    )
