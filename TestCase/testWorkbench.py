@@ -58,7 +58,7 @@ class TestWorkbench(object):
         # 获取平台的用户数量
         user_count = response.json()['results'][2]['data']['result'][0]['value'][1]
         # 查询集群的用户信息，并获取用户数量
-        r = platform_steps.step_get_user_info()
+        r = platform_steps.step_get_user_info('')
         user_count_actual = r.json()['totalItems']
         # 验证用户数量正确
         assert int(user_count) == user_count_actual
