@@ -11,7 +11,7 @@ from config import config
 from common.getHeader import get_header
 from common.logFormat import log_format
 from common import commonFunction
-from step import devops_steps, platform_step, workspace_steps
+from step import devops_steps, platform_steps, workspace_steps
 
 
 @allure.feature('DevOps')
@@ -30,7 +30,7 @@ class TestDevOps(object):
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
-        platform_step.step_create_user(self.user_name, self.user_role)  # 创建一个用户
+        platform_steps.step_create_user(self.user_name, self.user_role)  # 创建一个用户
         workspace_steps.step_create_workspace(self.ws_name)  # 创建一个企业空间
         commonFunction.ws_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
         devops_steps.step_create_devops(self.ws_name, self.dev_name)  # 创建一个devops工程，并获取工程名称
@@ -42,7 +42,7 @@ class TestDevOps(object):
         dev_name_new = response.json()['items'][0]['metadata']['name']
         devops_steps.step_delete_devops(ws_name=self.ws_name, devops_name=dev_name_new)  # 删除创建的devops工程
         workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的工作空间
-        platform_step.step_delete_user(self.user_name)  # 删除创建的用户
+        platform_steps.step_delete_user(self.user_name)  # 删除创建的用户
 
     '''
     以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式

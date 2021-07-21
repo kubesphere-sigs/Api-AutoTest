@@ -6,7 +6,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 from common.getData import DoexcleByPandas
 from common import commonFunction
-from step import platform_step
+from step import platform_steps
 
 
 @allure.feature('系统角色管理')
@@ -46,16 +46,16 @@ class TestRole(object):
     def test_edit_role(self):
         role_name = 'role' + str(commonFunction.get_random())
         authority = '["role-template-view-clusters","role-template-view-basic"]'
-        platform_step.step_create_role(role_name)  # 创建角色
+        platform_steps.step_create_role(role_name)  # 创建角色
         # 查询角色并获取version
-        response = platform_step.step_get_role_info(role_name)
+        response = platform_steps.step_get_role_info(role_name)
         version = response.json()['items'][0]['metadata']['resourceVersion']
-        r = platform_step.step_edit_role_authority(role_name, version, authority)
+        r = platform_steps.step_edit_role_authority(role_name, version, authority)
         try:
             # 验证编辑后的角色权限
             assert r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority
         finally:
-            platform_step.step_delete_role(role_name)  # 删除新建的角色
+            platform_steps.step_delete_role(role_name)  # 删除新建的角色
 
     @allure.story('编辑角色')
     @allure.severity(allure.severity_level.NORMAL)
@@ -64,7 +64,7 @@ class TestRole(object):
         # 构建角色名称
         role_name = 'role' + str(commonFunction.get_random())
         # 查询角色
-        response = platform_step.step_get_role_info(role_name)
+        response = platform_steps.step_get_role_info(role_name)
         # 验证查询结果为空
         assert response.json()['totalItems'] == 0
 

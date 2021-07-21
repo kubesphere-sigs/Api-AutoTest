@@ -114,7 +114,6 @@ class TestAppStore(object):
         app_id = app_steps.step_get_app_id()[app_name]
         version_id = app_steps.step_get_app_version()[app_name]
         name = app_name.lower().replace(' ', '') + str(commonFunction.get_random())
-        conf = conf
         # 部署示例应用
         app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id, name=name,
                                        version_id=version_id, conf=conf)

@@ -12,7 +12,7 @@ from common.getData import DoexcleByPandas
 from common.getHeader import get_header, get_header_for_patch
 from common.logFormat import log_format
 from common import commonFunction
-from step import workspace_steps, platform_step
+from step import workspace_steps, platform_steps
 
 
 @allure.feature('企业空间')
@@ -29,7 +29,7 @@ class TestWorkSpace(object):
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
-        platform_step.step_create_user(self.user_name, self.user_role)  # 创建一个用户
+        platform_steps.step_create_user(self.user_name, self.user_role)  # 创建一个用户
         workspace_steps.step_create_workspace(self.ws_name)  # 创建一个企业空间
         workspace_steps.step_create_workspace(self.ws_name1)  # 创建一个企业空间,供excle文件中的用例使用
         time.sleep(3)
@@ -38,7 +38,7 @@ class TestWorkSpace(object):
         time.sleep(10)
         workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的企业空间
         workspace_steps.step_delete_workspace(self.ws_name1)  # 删除供excle中用例使用的企业空间
-        platform_step.step_delete_user(self.user_name)  # 删除创建的用户
+        platform_steps.step_delete_user(self.user_name)  # 删除创建的用户
 
     @allure.title('{title}')  # 设置用例标题
     @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
@@ -138,7 +138,7 @@ class TestWorkSpace(object):
         # 创建用户
         user_name = 'user' + str(commonFunction.get_random())
         user_role = 'users-manager'
-        platform_step.step_create_user(user_name, user_role)
+        platform_steps.step_create_user(user_name, user_role)
         # 创建角色
         authority_create = '["role-template-view-basic"]'  # 创建角色的权限信息
         role_name = 'role' + str(commonFunction.get_random())
@@ -152,7 +152,7 @@ class TestWorkSpace(object):
         # 将邀请的用户移除企业空间
         workspace_steps.step_delete_ws_user(self.ws_name, user_name)
         # 删除创建的用户
-        platform_step.step_delete_user(user_name)
+        platform_steps.step_delete_user(user_name)
 
     @allure.story('企业空间设置-企业角色')
     @allure.title('在企业空间编辑邀请成员的角色')
@@ -161,7 +161,7 @@ class TestWorkSpace(object):
         # 创建用户
         user_name = 'user' + str(commonFunction.get_random())
         user_role = 'users-manager'
-        platform_step.step_create_user(user_name, user_role)
+        platform_steps.step_create_user(user_name, user_role)
         ws_role_create = self.ws_name + '-viewer'  # 邀请用户是赋予的角色
         ws_role_new = self.ws_name + '-admin'  # 修改的新角色
         # 将创建的用户邀请到创建的企业空间
@@ -177,7 +177,7 @@ class TestWorkSpace(object):
         # 将邀请的用户移除企业空间
         workspace_steps.step_delete_ws_user(self.ws_name, user_name)
         # 删除创建的用户
-        platform_step.step_delete_user(user_name)
+        platform_steps.step_delete_user(user_name)
 
     @allure.story('企业空间设置-企业成员')
     @allure.title('在企业空间删除邀请的成员并验证删除成功')
@@ -186,7 +186,7 @@ class TestWorkSpace(object):
         # 创建用户
         user_name = 'user' + str(commonFunction.get_random())
         user_role = 'users-manager'
-        platform_step.step_create_user(user_name, user_role)
+        platform_steps.step_create_user(user_name, user_role)
         ws_role_create = self.ws_name + '-viewer'  # 邀请用户是赋予的角色
         # 将创建的用户邀请到创建的企业空间
         workspace_steps.step_invite_user(self.ws_name, user_name, ws_role_create)
@@ -197,7 +197,7 @@ class TestWorkSpace(object):
         # 验证移除用户成功
         assert response.json()['totalItems'] == 0
         # 删除创建的用户
-        platform_step.step_delete_user(user_name)
+        platform_steps.step_delete_user(user_name)
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('创建、编辑、删除企业组织')
@@ -314,7 +314,7 @@ class TestWorkSpace(object):
         # 创建用户
         user_name = 'user' + str(commonFunction.get_random())
         user_role = 'users-manager'
-        platform_step.step_create_user(user_name, user_role)
+        platform_steps.step_create_user(user_name, user_role)
         # 将用户邀请到企业空间
         workspace_steps.step_invite_user(self.ws_name, user_name, self.ws_name + '-viewer')
         # 创建企业组织
@@ -343,7 +343,7 @@ class TestWorkSpace(object):
         # 验证可绑定的用户数量
         assert counts_new == counts - 1
         #删除创建的用户
-        platform_step.step_delete_user(user_name)
+        platform_steps.step_delete_user(user_name)
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('将已绑定企业组织的用户再次绑定该企业组织')
@@ -372,7 +372,7 @@ class TestWorkSpace(object):
         # 创建用户
         user_name = 'user' + str(commonFunction.get_random())
         user_role = 'users-manager'
-        platform_step.step_create_user(user_name, user_role)
+        platform_steps.step_create_user(user_name, user_role)
         group_name = 'group' + str(commonFunction.get_random())
         data = {"kubesphere.io/workspace-role": "wx-regular",
                 "kubesphere.io/alias-name": "",
@@ -392,7 +392,7 @@ class TestWorkSpace(object):
         # 校验解绑结果
         assert response.json()['message'] == 'success'
         # 删除创建的用户
-        platform_step.step_delete_user(user_name)
+        platform_steps.step_delete_user(user_name)
         # 删除创建的企业组织
         workspace_steps.step_delete_department(self.ws_name, group_name)
 

@@ -4,12 +4,10 @@ import json
 import allure
 import sys
 from config import config
-from common.getData import DoexcleByPandas
 from common.getHeader import get_header
 from common.getHeader import get_header_for_patch
 from common import commonFunction
 import time
-import datetime
 import random
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用

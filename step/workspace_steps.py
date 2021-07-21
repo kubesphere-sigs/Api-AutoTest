@@ -292,7 +292,8 @@ def step_delete_workspace(ws_name):
     :param ws_name: 企业空间的名称
     """
     url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
-    requests.delete(url, headers=get_header())
+    response = requests.delete(url, headers=get_header())
+    return response
 
 
 @allure.step('删除用户')
@@ -324,7 +325,6 @@ def step_get_ws_info(ws_name):
     return response
 
 
-
 @allure.step('查询集群的企业空间信息')
 def step_get_workspace_info():
     url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces?sortBy=createTime'
@@ -338,3 +338,5 @@ def step_get_project_info(ws_name):
           'sortBy=createTime&labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
     response = requests.get(url=url, headers=get_header())
     return response
+
+

@@ -171,8 +171,8 @@ def step_get_ws_info():
 
 
 @allure.step('查询平台的用户信息')
-def step_get_user_info():
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users'
+def step_get_user_info(user_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users?name=' + user_name
     response = requests.get(url=url, headers=get_header())
     return response
 

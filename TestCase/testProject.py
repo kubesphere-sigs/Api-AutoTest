@@ -11,7 +11,7 @@ from config import config
 from common.getData import DoexcleByPandas
 from common.getHeader import get_header
 from common import commonFunction
-from step import project_steps
+from step import project_steps, workspace_steps, platform_steps
 
 
 @allure.feature('Project')
@@ -20,8 +20,10 @@ class TestProject(object):
     volume_name = 'testvolume'  # 存储卷名称，在创建、删除存储卷和创建存储卷快照时使用,excle中的用例也用到了这个存储卷
     snapshot_name = 'testshot'  # 存储卷快照的名称,在创建和删除存储卷快照时使用，在excle中的用例也用到了这个快照
     user_name = 'user-for-test-project'  # 系统用户名称
-    ws_name = 'ws-for-test-project'  # 企业空间名称,不可修改，从excle中获取的测试用例中用到了这个企业空间
-    project_name = 'test-project'  # 项目名称，从excle中获取的测试用例中用到了这个项目名称
+    user_role = 'users-manager'  # 用户角色
+    ws_name = 'ws-for-test-project' + str(commonFunction.get_random())
+    project_name_for_exel = 'test-project'  # 项目名称，从excle中获取的测试用例中用到了这个项目名称
+    project_name = 'test-project' + str(commonFunction.get_random())
     ws_role_name = ws_name + '-viewer'  # 企业空间角色名称
     project_role_name = 'test-project-role'  # 项目角色名称
     job_name = 'demo-job'  # 任务名称,在创建和删除任务时使用
@@ -31,17 +33,23 @@ class TestProject(object):
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
-        commonFunction.step_create_user(self.user_name)  # 创建一个用户
-        commonFunction.create_workspace(self.ws_name)  # 创建一个企业空间
-        commonFunction.ws_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
-        commonFunction.create_project(self.ws_name, self.project_name)  # 创建一个project工程
+        platform_steps.step_create_user(self.user_name, self.user_role)  # 创建一个用户
+        workspace_steps.step_create_workspace(self.ws_name)  # 创建一个企业空间
+        workspace_steps.step_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
+        project_steps.step_create_project(self.ws_name, self.project_name)  # 创建一个project工程
+        project_steps.step_create_project(self.ws_name, self.project_name_for_exel)  # 创建一个project工程
+        # 创建存储卷
+        project_steps.step_create_volume(self.project_name_for_exel, self.volume_name)
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
-        commonFunction.delete_project(self.ws_name, self.project_name)  # 删除创建的项目
+        # 删除存储卷
+        project_steps.step_delete_volume(self.project_name, self.volume_name)
+        project_steps.step_delete_project(self.ws_name, self.project_name)  # 删除创建的项目
+        project_steps.step_delete_project(self.ws_name, self.project_name_for_exel)  # 删除创建的项目
         time.sleep(5)
-        commonFunction.delete_workspace(self.ws_name)  # 删除创建的工作空间
-        commonFunction.delete_user(self.user_name)  # 删除创建的用户
+        workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的工作空间
+        platform_steps.step_delete_user(self.user_name)  # 删除创建的用户
 
     '''
     以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
@@ -52,6 +60,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.BLOCKER)
     def test_create_volume_for_deployment(self):
         type_name = 'volume-type'  # 存储卷的类型
+        volume_name = 'volume' + str(commonFunction.get_random())
         replicas = 1  # 副本数
         image = 'redis'  # 镜像名称
         container_name = 'container1'  # 容器名称
@@ -59,13 +68,13 @@ class TestProject(object):
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
         volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
         strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
-        volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": self.volume_name}}]  # 存储卷的信息
+        volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
-        project_steps.step_create_volume(self.project_name, self.volume_name)
+        project_steps.step_create_volume(self.project_name, volume_name)
         # 创建资源并将存储卷绑定到资源
         project_steps.step_create_deploy(self.project_name, work_name=self.work_name, image=image, replicas=replicas,
-                           container_name=container_name, volume_info=volume_info, ports=port,
-                           volumemount=volumeMounts, strategy=strategy_info)
+                                         container_name=container_name, volume_info=volume_info, ports=port,
+                                         volumemount=volumeMounts, strategy=strategy_info)
         # 验证资源创建成功
         time.sleep(10)  # 等待资源创建成功
         # 获取工作负载的状态
@@ -74,7 +83,7 @@ class TestProject(object):
         # 验证资源的所有副本已就绪
         assert 'unavailableReplicas' not in status
         # 获取存储卷状态
-        response = project_steps.step_get_volume_status(self.project_name, self.volume_name)
+        response = project_steps.step_get_volume_status(self.project_name, volume_name)
         status = response.json()['items'][0]['status']['phase']
         # 验证存储卷状态正常
         assert status == 'Bound'
@@ -98,9 +107,10 @@ class TestProject(object):
         # 创建存储卷
         project_steps.step_create_volume(self.project_name, volume_name)
         # 创建资源并将存储卷绑定到资源
-        project_steps.step_create_stateful(project_name=self.project_name, work_name=work_name, container_name=container_name,
-                             image=image, replicas=replicas, ports=port, service_ports=service_port,
-                             volumemount=volumemounts, volume_info=volume_info, service_name=service_name)
+        project_steps.step_create_stateful(project_name=self.project_name, work_name=work_name,
+                                           container_name=container_name,
+                                           image=image, replicas=replicas, ports=port, service_ports=service_port,
+                                           volumemount=volumemounts, volume_info=volume_info, service_name=service_name)
 
         # 验证资源创建成功
         time.sleep(10)  # 等待资源创建成功
@@ -132,8 +142,8 @@ class TestProject(object):
         project_steps.step_create_volume(self.project_name, volume_name)
         # 创建资源并将存储卷绑定到资源
         project_steps.step_create_daemonset(self.project_name, work_name=work_name, image=image,
-                              container_name=container_name, volume_info=volume_info, ports=port,
-                              volumemount=volumeMounts)
+                                            container_name=container_name, volume_info=volume_info, ports=port,
+                                            volumemount=volumeMounts)
         # 验证资源创建成功
         time.sleep(10)  # 等待资源创建成功
         # 获取工作负载的状态
@@ -167,9 +177,10 @@ class TestProject(object):
         # 创建service
         project_steps.step_create_service(self.project_name, service_name, port_service)
         # 创建service绑定的deployment
-        project_steps.step_create_deploy(project_name=self.project_name, work_name=service_name, container_name=container_name,
-                           ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
-                           volume_info=volume_info, strategy=strategy_info)
+        project_steps.step_create_deploy(project_name=self.project_name, work_name=service_name,
+                                         container_name=container_name,
+                                         ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
+                                         volume_info=volume_info, strategy=strategy_info)
         # 验证service创建成功
         response = project_steps.step_get_workload(self.project_name, type='services', condition=condition)
         name = response.json()['items'][0]['metadata']['name']
@@ -259,15 +270,14 @@ class TestProject(object):
     @allure.title('模糊查找project工程中的角色')
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_role_fuzzy(self):
-        role_name = 'a'
+        role_name = 'ad'
         r = project_steps.step_get_role(self.project_name, role_name)
         assert r.json()['totalItems'] == 2  # 验证查询到的结果数量为2
         # 验证查找到的角色
         print("actual_result:r.json()['items'][0]['metadata']['name']=" + r.json()['items'][0]['metadata'][
             'name'])  # 在日志中打印出实际结果
         print('expect_result: operator')  # 在日志中打印出预期结果
-        assert r.json()['items'][0]['metadata']['name'] == 'operator'
-        assert r.json()['items'][1]['metadata']['name'] == 'admin'
+        assert r.json()['items'][0]['metadata']['name'] == 'admin'
 
     @allure.story("项目设置-项目角色")
     @allure.title('在project工程中创建角色')
@@ -511,71 +521,93 @@ class TestProject(object):
     @allure.description('创建一个计算圆周率的任务')
     @allure.severity(allure.severity_level.BLOCKER)
     def test_create_job(self):
-        project_steps.step_create_job(self.project_name, self.job_name)  # 创建任务
-        uid = project_steps.step_get_job_status(self.project_name, self.job_name)  # 验证任务的运行状态为完成,并获取uid
+        job_name = 'job' + str(commonFunction.get_random())
+        project_steps.step_create_job(self.project_name, job_name)  # 创建任务
+        uid = project_steps.step_get_job_status(self.project_name, job_name)  # 验证任务的运行状态为完成,并获取uid
         pod_name = project_steps.step_get_job_pods(self.project_name, uid)  # 查看任务的资源状态，并获取容器组名称
-        project_steps.step_get_pods_log(self.project_name, pod_name, self.job_name)  # 查看任务的第一个容器的运行日志，并验证任务的运行结果
+        project_steps.step_get_pods_log(self.project_name, pod_name, job_name)  # 查看任务的第一个容器的运行日志，并验证任务的运行结果
+        # 删除创建的任务
+        project_steps.step_delete_job(self.project_name, job_name)
 
     @allure.story('应用负载-任务')
     @allure.title('按名称模糊查询存在的任务')
     @allure.severity(allure.severity_level.NORMAL)
     def test_fuzzy_query_job(self):
-        fuzzy_name = 'demo'
-        result = project_steps.step_get_assign_job(self.project_name, 'name', fuzzy_name)  # 模糊查询存在的任务
-        assert result == 1
+        # 创建任务
+        job_name = 'job' + str(commonFunction.get_random())
+        project_steps.step_create_job(self.project_name, job_name)
+        # 模糊查询存在的任务
+        response = project_steps.step_get_assign_job(self.project_name, 'name', job_name[1:])
+        assert response.json()['totalItems'] == 1
 
     @allure.story('应用负载-任务')
     @allure.title('按状态查询已完成的任务')
     @allure.severity(allure.severity_level.NORMAL)
     def test_query_job_status_completed(self):
-        # 查询状态为已完成的任务，依赖于用例'创建任务，并验证运行正常'创建的任务
-        result = project_steps.step_get_assign_job(self.project_name, 'status', 'completed')
-        # 验证查询结果为1
-        assert result == 1
+        job_name = 'job' + str(commonFunction.get_random())
+        project_steps.step_create_job(self.project_name, job_name)  # 创建任务
+        project_steps.step_get_job_status(self.project_name, job_name)  # 验证任务的运行状态为完成
+        response = project_steps.step_get_assign_job(self.project_name, 'status', 'completed')
+        # 获取查询结果数量
+        job_count = response.json()['totalItems']
+        # 获取查询结果中job的名称
+        job_names = []
+        for i in range(0, job_count):
+            job_names.append(response.json()['items'][i]['metadata']['name'])
+        # 验证查询结果正确
+        assert job_name in job_names
+        # 删除创建的任务
+        project_steps.step_delete_job(self.project_name, job_name)
 
     @allure.story('应用负载-任务')
     @allure.title('按状态查询运行中的任务')
     @allure.severity(allure.severity_level.NORMAL)
     def test_query_job_status_running(self):
-        job_name = 'test-job1'
+        job_name = 'job' + str(commonFunction.get_random())
         # 创建任务
         project_steps.step_create_job(self.project_name, job_name)
         # 验证任务状态为运行中
         project_steps.step_get_job_status_run(self.project_name, job_name)
         # 按状态为运行中查询任务
-        result = project_steps.step_get_assign_job(self.project_name, 'status', 'running')
+        response = project_steps.step_get_assign_job(self.project_name, 'status', 'running')
         # 验证查询结果为1
-        assert result == 1
+        assert response.json()['totalItems'] == 1
 
     @allure.story('应用负载-容器组')
     @allure.title('按名称精确查询存在的容器组')
     @allure.severity(allure.severity_level.NORMAL)
     def test_precise_query_pod(self):
-        # 获取容器组名称，使用用例'创建任务，并验证运行正常'，创建的容器组
-        uid = project_steps.step_get_job_status(self.project_name, self.job_name)  # 验证任务的运行状态为完成,并获取uid
+        # 创建任务
+        job_name = 'job' + str(commonFunction.get_random())
+        project_steps.step_create_job(self.project_name, job_name)
+        uid = project_steps.step_get_job_status(self.project_name, job_name)  # 验证任务的运行状态为完成,并获取uid
         pod_name = project_steps.step_get_job_pods(self.project_name, uid)  # 查看任务的资源状态，并获取容器组名称
-        url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/pods?' \
-                                                                                                       'name=' + pod_name + '&sortBy=startTime&limit=10'
-
-        r = requests.get(url=url, headers=get_header())
+        # 在项目中查询pod信息
+        r = project_steps.step_get_pod_info(self.project_name, pod_name)
         # 验证查询到的容器名称
         print("actual_result:r.json()['items'][0]['metadata']['name'] = " + r.json()['items'][0]['metadata']['name'])
         print("expect_result:" + pod_name)
         assert r.json()['items'][0]['metadata']['name'] == pod_name
+        # 删除创建的任务
+        project_steps.step_delete_job(self.project_name, job_name)
 
     @allure.story('应用负载-容器组')
     @allure.title('按名称模糊查询存在的容器组')
     @allure.severity(allure.severity_level.NORMAL)
-    # 在用例'创建任务，并验证运行正常'中创建的是一个有4个容器组的任务
     def test_fuzzy_query_pod(self):
-        pod_name = self.job_name
-        url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/pods?' \
-                                                                                                       'name=' + pod_name + '&sortBy=startTime&limit=10'
-        r = requests.get(url=url, headers=get_header())
+        # 创建任务
+        job_name = 'job' + str(commonFunction.get_random())
+        project_steps.step_create_job(self.project_name, job_name)
+        project_steps.step_get_job_status(self.project_name, job_name)  # 验证任务的运行状态为完成
+        pod_name = job_name
+        # 在项目中查询pod信息
+        r = project_steps.step_get_pod_info(self.project_name, pod_name)
         # 验证查询到的容器名称
         print("actual_result:r.json()['totalItems'] = " + str(r.json()['totalItems']))
         print("expect_result:" + str(4))
         assert r.json()['totalItems'] == 4
+        # 删除创建的任务
+        project_steps.step_delete_job(self.project_name, job_name)
 
     @allure.story('应用负载-容器组')
     @allure.title('按名称查询不存在的容器组')
@@ -594,7 +626,10 @@ class TestProject(object):
     @allure.title('查看容器组详情')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_check_pod(self):
-        uid = project_steps.step_get_job_status(self.project_name, self.job_name)  # 验证任务的运行状态为完成,并获取uid
+        # 创建任务
+        job_name = 'job' + str(commonFunction.get_random())
+        project_steps.step_create_job(self.project_name, job_name)
+        uid = project_steps.step_get_job_status(self.project_name, job_name)  # 验证任务的运行状态为完成,并获取uid
         pod_name = project_steps.step_get_job_pods(self.project_name, uid)  # 查看任务的资源状态，并获取容器组名称
         url = config.url + '/api/v1/namespaces/' + self.project_name + '/pods/' + pod_name
         r = requests.get(url=url, headers=get_header())
@@ -602,12 +637,17 @@ class TestProject(object):
         print("actual_result:r.json()['status']['phase'] = " + r.json()['status']['phase'])
         print("expect_result: Succeeded")
         assert r.json()['status']['phase'] == 'Succeeded'
+        # 删除创建的任务
+        project_steps.step_delete_job(self.project_name, job_name)
 
     @allure.story('应用负载-容器组')
     @allure.title('删除状态为已完成的容器组')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_pod(self):
-        uid = project_steps.step_get_job_status(self.project_name, self.job_name)  # 验证任务的运行状态为完成,并获取uid
+        # 创建任务
+        job_name = 'job' + str(commonFunction.get_random())
+        project_steps.step_create_job(self.project_name, job_name)
+        uid = project_steps.step_get_job_status(self.project_name, job_name)  # 验证任务的运行状态为完成,并获取uid
         pod_name = project_steps.step_get_job_pods(self.project_name, uid)  # 查看任务的资源状态，并获取容器组名称
         url = config.url + '/api/v1/namespaces/' + self.project_name + '/pods/' + pod_name
         r = requests.delete(url=url, headers=get_header())
@@ -632,7 +672,7 @@ class TestProject(object):
     @allure.title('删除状态为运行中的任务')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_running_job(self):
-        job_name = 'test-job-demo'
+        job_name = 'job' + str(commonFunction.get_random())
         project_steps.step_create_job(self.project_name, job_name)  # 创建任务
         project_steps.step_get_job_status_run(self.project_name, job_name)  # 验证任务状态为运行中
         # 删除任务
@@ -640,27 +680,31 @@ class TestProject(object):
         # 验证删除结果为Success
         assert result == 'Success'
         # 在列表中查询任务，验证查询结果为空
-        result1 = project_steps.step_get_assign_job(self.project_name, 'name', job_name)
-        assert result1 == 0
+        response = project_steps.step_get_assign_job(self.project_name, 'name', job_name)
+        assert response.json()['totalItems'] == 0
 
     @allure.story('应用负载-任务')
     @allure.title('删除状态为已完成的任务')
     @allure.severity(allure.severity_level.CRITICAL)
-    # 删除用例'创建任务，并验证运行正常'创建的任务
     def test_delete_job(self):
-        result = project_steps.step_delete_job(self.project_name, self.job_name)
+        # 创建任务
+        job_name = 'job' + str(commonFunction.get_random())
+        project_steps.step_create_job(self.project_name, job_name)
+        project_steps.step_get_job_status(self.project_name, job_name)  # 验证任务的运行状态为完成
+        # 删除任务
+        result = project_steps.step_delete_job(self.project_name, job_name)
         # 验证删除结果为Success
         assert result == 'Success'
         # 在列表中查询任务，验证查询结果为空
-        result1 = project_steps.step_get_assign_job(self.project_name, 'name', self.job_name)
-        assert result1 == 0
+        response = project_steps.step_get_assign_job(self.project_name, 'name', job_name)
+        assert response.json()['totalItems'] == 0
 
     @allure.story('应用负载-任务')
     @allure.title('删除不存在的任务')
     @allure.severity(allure.severity_level.NORMAL)
-    # 删除用例'创建任务，并验证运行正常'创建的任务
     def test_delete_job_no(self):
         job_name = 'test123'
+        # 删除任务
         result = project_steps.step_delete_job(self.project_name, job_name)
         # 验证删除结果
         print("actual_result: " + result)
@@ -682,14 +726,15 @@ class TestProject(object):
         volume_info = []
         # 创建工作负载
         project_steps.step_create_deploy(project_name=self.project_name, work_name=workload_name,
-                           container_name=container_name, ports=port, volumemount=volumeMounts,
-                           image=image, replicas=replicas, volume_info=volume_info,
-                           strategy=strategy_info)
+                                         container_name=container_name, ports=port, volumemount=volumeMounts,
+                                         image=image, replicas=replicas, volume_info=volume_info,
+                                         strategy=strategy_info)
 
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
         i = 0
         while i < 60:
-            response = project_steps.step_get_workload(project_name=self.project_name, type='deployments', condition=condition)
+            response = project_steps.step_get_workload(project_name=self.project_name, type='deployments',
+                                                       condition=condition)
             status = response.json()['items'][0]['status']
             # 验证资源的所有副本已就绪
             if 'unavailableReplicas' not in status:
@@ -714,9 +759,9 @@ class TestProject(object):
         volume_info = []
         # 创建工作负载
         project_steps.step_create_deploy(project_name=self.project_name, work_name=workload_name,
-                           container_name=container_name, ports=port, volumemount=volumeMounts,
-                           image=image, replicas=replicas, volume_info=volume_info,
-                           strategy=strategy_info)
+                                         container_name=container_name, ports=port, volumemount=volumeMounts,
+                                         image=image, replicas=replicas, volume_info=volume_info,
+                                         strategy=strategy_info)
         # 按名称精确查询deployment
         time.sleep(3)
         response = project_steps.step_get_workload(self.project_name, type='deployments', condition=condition)
@@ -724,7 +769,8 @@ class TestProject(object):
         name = response.json()['items'][0]['metadata']['name']
         assert name == workload_name
         # 删除deployment
-        re = project_steps.step_delete_workload(project_name=self.project_name, type='deployments', work_name=workload_name)
+        re = project_steps.step_delete_workload(project_name=self.project_name, type='deployments',
+                                                work_name=workload_name)
         assert re.json()['status'] == 'Success'
 
     @allure.story('应用负载-工作负载')
@@ -742,9 +788,9 @@ class TestProject(object):
         volume_info = []
         # 创建工作负载
         project_steps.step_create_deploy(project_name=self.project_name, work_name=workload_name,
-                           container_name=container_name, ports=port, volumemount=volumeMounts,
-                           image=image, replicas=replicas, volume_info=volume_info,
-                           strategy=strategy_info)
+                                         container_name=container_name, ports=port, volumemount=volumeMounts,
+                                         image=image, replicas=replicas, volume_info=volume_info,
+                                         strategy=strategy_info)
         # 按名称精确查询deployment
         time.sleep(3)
         response = project_steps.step_get_workload(self.project_name, type='deployments', condition=conndition)
@@ -752,7 +798,8 @@ class TestProject(object):
         name = response.json()['items'][0]['metadata']['name']
         assert name == workload_name
         # 删除deployment
-        re = project_steps.step_delete_workload(project_name=self.project_name, type='deployments', work_name=workload_name)
+        re = project_steps.step_delete_workload(project_name=self.project_name, type='deployments',
+                                                work_name=workload_name)
         assert re.json()['status'] == 'Success'
 
     @allure.story('应用负载-工作负载')
@@ -771,15 +818,17 @@ class TestProject(object):
         volumemounts = []
         # 创建工作负载
         project_steps.step_create_stateful(project_name=self.project_name, work_name=workload_name,
-                             container_name=container_name,
-                             image=image, replicas=replicas, volume_info=volume_info, ports=port,
-                             service_ports=service_port, volumemount=volumemounts, service_name=service_name)
+                                           container_name=container_name,
+                                           image=image, replicas=replicas, volume_info=volume_info, ports=port,
+                                           service_ports=service_port, volumemount=volumemounts,
+                                           service_name=service_name)
 
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
         time.sleep(3)
         i = 3
         while i < 60:
-            response = project_steps.step_get_workload(project_name=self.project_name, type='statefulsets', condition=condition)
+            response = project_steps.step_get_workload(project_name=self.project_name, type='statefulsets',
+                                                       condition=condition)
             readyReplicas = response.json()['items'][0]['status']['readyReplicas']
             # 验证资源的所有副本已就绪
             if readyReplicas == replicas:
@@ -806,9 +855,10 @@ class TestProject(object):
         volumemounts = []
         # 创建工作负载
         project_steps.step_create_stateful(project_name=self.project_name, work_name=workload_name,
-                             container_name=container_name,
-                             image=image, replicas=replicas, volume_info=volume_info, ports=port,
-                             service_ports=service_port, volumemount=volumemounts, service_name=service_name)
+                                           container_name=container_name,
+                                           image=image, replicas=replicas, volume_info=volume_info, ports=port,
+                                           service_ports=service_port, volumemount=volumemounts,
+                                           service_name=service_name)
 
         # 按名称精确查询statefulsets
         time.sleep(1)
@@ -837,9 +887,10 @@ class TestProject(object):
         volumemounts = []
         # 创建工作负载
         project_steps.step_create_stateful(project_name=self.project_name, work_name=workload_name,
-                             container_name=container_name,
-                             image=image, replicas=replicas, volume_info=volume_info, ports=port,
-                             service_ports=service_port, volumemount=volumemounts, service_name=service_name)
+                                           container_name=container_name,
+                                           image=image, replicas=replicas, volume_info=volume_info, ports=port,
+                                           service_ports=service_port, volumemount=volumemounts,
+                                           service_name=service_name)
 
         # 按状态精确查询statefulsets
         time.sleep(5)
@@ -864,13 +915,14 @@ class TestProject(object):
         volumemount = []
         # 创建工作负载
         project_steps.step_create_daemonset(project_name=self.project_name, work_name=workload_name,
-                              container_name=container_name, image=image, ports=port,
-                              volume_info=volume_info, volumemount=volumemount)
+                                            container_name=container_name, image=image, ports=port,
+                                            volume_info=volume_info, volumemount=volumemount)
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
         time.sleep(3)
         i = 3
         while i < 60:
-            response = project_steps.step_get_workload(project_name=self.project_name, type='daemonsets', condition=condition)
+            response = project_steps.step_get_workload(project_name=self.project_name, type='daemonsets',
+                                                       condition=condition)
             numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
             # 验证资源的所有副本已就绪
             if numberReady == 1:
@@ -894,8 +946,8 @@ class TestProject(object):
         volumemount = []
         # 创建工作负载
         project_steps.step_create_daemonset(project_name=self.project_name, work_name=workload_name,
-                              container_name=container_name, image=image, ports=port,
-                              volume_info=volume_info, volumemount=volumemount)
+                                            container_name=container_name, image=image, ports=port,
+                                            volume_info=volume_info, volumemount=volumemount)
         # 按名称查询DaemonSets
         time.sleep(3)
         response = project_steps.step_get_workload(self.project_name, type=type, condition=condition)
@@ -919,8 +971,8 @@ class TestProject(object):
         volumemount = []
         # 创建工作负载
         project_steps.step_create_daemonset(project_name=self.project_name, work_name=workload_name,
-                              container_name=container_name, image=image, ports=port,
-                              volume_info=volume_info, volumemount=volumemount)
+                                            container_name=container_name, image=image, ports=port,
+                                            volume_info=volume_info, volumemount=volumemount)
         # 按名称查询DaemonSets
         time.sleep(3)
         response = project_steps.step_get_workload(self.project_name, type=type, condition=condition)
@@ -947,9 +999,10 @@ class TestProject(object):
         # 创建service
         project_steps.step_create_service(self.project_name, service_name, port_service)
         # 创建service绑定的deployment
-        project_steps.step_create_deploy(project_name=self.project_name, work_name=service_name, container_name=container_name,
-                           ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
-                           volume_info=volume_info, strategy=strategy_info)
+        project_steps.step_create_deploy(project_name=self.project_name, work_name=service_name,
+                                         container_name=container_name,
+                                         ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
+                                         volume_info=volume_info, strategy=strategy_info)
         # 验证service创建成功
         response = project_steps.step_get_workload(self.project_name, type='services', condition=condition)
         name = response.json()['items'][0]['metadata']['name']
@@ -998,9 +1051,10 @@ class TestProject(object):
         # 创建service
         project_steps.step_create_service(self.project_name, service_name, port_service)
         # 创建service绑定的deployment
-        project_steps.step_create_deploy(project_name=self.project_name, work_name=service_name, container_name=container_name,
-                           ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
-                           volume_info=volume_info, strategy=strategy_info)
+        project_steps.step_create_deploy(project_name=self.project_name, work_name=service_name,
+                                         container_name=container_name,
+                                         ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
+                                         volume_info=volume_info, strategy=strategy_info)
         # 验证service创建成功
         response = project_steps.step_get_workload(self.project_name, type='services', condition=condition)
         name = response.json()['items'][0]['metadata']['name']
@@ -1016,7 +1070,7 @@ class TestProject(object):
         host = 'www.test.com'
         service_info = {"serviceName": service_name, "servicePort": 80}
         response = project_steps.step_create_route(project_name=self.project_name, ingress_name=ingress_name, host=host,
-                                     service_info=service_info)
+                                                   service_info=service_info)
         # 获取路由绑定的服务名称
         name = response.json()['spec']['rules'][0]['http']['paths'][0]['backend']['serviceName']
         # 验证路由创建成功
@@ -1085,7 +1139,8 @@ class TestProject(object):
         # 依赖于用例'创建工作负载，并验证运行成功'创建的工作负载
         replicas = 3  # 副本数
         # 修改副本数
-        project_steps.step_modify_work_replicas(project_name=self.project_name, work_name=self.work_name, replicas=replicas)
+        project_steps.step_modify_work_replicas(project_name=self.project_name, work_name=self.work_name,
+                                                replicas=replicas)
         # 获取工作负载中所有的容器组，并验证其运行正常，最长等待时间60s
         status_test = []  # 创建一个对比数组
         for j in range(replicas):
@@ -1255,13 +1310,16 @@ class TestProject(object):
     @allure.title('删除存在的存储卷，并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_volume(self):
+        # 创建存储卷
+        volume_name = 'volume' + str(commonFunction.get_random())
+        project_steps.step_create_volume(self.project_name, volume_name)
         # 删除存储卷
-        project_steps.step_delete_volume(self.project_name, self.volume_name)
+        project_steps.step_delete_volume(self.project_name, volume_name)
         # 查询被删除的存储卷
         i = 0
         # 验证存储卷被删除，最长等待时间为30s
         while i < 30:
-            response = project_steps.step_get_volume(self.project_name, self.volume_name)
+            response = project_steps.step_get_volume(self.project_name, volume_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
             if response.json()['totalItems'] == 0:
                 print("删除存储卷耗时:" + str(i) + '秒')

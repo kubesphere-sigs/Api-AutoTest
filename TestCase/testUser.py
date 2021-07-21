@@ -7,7 +7,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 from common.getData import DoexcleByPandas
 from common import commonFunction
-from step import platform_step
+from step import platform_steps
 from common.getHeader import get_header
 
 
@@ -51,11 +51,11 @@ class TestUser(object):
         email_new = 'stevewen12345@yunify.com'
         role_new = 'users-manager'
         description = 'test'
-        platform_step.step_create_user(user_name, role)  # 创建用户
+        platform_steps.step_create_user(user_name, role)  # 创建用户
         time.sleep(3)
-        version = platform_step.step_get_user_version(user_name)  # 获取创建用户的resourceVersion
+        version = platform_steps.step_get_user_version(user_name)  # 获取创建用户的resourceVersion
         # 编辑用户信息的url地址
-        r = platform_step.step_edit_user(user_name, role_new, description, version, email_new)
+        r = platform_steps.step_edit_user(user_name, role_new, description, version, email_new)
         try:
             # 获取修改后的email
             email_actual = r.json()['spec']['email']
@@ -63,7 +63,7 @@ class TestUser(object):
             print(e)
         # 验证修改用户后的邮箱信息
         assert email_actual == email_new
-        platform_step.step_delete_user(user_name)  # 删除新建的用户
+        platform_steps.step_delete_user(user_name)  # 删除新建的用户
 
     @allure.story('用户')
     @allure.severity('critical')
@@ -73,23 +73,23 @@ class TestUser(object):
         for role in roles:
             user_name = 'test' + str(commonFunction.get_random())
             # 创建用户
-            platform_step.step_create_user(user_name, role)
+            platform_steps.step_create_user(user_name, role)
             # 等待创建的用户被激活
             time.sleep(3)
             # 查看用户详情
-            re = platform_step.step_get_user_info(user_name)
+            re = platform_steps.step_get_user_info(user_name)
             # 验证用户的状态为active
-            status = re.json()['status']['state']
+            status = re.json()['items'][0]['status']['state']
             assert status == 'Active'
             # 获取并校验用户的角色
-            user_role = re.json()['metadata']['annotations']['iam.kubesphere.io/globalrole']
+            user_role = re.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/globalrole']
             assert user_role == role
             # 登陆ks
-            headers = platform_step.step_get_headers(user_name, 'P@88w0rd')
+            headers = platform_steps.step_get_headers(user_name, 'P@88w0rd')
             # 验证headers获取成功
             assert headers
             # 删除用户
-            platform_step.step_delete_user(user_name)
+            platform_steps.step_delete_user(user_name)
 
     @allure.story('用户')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -101,29 +101,29 @@ class TestUser(object):
         # 创建用户
         user_name = 'modify' + str(commonFunction.get_random())
         role = 'users-manager'
-        platform_step.step_create_user(user_name, role)
+        platform_steps.step_create_user(user_name, role)
         # 等待创建的用户被激活
         time.sleep(3)
         # 使用新创建的用户登陆，并获取headers
         try:
-            headers = platform_step.step_get_headers(user_name, pwd='P@88w0rd')
+            headers = platform_steps.step_get_headers(user_name, pwd='P@88w0rd')
         except Exception as e:
             print(e)
             print("新创建的用户登陆失败")
         # 修改用户密码
         new_pwd = 'Admin@123'
         if type == 'admin':
-            response = platform_step.step_modify_user_pwd(user_name=user_name, headers=get_header(), new_pwd=new_pwd)
+            response = platform_steps.step_modify_user_pwd(user_name=user_name, headers=get_header(), new_pwd=new_pwd)
         elif type == 'user':
-            response = platform_step.step_modify_user_pwd(user_name=user_name, headers=headers, new_pwd=new_pwd)
+            response = platform_steps.step_modify_user_pwd(user_name=user_name, headers=headers, new_pwd=new_pwd)
         # 验证密码修改成功
         assert response.json()['message'] == 'success'
         time.sleep(3)
         # 使用新创建的用户登陆，并获取headers
-        headers_new = platform_step.step_get_headers(user_name=user_name, pwd=new_pwd)
+        headers_new = platform_steps.step_get_headers(user_name=user_name, pwd=new_pwd)
         assert headers_new
         # 删除创建的用户
-        platform_step.step_delete_user(user_name)
+        platform_steps.step_delete_user(user_name)
 
 
 if __name__ == "__main__":

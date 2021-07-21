@@ -97,8 +97,8 @@ def step_get_assign_job(project_name, way, condition):
     :return: 查询到的任务数量
     """
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/jobs?' + way + '=' + condition + '&sortBy=updateTime&limit=10'
-    r = requests.get(url=url, headers=get_header())
-    return r.json()['totalItems']
+    response = requests.get(url=url, headers=get_header())
+    return response
 
 
 @allure.step('删除指定任务，并返回删除结果')
@@ -818,5 +818,13 @@ def step_get_pod_info_of_project(project_name):
 def step_get_project_info(ws_name):
     url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces?' \
           'sortBy=createTime&labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在项目中查询pod')
+def step_get_pod_info(project_name, pod_name):
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods?' \
+                                                'name=' + pod_name + '&sortBy=startTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response

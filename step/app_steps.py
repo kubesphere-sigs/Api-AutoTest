@@ -51,10 +51,10 @@ def step_deploy_template(ws_name, project_name, app_id, name, version_id):
     """
     if commonFunction.check_multi_cluster() is False:
         url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + \
-                           '/clusters/default/namespaces/' + project_name + '/applications'
+              '/clusters/default/namespaces/' + project_name + '/applications'
     else:
         url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + \
-                           '/clusters/host/namespaces/' + project_name + '/applications'
+              '/clusters/host/namespaces/' + project_name + '/applications'
 
     data = {"app_id": app_id,
             "name": name,
@@ -356,8 +356,6 @@ def step_deployment_app(project_name, app_id, app_version_id, name, conf):
     assert r.json()['message'] == 'success'
 
 
-
-
 @allure.step('获取appstore中应用的app_id')
 def step_get_app_id():
     url = config.url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D2&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
@@ -409,8 +407,6 @@ def step_deploy_app_from_app_store(ws_name, project_name, app_id, name, version_
     }
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
-
-
 
 
 @allure.step('获取指定应用分类的category_id')
@@ -497,9 +493,9 @@ def step_get_apps_id():
     r = requests.get(url=url, headers=get_header())
     count = r.json()['total_count']
     # 获取页数
-    pages = ceil(count/10)
+    pages = ceil(count / 10)
     apps = []
-    for page in range(1, pages+1):
+    for page in range(1, pages + 1):
         r = requests.get(url, get_header())
         for item in r.json()['items']:
             apps.append(item['app_id'])
@@ -510,4 +506,98 @@ def step_get_apps_id():
 def step_get_app_detail(app_id):
     url = config.url + '/kapis/openpitrix.io/v1/apps/' + app_id
     response = requests.get(url=url, headers=get_header())
+    return response
+
+
+#########多集群环境############
+
+
+@allure.step('在多集群环境的host集群部署指定应用')
+def step_deployment_app_multi(project_name, app_id, app_version_id, name, conf):
+    """
+    :param project_name: 项目名称
+    :param app_id: 应用id
+    :param app_version_id: 应用版本号
+    :param name: 部署时的应用名称
+    :param conf: 应用的镜像信息
+    """
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/undefined/clusters/host/namespaces/' + \
+          project_name + '/applications'
+    data = {"app_id": app_id,
+            "name": name,
+            "version_id": app_version_id,
+            "conf": conf +
+                    "Name: " + name + "\nDescription: ''\nWorkspace: " + project_name + "\n"}
+    r = requests.post(url, headers=get_header(), data=json.dumps(data))
+    # 验证部署应用请求成功
+    assert r.json()['message'] == 'success'
+
+
+@allure.step('在多集群环境的host集群查看指定应用信息')
+def step_get_app_status_multi(ws_name, project_name, app_name):
+    """
+    :param ws_name: 企业空间
+    :param project_name: 项目名称
+    :param app_name: 应用名称
+    :return: 应用状态
+    """
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+          project_name + '/applications?conditions=keyword%3D' + app_name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在多集群环境的host集群的项目的应用列表中查看应用是否存在')
+def step_get_app_count_multi(ws_name, project_name, app_name):
+    """
+    :param ws_name: 企业空间
+    :param project_name: 项目名称
+    :param app_name: 应用名称
+    :return:
+    """
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+          project_name + '/applications?conditions=status%3Dactive%7Cstopped%7Cpending%7Csuspended%2Ckeyword%3D' + \
+          app_name + '&paging=limit%3D10%2Cpage%3D1&orderBy=status_time&reverse=true'
+    r = requests.get(url=url, headers=get_header())
+    return r.json()['total_count']
+
+
+@allure.step('在多集群环境的host集群的项目的应用列表获取指定应用的cluster_id')
+def step_get_deployed_app_multi(ws_name, project_name, app_name):
+    """
+    :param ws_name: 企业空间
+    :param project_name: 项目名称
+    :param app_name: 应用名称
+    :return: 应用的cluster_id
+    """
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+          project_name + '/applications?conditions=keyword%3D' + app_name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在多集群环境的host集群删除项目的应用列表指定的应用')
+def step_delete_app_multi(ws_name, project_name, cluster_id):
+    """
+    :param ws_name: 企业空间
+    :param project_name: 项目名称
+    :param cluster_id: 部署后的应用的id
+    """
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+          project_name + '/applications/' + cluster_id
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在多集群环境的host集群从应用商店部署应用')
+def step_deploy_app_from_app_store_multi(ws_name, project_name, app_id, name, version_id, conf):
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+          project_name + '/applications'
+    data = {
+        "app_id": app_id,
+        "name": name,
+        "version_id": version_id,
+        "conf": conf
+    }
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
