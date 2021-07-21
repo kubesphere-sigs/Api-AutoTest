@@ -270,9 +270,9 @@ class TestProject(object):
     @allure.title('模糊查找project工程中的角色')
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_role_fuzzy(self):
-        role_name = 'ad'
+        role_name = 'adm'
         r = project_steps.step_get_role(self.project_name, role_name)
-        assert r.json()['totalItems'] == 2  # 验证查询到的结果数量为2
+        assert r.json()['totalItems'] == 1  # 验证查询到的结果数量为2
         # 验证查找到的角色
         print("actual_result:r.json()['items'][0]['metadata']['name']=" + r.json()['items'][0]['metadata'][
             'name'])  # 在日志中打印出实际结果

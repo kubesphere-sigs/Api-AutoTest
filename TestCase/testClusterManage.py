@@ -721,7 +721,7 @@ class TestCluster(object):
             # 获取查询结果中的name
             name_actual = r.json()['items'][0]['metadata']['name']
             # 验证查询的结果正确
-            assert name == name_actual
+            assert name in name_actual
 
     @allure.story('应用负载')
     @allure.title('获取集群所有的容器组，并验证其数量与从项目管理中获取的数量一致')
@@ -786,7 +786,7 @@ class TestCluster(object):
         count = response.json()['totalItems']
         # 获取集群中存在的任一资源的名称
         name = response.json()['items'][random.randint(0, count - 1)]['metadata']['name']
-        fuzzy_name = name[:-1]
+        fuzzy_name = name[1:]
         # 按名称精确查询存在的资源
         r = cluster_steps.step_get_resource_of_cluster(type, 'name=' + fuzzy_name)
         name_actual = r.json()['items'][0]['metadata']['name']
