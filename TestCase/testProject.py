@@ -902,7 +902,7 @@ class TestProject(object):
             name = response.json()['items'][i]['metadata']['name']
             names.append(name)
         # 验证deployment的名称正确
-        assert name in workload_name
+        assert name in names
         # 删除创建的statefulsets
         re = project_steps.step_delete_workload(project_name=self.project_name, type=type, work_name=workload_name)
         assert re.json()['status'] == 'Success'
