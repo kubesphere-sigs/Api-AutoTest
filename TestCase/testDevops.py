@@ -335,12 +335,11 @@ class TestDevOps(object):
         # 获取创建的devops工程的别名
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + dev_name_new + '/roles?name=a&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
+        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + dev_name_new + '/roles?name=admi&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
         r = requests.get(url, headers=get_header())
-        assert r.json()['totalItems'] == 2  # 验证查询到的结果数量为2
+        assert r.json()['totalItems'] == 1  # 验证查询到的结果数量为2
         # 验证查找到的角色
-        assert r.json()['items'][0]['metadata']['name'] == 'operator'
-        assert r.json()['items'][1]['metadata']['name'] == 'admin'
+        assert r.json()['items'][0]['metadata']['name'] == 'admin'
 
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中创建角色')
