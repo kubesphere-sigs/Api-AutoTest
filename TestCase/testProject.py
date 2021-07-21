@@ -570,8 +570,8 @@ class TestProject(object):
         project_steps.step_get_job_status_run(self.project_name, job_name)
         # 按状态为运行中查询任务
         response = project_steps.step_get_assign_job(self.project_name, 'status', 'running')
-        # 验证查询结果为1
-        assert response.json()['totalItems'] == 1
+        # 验证查询结果
+        assert response.json()['totalItems'] >= 1
 
     @allure.story('应用负载-容器组')
     @allure.title('按名称精确查询存在的容器组')
