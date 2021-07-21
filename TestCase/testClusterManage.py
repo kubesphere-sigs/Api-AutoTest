@@ -766,7 +766,7 @@ class TestCluster(object):
         r = cluster_steps.step_get_resource_of_cluster(type, 'name=' + name)
         name_actual = r.json()['items'][0]['metadata']['name']
         # 验证查询结果正确
-        assert name_actual == name
+        assert name_actual in name
 
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
