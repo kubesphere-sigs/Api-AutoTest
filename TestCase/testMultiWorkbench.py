@@ -41,7 +41,7 @@ class TestWorkbench(object):
         # 获取平台的workspace数量
         ws_count = response.json()['results'][1]['data']['result'][0]['value'][1]
         # 查询集群的企业空间信息，并获取企业空间数量
-        r = workspace_steps.step_get_ws_info()
+        r = workspace_steps.step_get_ws_info('')
         ws_count_actual = r.json()['totalItems']
         # 验证企业空间数量正确
         assert int(ws_count) == ws_count_actual
