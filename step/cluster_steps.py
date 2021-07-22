@@ -282,11 +282,14 @@ def step_get_crd_detail(crd_name):
 
 @allure.step('查询CRD的FederatedGroupList信息')
 def step_get_crd_federated_group_list(group, version, kind):
-    if kind[-1] == 's':
+    if kind.endswith('ateway'):
+        url = config.url + '/apis/' + group + '/' + version + '/' + kind + 's'
+    elif kind.endswith('y'):
+        url = config.url + '/apis/' + group + '/' + version + '/' + kind[:-1] + 'ies'
+    elif kind[-1] in 'sx' or kind[-2:] in ['sh', 'ch']:
         url = config.url + '/apis/' + group + '/' + version + '/' + kind + 'es'
-    elif kind[-1] == 'y':
-        kind = kind.replace(kind[-1], 'i')
-        url = config.url + '/apis/' + group + '/' + version + '/' + kind + 'es'
+    elif kind.endswith('an'):
+        url = config.url + '/apis/' + group + '/' + version + '/' + kind[:-2] + 'en'
     else:
         url = config.url + '/apis/' + group + '/' + version + '/' + kind + 's'
     response = requests.get(url=url, headers=get_header())
@@ -329,7 +332,6 @@ def step_set_default_storage_class(name, set):
     url = config.url + '/apis/storage.k8s.io/v1/storageclasses/' + name
     data = {"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": set,
                                          "storageclass.beta.kubernetes.io/is-default-class": set}}}
-
     response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
     return response
 

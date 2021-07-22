@@ -318,16 +318,9 @@ def step_set_network_lsolation(ws_name, status):
     return response
 
 
-@allure.step('查询企业空间信息')
+@allure.step('在多集群环境查询企业空间')
 def step_get_ws_info(ws_name):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
-    response = requests.get(url=url, headers=get_header())
-    return response
-
-
-@allure.step('查询集群的企业空间信息')
-def step_get_workspace_info():
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces?sortBy=createTime'
+    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=' + ws_name
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -338,5 +331,30 @@ def step_get_project_info(ws_name):
           'sortBy=createTime&labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
     response = requests.get(url=url, headers=get_header())
     return response
+
+
+@allure.step('创建多集群企业空间')
+def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
+    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
+    clusters = []
+    if isinstance(cluster_names, str):
+        clusters.append({'name': cluster_names})
+    else:
+        for cluster_name in cluster_names:
+            clusters.append({'name': cluster_name})
+    data = {"apiVersion": "tenant.kubesphere.io/v1alpha2",
+            "kind": "WorkspaceTemplate",
+            "metadata":
+                {"name": ws_name,
+                 "annotations": {
+                     "kubesphere.io/alias-name": alias_name,
+                     "kubesphere.io/description": description,
+                     "kubesphere.io/creator": "admin"}
+                 },
+            "spec": {"template": {"spec": {"manager": "admin"}},
+                     "placement": {"clusters": clusters}}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
 
 
