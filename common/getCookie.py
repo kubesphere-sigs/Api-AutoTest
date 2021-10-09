@@ -9,7 +9,9 @@ def get_token(server):
     data = {
         'username': 'admin',
         'password': 'P@88w0rd',
-        'grant_type': 'password'
+        'grant_type': 'password',
+        'client_id': 'kubesphere',
+        'client_secret': 'kubesphere'
     }
     url = server + '/oauth/token'
     try:
@@ -23,5 +25,3 @@ def get_token(server):
 
     ks_token = 'Bearer ' + token
     return ks_token
-
-
