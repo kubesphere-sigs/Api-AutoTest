@@ -9,9 +9,7 @@ def get_token(server):
     data = {
         'username': 'admin',
         'password': 'P@88w0rd',
-        'grant_type': 'password',
-        'client_id': 'kubesphere',
-        'client_secret': 'kubesphere'
+        'grant_type': 'password'
     }
     url = server + '/oauth/token'
     try:
