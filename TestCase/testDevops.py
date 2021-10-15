@@ -52,7 +52,7 @@ class TestDevOps(object):
     @allure.title('创建devops工程,然后将其删除')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_devops(self):
-        devops_name = 'test-devops'
+        devops_name = 'test-devops' + str(commonFunction.get_random())
         # 创建devops工程
         devops_steps.step_create_devops(self.ws_name, devops_name)
         # 查询devops工程

@@ -18,7 +18,7 @@ def step_create_devops(ws_name, devops_name):
     """
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/workspaces/' + ws_name + '/devops'
     data = {"metadata": {"generateName": devops_name,
-                         "labels": {"kubesphere.io/workspace": devops_name},
+                         "labels": {"kubesphere.io/workspace": ws_name},
                          "annotations": {"kubesphere.io/creator": "admin"}},
             "kind": "DevOpsProject",
             "apiVersion": "devops.kubesphere.io/v1alpha3"}
@@ -48,7 +48,8 @@ def step_get_devopinfo(ws_name, devops_name):
     :param devop_name: devops工程的名称
     :return: devops工程的详细信息
     """
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/devops?name=' + devops_name
+    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/devops?name=' + devops_name + '&limit=10'
+    print(url)
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -213,7 +214,7 @@ def step_create_account_credential(devops_name, name):
     name = name
     description = '我是描述信息'
     username = 'YWRtaW4='
-    password = 'Z2hwXzRESFZhazlZdWxWR0pzMGUzT210cDVkYmVKQkt3VjMyUjRLMQ=='
+    password = 'Z2hwX0lvOWRwaTdiQWJyelRvSGxZeWlyam9rek5BQ2JVNDRlbGEwYw=='
 
     data = {"apiVersion": "v1", "kind": "Secret",
             "metadata": {"namespace": devops_name,

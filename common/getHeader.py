@@ -18,6 +18,3 @@ def get_header_for_patch():
     }
     return header
 
-
-headers = get_header()
-headers_for_patch = get_header_for_patch()
