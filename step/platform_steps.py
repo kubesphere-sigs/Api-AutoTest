@@ -104,7 +104,9 @@ def step_get_headers(user_name, pwd):
     data = {
         'username': user_name,
         'password': pwd,
-        'grant_type': 'password'
+        'grant_type': 'password',
+        'client_id': 'kubesphere',
+        'client_secret': 'kubesphere'
     }
     url = config.url + '/oauth/token'
     response = requests.post(url=url, headers=header, data=data)

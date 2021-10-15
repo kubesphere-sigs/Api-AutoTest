@@ -17,7 +17,6 @@ class TestUser(object):
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='system_user')
 
     @allure.title('{title}')  # 设置用例标题
-    @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
     # 将用例信息以参数化的方式传入测试方法
     @pytest.mark.parametrize('id,url,params,data, story, title,method,severity,condition,except_result', parametrize)
     def test_user(self, id, url, params, data, story, title, method, severity, condition, except_result):
@@ -54,7 +53,7 @@ class TestUser(object):
         platform_steps.step_create_user(user_name, role)  # 创建用户
         time.sleep(3)
         version = platform_steps.step_get_user_version(user_name)  # 获取创建用户的resourceVersion
-        # 编辑用户信息的url地址
+        # 编辑用户信息的email地址
         r = platform_steps.step_edit_user(user_name, role_new, description, version, email_new)
         try:
             # 获取修改后的email
@@ -67,7 +66,7 @@ class TestUser(object):
 
     @allure.story('用户')
     @allure.severity('critical')
-    @allure.title('遍历使用系统所有的内置角色创建用户，查看用户详情，然后使用新用户登陆ks,最后然后用户')
+    @allure.title('遍历使用系统所有的内置角色创建用户，查看用户详情，然后使用新用户登陆ks,最后删除用户')
     def test_login_with_new_user(self):
         roles = ['workspaces-manager', 'users-manager', 'platform-regular', 'platform-admin']
         for role in roles:
