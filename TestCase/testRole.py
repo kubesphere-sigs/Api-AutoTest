@@ -15,7 +15,6 @@ class TestRole(object):
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='system_role')
 
     @allure.title('{title}')  # 设置用例标题
-    @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
     # 将用例信息以参数化的方式传入测试方法
     @pytest.mark.parametrize('id,url,params,data, story, title,method,severity,condition,except_result', parametrize)
     def test_role(self, id, url, params, data, story, title, method, severity, condition, except_result):
