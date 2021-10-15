@@ -37,7 +37,7 @@ class TestProject(object):
         workspace_steps.step_create_workspace(self.ws_name)  # 创建一个企业空间
         workspace_steps.step_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
         project_steps.step_create_project(self.ws_name, self.project_name)  # 创建一个project工程
-        project_steps.step_create_project(self.ws_name, self.project_name_for_exel)  # 创建一个project工程
+        project_steps.step_create_project(self.ws_name, self.project_name_for_exel)  # 创建一个project工程用于执行excle中的用例
         # 创建存储卷
         project_steps.step_create_volume(self.project_name_for_exel, self.volume_name)
 
@@ -66,7 +66,7 @@ class TestProject(object):
         container_name = 'container1'  # 容器名称
         condition = 'name=' + self.work_name  # 查询条件
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-        volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+        volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载的存储卷
         strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
@@ -94,7 +94,7 @@ class TestProject(object):
     def test_create_volume_for_statefulsets(self):
         volume_name = 'volume-stateful'  # 存储卷的名称
         type_name = 'volume-type'  # 存储卷的类型
-        work_name = 'stateful-with-volume'  # 工作负载的名称
+        work_name = 'stateful-with-volume' + str(commonFunction.get_random())  # 工作负载的名称
         service_name = 'service' + volume_name
         replicas = 2  # 副本数
         image = 'nginx'  # 镜像名称
@@ -131,7 +131,7 @@ class TestProject(object):
     def test_create_volume_for_daemonsets(self):
         volume_name = 'volume-deamon'  # 存储卷的名称
         type_name = 'volume-type'  # 存储卷的类型
-        work_name = 'workload-daemon'  # 工作负载的名称
+        work_name = 'daemonsets' + str(commonFunction.get_random())  # 工作负载的名称
         image = 'redis'  # 镜像名称
         container_name = 'container-daemon'  # 容器名称
         condition = 'name=' + work_name  # 查询条件
@@ -532,7 +532,7 @@ class TestProject(object):
     @allure.story('应用负载-任务')
     @allure.title('按名称模糊查询存在的任务')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_fuzzy_query_job(self):
+    def test_fuzzy_job(self):
         # 创建任务
         job_name = 'job' + str(commonFunction.get_random())
         project_steps.step_create_job(self.project_name, job_name)
@@ -547,15 +547,11 @@ class TestProject(object):
         job_name = 'job' + str(commonFunction.get_random())
         project_steps.step_create_job(self.project_name, job_name)  # 创建任务
         project_steps.step_get_job_status(self.project_name, job_name)  # 验证任务的运行状态为完成
-        response = project_steps.step_get_assign_job(self.project_name, 'status', 'completed')
-        # 获取查询结果数量
-        job_count = response.json()['totalItems']
+        response = project_steps.step_get_assign_job(self.project_name, 'status', 'completed')  # 查询指定的任务
         # 获取查询结果中job的名称
-        job_names = []
-        for i in range(0, job_count):
-            job_names.append(response.json()['items'][i]['metadata']['name'])
+        job_name_actual = response.json()['items'][0]['metadata']['name']
         # 验证查询结果正确
-        assert job_name in job_names
+        assert job_name == job_name_actual
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
 
@@ -1248,23 +1244,17 @@ class TestProject(object):
         sa_name = 'satest'
         # 步骤1：创建sa
         project_steps.step_create_sa(project_name=self.project_name, sa_name=sa_name)
-
         # 步骤2：验证sa创建成功并返回secret
         sa_secret = project_steps.step_get_sa(project_name=self.project_name, sa_name=sa_name)
-
         # 步骤3：查询sa详情
         project_steps.step_get_sa_detail(project_name=self.project_name, sa_name=sa_name)
-
         # 步骤4：查询sa的密钥信息并返回密钥类型
-        secret_type = project_steps.step_get_secret(project_name=self.project_name, secret_name=sa_secret)
+        secret_type = project_steps.step_get_secret(project_name=self.project_name, secret_name=sa_secret).json()['items'][0]['type']
         assert secret_type == 'kubernetes.io/service-account-token'
-
         # 步骤5：删除sa
         project_steps.step_delete_sa(project_name=self.project_name, sa_name=sa_name)
-
         # 步骤6：验证删除成功
         num = project_steps.step_get_sa(project_name=self.project_name, sa_name=sa_name)
-
         assert num == 0
 
     @allure.title('{title}')  # 设置用例标题

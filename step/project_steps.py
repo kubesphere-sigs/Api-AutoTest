@@ -12,7 +12,7 @@ from common.getHeader import headers, headers_for_patch
 from step import workspace_steps
 
 
-@allure.step('创建任务')
+@allure.step('创建一个计算圆周率的任务')
 def step_create_job(project_name, job_name):
     """
     :param project_name: 项目名称
@@ -64,8 +64,8 @@ def step_get_job_status(project_name, job_name):
                 # print('任务从创建到运行完成耗时:' + str(i) + '秒')
                 break
         except KeyError:
-            time.sleep(1)
-            i = i + 1
+            time.sleep(10)
+            i = i + 10
     assert r2.json()['items'][0]['status']['conditions'][0]['type'] == 'Complete'
     return r2.json()['items'][0]['metadata']['uid']
 
@@ -98,7 +98,8 @@ def step_get_assign_job(project_name, way, condition):
     :param project_name: 项目名称
     :return: 查询到的任务数量
     """
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/jobs?' + way + '=' + condition + '&sortBy=updateTime&limit=10'
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/jobs?' + way + '=' + \
+          condition + '&sortBy=updateTime&limit=10'
     response = requests.get(url=url, headers=headers)
     return response
 
@@ -433,7 +434,8 @@ def step_create_volume(project_name, volume_name):
             "kind": "PersistentVolumeClaim",
             "metadata": {"namespace": project_name, "name": volume_name, "labels": {},
                          "annotations": {"kubesphere.io/creator": "admin"}},
-            "spec": {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "10Gi"}}}}
+            "spec": {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "10Gi"}},
+                     "storageClassName": "local"}}
     response = requests.post(url=url, headers=headers, data=json.dumps(data))
     return response
 
@@ -1417,10 +1419,10 @@ def step_create_secret_tls_in_multi_project(cluster_name, project_name, secret_n
     return response
 
 
-@allure.step('在多集群项目查询密钥')
+@allure.step('在单集群项目查询密钥')
 def step_get_secret(project_name, secret_name):
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
-          '/federatedsecrets?name=' + secret_name + '&sortBy=createTime'
+          '/secrets?name=' + secret_name + '&sortBy=createTime'
     response = requests.get(url=url, headers=headers)
     return response
 
@@ -1428,7 +1430,7 @@ def step_get_secret(project_name, secret_name):
 @allure.step('在多集群项目查询配置')
 def step_get_config_map(project_name, config_name):
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
-          '/federatedconfigmaps?name=' + config_name + '&sortBy=createTime'
+          '/configmaps?name=' + config_name + '&sortBy=createTime'
     response = requests.get(url=url, headers=headers)
     return response
 
