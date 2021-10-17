@@ -22,8 +22,7 @@ def step_create_devops(ws_name, devops_name):
                          "annotations": {"kubesphere.io/creator": "admin"}},
             "kind": "DevOpsProject",
             "apiVersion": "devops.kubesphere.io/v1alpha3"}
-    response = requests.post(url, headers=get_header(), data=json.dumps(data))
-    return response
+    requests.post(url, headers=get_header(), data=json.dumps(data))
 
 
 @allure.story('查询devops工程')
@@ -126,6 +125,70 @@ def step_delete_credential(devops_name, credential_name):
     return response
 
 
+@allure.step('创建devops工程角色')
+def step_create_role(devops_name, role_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + devops_name + '/roles'
+    data = {"apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "Role",
+            "metadata":
+                {"namespace": devops_name,
+                 "name": role_name,
+                 "annotations":
+                     {"iam.kubesphere.io/aggregation-roles": "[\"role-template-manage-pipelines\","
+                                                             "\"role-template-view-pipelines\","
+                                                             "\"role-template-view-credentials\","
+                                                             "\"role-template-view-basic\"]",
+                      "kubesphere.io/creator": "admin"}}, "rules": []}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('编辑devops角色的权限信息')
+def step_edit_role_authority(devops_name, role_name, annotations, resourceVersion):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + devops_name + '/roles/' + role_name
+    data = {"apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "Role",
+            "metadata": {"name": role_name,
+                         "namespace": devops_name,
+                         "annotations": annotations,
+                        "resourceVersion": resourceVersion}
+            }
+    response = requests.put(url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('编辑devops角色的基本信息')
+def step_edit_role_info(devops_name, role_name, alias, description):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + devops_name + '/roles/' + role_name
+    data = {"metadata":
+                {"name": role_name,
+                 "namespace": devops_name,
+                 "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
+                                                                        "\"role-template-view-credentials\","
+                                                                        "\"role-template-view-basic\"]",
+                                 "kubesphere.io/creator": "admin",
+                                 "kubesphere.io/alias-name": alias,
+                                 "kubesphere.io/description": description}
+                 }
+            }
+    response = requests.patch(url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('查询指定的devops角色')
+def step_get_role(devope_name, role_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devope_name + '/roles?' \
+                       'name=' + role_name + '&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('删除devops角色')
+def step_delete_role(devops_name, role_name):
+    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + devops_name + '/roles/' + role_name
+    requests.delete(url, headers=get_header())
+
+
 @allure.step('删除devops工程')
 def step_delete_devops(ws_name, devops_name):
     """
@@ -163,21 +226,6 @@ def step_pipeline_check_script_compile(devops_name_new, pipeline_name, data):
     }
     r = requests.post(url=url, headers=header, data=data)
     print(r.text)
-
-
-@allure.step('tojson')
-def step_pipeline_tojson(data):
-    """
-    :param data: jenkinsfile文件内容
-    :return:操作结果
-    """
-    url = config.url + '/kapis/devops.kubesphere.io/v1alpha2/tojson'
-    header = {
-        'Authorization': get_token(config.url),
-        'Content-Type': 'application/x-www-form-urlencoded'
-    }
-    r = requests.post(url=url, headers=header, data=data)
-    return r.json()['data']['result']
 
 
 @allure.step('运行流水线')
@@ -246,7 +294,7 @@ def step_create_ssh_credential(devops_name, name):
 
 
 @allure.step('基于github创建多分支流水线')
-def step_create_pipeline_base_github(devops, devops_name, pipeline_name, credential_name, tags):
+def step_create_pipeline_base_github(devops, devops_name, pipeline_name, credential_name, patch, tags):
     url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/pipelines'
     data = {"devopsName": "dev",
             "metadata": {"name": pipeline_name,
@@ -265,7 +313,7 @@ def step_create_pipeline_base_github(devops, devops_name, pipeline_name, credent
                                "description": "test-devops",
                                "git_clone_option": {"depth": 1, "timeout": 20}},
                           "discarder": {"days_to_keep": "-1", "num_to_keep": "-1"},
-                          "script_path": "Jenkinsfile-online",
+                          "script_path": patch,
                           "devopsName": devops,
                           "cluster": "default",
                           "devops": devops_name,
@@ -279,6 +327,41 @@ def step_create_pipeline_base_github(devops, devops_name, pipeline_name, credent
                      "type": "multi-branch-pipeline"},
             "kind": "Pipeline",
             "apiVersion": "devops.kubesphere.io/v1alpha3"}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('基于gitlab创建流水线')
+def step_create_pipeline_base_gitlab(devops, devops_name, pipeline_name, tags):
+    url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/pipelines'
+    data = {"devopsName": devops_name,
+            "metadata": {"name": pipeline_name,
+                        "namespace": devops_name,
+                        "annotations": {"kubesphere.io/creator": "admin"}
+                        },
+            "spec": {"multi_branch_pipeline":
+                        {"source_type": "gitlab",
+                         "gitlab_source": {"server_name": "https://gitlab.com",
+                                          "owner": "wxsunshine",
+                                          "repo": "wxsunshine/test-public",
+                                          "discover_branches": 1,
+                                          "discover_pr_from_forks": {"strategy": 2, "trust": 2},
+                                          "discover_pr_from_origin": 2,
+                                          "discover_tags": True},
+                         "discarder": {"days_to_keep": "7", "num_to_keep": "5"},
+                         "script_path": "jenkinsfile/test1",
+                         "devopsName": devops,
+                         "cluster": "default",
+                         "devops": devops_name,
+                         "enable_timer_trigger": False,
+                         "enable_discarder": True,
+                         "name": pipeline_name,
+                         "discover_branches": 1,
+                         "discover_tags": tags,
+                         "discover_pr_from_origin": 2,
+                         "discover_pr_from_forks": {"strategy": 2, "trust": 2}},
+                    "type": "multi-branch-pipeline"},
+            "kind": "Pipeline", "apiVersion": "devops.kubesphere.io/v1alpha3"}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
