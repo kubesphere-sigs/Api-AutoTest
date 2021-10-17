@@ -342,11 +342,11 @@ class TestDevOps(object):
         # 验证创建角色失败的异常提示信息
         assert r.text.strip() == 'Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required'
 
-    # 以下4条用例的执行结果应当为false。接口没有对角色的名称做限制
+    @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对角色的名称做限制')
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中创建角色-名称中包含大写字母')
     @allure.severity(allure.severity_level.CRITICAL)
-    def wx_test_devops_role_create_name(self):
+    def test_devops_role_create_name(self):
         # 获取创建的devops工程的别名
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
@@ -366,10 +366,11 @@ class TestDevOps(object):
         r = requests.post(url, headers=get_header(), data=json.dumps(data))
         print(r.text)
 
+    @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对角色的名称做限制')
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中创建角色-名称中包含非分隔符("-")的特殊符号')
     @allure.severity(allure.severity_level.CRITICAL)
-    def wx_test_devops_role_create_name1(self):
+    def test_devops_role_create_name1(self):
         # 获取创建的devops工程的别名
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
@@ -389,10 +390,11 @@ class TestDevOps(object):
         r = requests.post(url, headers=get_header(), data=json.dumps(data))
         print(r.text)
 
+    @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对角色的名称做限制')
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中创建角色-名称以分隔符("-")开头')
     @allure.severity(allure.severity_level.CRITICAL)
-    def wx_test_devops_role_create_name2(self):
+    def test_devops_role_create_name2(self):
         # 获取创建的devops工程的别名
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
@@ -412,10 +414,11 @@ class TestDevOps(object):
         r = requests.post(url, headers=get_header(), data=json.dumps(data))
         print(r.text)
 
+    @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对角色的名称做限制')
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中创建角色-名称以分隔符("-")结尾')
     @allure.severity(allure.severity_level.CRITICAL)
-    def wx_test_devops_role_create_name3(self):
+    def test_devops_role_create_name3(self):
         # 获取创建的devops工程的别名
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
@@ -536,11 +539,11 @@ class TestDevOps(object):
         r = requests.post(url, headers=get_header(), data=json.dumps(data))
         assert r.json()[0]['username'] == self.user_name  # 验证邀请后的用户名称
 
-    # 用例的执行结果应当为false。接口没有对不存在的用户做限制
+    @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对不存在的用户做限制')
     @allure.story('工程管理-工程成员')
     @allure.title('邀请不存在的用户到devops工程')
     @allure.severity(allure.severity_level.CRITICAL)
-    def wx_test_devops_invite_none_user(self):
+    def test_devops_invite_none_user(self):
         # 获取创建的devops工程的别名
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
