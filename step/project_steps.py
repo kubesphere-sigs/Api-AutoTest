@@ -1434,10 +1434,18 @@ def step_get_secret(project_name, secret_name):
     return response
 
 
-@allure.step('在多集群项目查询配置')
-def step_get_config_map(project_name, config_name):
+@allure.step('在多集群项目查询密钥')
+def step_get_federatedsecret(project_name, secret_name):
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
-          '/configmaps?name=' + config_name + '&sortBy=createTime'
+          '/federatedsecrets?name=' + secret_name + '&sortBy=createTime'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在多集群项目查询配置')
+def step_get_federatedconfigmap(project_name, config_name):
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+          '/federatedconfigmaps?name=' + config_name + '&sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -1490,7 +1498,7 @@ def step_create_secret_account_in_multi_project(cluster_name, project_name, secr
 
 
 @allure.step('在多集群项目删除密钥')
-def step_delete_secret(project_name, secret_name):
+def step_delete_federatedsecret(project_name, secret_name):
     url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets/' + secret_name
     response = requests.delete(url=url, headers=get_header())
     return response

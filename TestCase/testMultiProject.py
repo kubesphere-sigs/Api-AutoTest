@@ -60,23 +60,23 @@ class TestProject(object):
                     project_steps.step_create_multi_project(ws_name, multi_project_name, clusters_name)
 
     # 所有用例执行完之后执行该方法
-    # def teardown_class(self):
-    #     # 获取环境中所有的多集群项目
-    #     multi_project_name = project_steps.step_get_multi_projects_name()
-    #     for multi_project in multi_project_name:
-    #         if 'multi-pro' in multi_project:
-    #             # 删除创建的多集群项目
-    #             project_steps.step_delete_project_by_name(multi_project)
-    #     time.sleep(5)
-    #     # 获取环境中所有的企业空间
-    #     response = workspace_steps.step_get_ws_info('')
-    #     ws_count = response.json()['totalItems']
-    #     for k in range(0, ws_count):
-    #         # 获取每个企业空间的名称
-    #         ws_name = response.json()['items'][k]['metadata']['name']
-    #         # 获取企业空间的集群信息
-    #         if ws_name != 'system-workspace':
-    #             commonFunction.delete_workspace(ws_name)  # 删除创建的工作空间
+    def teardown_class(self):
+        # 获取环境中所有的多集群项目
+        multi_project_name = project_steps.step_get_multi_projects_name()
+        for multi_project in multi_project_name:
+            if 'multi-pro' in multi_project:
+                # 删除创建的多集群项目
+                project_steps.step_delete_project_by_name(multi_project)
+        time.sleep(5)
+        # 获取环境中所有的企业空间
+        response = workspace_steps.step_get_ws_info('')
+        ws_count = response.json()['totalItems']
+        for k in range(0, ws_count):
+            # 获取每个企业空间的名称
+            ws_name = response.json()['items'][k]['metadata']['name']
+            # 获取企业空间的集群信息
+            if ws_name != 'system-workspace':
+                commonFunction.delete_workspace(ws_name)  # 删除创建的工作空间
 
     @allure.story('存储管理-存储卷')
     @allure.title('在多集群项目创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常')
@@ -1342,7 +1342,7 @@ class TestProject(object):
                                                                       secret_name=secret_name, key='wx',
                                                                       value='dGVzdA==')
             # 查询创建的密钥
-            response = project_steps.step_get_secret(project_name=project_info[0], secret_name=secret_name)
+            response = project_steps.step_get_federatedsecret(project_name=project_info[0], secret_name=secret_name)
             try:
                 # 获取密钥的数量和状态
                 secret_count = response.json()['totalItems']
@@ -1355,7 +1355,7 @@ class TestProject(object):
             assert secret_count == 1
             assert secret_status == 'True'
             # 删除创建的密钥
-            project_steps.step_delete_secret(project_name=project_info[0], secret_name=secret_name)
+            project_steps.step_delete_federatedsecret(project_name=project_info[0], secret_name=secret_name)
 
     @allure.story('配置中心-密钥')
     @allure.title('在多集群项目创建TLS类型的密钥')
@@ -1370,7 +1370,7 @@ class TestProject(object):
                                                                   secret_name=secret_name, credential='d3g=',
                                                                   key='dGVzdA==')
             # 查询创建的密钥
-            response = project_steps.step_get_secret(project_name=project_info[0], secret_name=secret_name)
+            response = project_steps.step_get_federatedsecret(project_name=project_info[0], secret_name=secret_name)
             # 获取密钥的数量和状态
             try:
                 secret_count = response.json()['totalItems']
@@ -1383,7 +1383,7 @@ class TestProject(object):
             assert secret_count == 1
             assert secret_status == 'True'
             # 删除创建的密钥
-            project_steps.step_delete_secret(project_name=project_info[0], secret_name=secret_name)
+            project_steps.step_delete_federatedsecret(project_name=project_info[0], secret_name=secret_name)
 
     @allure.story('配置中心-密钥')
     @allure.title('在多集群项目创建image类型的密钥')
@@ -1397,7 +1397,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     secret_name=secret_name)
             # 查询创建的密钥
-            response = project_steps.step_get_secret(project_name=project_info[0], secret_name=secret_name)
+            response = project_steps.step_get_federatedsecret(project_name=project_info[0], secret_name=secret_name)
             # 获取密钥的数量和状态
             try:
                 secret_count = response.json()['totalItems']
@@ -1410,7 +1410,7 @@ class TestProject(object):
             assert secret_count == 1
             assert secret_status == 'True'
             # 删除创建的密钥
-            project_steps.step_delete_secret(project_name=project_info[0], secret_name=secret_name)
+            project_steps.step_delete_federatedsecret(project_name=project_info[0], secret_name=secret_name)
 
     @allure.story('配置中心-密钥')
     @allure.title('在多集群项目创建账号密码类型的密钥')
@@ -1425,7 +1425,7 @@ class TestProject(object):
                                                                       secret_name=secret_name, username='d3g=',
                                                                       password='dGVzdA==')
             # 查询创建的密钥
-            response = project_steps.step_get_secret(project_name=project_info[0], secret_name=secret_name)
+            response = project_steps.step_get_federatedsecret(project_name=project_info[0], secret_name=secret_name)
             # 获取密钥的数量和状态
             try:
                 secret_count = response.json()['totalItems']
@@ -1438,7 +1438,7 @@ class TestProject(object):
             assert secret_count == 1
             assert secret_status == 'True'
             # 删除创建的密钥
-            project_steps.step_delete_secret(project_name=project_info[0], secret_name=secret_name)
+            project_steps.step_delete_federatedsecret(project_name=project_info[0], secret_name=secret_name)
 
     @allure.story('配置中心-密钥')
     @allure.title('在多集群项目创建配置')
@@ -1452,7 +1452,7 @@ class TestProject(object):
                                                                   project_name=project_info[0],
                                                                   config_name=config_name, key='wx', value='test')
             # 查询创建的配置
-            response = project_steps.step_get_config_map(project_name=project_info[0], config_name=config_name)
+            response = project_steps.step_get_federatedconfigmap(project_name=project_info[0], config_name=config_name)
             # 获取配置的数量和状态
             try:
                 secret_count = response.json()['totalItems']
