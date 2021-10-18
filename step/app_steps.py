@@ -534,14 +534,14 @@ def step_deployment_app_multi(project_name, app_id, app_version_id, name, conf):
 
 
 @allure.step('在多集群环境的host集群查看指定应用信息')
-def step_get_app_status_multi(ws_name, project_name, app_name):
+def step_get_app_status_multi(cluster_name, ws_name, project_name, app_name):
     """
     :param ws_name: 企业空间
     :param project_name: 项目名称
     :param app_name: 应用名称
     :return: 应用状态
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/' + cluster_name + '/namespaces/' + \
           project_name + '/applications?conditions=keyword%3D' + app_name
     response = requests.get(url=url, headers=get_header())
     return response
@@ -563,35 +563,35 @@ def step_get_app_count_multi(ws_name, project_name, app_name):
 
 
 @allure.step('在多集群环境的host集群的项目的应用列表获取指定应用的cluster_id')
-def step_get_deployed_app_multi(ws_name, project_name, app_name):
+def step_get_deployed_app_multi(cluster_name, ws_name, project_name, app_name):
     """
     :param ws_name: 企业空间
     :param project_name: 项目名称
     :param app_name: 应用名称
     :return: 应用的cluster_id
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/' + cluster_name + '/namespaces/' + \
           project_name + '/applications?conditions=keyword%3D' + app_name
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('在多集群环境的host集群删除项目的应用列表指定的应用')
-def step_delete_app_multi(ws_name, project_name, cluster_id):
+def step_delete_app_multi(cluster_name, ws_name, project_name, cluster_id):
     """
     :param ws_name: 企业空间
     :param project_name: 项目名称
     :param cluster_id: 部署后的应用的id
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/' + cluster_name + '/namespaces/' + \
           project_name + '/applications/' + cluster_id
     response = requests.delete(url=url, headers=get_header())
     return response
 
 
 @allure.step('在多集群环境的host集群从应用商店部署应用')
-def step_deploy_app_from_app_store_multi(ws_name, project_name, app_id, name, version_id, conf):
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/host/namespaces/' + \
+def step_deploy_app_from_app_store_multi(cluster_name, ws_name, project_name, app_id, name, version_id, conf):
+    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/' + cluster_name + '/namespaces/' + \
           project_name + '/applications'
     data = {
         "app_id": app_id,

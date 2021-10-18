@@ -23,6 +23,8 @@ class TestAppStore(object):
     log_format()  # 配置日志格式
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='appstore')
+    # 获取host集群的名称
+    host_name = project_steps.step_get_host_name()
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
@@ -32,7 +34,7 @@ class TestAppStore(object):
         workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description,
                              clusters)
         # 在企业空间的host集群上创建一个项目
-        project_steps.step_create_project_for_cluster(cluster_name='host', ws_name=self.ws_name, project_name=self.project_name)
+        project_steps.step_create_project_for_cluster(cluster_name=self.host_name, ws_name=self.ws_name, project_name=self.project_name)
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
@@ -52,13 +54,13 @@ class TestAppStore(object):
                "]\nnameOverride: ''\nfullnameOverride: ''\npersistence:\n  size: 5Gi\nextraConfigurations: {" \
                "}\nrootUsername: admin\nrootPassword: password\nservice:\n  type: ClusterIP\n  port: " \
                "27017\nresources: {}\nnodeSelector: {}\ntolerations: []\naffinity: {}\n "
-        # 部署示例应用
-        app_steps.step_deploy_app_from_app_store_multi(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id, name=name,
+        # 部署应用
+        app_steps.step_deploy_app_from_app_store_multi(cluster_name=self.host_name, ws_name=self.ws_name, project_name=self.project_name, app_id=app_id, name=name,
                                        version_id=version_id, conf=conf)
         i = 0
         while i < 600:
             # 查看应用部署情况
-            response = app_steps.step_get_app_status_multi(self.ws_name, self.project_name, name)
+            response = app_steps.step_get_app_status_multi(self.host_name, self.ws_name, self.project_name, name)
             # 获取应用状态
             status = response.json()['items'][0]['cluster']['status']
             if status == 'active':
@@ -71,16 +73,17 @@ class TestAppStore(object):
                 time.sleep(1)
                 i = i + 1
         # 使用已经存在的应用名称部署应用
-        response = app_steps.step_deploy_app_from_app_store_multi(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id,
-                                                  name=name, version_id=version_id, conf=conf)
+        response = app_steps.step_deploy_app_from_app_store_multi(cluster_name=self.host_name, ws_name=self.ws_name,
+                                                                  project_name=self.project_name, app_id=app_id,
+                                                                  name=name, version_id=version_id, conf=conf)
         # 获取部署结果
         result = response.text
         # 在应用列表查询部署的应用
-        response = app_steps.step_get_deployed_app_multi(self.ws_name, self.project_name, name)
+        response = app_steps.step_get_deployed_app_multi(self.host_name, self.ws_name, self.project_name, name)
         # 获取应用的cluster_id
         cluster_id = response.json()['items'][0]['cluster']['cluster_id']
         # 删除应用
-        app_steps.step_delete_app_multi(self.ws_name, self.project_name, cluster_id)
+        app_steps.step_delete_app_multi(self.host_name, self.ws_name, self.project_name, cluster_id)
         # 验证部署结果
         assert result == 'release ' + name + ' exists\n'
 
@@ -95,26 +98,26 @@ class TestAppStore(object):
                "]\nnameOverride: ''\nfullnameOverride: ''\npersistence:\n  size: 5Gi\nextraConfigurations: {" \
                "}\nrootUsername: admin\nrootPassword: password\nservice:\n  type: ClusterIP\n  port: " \
                "27017\nresources: {}\nnodeSelector: {}\ntolerations: []\naffinity: {}\n "
-        # 部署示例应用
-        app_steps.step_deploy_app_from_app_store_multi(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id, name=name,
-                                       version_id=version_id, conf=conf)
+        # 部署应用
+        app_steps.step_deploy_app_from_app_store_multi(cluster_name=self.host_name, ws_name=self.ws_name,
+                                                       project_name=self.project_name, app_id=app_id, name=name,
+                                                       version_id=version_id, conf=conf)
         # 查看应用部署情况
-        response = app_steps.step_get_app_status_multi(self.ws_name, self.project_name, name)
+        response = app_steps.step_get_app_status_multi(self.host_name, self.ws_name, self.project_name, name)
         # 获取应用状态
         status = response.json()['items'][0]['cluster']['status']
         assert status == 'failed'
 
         # 在应用列表查询部署的应用
-        response = app_steps.step_get_deployed_app_multi(self.ws_name, self.project_name, name)
+        response = app_steps.step_get_deployed_app_multi(self.host_name, self.ws_name, self.project_name, name)
         # 获取应用的cluster_id
         cluster_id = response.json()['items'][0]['cluster']['cluster_id']
         # 删除应用
-        app_steps.step_delete_app_multi(self.ws_name, self.project_name, cluster_id)
+        app_steps.step_delete_app_multi(self.host_name, self.ws_name, self.project_name, cluster_id)
 
     @allure.title('{title}')  # 设置用例标题
-    @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
     # 将用例信息以参数化的方式传入测试方法
-    @pytest.mark.parametrize('id,app_name,conf, story, title,severity,except_result', parametrize)
+    @pytest.mark.parametrize('id,app_name,conf,story,title,severity,except_result', parametrize)
     def test_ws_role_user(self, id, app_name, conf, story, title, severity, except_result):
 
         allure.dynamic.story(story)  # 动态生成模块
@@ -124,12 +127,12 @@ class TestAppStore(object):
         version_id = app_steps.step_get_app_version()[app_name]
         name = app_name.lower().replace(' ', '') + str(commonFunction.get_random())
         # 部署示例应用
-        app_steps.step_deploy_app_from_app_store_multi(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id, name=name,
+        app_steps.step_deploy_app_from_app_store_multi(cluster_name=self.host_name, ws_name=self.ws_name, project_name=self.project_name, app_id=app_id, name=name,
                                        version_id=version_id, conf=conf)
         i = 0
         while i < 300:
             # 查看应用部署情况
-            response = app_steps.step_get_app_status_multi(self.ws_name, self.project_name, name)
+            response = app_steps.step_get_app_status_multi(self.host_name, self.ws_name, self.project_name, name)
             # 获取应用状态
             status = response.json()['items'][0]['cluster']['status']
             if status == 'active':
@@ -144,15 +147,15 @@ class TestAppStore(object):
         # 验证应用运行成功
         assert status == 'active'
         # 在应用列表查询部署的应用
-        response = app_steps.step_get_deployed_app_multi(self.ws_name, self.project_name, name)
+        response = app_steps.step_get_deployed_app_multi(self.host_name, self.ws_name, self.project_name, name)
         # 获取应用的cluster_id
         cluster_id = response.json()['items'][0]['cluster']['cluster_id']
         # 删除应用
-        app_steps.step_delete_app_multi(self.ws_name, self.project_name, cluster_id)
+        app_steps.step_delete_app_multi(self.host_name, self.ws_name, self.project_name, cluster_id)
         # 验证应用删除成功
         j = 0
         while j < 60:
-            r = app_steps.step_get_deployed_app_multi(self.ws_name, self.project_name, name)
+            r = app_steps.step_get_deployed_app_multi(self.host_name, self.ws_name, self.project_name, name)
             count = r.json()['total_count']
             if count == 0:
                 print('删除应用耗时:' + str(j) + '秒')
