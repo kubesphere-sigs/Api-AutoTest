@@ -743,6 +743,7 @@ def step_create_project_for_cluster(cluster_name, ws_name, project_name):
             "metadata": {"name": project_name, "labels": {"kubesphere.io/workspace": ws_name},
                          "annotations": {"kubesphere.io/creator": "admin"}}, "cluster": cluster_name}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    print(response.json())
     return response
 
 
@@ -833,6 +834,13 @@ def step_get_pod_info(project_name, pod_name):
 
 
 #####多集群######
+@allure.step('获取host集群的名称')
+def step_get_host_name():
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/clusters?labelSelector=cluster-role.kubesphere.io%2Fhost'
+    response = requests.get(url=url, headers=get_header())
+    return response.json()['items'][0]['metadata']['name']
+
+
 @allure.step('在多集群环境查询项目的federatedlimitranges')
 def step_get_project_federatedlimitranges(project_name):
     url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedlimitranges'
