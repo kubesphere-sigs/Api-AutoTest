@@ -185,3 +185,10 @@ def step_get_app_info():
                        'conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
     response = requests.get(url=url, headers=get_header())
     return response
+
+
+@allure.step('获取集群的kubeconfig信息')
+def step_get_kubeconfig():
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/users/admin/kubeconfig'
+    response = requests.get(url=url, headers=get_header())
+    return response

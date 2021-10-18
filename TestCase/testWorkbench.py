@@ -84,3 +84,11 @@ class TestWorkbench(object):
         except IndexError as e:
             print(e)
             print('集群未开启openpitrix')
+
+    @allure.story('工具箱')
+    @allure.title('获取集群的kubeconfig信息')
+    def test_get_kubeconfig(self):
+        # 获取集群的kubeconfig信息
+        response = platform_steps.step_get_kubeconfig()
+        # 验证获取信息成功
+        assert response.status_code == 200
