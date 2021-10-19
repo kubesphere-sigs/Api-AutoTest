@@ -19,7 +19,7 @@ from step import project_steps, workspace_steps, platform_steps
 class TestProject(object):
     volume_name = 'testvolume'  # 存储卷名称，在创建、删除存储卷和创建存储卷快照时使用,excle中的用例也用到了这个存储卷
     snapshot_name = 'testshot'  # 存储卷快照的名称,在创建和删除存储卷快照时使用，在excle中的用例也用到了这个快照
-    user_name = 'user-for-test-project'  # 系统用户名称
+    user_name = 'user-for-test-project'   # 系统用户名称
     user_role = 'users-manager'  # 用户角色
     ws_name = 'ws-for-test-project' + str(commonFunction.get_random())
     project_name_for_exel = 'test-project'  # 项目名称，从excle中获取的测试用例中用到了这个项目名称
@@ -38,13 +38,11 @@ class TestProject(object):
         workspace_steps.step_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
         project_steps.step_create_project(self.ws_name, self.project_name)  # 创建一个project工程
         project_steps.step_create_project(self.ws_name, self.project_name_for_exel)  # 创建一个project工程用于执行excle中的用例
-        # 创建存储卷
-        project_steps.step_create_volume(self.project_name_for_exel, self.volume_name)
+        project_steps.step_create_volume(self.project_name_for_exel, self.volume_name)  # 创建存储卷
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
-        # 删除存储卷
-        project_steps.step_delete_volume(self.project_name, self.volume_name)
+        project_steps.step_delete_volume(self.project_name, self.volume_name) # 删除存储卷
         project_steps.step_delete_project(self.ws_name, self.project_name)  # 删除创建的项目
         project_steps.step_delete_project(self.ws_name, self.project_name_for_exel)  # 删除创建的项目
         time.sleep(5)

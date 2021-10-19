@@ -2,7 +2,7 @@ import pytest
 import allure
 import sys
 from common import commonFunction
-from step import multi_meter_steeps
+from step import multi_meter_steps
 import random
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
@@ -23,7 +23,7 @@ class TestMetering(object):
                               ])
     def test_get_cluster_consumption_by_yesterday(self, step, title):
         # 获取多集群环境的集群名称
-        response = multi_meter_steeps.step_get_cluster()
+        response = multi_meter_steps.step_get_cluster()
         # 获取集群的数量
         cluster_count = response.json()['totalItems']
         for i in range(0, cluster_count):
@@ -34,9 +34,9 @@ class TestMetering(object):
             # 获取7天之前的时间戳
             before_timestamp = commonFunction.get_before_timestamp_day(7)
             # 获取截止到昨天的最近7天的消费历史
-            re = multi_meter_steeps.step_get_cluster_consumption_history(type='cluster', start_time=before_timestamp,
-                                                      end_time=now_timestamp,
-                                                      step=step, cluster_name=cluster_name)
+            re = multi_meter_steps.step_get_cluster_consumption_history(type='cluster', start_time=before_timestamp,
+                                                                        end_time=now_timestamp,
+                                                                        step=step, cluster_name=cluster_name)
             # 获取查询结果的数据类型
             for j in range(0, 5):
                 try:
@@ -66,14 +66,14 @@ class TestMetering(object):
                               ])
     def test_get_node_consumption(self, metric_name, title):
         # 获取多集群环境的集群名称
-        response = multi_meter_steeps.step_get_cluster()
+        response = multi_meter_steps.step_get_cluster()
         # 获取集群的数量
         cluster_count = response.json()['totalItems']
         for i in range(0, cluster_count):
             # 获取每个集群的名称
             cluster_name = response.json()['items'][i]['metadata']['name']
             # 查询集群的节点信息
-            re = multi_meter_steeps.step_get_node_info(cluster_name)
+            re = multi_meter_steps.step_get_node_info(cluster_name)
             # 获取集群节点的数量
             count = re.json()['totalItems']
             # 获取节点的名称
@@ -81,7 +81,7 @@ class TestMetering(object):
                 try:
                     name = re.json()['items'][j]['metadata']['name']
                     # 查看节点的消费信息
-                    r = multi_meter_steeps.step_get_node_consumption(metric_name, name)
+                    r = multi_meter_steps.step_get_node_consumption(metric_name, name)
                     # 获取metric_name
                     metric = r.json()['results'][j]['metric_name']
                     # 验证metric正确
@@ -103,7 +103,7 @@ class TestMetering(object):
                               ])
     def test_get_node_consumption_by_yesterday(self, step, title):
         # 获取多集群环境的集群名称
-        response = multi_meter_steeps.step_get_cluster()
+        response = multi_meter_steps.step_get_cluster()
         # 获取集群的数量
         cluster_count = response.json()['totalItems']
         for i in range(0, cluster_count):
@@ -114,15 +114,15 @@ class TestMetering(object):
             # 获取7天之前的时间戳
             before_timestamp = commonFunction.get_before_timestamp_day(7)
             # 查询集群的节点信息
-            re = multi_meter_steeps.step_get_node_info(cluster_name)
+            re = multi_meter_steps.step_get_node_info(cluster_name)
             # 获取集群节点的数量
             count = re.json()['totalItems']
             # 获取节点的名称
             for j in range(0, count):
                 name = re.json()['items'][j]['metadata']['name']
                 # 获取截止到昨天的最近7天的消费历史
-                r = multi_meter_steeps.step_get_node_consumption_history(cluster_name=cluster_name, start_time=before_timestamp,
-                                                             end_time=now_timestamp, step=step, name=name)
+                r = multi_meter_steps.step_get_node_consumption_history(cluster_name=cluster_name, start_time=before_timestamp,
+                                                                        end_time=now_timestamp, step=step, name=name)
                 # 获取查询结果的数据类型
                 for k in range(0, 5):
                     try:
@@ -152,14 +152,14 @@ class TestMetering(object):
                               ])
     def test_get_pod_consumption(self, metric_name, title):
         # 获取多集群环境的集群名称
-        response = multi_meter_steeps.step_get_cluster()
+        response = multi_meter_steps.step_get_cluster()
         # 获取集群的数量
         cluster_count = response.json()['totalItems']
         for i in range(0, cluster_count):
             # 获取每个集群的名称
             cluster_name = response.json()['items'][i]['metadata']['name']
             # 查询集群的节点信息
-            re = multi_meter_steeps.step_get_node_info(cluster_name)
+            re = multi_meter_steps.step_get_node_info(cluster_name)
             # 获取集群节点的数量
             count = re.json()['totalItems']
             # 获取节点的名称
@@ -167,7 +167,7 @@ class TestMetering(object):
                 try:
                     name = re.json()['items'][j]['metadata']['name']
                     # 查询pod的消费信息
-                    r = multi_meter_steeps.step_get_pod_consumption(cluster_name=cluster_name, node_name=name, metric=metric_name)
+                    r = multi_meter_steps.step_get_pod_consumption(cluster_name=cluster_name, node_name=name, metric=metric_name)
                     # 获取metric_name
                     metric = r.json()['results'][0]['metric_name']
                     # 验证metric正确
@@ -188,29 +188,29 @@ class TestMetering(object):
         # 获取7天之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp_day(7)
         # 获取多集群环境的集群名称
-        response = multi_meter_steeps.step_get_cluster()
+        response = multi_meter_steps.step_get_cluster()
         # 获取集群的数量
         cluster_count = response.json()['totalItems']
         for i in range(0, cluster_count):
             # 获取每个集群的名称
             cluster_name = response.json()['items'][i]['metadata']['name']
             # 查询集群所有的节点
-            res = multi_meter_steeps.step_get_node_info(cluster_name)
+            res = multi_meter_steps.step_get_node_info(cluster_name)
             # 获取集群的节点数量
             node_count = res.json()['totalItems']
             # 获取节点的名称
             for m in range(0, node_count):
                 node_name = res.json()['items'][m]['metadata']['name']
                 # 查询每个节点的pod信息
-                re = multi_meter_steeps.step_get_pod_info(cluster_name, node_name)
+                re = multi_meter_steps.step_get_pod_info(cluster_name, node_name)
                 # 获取每个节点的pod数量
                 pod_count = re.json()['totalItems']
                 for j in range(0, pod_count):
                     # 获取每个pod的名称
                     pod_name = re.json()['items'][j]['metadata']['name']
                     # 查询pod截止到昨天最近7天的消费情况
-                    r = multi_meter_steeps.step_get_pod_consumption_history(cluster_name, node_name, before_timestamp,
-                                                         now_timestamp, step, pod_name)
+                    r = multi_meter_steps.step_get_pod_consumption_history(cluster_name, node_name, before_timestamp,
+                                                                           now_timestamp, step, pod_name)
                     # 获取每个指标的消费历史数据的时间间隔
                     for k in range(0, 4):
                         try:
@@ -240,7 +240,7 @@ class TestMetering(object):
         # 获取7天之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp_day(7)
         # 查询企业空间信息
-        response = multi_meter_steeps.step_get_workspace_info()
+        response = multi_meter_steps.step_get_workspace_info()
         # 获取企业空间的数量
         ws_count = response.json()['totalItems']
         # 获取企业空间的名称
@@ -252,8 +252,8 @@ class TestMetering(object):
                 for k in range(0, cluster_count):
                     cluster_name = response.json()['items'][i]['spec']['placement']['clusters'][k]['name']
                     # 查询企业空间的历史消费信息
-                    r = multi_meter_steeps.step_get_workspace_consumption_history(cluster_name, ws_name, before_timestamp,
-                                                               now_timestamp, step)
+                    r = multi_meter_steps.step_get_workspace_consumption_history(cluster_name, ws_name, before_timestamp,
+                                                                                 now_timestamp, step)
                     # 查询每个指标的消费历史数据
                     for j in range(0, 5):
                         try:
@@ -272,14 +272,14 @@ class TestMetering(object):
                             break
             else:
                 # 获取多集群环境的集群名称
-                response = multi_meter_steeps.step_get_cluster()
+                response = multi_meter_steps.step_get_cluster()
                 # 获取集群的数量
                 cluster_count = response.json()['totalItems']
                 for n in range(0, cluster_count):
                     # 获取每个集群的名称
                     cluster_name = response.json()['items'][n]['metadata']['name']
-                    r = multi_meter_steeps.step_get_workspace_consumption_history(cluster_name, ws_name, before_timestamp,
-                                                               now_timestamp, step)
+                    r = multi_meter_steps.step_get_workspace_consumption_history(cluster_name, ws_name, before_timestamp,
+                                                                                 now_timestamp, step)
                     # 查询每个指标的消费历史数据
                     for j in range(0, 5):
                         try:
@@ -309,7 +309,7 @@ class TestMetering(object):
                               ])
     def test_get_project_consumption(self, metric, title):
         # 查询企业空间信息
-        response = multi_meter_steeps.step_get_workspace_info()
+        response = multi_meter_steps.step_get_workspace_info()
         # 获取企业空间的数量
         ws_count = response.json()['totalItems']
         # 获取企业空间的名称
@@ -320,7 +320,7 @@ class TestMetering(object):
                 for k in range(0, cluster_count):
                     cluster_name = response.json()['items'][i]['spec']['placement']['clusters'][k]['name']
                     # 查询每个企业空间的项目信息
-                    re = multi_meter_steeps.step_get_project_info(cluster_name, ws_name)
+                    re = multi_meter_steps.step_get_project_info(cluster_name, ws_name)
                     # 获取项目的数量
                     project_count = re.json()['totalItems']
                     project_names = []
@@ -330,7 +330,7 @@ class TestMetering(object):
                         project_names.append(project_name)
                     # 查询每个项目最近1h的资源消费信息
                     if len(project_names) > 0:
-                        r = multi_meter_steeps.step_get_project_consumption(metric, project_names)
+                        r = multi_meter_steps.step_get_project_consumption(metric, project_names)
                         # 获取查询结果中的metric_name
                         metric_name = r.json()['results'][0]['metric_name']
                         # 验证metric_name正确
@@ -339,14 +339,14 @@ class TestMetering(object):
                         print('企业空间：' + ws_name + '没有项目')
             else:
                 # 获取多集群环境的集群名称
-                response = multi_meter_steeps.step_get_cluster()
+                response = multi_meter_steps.step_get_cluster()
                 # 获取集群的数量
                 cluster_count = response.json()['totalItems']
                 for n in range(0, cluster_count):
                     # 获取每个集群的名称
                     cluster_name = response.json()['items'][n]['metadata']['name']
                     # 查询每个企业空间的项目信息
-                    re = multi_meter_steeps.step_get_project_info(cluster_name, ws_name)
+                    re = multi_meter_steps.step_get_project_info(cluster_name, ws_name)
                     # 获取项目的数量
                     project_count = re.json()['totalItems']
                     project_names = []
@@ -356,7 +356,7 @@ class TestMetering(object):
                         project_names.append(project_name)
                     # 查询每个项目最近1h的资源消费信息
                     if len(project_names) > 0:
-                        r = multi_meter_steeps.step_get_project_consumption(metric, project_names)
+                        r = multi_meter_steps.step_get_project_consumption(metric, project_names)
                         # 获取查询结果中的metric_name
                         metric_name = r.json()['results'][0]['metric_name']
                         # 验证metric_name正确
@@ -380,7 +380,7 @@ class TestMetering(object):
         # 获取7天之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp_day(7)
         # 查询企业空间信息
-        response = multi_meter_steeps.step_get_workspace_info()
+        response = multi_meter_steps.step_get_workspace_info()
         # 获取企业空间的数量
         ws_count = response.json()['totalItems']
         # 获取企业空间的名称
@@ -391,15 +391,15 @@ class TestMetering(object):
                 cluster_count = len(response.json()['items'][i]['spec']['placement']['clusters'])
                 for k in range(0, cluster_count):
                     cluster_name = response.json()['items'][i]['spec']['placement']['clusters'][k]['name']
-                    re = multi_meter_steeps.step_get_project_info(cluster_name, ws_name)
+                    re = multi_meter_steps.step_get_project_info(cluster_name, ws_name)
                     # 获取项目的数量
                     project_count = re.json()['totalItems']
                     # 获取企业空间中项目的名称
                     for j in range(0, project_count):
                         project_name = re.json()['items'][j]['metadata']['name']
                         # 查询项目截止到昨天最近7天的资源消费历史
-                        r = multi_meter_steeps.step_get_project_consumption_history(cluster_name, project_name,
-                                                                 before_timestamp, now_timestamp, step)
+                        r = multi_meter_steps.step_get_project_consumption_history(cluster_name, project_name,
+                                                                                   before_timestamp, now_timestamp, step)
                         for m in range(1, 5):
                             try:
                                 # 获取并验证查询结果中每个指标的数据类型
@@ -416,21 +416,21 @@ class TestMetering(object):
                                 break
             else:
                 # 获取多集群环境的集群名称
-                response = multi_meter_steeps.step_get_cluster()
+                response = multi_meter_steps.step_get_cluster()
                 # 获取集群的数量
                 cluster_count = response.json()['totalItems']
                 for n in range(0, cluster_count):
                     # 获取每个集群的名称
                     cluster_name = response.json()['items'][n]['metadata']['name']
-                    re = multi_meter_steeps.step_get_project_info(cluster_name, ws_name)
+                    re = multi_meter_steps.step_get_project_info(cluster_name, ws_name)
                     # 获取项目的数量
                     project_count = re.json()['totalItems']
                     # 获取企业空间中项目的名称
                     for j in range(0, project_count):
                         project_name = re.json()['items'][j]['metadata']['name']
                         # 查询项目截止到昨天最近7天的资源消费历史
-                        r = multi_meter_steeps.step_get_project_consumption_history(cluster_name, project_name,
-                                                                 before_timestamp, now_timestamp, step)
+                        r = multi_meter_steps.step_get_project_consumption_history(cluster_name, project_name,
+                                                                                   before_timestamp, now_timestamp, step)
                         for m in range(1, 5):
                             try:
                                 # 获取并验证查询结果中每个指标的数据类型
@@ -451,7 +451,7 @@ class TestMetering(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_hierarchy_consumption(self):
         # 查询企业空间信息
-        response = multi_meter_steeps.step_get_workspace_info()
+        response = multi_meter_steps.step_get_workspace_info()
         # 获取企业空间的数量
         ws_count = response.json()['totalItems']
         # 获取企业空间的名称
@@ -462,32 +462,32 @@ class TestMetering(object):
                 cluster_count = len(response.json()['items'][i]['spec']['placement']['clusters'])
                 for k in range(0, cluster_count):
                     cluster_name = response.json()['items'][i]['spec']['placement']['clusters'][k]['name']
-                    re = multi_meter_steeps.step_get_project_info(cluster_name, ws_name)
+                    re = multi_meter_steps.step_get_project_info(cluster_name, ws_name)
                     # 获取项目的数量
                     project_count = re.json()['totalItems']
                     # 获取企业空间中项目的名称
                     for j in range(0, project_count):
                         project_name = re.json()['items'][j]['metadata']['name']
                         # 查询最近1h消费的资源信息
-                        r = multi_meter_steeps.step_get_hierarchy_consumption(cluster_name, ws_name, project_name)
+                        r = multi_meter_steps.step_get_hierarchy_consumption(cluster_name, ws_name, project_name)
                         # 验证资源查询成功
                         assert r.status_code == 200
             else:
                 # 获取多集群环境的集群名称
-                response = multi_meter_steeps.step_get_cluster()
+                response = multi_meter_steps.step_get_cluster()
                 # 获取集群的数量
                 cluster_count = response.json()['totalItems']
                 for n in range(0, cluster_count):
                     # 获取每个集群的名称
                     cluster_name = response.json()['items'][n]['metadata']['name']
-                    re = multi_meter_steeps.step_get_project_info(cluster_name, ws_name)
+                    re = multi_meter_steps.step_get_project_info(cluster_name, ws_name)
                     # 获取项目的数量
                     project_count = re.json()['totalItems']
                     # 获取企业空间中项目的名称
                     for j in range(0, project_count):
                         project_name = re.json()['items'][j]['metadata']['name']
                         # 查询最近1h消费的资源信息
-                        r = multi_meter_steeps.step_get_hierarchy_consumption(cluster_name, ws_name, project_name)
+                        r = multi_meter_steps.step_get_hierarchy_consumption(cluster_name, ws_name, project_name)
                         # 验证资源查询成功
                         assert r.status_code == 200
 
@@ -506,7 +506,7 @@ class TestMetering(object):
         # 获取7天之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp_day(7)
         # 查询企业空间信息
-        response = multi_meter_steeps.step_get_workspace_info()
+        response = multi_meter_steps.step_get_workspace_info()
         # 获取企业空间的数量
         ws_count = response.json()['totalItems']
         # 获取企业空间的名称
@@ -517,23 +517,23 @@ class TestMetering(object):
                 cluster_count = len(response.json()['items'][i]['spec']['placement']['clusters'])
                 for g in range(0, cluster_count):
                     cluster_name = response.json()['items'][i]['spec']['placement']['clusters'][g]['name']
-                    re = multi_meter_steeps.step_get_project_info(cluster_name, ws_name)
+                    re = multi_meter_steps.step_get_project_info(cluster_name, ws_name)
                     # 获取项目的数量
                     project_count = re.json()['totalItems']
                     # 获取企业空间中项目的名称
                     for j in range(0, project_count):
                         project_name = re.json()['items'][j]['metadata']['name']
                         # 查询最近1h消费的资源信息
-                        r = multi_meter_steeps.step_get_hierarchy_consumption(cluster_name, ws_name, project_name)
+                        r = multi_meter_steps.step_get_hierarchy_consumption(cluster_name, ws_name, project_name)
                         hierarchy_list = ['apps', 'daemonsets', 'deployments', 'openpitrixs', 'statefulsets']
                         for k in hierarchy_list:
                             if r.json()[k] is not None:
                                 hierarchy = r.json()[k]
                                 for key in hierarchy.keys():
                                     # 查询资源截止到昨天的最近7天消费历史
-                                    rep = multi_meter_steeps.step_get_hierarchy_consumption_history(cluster_name, project_name,
-                                                                                 before_timestamp, now_timestamp,
-                                                                                 step, key, k)
+                                    rep = multi_meter_steps.step_get_hierarchy_consumption_history(cluster_name, project_name,
+                                                                                                   before_timestamp, now_timestamp,
+                                                                                                   step, key, k)
                                     # 获取查询结果中所有指标的数据类型
                                     for m in range(0, 4):
                                         try:
@@ -551,29 +551,29 @@ class TestMetering(object):
                                             break
             else:
                 # 获取多集群环境的集群名称
-                response = multi_meter_steeps.step_get_cluster()
+                response = multi_meter_steps.step_get_cluster()
                 # 获取集群的数量
                 cluster_count = response.json()['totalItems']
                 for n in range(0, cluster_count):
                     # 获取每个集群的名称
                     cluster_name = response.json()['items'][n]['metadata']['name']
-                    re = multi_meter_steeps.step_get_project_info(cluster_name, ws_name)
+                    re = multi_meter_steps.step_get_project_info(cluster_name, ws_name)
                     # 获取项目的数量
                     project_count = re.json()['totalItems']
                     # 获取企业空间中项目的名称
                     for j in range(0, project_count):
                         project_name = re.json()['items'][j]['metadata']['name']
                         # 查询最近1h消费的资源信息
-                        r = multi_meter_steeps.step_get_hierarchy_consumption(cluster_name, ws_name, project_name)
+                        r = multi_meter_steps.step_get_hierarchy_consumption(cluster_name, ws_name, project_name)
                         hierarchy_list = ['apps', 'daemonsets', 'deployments', 'openpitrixs', 'statefulsets']
                         for k in hierarchy_list:
                             if r.json()[k] is not None:
                                 hierarchy = r.json()[k]
                                 for key in hierarchy.keys():
                                     # 查询资源截止到昨天的最近7天消费历史
-                                    rep = multi_meter_steeps.step_get_hierarchy_consumption_history(cluster_name, project_name,
-                                                                                 before_timestamp, now_timestamp,
-                                                                                 step, key, k)
+                                    rep = multi_meter_steps.step_get_hierarchy_consumption_history(cluster_name, project_name,
+                                                                                                   before_timestamp, now_timestamp,
+                                                                                                   step, key, k)
                                     # 获取查询结果中所有指标的数据类型
                                     for m in range(0, 4):
                                         try:

@@ -14,12 +14,12 @@ from step import project_steps, cluster_steps, workspace_steps, platform_steps
 class TestProject(object):
     volume_name = 'testvolume'  # 存储卷名称，在创建、删除存储卷和创建存储卷快照时使用,excle中的用例也用到了这个存储卷
     snapshot_name = 'testshot'  # 存储卷快照的名称,在创建和删除存储卷快照时使用，在excle中的用例也用到了这个快照
-    user_name = 'user-for-test-project'  # 系统用户名称
+    user_name = 'user-for-test-project' + str(commonFunction.get_random())  # 系统用户名称
     user_role = 'workspaces-manager'
-    ws_name = 'ws-for-test-project'  # 企业空间名称,不可修改，从excle中获取的测试用例中用到了这个企业空间
-    alias_name = '我是别名'
-    description = '我是描述'
-    project_name = 'test-project'  # 项目名称，从excle中获取的测试用例中用到了这个项目名称
+    ws_name = 'ws-for-test-project' + str(commonFunction.get_random())
+    alias_name = '多集群'
+    description = '用于测试多集群项目管理'
+    project_name = 'test-project' + str(commonFunction.get_random())
     ws_role_name = ws_name + '-viewer'  # 企业空间角色名称
     project_role_name = 'test-project-role'  # 项目角色名称
     job_name = 'demo-job'  # 任务名称,在创建和删除任务时使用

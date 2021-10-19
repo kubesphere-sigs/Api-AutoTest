@@ -12,14 +12,13 @@ from step import app_steps, cluster_steps, workspace_steps, project_steps
 
 
 @allure.feature('遍历部署AppStore的所有应用')
-@pytest.mark.skipif(commonFunction.get_component_health_of_cluster('') is False, reason='')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 class TestAppStore(object):
-    ws_name = 'test-deploy-from-appstore'  # 在excle中读取的用例此名称，不能修改。
+    ws_name = 'test-deploy-from-appstore' + str(commonFunction.get_random())  # 在excle中读取的用例此名称，不能修改。
     alias_name = 'for app store'
     description = '在多集群企业空间部署app store 中的应用'
-    project_name = 'project-for-test-deploy-app-from-appstore'  # 在excle中读取的用例此名称，不能修改。
+    project_name = 'project-for-test-deploy-app-from-appstore' + str(commonFunction.get_random())  # 在excle中读取的用例此名称，不能修改。
     log_format()  # 配置日志格式
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='appstore')
@@ -31,8 +30,7 @@ class TestAppStore(object):
         # 获取集群名称
         clusters = cluster_steps.step_get_cluster_name()
         # 创建一个多集群企业空间（包含所有的集群）
-        workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description,
-                             clusters)
+        workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, clusters)
         # 在企业空间的host集群上创建一个项目
         project_steps.step_create_project_for_cluster(cluster_name=self.host_name, ws_name=self.ws_name, project_name=self.project_name)
 
@@ -55,8 +53,9 @@ class TestAppStore(object):
                "}\nrootUsername: admin\nrootPassword: password\nservice:\n  type: ClusterIP\n  port: " \
                "27017\nresources: {}\nnodeSelector: {}\ntolerations: []\naffinity: {}\n "
         # 部署应用
-        app_steps.step_deploy_app_from_app_store_multi(cluster_name=self.host_name, ws_name=self.ws_name, project_name=self.project_name, app_id=app_id, name=name,
-                                       version_id=version_id, conf=conf)
+        app_steps.step_deploy_app_from_app_store_multi(cluster_name=self.host_name, ws_name=self.ws_name,
+                                                       project_name=self.project_name, app_id=app_id, name=name,
+                                                       version_id=version_id, conf=conf)
         i = 0
         while i < 600:
             # 查看应用部署情况
@@ -118,7 +117,7 @@ class TestAppStore(object):
     @allure.title('{title}')  # 设置用例标题
     # 将用例信息以参数化的方式传入测试方法
     @pytest.mark.parametrize('id,app_name,conf,story,title,severity,except_result', parametrize)
-    def test_ws_role_user(self, id, app_name, conf, story, title, severity, except_result):
+    def test_deploy_from_appstore(self, id, app_name, conf, story, title, severity, except_result):
 
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
@@ -127,8 +126,9 @@ class TestAppStore(object):
         version_id = app_steps.step_get_app_version()[app_name]
         name = app_name.lower().replace(' ', '') + str(commonFunction.get_random())
         # 部署示例应用
-        app_steps.step_deploy_app_from_app_store_multi(cluster_name=self.host_name, ws_name=self.ws_name, project_name=self.project_name, app_id=app_id, name=name,
-                                       version_id=version_id, conf=conf)
+        app_steps.step_deploy_app_from_app_store_multi(cluster_name=self.host_name, ws_name=self.ws_name,
+                                                       project_name=self.project_name, app_id=app_id, name=name,
+                                                       version_id=version_id, conf=conf)
         i = 0
         while i < 300:
             # 查看应用部署情况
@@ -167,6 +167,6 @@ class TestAppStore(object):
 
 
 if __name__ == "__main__":
-    pytest.main(['-vs', 'testAppStore.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
+    pytest.main(['-s', 'testAppStore.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
 
 

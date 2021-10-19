@@ -2,7 +2,7 @@ import pytest
 import allure
 import sys
 from common import commonFunction
-from step import multi_cluster_steps
+from step import multi_cluster_steps, project_steps
 import time
 import random
 
@@ -554,11 +554,18 @@ class TestCluster(object):
             re = multi_cluster_steps.step_get_resource_of_cluster(cluster_name, 'deployments')
             # 获取集群deployments的数量
             count = re.json()['totalItems']
+            # 获取集群所有的系统项目名称
+            system_ns = project_steps.step_get_system_project(cluster_name)
             # 获取集群所有的deployments的状态
             for j in range(0, count):
-                state = re.json()['items'][j]['status']['conditions'][0]['status']
-                # 验证deployment的状态为True
-                assert state == 'True'
+                # 获取每个deployment的namespace
+                ns = re.json()['items'][j]['metadata']['namespace']
+                if ns in system_ns:
+                    state = re.json()['items'][j]['status']['conditions'][0]['status']
+                    # 验证deployment的状态为True
+                    assert state == 'True'
+                else:
+                    break
 
     @allure.story('应用负载')
     @allure.title('查看每个集群所有的deployments的Revision Records')
@@ -595,14 +602,21 @@ class TestCluster(object):
         for cluster_name in self.cluster_names:
             # 查询集群所有的statefulSets
             re = multi_cluster_steps.step_get_resource_of_cluster(cluster_name, 'statefulsets')
+            # 获取集群所有的系统项目名称
+            system_ns = project_steps.step_get_system_project(cluster_name)
             # 获取集群statefulSets的数量
             count = re.json()['totalItems']
             # 获取集群所有的statefulSets的副本数和ready的副本数
             for j in range(0, count):
-                replica = re.json()['items'][j]['status']['replicas']
-                readyReplicas = re.json()['items'][j]['status']['readyReplicas']
+                # 获取每个statefulSets的namespace
+                ns = re.json()['items'][j]['metadata']['namespace']
+                if ns in system_ns:
+                    replica = re.json()['items'][j]['status']['replicas']
+                    readyReplicas = re.json()['items'][j]['status']['readyReplicas']
                 # 验证每个statefulSets的ready的副本数=副本数
-                assert replica == readyReplicas
+                    assert replica == readyReplicas
+                else:
+                    break
 
     @allure.story('应用负载')
     @allure.title('查看每个集群所有的daemonSets，并验证其运行正常')
