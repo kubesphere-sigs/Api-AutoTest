@@ -11,10 +11,9 @@ from step import app_steps, cluster_steps, workspace_steps, project_steps
 
 
 @allure.feature('应用管理')
-@pytest.mark.skipif(commonFunction.get_component_health_of_cluster('') is False, reason='')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
 class TestAppTemplate(object):
-    ws_name = 'test-app'  # 在读取execle中的测试用例时，使用到了ws_name
+    ws_name = 'test-app' + str(commonFunction.get_random())
     project_name = 'project-for-test-app' + str(commonFunction.get_random())
     alias_name = 'for app store'
     description = '在多集群企业空间部署app store 中的应用'
@@ -28,8 +27,7 @@ class TestAppTemplate(object):
             # 获取集群名称
             clusters = cluster_steps.step_get_cluster_name()
             # 创建一个多集群企业空间（包含所有的集群）
-            workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description,
-                                 clusters)
+            workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, clusters)
             # 获取host集群的名称
             host_name = project_steps.step_get_host_name()
             # 在企业空间的host集群上创建一个项目
@@ -70,7 +68,12 @@ class TestAppTemplate(object):
 
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
-        commonFunction.request_resource(url, params, data, story, title, method, severity, condition, except_result)
+        # 将测试用例中的变量替换成指定内容
+        targets = commonFunction.replace_str(url, params, data, condition,
+                                             actual_value='${ws_name}', expect_value=self.ws_name)
+        # 使用修改过的内容进行测试
+        commonFunction.request_resource(targets[0], targets[1], targets[2], story, title, method, severity,
+                                        targets[3], except_result)
 
     @allure.story('应用管理-应用仓库')
     @allure.title('使用正确的信息新建应用仓库')
