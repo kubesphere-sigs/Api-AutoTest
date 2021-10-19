@@ -5,18 +5,13 @@ import sys
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from common.getData import DoexcleByPandas
-from common.logFormat import log_format
 from common import commonFunction
 from step import app_steps
 
 
 @allure.feature('应用商店管理')
-@pytest.mark.skipif(commonFunction.get_component_health_of_cluster('') is False, reason='')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
 class TestManageAppStore(object):
-    ws_name = 'test-appstore-manage'  # 在excle中读取的用例此名称，不能修改。
-    project_name = 'project-for-test-appstore-manage'  # 在excle中读取的用例此名称，不能修改。
-    log_format()  # 配置日志格式
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='manageapps')
 
