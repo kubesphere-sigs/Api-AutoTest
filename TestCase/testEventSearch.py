@@ -9,7 +9,6 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 
 @allure.feature('事件查询')
-@pytest.mark.skipif(commonFunction.get_component_health_of_cluster('') is False, reason='')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('events') is False, reason='集群未开启events功能')
 class TestEventSearch(object):
 
