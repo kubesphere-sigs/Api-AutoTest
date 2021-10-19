@@ -30,8 +30,10 @@ class TestAppTemplate(object):
             # 创建一个多集群企业空间（包含所有的集群）
             workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description,
                                  clusters)
+            # 获取host集群的名称
+            host_name = project_steps.step_get_host_name()
             # 在企业空间的host集群上创建一个项目
-            project_steps.step_create_project_for_cluster(cluster_name='host', ws_name=self.ws_name,
+            project_steps.step_create_project_for_cluster(cluster_name=host_name, ws_name=self.ws_name,
                                                           project_name=self.project_name)
 
     # 所有用例执行完之后执行该方法

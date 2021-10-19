@@ -7,6 +7,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 from config import config
 from common.getHeader import get_header, get_header_for_patch
+from step import project_steps
 from common import commonFunction
 from math import ceil
 
@@ -53,8 +54,10 @@ def step_deploy_template(ws_name, project_name, app_id, name, version_id):
         url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + \
               '/clusters/default/namespaces/' + project_name + '/applications'
     else:
+        # 获取host 集群的名称
+        host_name = project_steps.step_get_host_name()
         url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + \
-              '/clusters/host/namespaces/' + project_name + '/applications'
+              '/clusters/' + host_name + '/namespaces/' + project_name + '/applications'
 
     data = {"app_id": app_id,
             "name": name,
