@@ -8,6 +8,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 from config import config
 from common.getHeader import get_header, get_header_for_patch
+from common import commonFunction
 from step import workspace_steps
 
 
@@ -1577,3 +1578,20 @@ def step_get_project_workloads_in_multi_project(cluster_name, project_name):
                          '&sort_type=desc&sort_metric=workload_cpu_usage'
     response = requests.get(url=url, headers=get_header())
     return response
+
+
+@allure.step('获取集群中所有的系统项目的名称')
+def step_get_system_project(cluster_name):
+    # 判断环境是否是多集群环境
+    if commonFunction.check_multi_cluster() is True:
+        url = config.url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces?' \
+                           'sortBy=createTime&labelSelector=kubesphere.io%2Fworkspace%3Dsystem-workspace'
+    else:
+        url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces?' \
+                           'sortBy=createTime&labelSelector=kubesphere.io%2Fworkspace%3Dsystem-workspace'
+    response = requests.get(url=url, headers=get_header())
+    count = response.json()['totalItems']
+    ns = []
+    for i in range(0, count):
+        ns.append(response.json()['items'][i]['metadata']['name'])
+    return ns
