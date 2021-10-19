@@ -12,7 +12,6 @@ from step import app_steps, project_steps, workspace_steps
 
 
 @allure.feature('遍历部署AppStore的所有应用')
-@pytest.mark.skipif(commonFunction.get_component_health_of_cluster('') is False, reason='')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 class TestAppStore(object):
@@ -44,8 +43,8 @@ class TestAppStore(object):
                "}\nrootUsername: admin\nrootPassword: password\nservice:\n  type: ClusterIP\n  port: " \
                "27017\nresources: {}\nnodeSelector: {}\ntolerations: []\naffinity: {}\n "
         # 部署示例应用
-        app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id, name=name,
-                                       version_id=version_id, conf=conf)
+        app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id,
+                                                 name=name, version_id=version_id, conf=conf)
         i = 0
         while i < 600:
             # 查看应用部署情况
@@ -62,8 +61,8 @@ class TestAppStore(object):
                 time.sleep(1)
                 i = i + 1
         # 使用已经存在的应用名称部署应用
-        response = app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id,
-                                                  name=name, version_id=version_id, conf=conf)
+        response = app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name,
+                                                            app_id=app_id, name=name, version_id=version_id, conf=conf)
         # 获取部署结果
         result = response.text
         # 在应用列表查询部署的应用
@@ -87,8 +86,8 @@ class TestAppStore(object):
                "}\nrootUsername: admin\nrootPassword: password\nservice:\n  type: ClusterIP\n  port: " \
                "27017\nresources: {}\nnodeSelector: {}\ntolerations: []\naffinity: {}\n "
         # 部署示例应用
-        app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id, name=name,
-                                       version_id=version_id, conf=conf)
+        app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name,
+                                                 app_id=app_id, name=name, version_id=version_id, conf=conf)
         # 查看应用部署情况
         response = project_steps.step_get_app_status(self.ws_name, self.project_name, name)
         # 获取应用状态
@@ -115,8 +114,8 @@ class TestAppStore(object):
         version_id = app_steps.step_get_app_version()[app_name]
         name = app_name.lower().replace(' ', '') + str(commonFunction.get_random())
         # 部署示例应用
-        app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id, name=name,
-                                       version_id=version_id, conf=conf)
+        app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name,
+                                                 app_id=app_id, name=name, version_id=version_id, conf=conf)
         i = 0
         while i < 300:
             # 查看应用部署情况
