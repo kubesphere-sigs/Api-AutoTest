@@ -2,6 +2,7 @@ import requests
 import json
 import random
 from config import config
+from step import project_steps
 import time
 import datetime
 from common.getHeader import get_header, get_header_for_patch
@@ -338,23 +339,27 @@ def get_before_timestamp_day(day):
 
 # 获取集群所有服务组件的状态
 def get_component_health_of_cluster(namespace_actual):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/components'
+    if check_multi_cluster() is True:
+        # 获取多集群环境的host集群的名称
+        host_name = project_steps.step_get_host_name()
+        url = config.url + '/kapis/clusters/' + host_name + '/resources.kubesphere.io/v1alpha2/components'
+    else:
+        url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/components'
     response = requests.get(url=url, headers=get_header())
     # 获取集群的组件数量
     components_count = len(response.json())
     print(components_count)
     not_ready_namespace = []
     for i in range(0, components_count):
-
         # 获取组件的名称及namespace
         component_name = response.json()[i]['name']
-        namespce = response.json()[i]['namespace']
+        namespace = response.json()[i]['namespace']
         # 获取组件的健康状态
         healthyBackends = response.json()[i]['healthyBackends']
         totalBackends = response.json()[i]['totalBackends']
         if healthyBackends != totalBackends:
-            print('NameSpace: ' + namespce + '  组件：' + component_name + '状态异常！')
-            not_ready_namespace.append(namespce)
+            print('NameSpace: ' + namespace + '  组件：' + component_name + '状态异常！')
+            not_ready_namespace.append(namespace)
     if namespace_actual in not_ready_namespace:
         return False
     else:
@@ -450,3 +455,18 @@ def request_resource(url, params, data, story, title, method, severity, conditio
                          '用例的实际结果: ' + str(condition_new) + '\n'
                                                             '用例的预期结果: ' + str(except_result)
     )
+
+
+# 替换字符串中的指定内容
+def replace_str(*targets, actual_value, expect_value):
+    target_new = []
+    for target in targets:
+        # 将参数转换为字符类型，然后判断其是否由数字组成
+        if str(target).isdigit() is True:
+            target_new.append(int(target))
+        elif target != '' and isinstance(target, str):
+            target_new.append(target.replace(actual_value, expect_value))
+        else:
+            target_new.append('')
+    return target_new
+
