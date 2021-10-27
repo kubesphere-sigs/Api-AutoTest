@@ -42,7 +42,7 @@ class TestProject(object):
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
-        project_steps.step_delete_volume(self.project_name, self.volume_name) # 删除存储卷
+        project_steps.step_delete_volume(self.project_name, self.volume_name)  # 删除存储卷
         project_steps.step_delete_project(self.ws_name, self.project_name)  # 删除创建的项目
         project_steps.step_delete_project(self.ws_name, self.project_name_for_exel)  # 删除创建的项目
         time.sleep(5)
