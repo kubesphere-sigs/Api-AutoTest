@@ -15,8 +15,8 @@ from step import app_steps, project_steps, workspace_steps
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 class TestAppStore(object):
-    ws_name = 'test-deploy-from-appstore'  # 在excle中读取的用例此名称，不能修改。
-    project_name = 'project-for-test-deploy-app-from-appstore'  # 在excle中读取的用例此名称，不能修改。
+    ws_name = 'test-deploy-from-appstore' + str(commonFunction.get_random())  # 在excle中读取的用例此名称，不能修改。
+    project_name = 'project-for-test-deploy-app-from-appstore' + str(commonFunction.get_random())  # 在excle中读取的用例此名称，不能修改。
     log_format()  # 配置日志格式
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='appstore')
