@@ -3,14 +3,16 @@ import pytest
 import json
 import allure
 import sys
+import base64
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 import time
+from urllib import parse
 from config import config
 from common.getHeader import get_header
 from common import commonFunction
-from step import devops_steps, platform_steps, workspace_steps
+from step import devops_steps, platform_steps, workspace_steps, toolbox_steps, project_steps
 
 
 @allure.feature('DevOps')
@@ -247,14 +249,17 @@ class TestDevOps(object):
     @allure.story('工程管理-凭证')
     @allure.title('删除凭证')
     def test_delete_credential(self):
-        credential_name = 'github' + str(commonFunction.get_random())
+        credential_name = 'testdelete' + str(commonFunction.get_random())
         # 获取创建的devops工程的别名
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
         # 创建凭证
-        devops_steps.step_create_account_credential(dev_name_new, credential_name)
+        username = 'd2VueGlueGlu'      
+        password = 'd2VueGluMTIzNDU2'
+        devops_steps.step_create_account_credential(dev_name_new, credential_name, username, password)
         # 查询创建的凭证
         response = devops_steps.step_get_credential(dev_name_new, credential_name)
+        print(response.text)
         # 获取凭证的数量
         count = response.json()['totalItems']
         # 验证凭证的数量正确
@@ -487,8 +492,8 @@ class TestDevOps(object):
         # 验证角色创建成功
         assert count == 1
         # 删除角色
-        devops_steps.step_delete_role(self.dev_role_name, role_name)
-        time.sleep(3)
+        devops_steps.step_delete_role(self.dev_name_new, role_name)
+        time.sleep(10)
         # 精确查询创建的角色
         count1 = devops_steps.step_get_role(self.dev_name_new, role_name).json()['totalItems']
         # 验证角色删除成功
@@ -577,25 +582,25 @@ class TestDevOps(object):
     def test_create_pipeline_base_github_with_tag(self):
         credential_name = 'github' + str(commonFunction.get_random())
         pipeline_name = 'github' + str(commonFunction.get_random())
-        patch = 'Jenkinsfile-online'
+        patch = 'Jenkinsfile-online'    # 脚本路径
         # 获取创建的devops工程的别名
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
         # 创建凭证
-        devops_steps.step_create_account_credential(dev_name_new, credential_name)
+        username = 'YWRtaW4='
+        password = 'Z2hwX2RsVUpBNm1wRmg3VFFRVWtLVTBkMzBNYTNZbEplUTIzUm5jNw=='
+        devops_steps.step_create_account_credential(dev_name_new, credential_name, username, password)
         # 创建流水线
         devops_steps.step_create_pipeline_base_github(self.dev_name, dev_name_new, pipeline_name,
                                                       credential_name, patch, True)
         # 等待流水线分支拉取成功
         time.sleep(40)
-        # 查询创建的流水线
-        r = devops_steps.step_get_pipeline(dev_name_new, pipeline_name)
         # 获取流水线的健康状态
-        health = r.json()['items'][0]['weatherScore']
+        weatherScore = devops_steps.step_get_pipeline_weather(dev_name_new, pipeline_name)
         # 获取流水线的分支数量
-        branch_count = r.json()['items'][0]['totalNumberOfBranches']
+        branch_count = devops_steps.step_get_pipeline_branch(dev_name_new, pipeline_name)
         # 验证流水线的状态和分支数量正确
-        assert health == 100
+        assert weatherScore == 100
         assert branch_count == 22
         # 删除创建的流水线
         devops_steps.step_delete_pipeline(dev_name_new, pipeline_name)
@@ -608,25 +613,25 @@ class TestDevOps(object):
     def test_create_pipeline_base_github_no_tag(self):
         credential_name = 'github' + str(commonFunction.get_random())
         pipeline_name = 'github' + str(commonFunction.get_random())
-        patch = 'Jenkinsfile-online'
+        patch = 'Jenkinsfile-online'  # 脚本路径
         # 获取创建的devops工程的别名
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
         # 创建凭证
-        devops_steps.step_create_account_credential(dev_name_new, credential_name)
+        username = 'YWRtaW4='
+        password = 'Z2hwX2RsVUpBNm1wRmg3VFFRVWtLVTBkMzBNYTNZbEplUTIzUm5jNw=='
+        devops_steps.step_create_account_credential(dev_name_new, credential_name, username, password)
         # 创建流水线
         devops_steps.step_create_pipeline_base_github(self.dev_name, dev_name_new, pipeline_name,
                                                       credential_name, patch, False)
         # 等待流水线分支拉取成功
         time.sleep(30)
-        # 查询创建的流水线
-        r = devops_steps.step_get_pipeline(dev_name_new, pipeline_name)
         # 获取流水线的健康状态
-        health = r.json()['items'][0]['weatherScore']
+        weatherScore = devops_steps.step_get_pipeline_weather(dev_name_new, pipeline_name)
         # 获取流水线的分支数量
-        branch_count = r.json()['items'][0]['totalNumberOfBranches']
+        branch_count = devops_steps.step_get_pipeline_branch(dev_name_new, pipeline_name)
         # 验证流水线的状态和分支数量正确
-        assert health == 100
+        assert weatherScore == 100
         assert branch_count == 12
         # 删除创建的流水线
         devops_steps.step_delete_pipeline(dev_name_new, pipeline_name)
@@ -645,17 +650,68 @@ class TestDevOps(object):
         devops_steps.step_create_pipeline_base_gitlab(self.dev_name, dev_name_new, pipeline_name, False)
         # 等待流水线分支拉取成功
         time.sleep(60)
-        # 查询创建的流水线
-        r = devops_steps.step_get_pipeline(dev_name_new, pipeline_name)
         # 获取流水线的健康状态
-        health = r.json()['items'][0]['weatherScore']
+        weatherScore = devops_steps.step_get_pipeline_weather(dev_name_new, pipeline_name)
         # 获取流水线的分支数量
-        branch_count = r.json()['items'][0]['totalNumberOfBranches']
+        branch_count = devops_steps.step_get_pipeline_branch(dev_name_new, pipeline_name)
         # 验证流水线的状态和分支数量正确
-        assert health == 100
+        assert weatherScore == 100
         assert branch_count == 1
         # 删除创建的流水线
         devops_steps.step_delete_pipeline(dev_name_new, pipeline_name)
+
+    @allure.story('流水线')
+    @allure.title('maven流水线实例')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_maven(self):
+        credential_name = 'dockerhub-wx'
+        credential_name1 = 'wx'
+        pipeline_name = 'gitlab' + str(commonFunction.get_random())
+        # 获取创建的devops工程的别名
+        response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
+        dev_name_new = response.json()['items'][0]['metadata']['name']
+        # 创建用户名和密码凭证
+        username = 'd2VueGlueGlu'
+        password = 'd2VueGluMTIzNDU2'
+        devops_steps.step_create_account_credential(dev_name_new, credential_name, username, password)
+        # 创建kubeconfig类型凭证
+        kubeconfig = toolbox_steps.step_get_kubeconfig()
+        content = base64.b64encode(kubeconfig.encode("utf-8")).decode("utf-8")  # 将kubeconfig编码成base64,然后转换成str类型
+        devops_steps.step_create_kubeconfig_credential(dev_name_new, credential_name1, content)
+        # 使用图形化方式创建流水线并获取resourceVersion
+        r = devops_steps.step_create_pipeline(self.dev_name, dev_name_new, pipeline_name)
+        resourceVersion = r.json()['metadata']['resourceVersion']
+        # 查看流水线详情并获取spechash和uid
+        r1 = devops_steps.step_get_pipeline(dev_name_new, pipeline_name)
+        spechash = r1.json()['items'][0]['metadata']['annotations']["pipeline.devops.kubesphere.io/spechash"]
+        uid = r1.json()['items'][0]['metadata']['uid']
+        # 编辑jenkinsfile
+        # 从jenkinsfile文件中读取jenkinsfile信息
+        with open('../data/jenkinsfile') as file_object:
+            contents = file_object.read()
+        # 将jenkinsfile编码为encodeURIComponent
+        jenkinsfile = parse.quote(contents)
+        # 1、checkScriptCompile
+        devops_steps.step_edit_jenkinsfile_checkScriptCompile(dev_name_new, pipeline_name, jenkinsfile)
+        # 2、put
+        devops_steps.step_edit_jenkinsfile_put(dev_name_new, uid, pipeline_name, resourceVersion, contents, spechash)
+        # 3、tojson
+        devops_steps.step_edit_jenkinsfile_tojson(jenkinsfile)
+
+        # 创建流水线编译所需的ns
+        project_steps.step_create_project(self.ws_name, project_name='kubesphere-sample-dev')
+
+        # 运行pipeline
+        devops_steps.step_run_pipeline(dev_name_new, pipeline_name)
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
