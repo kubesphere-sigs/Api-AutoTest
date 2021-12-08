@@ -838,8 +838,12 @@ def step_get_pod_info(project_name, pod_name):
 @allure.step('获取host集群的名称')
 def step_get_host_name():
     url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/clusters?labelSelector=cluster-role.kubesphere.io%2Fhost'
-    response = requests.get(url=url, headers=get_header())
-    return response.json()['items'][0]['metadata']['name']
+    try:
+        response = requests.get(url=url, headers=get_header())
+        return response.json()['items'][0]['metadata']['name']
+    except IndexError as e:
+        print(e)
+
 
 
 @allure.step('在多集群环境查询项目的federatedlimitranges')
