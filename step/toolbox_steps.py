@@ -219,9 +219,6 @@ def step_get_pod_consumption(node_name, metric):
     return response
 
 
-
-
-
 @allure.step('查询企业空间的项目的最近1h的消费信息')
 def step_get_project_consumption(metric, project):
     condition = ''
@@ -249,4 +246,11 @@ def step_get_hierarchy_consumption_history(project_name, start_time, end_time, s
           'meter_workload_net_bytes_transmitted%7Cmeter_workload_net_bytes_received&' \
           'resources_filter=' + name + '&kind=' + kind
     response = requests.get(url=url, headers=get_header())
-    return response
+    return response.text
+
+
+@allure.step('获取kubeconfig')
+def step_get_kubeconfig():
+    url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/users/admin/kubeconfig'
+    response = requests.get(url=url, headers=get_header())
+    return response.text
