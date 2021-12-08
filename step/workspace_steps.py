@@ -318,7 +318,7 @@ def step_set_network_lsolation(ws_name, status):
     return response
 
 
-@allure.step('在多集群环境查询企业空间')
+@allure.step('在单集群环境查询企业空间')
 def step_get_ws_info(ws_name):
     url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=' + ws_name
     response = requests.get(url=url, headers=get_header())
