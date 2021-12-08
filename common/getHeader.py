@@ -11,6 +11,15 @@ def get_header():
     return header
 
 
+def get_header_for_urlencoded():
+    header = {
+        'Authorization': get_token(config.url),
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Connection': 'close'
+    }
+    return header
+
+
 def get_header_for_patch():
     header = {
         'Authorization': get_token(config.url),
