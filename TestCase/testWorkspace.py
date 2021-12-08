@@ -393,7 +393,7 @@ class TestWorkSpace(object):
         # 验证企业空间信息
         response = workspace_steps.step_get_ws_info(self.ws_name)
         # 获取企业空间的网络隔离状态
-        network_lsolation = response.json()['spec']['template']['spec']['networkIsolation']
+        network_lsolation = response.json()['items'][0]['spec']['template']['spec']['networkIsolation']
         # 验证设置成功
         assert network_lsolation is False
 
@@ -403,12 +403,12 @@ class TestWorkSpace(object):
     @allure.title('开启企业空间网络隔离')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_enable_network_lsolation(self):
-        # 关闭企业空间网络隔离
+        # 开启企业空间网络隔离
         workspace_steps.step_set_network_lsolation(self.ws_name, True)
         # 验证企业空间信息
         response = workspace_steps.step_get_ws_info(self.ws_name)
         # 获取企业空间的网络隔离状态
-        network_lsolation = response.json()['spec']['template']['spec']['networkIsolation']
+        network_lsolation = response.json()['items'][0]['spec']['template']['spec']['networkIsolation']
         # 验证设置成功
         assert network_lsolation is True
 
