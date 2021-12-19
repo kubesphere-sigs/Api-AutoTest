@@ -1,2 +1,2 @@
 env:
-  url: $ENV_URL
+  url: ${ENV_URL}
