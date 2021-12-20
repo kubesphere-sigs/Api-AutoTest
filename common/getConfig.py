@@ -4,7 +4,7 @@ import sys
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 # 获取yaml文件路径
-yamlPath = '../config/config.yaml'
+yamlPath = '../config/config_new.yaml'
 
 
 def get_config():
