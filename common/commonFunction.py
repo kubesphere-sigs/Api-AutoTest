@@ -7,6 +7,9 @@ import time
 import datetime
 from common.getHeader import get_header, get_header_for_patch
 import allure
+from common.getConfig import get_config
+
+env_url = get_config()['env']['url']
 
 
 # 创建系统用户
@@ -15,7 +18,7 @@ def step_create_user(user_name):
     """
     :param user_name: 系统用户的名称
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users'
     data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
             "kind": "User",
             "metadata": {"name": user_name,
@@ -32,7 +35,7 @@ def get_user_version():
     """
     :return: 系统第一个用户的resourceversion
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users'
     r = requests.get(url, headers=get_header())
     return r.json()['items'][0]['metadata']['resourceVersion']
 
@@ -42,7 +45,7 @@ def delete_user(user_name):
     """
     :param user_name: 系统用户的名称
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users/' + user_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users/' + user_name
     requests.delete(url, headers=get_header())
 
 
@@ -52,7 +55,7 @@ def create_role(role_name):
     :param role_name: 系统角色名称
     :return: 创建的系统角色的resourceversion
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles'
     data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
             "kind": "GlobalRole",
             "rules": [],
@@ -73,7 +76,7 @@ def get_role_version():
     """
     :return: 系统第一个角色的resourceversion
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles'
     r = requests.get(url, headers=get_header())
     return r.json()['items'][0]['metadata']['resourceVersion']
 
@@ -83,7 +86,7 @@ def delete_role(role_name):
     """
     :param role_name: 系统角色的名称
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles/' + role_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles/' + role_name
     requests.delete(url, headers=get_header())
 
 
@@ -92,7 +95,7 @@ def create_workspace(ws_name):
     """
     :param ws_name: 企业空间的名称
     """
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
     data = {"apiVersion": "tenant.kubesphere.io/v1alpha2",
             "kind": "WorkspaceTemplate",
             "metadata": {"name": ws_name,
@@ -106,7 +109,7 @@ def delete_workspace(ws_name):
     """
     :param ws_name: 企业空间的名称
     """
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
     requests.delete(url, headers=get_header())
 
 
@@ -116,7 +119,7 @@ def create_ws_role(ws_name, ws_role_name):
     :param ws_name: 企业空间的名称
     :param ws_role_name: 企业空间的角色的名称
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles'
     data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
             "kind": "WorkspaceRole",
             "rules": [],
@@ -134,7 +137,7 @@ def delete_ws_role(ws_name, ws_role_name):
     :param ws_name: 企业空间的名称
     :param ws_role_name: 企业空间角色的名称
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles/' + ws_role_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles/' + ws_role_name
     requests.delete(url, headers=get_header())
 
 
@@ -145,7 +148,7 @@ def ws_invite_user(ws_name, user_name, ws_role):
     :param user_name: 系统用户的名称
     :param ws_role: 企业空间的角色
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers'
     data = [{"username": user_name, "roleRef": ws_role}]
     requests.post(url, headers=get_header(), data=json.dumps(data))
 
@@ -157,7 +160,7 @@ def create_devops(ws_name, devops_name):
     :param devops_name: devops工程的名称
     :return:
     """
-    url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/workspaces/' + ws_name + '/devops'
+    url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/workspaces/' + ws_name + '/devops'
     data = {"metadata": {"generateName": devops_name,
                          "labels": {"kubesphere.io/workspace": devops_name},
                          "annotations": {"kubesphere.io/creator": "admin"}},
@@ -174,7 +177,7 @@ def get_devops_resourceVersion(devops_name, devops_role_name):
     :param devops_role_name: devops工程的角色的名称
     :return:
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name + '/roles?name=' + devops_role_name + '&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devops_name + '/roles?name=' + devops_role_name + '&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
     r = requests.get(url, headers=get_header())
     return r.json()['items'][0]['metadata']['resourceVersion']
 
@@ -185,7 +188,7 @@ def create_project(ws_name, project_name):
     :param ws_name: 企业空间名称
     :param project_name: 项目名称
     """
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces'
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces'
     data = {"apiVersion": "v1",
             "kind": "Namespace",
             "metadata": {"name": project_name,
@@ -203,7 +206,7 @@ def delete_project(ws_name, project_name):
     :param ws_name: 企业空间名称
     :param project_name: 项目名称
     """
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
     requests.delete(url=url, headers=get_header())
 
 
@@ -214,15 +217,15 @@ def get_project_role_version(project_nmae, project_rloe_name):
     :param project_rloe_name: 项目角色名称
     :return:
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_nmae + '/roles?name=' + project_rloe_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_nmae + '/roles?name=' + project_rloe_name
     r = requests.get(url, headers=get_header())
     return r.json()['items'][0]['metadata']['resourceVersion']
 
 
 # 获取appstore中应用的app_id
 def get_app_id(key):
-    url = config.url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D2&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
-    url2 = config.url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+    url = env_url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D2&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+    url2 = env_url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
     r = requests.get(url, headers=get_header())  # 获取app的id和name，将其组合成一个字典
     r2 = requests.get(url2, headers=get_header())  # 获取app的id和name，将其组合成一个字典
     item_name = []
@@ -243,7 +246,7 @@ def get_app_id(key):
 
 # 获取appstore中应用的version_id
 def get_app_version(app_id):
-    url = config.url + '/kapis/openpitrix.io/v1/apps/' + app_id
+    url = env_url + '/kapis/openpitrix.io/v1/apps/' + app_id
     r = requests.get(url, headers=get_header())
     return r.json()['latest_app_version']['version_id']
 
@@ -251,7 +254,7 @@ def get_app_version(app_id):
 # 获取应用模板中获取version_id
 def get_app_versions(ws_name, app_id):
     versions = []
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/apps/' + app_id + '/versions?orderBy=sequence&paging=limit%3D10%2Cpage%3D1&conditions=status%3Ddraft%7Csubmitted%7Crejected%7Cin-review%7Cpassed%7Cactive%7Csuspended&reverse=true'
+    url = env_url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/apps/' + app_id + '/versions?orderBy=sequence&paging=limit%3D10%2Cpage%3D1&conditions=status%3Ddraft%7Csubmitted%7Crejected%7Cin-review%7Cpassed%7Cactive%7Csuspended&reverse=true'
     r = requests.get(url=url, headers=get_header())
     # print(r.json()['items'])
     for item in r.json()['items']:
@@ -263,7 +266,7 @@ def get_app_versions(ws_name, app_id):
 
 # 获取没有version的应用模板的app_id
 def get_app_id_noversion(ws_name, app_name):
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/apps?paging=limit%3D10%2Cpage%3D1&conditions=status%3Ddraft%7Cactive%7Csuspended%7Cpassed%2Ckeyword%3D' + app_name
+    url = env_url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/apps?paging=limit%3D10%2Cpage%3D1&conditions=status%3Ddraft%7Cactive%7Csuspended%7Cpassed%2Ckeyword%3D' + app_name
     r = requests.get(url=url, headers=get_header())
     return r.json()['items'][0]['app_id']
 
@@ -272,7 +275,7 @@ def get_app_id_noversion(ws_name, app_name):
 def get_apps_id():
     apps = []
     for page in (1, 2):
-        url = config.url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D' + str(
+        url = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D' + str(
             page) + '&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm&reverse=true'
         r = requests.get(url, get_header())
         for item in r.json()['items']:
@@ -284,7 +287,7 @@ def get_apps_id():
 def get_app_category():
     appCategorys = []
     for page in (1, 2):
-        url = config.url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D' + str(
+        url = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D' + str(
             page) + '&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm&reverse=true'
         r = requests.get(url, get_header())
         # print(r.json()['items'])
@@ -342,9 +345,9 @@ def get_component_health_of_cluster(namespace_actual):
     if check_multi_cluster() is True:
         # 获取多集群环境的host集群的名称
         host_name = project_steps.step_get_host_name()
-        url = config.url + '/kapis/clusters/' + host_name + '/resources.kubesphere.io/v1alpha2/components'
+        url = env_url + '/kapis/clusters/' + host_name + '/resources.kubesphere.io/v1alpha2/components'
     else:
-        url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/components'
+        url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/components'
     response = requests.get(url=url, headers=get_header())
     # 获取集群的组件数量
     components_count = len(response.json())
@@ -368,7 +371,7 @@ def get_component_health_of_cluster(namespace_actual):
 
 # 获取集群的组件开启情况
 def get_components_status_of_cluster(component):
-    url = config.url + '/apis/installer.kubesphere.io/v1alpha1/clusterconfigurations'
+    url = env_url + '/apis/installer.kubesphere.io/v1alpha1/clusterconfigurations'
     response = requests.get(url=url, headers=get_header())
     # 获取组件的配置信息
     spec = response.json()['items'][0]['spec']
@@ -384,7 +387,7 @@ def get_components_status_of_cluster(component):
 
 # 判断环境是否开启多集群功能
 def check_multi_cluster():
-    url = config.url + '/apis/installer.kubesphere.io/v1alpha1/clusterconfigurations'
+    url = env_url + '/apis/installer.kubesphere.io/v1alpha1/clusterconfigurations'
     response = requests.get(url=url, headers=get_header())
     # 查询多集群功能是否启用
     try:
@@ -402,9 +405,9 @@ def check_multi_cluster():
 def request_resource(url, params, data, story, title, method, severity, condition, except_result):
     if 'http' not in url:
         if params != '':
-            url_new = config.url + url + '?' + params
+            url_new = env_url + url + '?' + params
         else:
-            url_new = config.url + url
+            url_new = env_url + url
         print(url_new)
     else:
         if params != '':
