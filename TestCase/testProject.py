@@ -7,12 +7,14 @@ import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
-from config import config
 from common.getData import DoexcleByPandas
 from common.getHeader import get_header
 from common import commonFunction
 from step import project_steps, workspace_steps, platform_steps
+from step import workspace_steps
+from common.getConfig import get_config
 
+env_url = get_config()['env']['url']
 
 @allure.feature('Project')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
@@ -199,7 +201,7 @@ class TestProject(object):
     @allure.title('创建存储卷快照，并验证创建成功')
     @allure.severity(allure.severity_level.BLOCKER)
     def wx_test_create_volume_snapshot(self):
-        url = config.url + '/apis/snapshot.storage.k8s.io/v1beta1/namespaces/' + self.project_name + '/volumesnapshots'
+        url = env_url + '/apis/snapshot.storage.k8s.io/v1beta1/namespaces/' + self.project_name + '/volumesnapshots'
         data = {"apiVersion": "snapshot.storage.k8s.io/v1beta1",
                 "kind": "VolumeSnapshot",
                 "metadata": {"name": self.snapshot_name,
@@ -215,7 +217,7 @@ class TestProject(object):
         assert r.json()['metadata']['name'] == self.snapshot_name
 
         # 查询创建的存储卷快照
-        url1 = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + \
+        url1 = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + \
                '/volumesnapshots?name=' + self.snapshot_name + '&sortBy=createTime&limit=10'
         i = 0
         # 验证存储卷快照状态为准备就绪，最长等待时间为150s
@@ -365,7 +367,7 @@ class TestProject(object):
     @allure.title('查看project默认的所有用户')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_user_all(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/members'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/members'
         r = requests.get(url, headers=get_header())
 
         print("actual_result:r.json()['items'][0]['metadata']['name']=" + r.json()['items'][0]['metadata'][
@@ -410,7 +412,7 @@ class TestProject(object):
     @allure.title('邀请用户到project')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_invite_user(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/members'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/members'
         data = [{"username": self.user_name,
                  "roleRef": 'viewer'
                  }]
@@ -424,7 +426,7 @@ class TestProject(object):
     @allure.title('邀请不存在的用户到project')
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_invite_none_user(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/members'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/members'
         data = [{"username": 'wxqw',
                  "roleRef": "viewer"}]
         r = requests.post(url, headers=get_header(), data=json.dumps(data))
@@ -434,7 +436,7 @@ class TestProject(object):
     @allure.title('编辑project成员的角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_edit_user(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/members/' + self.user_name
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/members/' + self.user_name
         data = {"username": self.user_name,
                 "roleRef": "operator"}
         r = requests.put(url, headers=get_header(), data=json.dumps(data))
@@ -444,7 +446,7 @@ class TestProject(object):
     @allure.title('删除project的成员')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_delete_user(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + \
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + \
               '/members/' + self.user_name
         r = requests.delete(url, headers=get_header())
         assert r.json()['message'] == 'success'  # 验证删除成功
@@ -454,7 +456,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_role_create_name(self):
         project_role_name = 'WX'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
                 "metadata": {"namespace": self.project_name,
@@ -470,7 +472,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_role_create_name1(self):
         project_role_name = 'w@x'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
                 "metadata": {"namespace": self.project_name,
@@ -486,7 +488,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_role_create_name2(self):
         project_role_name = '-wx'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
                 "metadata": {"namespace": self.project_name,
@@ -502,7 +504,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_role_create_name3(self):
         project_role_name = 'wx-'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
                 "metadata": {"namespace": self.project_name,
@@ -608,7 +610,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.NORMAL)
     def test_query_no_pod(self):
         pod_name = 'test123'  # 不存在的容器组名称
-        url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/pods?' \
+        url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/pods?' \
                                                                                                        'name=' + pod_name + '&sortBy=startTime&limit=10'
         r = requests.get(url=url, headers=get_header())
         # 验证查询到的容器名称
@@ -625,7 +627,7 @@ class TestProject(object):
         project_steps.step_create_job(self.project_name, job_name)
         uid = project_steps.step_get_job_status(self.project_name, job_name)  # 验证任务的运行状态为完成,并获取uid
         pod_name = project_steps.step_get_job_pods(self.project_name, uid)  # 查看任务的资源状态，并获取容器组名称
-        url = config.url + '/api/v1/namespaces/' + self.project_name + '/pods/' + pod_name
+        url = env_url + '/api/v1/namespaces/' + self.project_name + '/pods/' + pod_name
         r = requests.get(url=url, headers=get_header())
         # 验证查询结果
         print("actual_result:r.json()['status']['phase'] = " + r.json()['status']['phase'])
@@ -643,7 +645,7 @@ class TestProject(object):
         project_steps.step_create_job(self.project_name, job_name)
         uid = project_steps.step_get_job_status(self.project_name, job_name)  # 验证任务的运行状态为完成,并获取uid
         pod_name = project_steps.step_get_job_pods(self.project_name, uid)  # 查看任务的资源状态，并获取容器组名称
-        url = config.url + '/api/v1/namespaces/' + self.project_name + '/pods/' + pod_name
+        url = env_url + '/api/v1/namespaces/' + self.project_name + '/pods/' + pod_name
         r = requests.delete(url=url, headers=get_header())
         # 验证删除操作成功
         print("actual_result:r.json()['status']['phase'] = " + r.json()['status']['phase'])
@@ -655,7 +657,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_pod_no(self):
         pod_name = 'pod-test'
-        url = config.url + '/api/v1/namespaces/' + self.project_name + '/pods/' + pod_name
+        url = env_url + '/api/v1/namespaces/' + self.project_name + '/pods/' + pod_name
         r = requests.delete(url=url, headers=get_header())
         # 验证删除失败
         print("actual_result:r.json()['status'] = " + r.json()['status'])
@@ -1160,7 +1162,7 @@ class TestProject(object):
     def test_query_work_by_status(self):
         # 依赖于用例"创建工作负载，并验证运行成功"
         status = 'running'
-        url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
+        url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
                                                                                                        '?status=' + status + '&sortBy=updateTime&limit=10'
         r = requests.get(url=url, headers=get_header())
         assert r.json()['totalItems'] >= 1
@@ -1170,7 +1172,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.NORMAL)
     # 依赖于用例"创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常"
     def test_query_work_by_name(self):
-        url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
+        url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
                                                                                                        '?name=' + self.work_name
 
         r = requests.get(url=url, headers=get_header())
@@ -1183,7 +1185,7 @@ class TestProject(object):
     # 依赖于用例"创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常"
     def test_fuzzy_query_work_by_name(self):
         name = 'demo'
-        url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
+        url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
                                                                                                        '?name=' + name
         r = requests.get(url=url, headers=get_header())
         # 验证查询结果
@@ -1195,7 +1197,7 @@ class TestProject(object):
     # 依赖于用例"创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常"
     def test_fuzzy_query_work_by_name(self):
         name = 'demo123'
-        url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
+        url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
                                                                                                        '?name=' + name
         r = requests.get(url=url, headers=get_header())
         # 验证查询结果
@@ -1206,7 +1208,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_work_by_status(self):
 
-        url = config.url + '/apis/autoscaling/v2beta2/namespaces/' + self.project_name + '/horizontalpodautoscalers'
+        url = env_url + '/apis/autoscaling/v2beta2/namespaces/' + self.project_name + '/horizontalpodautoscalers'
         data = {"metadata": {"name": self.work_name, "namespace": self.project_name,
                              "annotations": {"cpuCurrentUtilization": "0", "cpuTargetUtilization": "50",
                                              "memoryCurrentValue": "0", "memoryTargetValue": "2Mi",
@@ -1229,7 +1231,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     # 依赖于用例"创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常"
     def test_delete_work(self):
-        url = config.url + '/apis/apps/v1/namespaces/' + self.project_name + '/deployments/' + self.work_name
+        url = env_url + '/apis/apps/v1/namespaces/' + self.project_name + '/deployments/' + self.work_name
         data = {"kind": "DeleteOptions", "apiVersion": "v1", "propagationPolicy": "Background"}
         r = requests.delete(url=url, headers=get_header(), data=json.dumps(data))
         # 验证删除成功

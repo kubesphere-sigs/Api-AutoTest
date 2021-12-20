@@ -6,10 +6,12 @@ import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
-from config import config
 from common.getHeader import get_header, get_header_for_patch
 from common import commonFunction
 from step import workspace_steps
+from common.getConfig import get_config
+
+env_url = get_config()['env']['url']
 
 
 @allure.step('创建一个计算圆周率的任务')
@@ -19,8 +21,8 @@ def step_create_job(project_name, job_name):
     :param job_name: 任务名称
     """
     container_name = 'container-' + job_name
-    url = config.url + '/apis/batch/v1/namespaces/' + project_name + '/jobs?dryRun=All'
-    url1 = config.url + '/apis/batch/v1/namespaces/' + project_name + '/jobs'
+    url = env_url + '/apis/batch/v1/namespaces/' + project_name + '/jobs?dryRun=All'
+    url1 = env_url + '/apis/batch/v1/namespaces/' + project_name + '/jobs'
     data = {"apiVersion": "batch/v1",
             "kind": "Job",
             "metadata": {"namespace": project_name,
@@ -53,7 +55,7 @@ def step_get_job_status(project_name, job_name):
     :return: 任务的uid
     """
     # 验证任务状态为完成，等待60s
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
           '/jobs?name=' + job_name + '&sortBy=updateTime&limit=10'
     i = 0
     while i < 60:
@@ -78,7 +80,7 @@ def step_get_job_status_run(project_name, job_name):
     :return: 任务的uid
     """
     # 验证任务状态为运行中
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
           '/jobs?name=' + job_name + '&sortBy=updateTime&limit=10'
     r2 = requests.get(url=url, headers=get_header())
     print(r2.json()['items'])
@@ -98,7 +100,7 @@ def step_get_assign_job(project_name, way, condition):
     :param project_name: 项目名称
     :return: 查询到的任务数量
     """
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/jobs?' + way + '=' + \
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/jobs?' + way + '=' + \
           condition + '&sortBy=updateTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -111,7 +113,7 @@ def step_delete_job(project_name, job_name):
     :param job_name: 任务名称
     :return: 删除结果
     """
-    url = config.url + '/apis/batch/v1/namespaces/' + project_name + '/jobs/' + job_name
+    url = env_url + '/apis/batch/v1/namespaces/' + project_name + '/jobs/' + job_name
     data = {"kind": "DeleteOptions",
             "apiVersion": "v1",
             "propagationPolicy": "Background"}
@@ -127,7 +129,7 @@ def step_get_job_pods(project_name, uid):
     :param uid: 容器的uid
     :return: 第一个容器的名称
     """
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
           '/pods?limit=10&ownerKind=Job&labelSelector=controller-uid%3D' + uid + '&sortBy=startTime'
     r = requests.get(url=url, headers=get_header())
     return r.json()['items'][0]['metadata']['name']
@@ -141,7 +143,7 @@ def step_get_pods_log(project_name, pod_name, job_name):
     :param job_name: 任务名称
     """
     container_name = 'container-' + job_name
-    url = config.url + '/api/v1/namespaces/' + project_name + '/pods/' + pod_name + '/log?container=' + container_name + '&tailLines=1000&timestamps=true&follow=false'
+    url = env_url + '/api/v1/namespaces/' + project_name + '/pods/' + pod_name + '/log?container=' + container_name + '&tailLines=1000&timestamps=true&follow=false'
     r = requests.get(url=url, headers=get_header())
 
     print(r.text)
@@ -164,8 +166,8 @@ def step_create_deploy(project_name, work_name, container_name, image, replicas,
     :param container_name: 容器名称
     :param image: 镜像名称
     """
-    url1 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/' + 'deployments?dryRun=All'
-    url2 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/deployments'
+    url1 = env_url + '/apis/apps/v1/namespaces/' + project_name + '/' + 'deployments?dryRun=All'
+    url2 = env_url + '/apis/apps/v1/namespaces/' + project_name + '/deployments'
 
     data = {"apiVersion": "apps/v1", "kind": "Deployment",
             "metadata": {"namespace": project_name,
@@ -201,10 +203,10 @@ def step_create_deploy(project_name, work_name, container_name, image, replicas,
 def step_create_stateful(project_name, work_name, container_name, image, replicas, ports, service_ports, volumemount,
                          volume_info,
                          service_name):
-    url1 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/statefulsets?dryRun=All'
-    url3 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/statefulsets'
-    url2 = config.url + '/api/v1/namespaces/' + project_name + '/services?dryRun=All'
-    url4 = config.url + '/api/v1/namespaces/' + project_name + '/services'
+    url1 = env_url + '/apis/apps/v1/namespaces/' + project_name + '/statefulsets?dryRun=All'
+    url3 = env_url + '/apis/apps/v1/namespaces/' + project_name + '/statefulsets'
+    url2 = env_url + '/api/v1/namespaces/' + project_name + '/services?dryRun=All'
+    url4 = env_url + '/api/v1/namespaces/' + project_name + '/services'
     data1 = {"apiVersion": "apps/v1",
              "kind": "StatefulSet",
              "metadata": {
@@ -259,8 +261,8 @@ def step_create_stateful(project_name, work_name, container_name, image, replica
 @allure.step('创建daemonsets')
 def step_create_daemonset(project_name, work_name, container_name, image, ports, volumemount,
                           volume_info):
-    url1 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/daemonsets?dryRun=All'
-    url2 = config.url + '/apis/apps/v1/namespaces/' + project_name + '/daemonsets'
+    url1 = env_url + '/apis/apps/v1/namespaces/' + project_name + '/daemonsets?dryRun=All'
+    url2 = env_url + '/apis/apps/v1/namespaces/' + project_name + '/daemonsets'
     data = {"apiVersion": "apps/v1", "kind": "DaemonSet",
             "metadata": {
                 "namespace": project_name,
@@ -295,8 +297,8 @@ def step_create_daemonset(project_name, work_name, container_name, image, ports,
 
 @allure.step('创建service')
 def step_create_service(project_name, service_name, port):
-    url1 = config.url + '/api/v1/namespaces/' + project_name + '/services?dryRun=All'
-    url2 = config.url + '/api/v1/namespaces/' + project_name + '/services'
+    url1 = env_url + '/api/v1/namespaces/' + project_name + '/services?dryRun=All'
+    url2 = env_url + '/api/v1/namespaces/' + project_name + '/services'
 
     data = {"apiVersion": "v1",
             "kind": "Service",
@@ -318,7 +320,7 @@ def step_create_service(project_name, service_name, port):
 
 @allure.step('创建路由')
 def step_create_route(project_name, ingress_name, host, service_info):
-    url = config.url + '/apis/extensions/v1beta1/namespaces/' + project_name + '/ingresses'
+    url = env_url + '/apis/extensions/v1beta1/namespaces/' + project_name + '/ingresses'
     data = {"apiVersion": "extensions/v1beta1",
             "kind": "Ingress",
             "metadata": {
@@ -341,7 +343,7 @@ def step_create_route(project_name, ingress_name, host, service_info):
 
 @allure.step('设置网关')
 def step_create_gateway(project_name, type, annotations):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
     data = {"type": type, "annotations": annotations}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
@@ -349,7 +351,7 @@ def step_create_gateway(project_name, type, annotations):
 
 @allure.step('编辑网关')
 def step_edit_gateway(project_name, type, annotations):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
     data = {"type": type, "annotations": annotations}
     response = requests.put(url=url, headers=get_header(), data=json.dumps(data))
     return response
@@ -357,7 +359,7 @@ def step_edit_gateway(project_name, type, annotations):
 
 @allure.step('删除网关')
 def step_delete_gateway(project_name):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
     data = {}
     response = requests.delete(url=url, headers=get_header(), data=json.dumps(data))
     return response
@@ -365,14 +367,14 @@ def step_delete_gateway(project_name):
 
 @allure.step('查看项目网关')
 def step_get_gateway(project_name):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('删除service')
 def step_delete_service(project_name, service_name):
-    url = config.url + '/api/v1/namespaces/' + project_name + '/services/' + service_name
+    url = env_url + '/api/v1/namespaces/' + project_name + '/services/' + service_name
     response = requests.delete(url=url, headers=get_header())
     return response
 
@@ -384,7 +386,7 @@ def step_modify_work_replicas(project_name, work_name, replicas):
     :param work_name: 工作负载名称
     :param replicas: 副本数
     """
-    url = config.url + '/apis/apps/v1/namespaces/' + project_name + '/deployments/' + work_name
+    url = env_url + '/apis/apps/v1/namespaces/' + project_name + '/deployments/' + work_name
     data = {"spec": {"replicas": replicas}}
     r = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
     # 验证修改后的副本数
@@ -394,7 +396,7 @@ def step_modify_work_replicas(project_name, work_name, replicas):
 @allure.step('获取工作负载中所有的容器组的运行状态')
 def step_get_work_pod_status(project_name, work_name):
     status = []
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods' \
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods' \
                                                                                               '?ownerKind=ReplicaSet&labelSelector=app%3' + work_name + '&name=' + work_name + '&sortBy=startTime'
 
     r = requests.get(url=url, headers=get_header())
@@ -413,7 +415,7 @@ def step_get_workload(project_name, type, condition):
     :param condition: 查询条件  如：name=test
     :return:
     """
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' \
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' \
           + project_name + '/' + type + '?' + condition
     response = requests.get(url=url, headers=get_header())
     return response
@@ -421,7 +423,7 @@ def step_get_workload(project_name, type, condition):
 
 @allure.step('删除指定的工作负载')
 def step_delete_workload(project_name, type, work_name):
-    url = config.url + '/apis/apps/v1/namespaces/' + project_name + '/' + type + '/' + work_name
+    url = env_url + '/apis/apps/v1/namespaces/' + project_name + '/' + type + '/' + work_name
     data = {"kind": "DeleteOptions", "apiVersion": "v1", "propagationPolicy": "Background"}
     response = requests.delete(url=url, headers=get_header(), data=json.dumps(data))
     return response
@@ -429,7 +431,7 @@ def step_delete_workload(project_name, type, work_name):
 
 @allure.step('创建存储卷')
 def step_create_volume(project_name, volume_name):
-    url = config.url + '/api/v1/namespaces/' + project_name + '/persistentvolumeclaims'
+    url = env_url + '/api/v1/namespaces/' + project_name + '/persistentvolumeclaims'
     data = {"apiVersion": "v1",
             "kind": "PersistentVolumeClaim",
             "metadata": {"namespace": project_name, "name": volume_name, "labels": {},
@@ -442,7 +444,7 @@ def step_create_volume(project_name, volume_name):
 
 @allure.step('删除存储卷')
 def step_delete_volume(project_name, volume_name):
-    url = config.url + '/api/v1/namespaces/' + project_name + '/persistentvolumeclaims/' + volume_name
+    url = env_url + '/api/v1/namespaces/' + project_name + '/persistentvolumeclaims/' + volume_name
     # 删除存储卷
     response = requests.delete(url=url, headers=get_header())
     return response
@@ -450,7 +452,7 @@ def step_delete_volume(project_name, volume_name):
 
 @allure.step('查询指定的存储卷')
 def step_get_volume(project_name, volume_name):
-    url1 = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+    url1 = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
            '/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime&limit=10'
     response = requests.get(url=url1, headers=get_header())
     return response
@@ -458,14 +460,14 @@ def step_get_volume(project_name, volume_name):
 
 @allure.step('获取存储卷状态')
 def step_get_volume_status(project_name, volume_name):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime&limit=10'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('创建sa')
 def step_create_sa(project_name, sa_name):
-    url = config.url + '/api/v1/namespaces/' + project_name + '/serviceaccounts'
+    url = env_url + '/api/v1/namespaces/' + project_name + '/serviceaccounts'
     data = {"apiVersion": "v1", "kind": "ServiceAccount",
             "metadata": {"namespace": project_name, "labels": {}, "name": sa_name,
                          "annotations": {"kubesphere.io/creator": "admin"}}}
@@ -474,7 +476,7 @@ def step_create_sa(project_name, sa_name):
 
 @allure.step('查询指定sa并返回密钥名称')
 def step_get_sa(project_name, sa_name):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/serviceaccounts?name=' + sa_name + '&sortBy=createTime&limit=10'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/serviceaccounts?name=' + sa_name + '&sortBy=createTime&limit=10'
     r = requests.get(url=url, headers=get_header())
     if r.json()['totalItems'] > 0:
         return r.json()['items'][0]['secrets'][0]['name']
@@ -484,14 +486,14 @@ def step_get_sa(project_name, sa_name):
 
 @allure.step('查询项目的角色信息')
 def step_get_role(project_name, role_name):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles?name=' + role_name + '&annotation=kubesphere.io%2Fcreator'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles?name=' + role_name + '&annotation=kubesphere.io%2Fcreator'
     response = requests.get(url, headers=get_header())
     return response
 
 
 @allure.step('创建角色')
 def step_create_role(project_name, role_name):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles'
     data = {"apiVersion": "rbac.authorization.k8s.io/v1",
             "kind": "Role",
             "metadata": {"namespace": project_name,
@@ -511,14 +513,14 @@ def step_get_project_role(project_name, rloe_name):
     :param rloe_name: 项目角色名称
     :return:
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles?name=' + rloe_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles?name=' + rloe_name
     response = requests.get(url, headers=get_header())
     return response
 
 
 @allure.step('修改角色信息')
 def step_edit_project_role(project_name, role_name, resourceversion, annotations):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles/' + role_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles/' + role_name
     data = {"metadata": {"name": role_name,
                          "namespace": project_name,
                          "resourceVersion": resourceversion,
@@ -531,40 +533,40 @@ def step_edit_project_role(project_name, role_name, resourceversion, annotations
 
 @allure.step('删除角色')
 def step_project_delete_role(project_name, role_name):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles/' + role_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles/' + role_name
     response = requests.delete(url, headers=get_header())
     return response
 
 
 @allure.step('查看指定用户')
 def step_get_project_user(project_name, user_name):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/members?name=' + user_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/members?name=' + user_name
     response = requests.get(url, headers=get_header())
     return response
 
 
 @allure.step('查看指定sa详情信息')
 def step_get_sa_detail(project_name, sa_name):
-    url = config.url + '/api/v1/namespaces/' + project_name + '/serviceaccounts/' + sa_name
+    url = env_url + '/api/v1/namespaces/' + project_name + '/serviceaccounts/' + sa_name
     r = requests.get(url=url, headers=get_header())
 
 
 @allure.step('查看指定密钥并返回密钥类型')
 def step_get_secret(project_name, secret_name):
-    url = config.url + '/api/v1/namespaces/' + project_name + '/secrets/' + secret_name
+    url = env_url + '/api/v1/namespaces/' + project_name + '/secrets/' + secret_name
     r = requests.get(url=url, headers=get_header())
     return r.json()['type']
 
 
 @allure.step('删除指定sa')
 def step_delete_sa(project_name, sa_name):
-    url = config.url + '/api/v1/namespaces/' + project_name + '/serviceaccounts/' + sa_name
+    url = env_url + '/api/v1/namespaces/' + project_name + '/serviceaccounts/' + sa_name
     r = requests.delete(url=url, headers=get_header())
 
 
 @allure.step('删除存储卷快照')
 def step_delete_volume_snapshot(project_name, snapshot_name):
-    url = config.url + '/apis/snapshot.storage.k8s.io/v1beta1/namespaces/' + project_name + \
+    url = env_url + '/apis/snapshot.storage.k8s.io/v1beta1/namespaces/' + project_name + \
           '/volumesnapshots/' + snapshot_name
     response = requests.delete(url=url, headers=get_header())
     return response
@@ -572,7 +574,7 @@ def step_delete_volume_snapshot(project_name, snapshot_name):
 
 @allure.step('查询指定的存储卷快照')
 def step_get_volume_snapshot(project_name, snapshot_name):
-    url1 = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+    url1 = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
            '/volumesnapshots?name=' + snapshot_name + '&sortBy=createTime&limit=10'
     response = requests.get(url=url1, headers=get_header())
     return response
@@ -580,7 +582,7 @@ def step_get_volume_snapshot(project_name, snapshot_name):
 
 @allure.step('查询指定的项目')
 def step_get_project(ws_name, project_name):
-    url1 = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + \
+    url1 = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + \
            '/namespaces?name=' + project_name
     response = requests.get(url=url1, headers=get_header())
     return response
@@ -588,7 +590,7 @@ def step_get_project(ws_name, project_name):
 
 @allure.step('编辑项目')
 def step_edit_project(ws_name, project_name, alias_name, description):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
     data = {
         "metadata": {
             "name": project_name,
@@ -608,7 +610,7 @@ def step_edit_project(ws_name, project_name, alias_name, description):
 
 @allure.step('获取项目配额的resourceVersion')
 def step_get_project_quota_version(project_name):
-    url = config.url + '/api/v1/namespaces/' + project_name + '/resourcequotas/' + project_name
+    url = env_url + '/api/v1/namespaces/' + project_name + '/resourcequotas/' + project_name
     response = requests.get(url=url, headers=get_header())
     try:
         if response.json():
@@ -621,8 +623,8 @@ def step_get_project_quota_version(project_name):
 
 @allure.step('编辑项目配额')
 def step_edit_project_quota(project_name, hard, resource_version):
-    url_put = config.url + '/api/v1/namespaces/' + project_name + '/resourcequotas/' + project_name
-    url_post = config.url + '/api/v1/namespaces/' + project_name + '/resourcequotas'
+    url_put = env_url + '/api/v1/namespaces/' + project_name + '/resourcequotas/' + project_name
+    url_post = env_url + '/api/v1/namespaces/' + project_name + '/resourcequotas'
     data_post = {
         "apiVersion": "v1",
         "kind": "ResourceQuota",
@@ -655,14 +657,14 @@ def step_edit_project_quota(project_name, hard, resource_version):
 
 @allure.step('查询项目配额')
 def step_get_project_quota(project_name):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/quotas'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/quotas'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('获取容器默认资源请求')
 def step_get_container_quota(project_name, ws_name):
-    url = config.url + '/api/v1/namespaces/' + project_name + '/limitranges?workspace=' + ws_name
+    url = env_url + '/api/v1/namespaces/' + project_name + '/limitranges?workspace=' + ws_name
     try:
         response = requests.get(url=url, headers=get_header())
         return response
@@ -672,8 +674,8 @@ def step_get_container_quota(project_name, ws_name):
 
 @allure.step('编辑容器资源默认请求')
 def step_edit_container_quota(project_name, name, resource_version, limit, request):
-    url_post = config.url + '/api/v1/namespaces/' + project_name + '/limitranges'
-    url_put = config.url + '/api/v1/namespaces/' + project_name + '/limitranges/' + name
+    url_post = env_url + '/api/v1/namespaces/' + project_name + '/limitranges'
+    url_put = env_url + '/api/v1/namespaces/' + project_name + '/limitranges/' + name
     data_post = {
         "apiVersion": "v1",
         "kind": "LimitRange",
@@ -714,7 +716,7 @@ def step_edit_container_quota(project_name, name, resource_version, limit, reque
 
 @allure.step('在单集群环境删除指定的项目')
 def step_delete_project(ws_name, project_name):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
     response = requests.delete(url=url, headers=get_header())
     return response
 
@@ -725,7 +727,7 @@ def step_create_project(ws_name, project_name):
     :param ws_name: 企业空间名称
     :param project_name: 项目名称
     """
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces'
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces'
     data = {"apiVersion": "v1",
             "kind": "Namespace",
             "metadata": {"name": project_name,
@@ -738,7 +740,7 @@ def step_create_project(ws_name, project_name):
 
 @allure.step('在指定集群创建项目')
 def step_create_project_for_cluster(cluster_name, ws_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
           ws_name + '/namespaces'
     data = {"apiVersion": "v1", "kind": "Namespace",
             "metadata": {"name": project_name, "labels": {"kubesphere.io/workspace": ws_name},
@@ -750,7 +752,7 @@ def step_create_project_for_cluster(cluster_name, ws_name, project_name):
 
 @allure.step('从指定集群删除项目')
 def step_delete_project_from_cluster(cluster_name, ws_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
           ws_name + '/namespaces/' + project_name
     response = requests.delete(url=url, headers=get_header())
     return response
@@ -764,7 +766,7 @@ def step_get_app_status(ws_name, project_name, app_name):
     :param app_name: 应用名称
     :return: 应用状态
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/namespaces/' + project_name + '/applications?conditions=keyword%3D' + app_name
+    url = env_url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/namespaces/' + project_name + '/applications?conditions=keyword%3D' + app_name
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -777,7 +779,7 @@ def step_get_app_count(ws_name, project_name, app_name):
     :param app_name: 应用名称
     :return:
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/default/namespaces/' + \
+    url = env_url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/clusters/default/namespaces/' + \
           project_name + '/applications?conditions=status%3Dactive%7Cstopped%7Cpending%7Csuspended%2Ckeyword%3D' + \
           app_name + '&paging=limit%3D10%2Cpage%3D1&orderBy=status_time&reverse=true'
     r = requests.get(url=url, headers=get_header())
@@ -792,7 +794,7 @@ def step_get_deployed_app(ws_name, project_name, app_name):
     :param app_name: 应用名称
     :return: 应用的cluster_id
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/namespaces/' + project_name + \
+    url = env_url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/namespaces/' + project_name + \
           '/applications?conditions=keyword%3D' + app_name
     response = requests.get(url=url, headers=get_header())
     return response
@@ -805,7 +807,7 @@ def step_delete_app(ws_name, project_name, cluster_id):
     :param project_name: 项目名称
     :param cluster_id: 部署后的应用的id
     """
-    url = config.url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/namespaces/' + project_name + \
+    url = env_url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/namespaces/' + project_name + \
           '/applications/' + cluster_id
     response = requests.delete(url=url, headers=get_header())
     return response
@@ -813,14 +815,14 @@ def step_delete_app(ws_name, project_name, cluster_id):
 
 @allure.step('查询项目的pod信息')
 def step_get_pod_info_of_project(project_name):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods?sortBy=startTime'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods?sortBy=startTime'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('查询企业空间的项目信息')
 def step_get_project_info(ws_name):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces?' \
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces?' \
                                                                                       'sortBy=createTime&labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -828,7 +830,7 @@ def step_get_project_info(ws_name):
 
 @allure.step('在项目中查询pod')
 def step_get_pod_info(project_name, pod_name):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods?' \
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods?' \
                                                                                               'name=' + pod_name + '&sortBy=startTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -837,7 +839,7 @@ def step_get_pod_info(project_name, pod_name):
 #####多集群######
 @allure.step('获取host集群的名称')
 def step_get_host_name():
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/clusters?labelSelector=cluster-role.kubesphere.io%2Fhost'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/clusters?labelSelector=cluster-role.kubesphere.io%2Fhost'
     try:
         response = requests.get(url=url, headers=get_header())
         return response.json()['items'][0]['metadata']['name']
@@ -848,14 +850,14 @@ def step_get_host_name():
 
 @allure.step('在多集群环境查询项目的federatedlimitranges')
 def step_get_project_federatedlimitranges(project_name):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedlimitranges'
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedlimitranges'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('在多集群环境查询落盘日志收集功能')
 def step_check_disk_log_collection(project_name):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
           '/federatednamespaces/' + project_name
     response = requests.get(url=url, headers=get_header())
     return response
@@ -879,7 +881,7 @@ def step_create_deploy_in_multi_project(cluster_name, project_name, work_name, c
     :param container_name: 容器名称
     :param image: 镜像名称
     """
-    url1 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federateddeployments'
+    url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federateddeployments'
     url2 = url1 + '?dryRun=All'
 
     data = {"apiVersion": "types.kubefed.io/v1beta1", "kind": "FederatedDeployment",
@@ -918,10 +920,10 @@ def step_create_deploy_in_multi_project(cluster_name, project_name, work_name, c
 def step_create_stateful_in_multi_project(cluster_name, project_name, work_name, container_name, image, replicas, ports,
                                           service_ports,
                                           volumemount, volume_info, service_name):
-    url1 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedstatefulsets?dryRun=All'
-    url3 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedstatefulsets'
-    url2 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices?dryRun=All'
-    url4 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices'
+    url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedstatefulsets?dryRun=All'
+    url3 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedstatefulsets'
+    url2 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices?dryRun=All'
+    url4 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices'
     data1 = {"apiVersion": "types.kubefed.io/v1beta1",
              "kind": "FederatedStatefulSet",
              "metadata": {"namespace": project_name,
@@ -973,8 +975,8 @@ def step_create_stateful_in_multi_project(cluster_name, project_name, work_name,
 
 @allure.step('在多集群环境创建无状态服务')
 def step_create_service_in_multi_project(cluster_name, project_name, service_name, port):
-    url1 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices?dryRun=All'
-    url2 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices'
+    url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices?dryRun=All'
+    url2 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices'
 
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedService",
@@ -1000,8 +1002,8 @@ def step_create_service_in_multi_project(cluster_name, project_name, service_nam
 
 @allure.step('在多集群项目创建路由')
 def step_create_route_in_multi_project(cluster_name, project_name, ingress_name, host, service_info):
-    url1 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedingresses?dryRun=All'
-    url2 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedingresses'
+    url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedingresses?dryRun=All'
+    url2 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedingresses'
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedIngress",
             "metadata": {"namespace": project_name, "name": ingress_name,
@@ -1028,7 +1030,7 @@ def step_create_route_in_multi_project(cluster_name, project_name, ingress_name,
 
 @allure.step('在多集群项目设置网关')
 def step_create_gateway_in_multi_project(cluster_name, project_name, type, annotations):
-    url = config.url + '/kapis/clusters/' + cluster_name + \
+    url = env_url + '/kapis/clusters/' + cluster_name + \
           '/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
     data = {"type": type, "annotations": annotations}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
@@ -1037,7 +1039,7 @@ def step_create_gateway_in_multi_project(cluster_name, project_name, type, annot
 
 @allure.step('编辑多集群项目的网关')
 def step_edit_gateway_in_multi_project(cluster_name, project_name, type, annotations):
-    url = config.url + '/kapis/clusters/' + cluster_name + \
+    url = env_url + '/kapis/clusters/' + cluster_name + \
           '/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
     data = {"type": type, "annotations": annotations}
     response = requests.put(url=url, headers=get_header(), data=json.dumps(data))
@@ -1046,7 +1048,7 @@ def step_edit_gateway_in_multi_project(cluster_name, project_name, type, annotat
 
 @allure.step('在多集群项目删除网关')
 def step_delete_gateway_in_multi_project(cluster_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + \
+    url = env_url + '/kapis/clusters/' + cluster_name + \
           '/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
     data = {}
     response = requests.delete(url=url, headers=get_header(), data=json.dumps(data))
@@ -1055,7 +1057,7 @@ def step_delete_gateway_in_multi_project(cluster_name, project_name):
 
 @allure.step('查看多集群项目网关')
 def step_get_gateway_in_multi_project(cluster_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + \
+    url = env_url + '/kapis/clusters/' + cluster_name + \
           '/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -1068,8 +1070,8 @@ def step_modify_work_replicas_in_multi_project(cluster_name, project_name, type,
     :param work_name: 工作负载名称
     :param replicas: 副本数
     """
-    url1 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federated' + type + '/' + work_name
-    url2 = config.url + '/apis/clusters/host/apps/v1/namespaces/' + project_name + '/' + type + '/' + work_name
+    url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federated' + type + '/' + work_name
+    url2 = env_url + '/apis/clusters/host/apps/v1/namespaces/' + project_name + '/' + type + '/' + work_name
     data1 = {
         "spec": {"overrides": [{"clusterName": cluster_name,
                                 "clusterOverrides": [{"path": "/spec/replicas", "value": replicas}]
@@ -1086,7 +1088,7 @@ def step_modify_work_replicas_in_multi_project(cluster_name, project_name, type,
 @allure.step('获取多集群项目的工作负载中所有的容器组的运行情况')
 def step_get_work_pod_info_in_multi_project(cluster_name, project_name, work_name):
     status = []
-    url = config.url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces/' + \
           project_name + '/pods?ownerKind=ReplicaSet&labelSelector=app%3D' + work_name
 
     r = requests.get(url=url, headers=get_header())
@@ -1102,7 +1104,7 @@ def step_get_workload_in_multi_project(cluster_name, project_name, type, conditi
     :param condition: 查询条件  如：name=test
     :return:
     """
-    url = config.url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces/' \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces/' \
           + project_name + '/' + type + '?' + condition
     print(url)
     response = requests.get(url=url, headers=get_header())
@@ -1111,14 +1113,14 @@ def step_get_workload_in_multi_project(cluster_name, project_name, type, conditi
 
 @allure.step('删除多集群项目指定的工作负载')
 def step_delete_workload_in_multi_project(project_name, type, work_name):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federated' + type + '/' + work_name
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federated' + type + '/' + work_name
     response = requests.delete(url=url, headers=get_header())
     return response
 
 
 @allure.step('在多集群环境创建存储卷')
 def step_create_volume_in_multi_project(cluster_name, project_name, volume_name):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedpersistentvolumeclaims'
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedpersistentvolumeclaims'
     url2 = url + '?dryRun=All'
 
     data = {"apiVersion": "types.kubefed.io/v1beta1",
@@ -1139,7 +1141,7 @@ def step_create_volume_in_multi_project(cluster_name, project_name, volume_name)
 
 @allure.step('删除多集群项目的存储卷')
 def step_delete_volume_in_multi_project(project_name, volume_name):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
           '/federatedpersistentvolumeclaims/' + volume_name
     # 删除存储卷
     response = requests.delete(url=url, headers=get_header())
@@ -1148,7 +1150,7 @@ def step_delete_volume_in_multi_project(project_name, volume_name):
 
 @allure.step('获取多集群项目存储卷状态')
 def step_get_volume_status_in_multi_project(cluster_name, project_name, volume_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces/' \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces/' \
           + project_name + '/persistentvolumeclaims?names=' + volume_name
     response = requests.get(url=url, headers=get_header())
     return response
@@ -1156,7 +1158,7 @@ def step_get_volume_status_in_multi_project(cluster_name, project_name, volume_n
 
 @allure.step('查询指定的存储卷快照')
 def step_get_volume_snapshot(project_name, snapshot_name):
-    url1 = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+    url1 = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
            '/volumesnapshots?name=' + snapshot_name + '&sortBy=createTime&limit=10'
     response = requests.get(url=url1, headers=get_header())
     return response
@@ -1164,7 +1166,7 @@ def step_get_volume_snapshot(project_name, snapshot_name):
 
 @allure.step('查询指定的多集群项目')
 def step_get_project_in_multi_project(ws_name, project_name):
-    url1 = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + \
+    url1 = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + \
            '/federatednamespaces?name=' + project_name
     response = requests.get(url=url1, headers=get_header())
     return response
@@ -1172,7 +1174,7 @@ def step_get_project_in_multi_project(ws_name, project_name):
 
 @allure.step('编辑多集群项目')
 def step_edit_project_in_multi_project(cluster_name, ws_name, project_name, alias_name, description):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
           '/federatednamespaces/' + project_name
 
     data = {"metadata": {"name": project_name, "namespace": project_name,
@@ -1191,7 +1193,7 @@ def step_edit_project_in_multi_project(cluster_name, ws_name, project_name, alia
 
 @allure.step('在多集群项目获取项目配额的resourceVersion')
 def step_get_project_quota_version_in_multi_project(cluster_name, project_name):
-    url = config.url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + \
+    url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + \
           '/resourcequotas/' + project_name
     response = requests.get(url=url, headers=get_header())
     try:
@@ -1205,9 +1207,9 @@ def step_get_project_quota_version_in_multi_project(cluster_name, project_name):
 
 @allure.step('在多集群项目编辑项目配额')
 def step_edit_project_quota_in_multi_project(cluster_name, project_name, hard, resource_version):
-    url_put = config.url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + \
+    url_put = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + \
               '/resourcequotas/' + project_name
-    url_post = config.url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + '/resourcequotas'
+    url_post = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + '/resourcequotas'
 
     data_post = {"apiVersion": "v1",
                  "kind": "ResourceQuota",
@@ -1237,7 +1239,7 @@ def step_edit_project_quota_in_multi_project(cluster_name, project_name, hard, r
 
 @allure.step('在多集群项目查询项目配额')
 def step_get_project_quota_in_multi_project(cluster_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha2/namespaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha2/namespaces/' + \
           project_name + '/quotas'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -1245,7 +1247,7 @@ def step_get_project_quota_in_multi_project(cluster_name, project_name):
 
 @allure.step('获取多集群环境容器默认资源请求')
 def step_get_container_quota_in_multi_project(project_name, ws_name):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
           '/federatedlimitranges?workspace=' + ws_name
     try:
         response = requests.get(url=url, headers=get_header())
@@ -1256,8 +1258,8 @@ def step_get_container_quota_in_multi_project(project_name, ws_name):
 
 @allure.step('在多集群项目编辑容器资源默认请求')
 def step_edit_container_quota_in_multi_project(cluster_name, project_name, resource_version, limit, request):
-    url_post = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedlimitranges'
-    url_put = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
+    url_post = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedlimitranges'
+    url_put = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
               '/federatedlimitranges/' + project_name
 
     data_post = {"apiVersion": "types.kubefed.io/v1beta1",
@@ -1297,9 +1299,9 @@ def step_edit_container_quota_in_multi_project(cluster_name, project_name, resou
 
 @allure.step('创建多集群项目')
 def step_create_multi_project(ws_name, project_name, clusters):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces'
-    url1 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatednamespaces?dryRun=All'
-    url2 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatednamespaces'
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces'
+    url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatednamespaces?dryRun=All'
+    url2 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatednamespaces'
     cluster_actual = []
     overrides = []
     if isinstance(clusters, str):
@@ -1371,7 +1373,7 @@ def step_get_multi_project_all():
 
 @allure.step('获取环境中所有的多集群项目的名称')
 def step_get_multi_projects_name():
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/federatednamespaces?sortBy=createTime'
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/federatednamespaces?sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
     multi_project_name = []
     for i in range(0, response.json()['totalItems']):
@@ -1381,14 +1383,14 @@ def step_get_multi_projects_name():
 
 @allure.step('按名称删除项目')
 def step_delete_project_by_name(project_name):
-    url = config.url + '/api/v1/namespaces/' + project_name
+    url = env_url + '/api/v1/namespaces/' + project_name
     response = requests.delete(url=url, headers=get_header())
     return response
 
 
 @allure.step('在多集群项目创建默认密钥')
 def step_create_secret_default_in_multi_project(cluster_name, project_name, secret_name, key, value):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
     url1 = url + '?dryRun=All'
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedSecret",
@@ -1411,7 +1413,7 @@ def step_create_secret_default_in_multi_project(cluster_name, project_name, secr
 
 @allure.step('在多集群项目创建TLS类型密钥')
 def step_create_secret_tls_in_multi_project(cluster_name, project_name, secret_name, credential, key):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
     url1 = url + '?dryRun=All'
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedSecret",
@@ -1433,7 +1435,7 @@ def step_create_secret_tls_in_multi_project(cluster_name, project_name, secret_n
 
 @allure.step('在单集群项目查询密钥')
 def step_get_secret(project_name, secret_name):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
           '/secrets?name=' + secret_name + '&sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -1441,7 +1443,7 @@ def step_get_secret(project_name, secret_name):
 
 @allure.step('在多集群项目查询密钥')
 def step_get_federatedsecret(project_name, secret_name):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
           '/federatedsecrets?name=' + secret_name + '&sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -1449,7 +1451,7 @@ def step_get_federatedsecret(project_name, secret_name):
 
 @allure.step('在多集群项目查询配置')
 def step_get_federatedconfigmap(project_name, config_name):
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
           '/federatedconfigmaps?name=' + config_name + '&sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -1457,7 +1459,7 @@ def step_get_federatedconfigmap(project_name, config_name):
 
 @allure.step('在多集群项目创建镜像仓库类型密钥')
 def step_create_secret_image_in_multi_project(cluster_name, project_name, secret_name):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
     url1 = url + '?dryRun=All'
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedSecret",
@@ -1481,7 +1483,7 @@ def step_create_secret_image_in_multi_project(cluster_name, project_name, secret
 
 @allure.step('在多集群项目创建账户密码密钥')
 def step_create_secret_account_in_multi_project(cluster_name, project_name, secret_name, username, password):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
     url1 = url + '?dryRun=All'
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedSecret",
@@ -1504,14 +1506,14 @@ def step_create_secret_account_in_multi_project(cluster_name, project_name, secr
 
 @allure.step('在多集群项目删除密钥')
 def step_delete_federatedsecret(project_name, secret_name):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets/' + secret_name
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets/' + secret_name
     response = requests.delete(url=url, headers=get_header())
     return response
 
 
 @allure.step('在多集群项目删除配置')
 def step_delete_config_map(project_name, config_name):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
           '/federatedconfigmaps/' + config_name
     response = requests.delete(url=url, headers=get_header())
     return response
@@ -1519,7 +1521,7 @@ def step_delete_config_map(project_name, config_name):
 
 @allure.step('在多集群项目创建配置')
 def step_create_config_map_in_multi_project(cluster_name, project_name, config_name, key, value):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedconfigmaps'
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedconfigmaps'
     url1 = url + '?dryRun=All'
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedConfigMap",
@@ -1539,7 +1541,7 @@ def step_create_config_map_in_multi_project(cluster_name, project_name, config_n
 
 @allure.step('在多集群环境设置落盘日志收集功能')
 def step_set_disk_log_collection(project_name, set):
-    url = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
           '/federatednamespaces/' + project_name
     data = {"metadata":
                 {"labels":
@@ -1555,7 +1557,7 @@ def step_set_disk_log_collection(project_name, set):
 
 @allure.step('在多集群环境查询项目的监控信息')
 def step_get_project_metrics_in_multi_project(cluster_name, project_name, start_time, end_time, step, times):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/namespaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/namespaces/' + \
           project_name + '?namespace=' + project_name + '&start=' + start_time + '&end=' + end_time + \
           '&step=' + step + '&times=' + times + '&metrics_filter=namespace_pod_count%7C' \
                                                 'namespace_deployment_count%7Cnamespace_statefulset_count%7C' \
@@ -1568,7 +1570,7 @@ def step_get_project_metrics_in_multi_project(cluster_name, project_name, start_
 
 @allure.step('在多集群环境查询项目的abnormalworkloads')
 def step_get_project_abnormalworkloads_in_multi_project(cluster_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha2/namespaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha2/namespaces/' + \
           project_name + '/abnormalworkloads'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -1576,7 +1578,7 @@ def step_get_project_abnormalworkloads_in_multi_project(cluster_name, project_na
 
 @allure.step('在多集群环境查询项目的workloads')
 def step_get_project_workloads_in_multi_project(cluster_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/namespaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/namespaces/' + \
           project_name + '/workloads?type=rank&metrics_filter=workload_cpu_usage%7Cworkload_memory_usage_wo_cache%7C' \
                          'workload_net_bytes_transmitted%7Cworkload_net_bytes_received%7Creplica&page=1&limit=10' \
                          '&sort_type=desc&sort_metric=workload_cpu_usage'
@@ -1588,10 +1590,10 @@ def step_get_project_workloads_in_multi_project(cluster_name, project_name):
 def step_get_system_project(cluster_name):
     # 判断环境是否是多集群环境
     if commonFunction.check_multi_cluster() is True:
-        url = config.url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces?' \
+        url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces?' \
                            'sortBy=createTime&labelSelector=kubesphere.io%2Fworkspace%3Dsystem-workspace'
     else:
-        url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces?' \
+        url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces?' \
                            'sortBy=createTime&labelSelector=kubesphere.io%2Fworkspace%3Dsystem-workspace'
     response = requests.get(url=url, headers=get_header())
     count = response.json()['totalItems']

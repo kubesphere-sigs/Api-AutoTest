@@ -2,17 +2,18 @@ import requests
 import json
 import allure
 import sys
+from common.getConfig import get_config
 
+env_url = get_config()['env']['url']
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
-from config import config
-from common.getHeader import get_header, get_header_for_patch
+from common.getHeader import get_header
 from common import commonFunction
 
 
 @allure.step('获取集群信息')
 def step_get_cluster():
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/clusters'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/clusters'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -20,7 +21,7 @@ def step_get_cluster():
 @allure.step('获取集群的名称')
 def step_get_cluster_name():
     clusters = []
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/clusters'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/clusters'
     response = requests.get(url=url, headers=get_header())
     for i in range(response.json()['totalItems']):
         clusters.append(response.json()['items'][i]['metadata']['name'])
@@ -29,7 +30,7 @@ def step_get_cluster_name():
 
 @allure.step('创建多集群企业空间')
 def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
     clusters = []
     if isinstance(cluster_names, str):
         clusters.append({'name': cluster_names})
@@ -57,7 +58,7 @@ def step_create_ws_role(ws_name, ws_role_name, authory):
     :param ws_name: 企业空间的名称
     :param ws_role_name: 企业空间的角色的名称
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles'
     data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
             "kind": "WorkspaceRole",
             "rules": [],
@@ -73,7 +74,7 @@ def step_create_ws_role(ws_name, ws_role_name, authory):
 @allure.step('修改角色权限')
 def step_edit_role_authory(ws_name, role_name, version, authory):
     # 修改角色的url地址
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles/' + role_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles/' + role_name
     # 修改目标角色的数据
     data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
             "kind": "WorkspaceRole",
@@ -95,7 +96,7 @@ def step_get_ws_role(ws_name, role_name):
     :param ws_name: 企业空间的名称
     :return: 企业空间中第一个角色的resourceversion
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles?name=' + role_name \
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles?name=' + role_name \
           + '&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
 
     response = requests.get(url, headers=get_header())
@@ -104,21 +105,21 @@ def step_get_ws_role(ws_name, role_name):
 
 @allure.step('查询企业空间指定成员')
 def step_get_ws_user(ws_name, user_name):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers?name=' + user_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers?name=' + user_name
     response = requests.get(url, headers=get_header())
     return response
 
 
 @allure.step('删除企业空间角色')
 def step_delete_role(ws_name, role_name):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles/' + role_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles/' + role_name
     response = requests.delete(url, headers=get_header())
     return response
 
 
 @allure.step('邀请用户到企业空间')
 def step_invite_user(ws_name, user_name, role_name):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers'
     # 邀请成员的信息
     data = [{"username": user_name, "roleRef": role_name}]
     # 邀请成员
@@ -129,7 +130,7 @@ def step_invite_user(ws_name, user_name, role_name):
 @allure.step('修改企业成员的角色')
 def step_edit_ws_user_role(ws_name, user_name, role_name):
     # 修改企业空间成员角色的url地址
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers/' + user_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers/' + user_name
     # 修改的目标数据
     data = {"username": user_name,
             "roleRef": role_name}
@@ -141,7 +142,7 @@ def step_edit_ws_user_role(ws_name, user_name, role_name):
 @allure.step('将用户从企业空间移除')
 def step_delete_ws_user(ws_name, user_name):
     # 删除邀请成员的url地址
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers/' + user_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers/' + user_name
     # 删除邀请成员
     response = requests.delete(url, headers=get_header())
     return response
@@ -149,14 +150,14 @@ def step_delete_ws_user(ws_name, user_name):
 
 @allure.step('在企业空间中查询指定用户')
 def step_get_ws_user(ws_name, user_name):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers?name=' + user_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers?name=' + user_name
     response = requests.get(url, headers=get_header())
     return response
 
 
 @allure.step('查询企业空间的配额信息')
 def step_get_ws_quota(cluster_name, ws_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + \
           '/resourcequotas/' + ws_name
     response = requests.get(url, headers=get_header())
     return response
@@ -164,7 +165,7 @@ def step_get_ws_quota(cluster_name, ws_name):
 
 @allure.step('创建企业组织')
 def step_create_department(ws_name, group_name, data):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groups'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groups'
     data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
             "kind": "Group",
             "metadata": {
@@ -179,21 +180,21 @@ def step_create_department(ws_name, group_name, data):
 
 @allure.step('查看企业组织可分配的用户信息')
 def step_get_user_for_department(name):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users?notingroup=' + name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users?notingroup=' + name
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('查看企业组织已分配的用户信息')
 def step_get_user_assigned_department(name):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users?ingroup=' + name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users?ingroup=' + name
     response = requests.get(url)
     return response
 
 
 @allure.step('将指定用户绑定到指定企业组织')
 def step_binding_user(ws_name, group_name, user_name):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groupbindings'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groupbindings'
     data = [{"userName": user_name, "groupName": group_name}]
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
@@ -201,7 +202,7 @@ def step_binding_user(ws_name, group_name, user_name):
 
 @allure.step('将用户从企业组织解绑')
 def step_unbind_user(ws_name, user_name):
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groupbindings/' + user_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groupbindings/' + user_name
     response = requests.delete(url=url, headers=get_header())
     return response
 
@@ -213,7 +214,7 @@ def step_get_department(ws_name):
     :return: 所有的企业组织名称
     """
     name_list = []
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groups'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groups'
     r = requests.get(url=url, headers=get_header())
     count = r.json()['totalItems']
     for i in range(0, count):
@@ -231,7 +232,7 @@ def step_edit_department(ws_name, group_name, data):
     :return:
     """
     # 修改企业空间的annotations信息，并返回annotations
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groups/' + group_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groups/' + group_name
     r = requests.patch(url=url, headers=get_header(), data=json.dumps(data))
     return r.json()['metadata']['annotations']
 
@@ -244,7 +245,7 @@ def step_delete_department(ws_name, group_name):
     :param group_name: 企业组织name
     :return:
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groups/' + group_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groups/' + group_name
     print(url)
     r = requests.delete(url=url, headers=get_header())
     return r
@@ -255,7 +256,7 @@ def step_init_quota(cluster_name, ws_name):
     data = {"apiVersion": "quota.kubesphere.io/v1alpha2", "kind": "ResourceQuota",
             "metadata": {"name": ws_name, "workspace": ws_name, "cluster": cluster_name,
                          "annotations": {"kubesphere.io/creator": "admin"}}, "spec": {"quota": {"hard": {}}}}
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
           ws_name + '/resourcequotas'
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
@@ -263,7 +264,7 @@ def step_init_quota(cluster_name, ws_name):
 
 @allure.step('获取企业配额的信息')
 def step_get_quota_resource_version(cluster_name, ws_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
           ws_name + '/resourcequotas/' + ws_name
     response = requests.get(url=url, headers=get_header())
     return response
@@ -276,7 +277,7 @@ def step_edit_quota(ws_name, hard_data, cluster_name, resource_version):
                          "resourceVersion": resource_version},
             "spec": {"quota": {"hard": hard_data}}}
 
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
           ws_name + '/resourcequotas/' + ws_name
     response = requests.put(url=url, headers=get_header(), data=json.dumps(data))
     return response
@@ -288,7 +289,7 @@ def step_create_user(user_name):
     :param user_name: 系统用户的名称
     """
     email = 'stevewen' + str(commonFunction.get_random()) + '@yunify.com'
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users'
     data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
             "kind": "User",
             "metadata": {"name": user_name,
@@ -306,7 +307,7 @@ def step_delete_workspace(ws_name):
     """
     :param ws_name: 企业空间的名称
     """
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
     requests.delete(url, headers=get_header())
 
 
@@ -315,13 +316,13 @@ def step_delete_user(user_name):
     """
     :param user_name: 系统用户的名称
     """
-    url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/users/' + user_name
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users/' + user_name
     requests.delete(url, headers=get_header())
 
 
 @allure.step('在多集群企业空间创建项目')
 def step_create_project(cluster_name, ws_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
           ws_name + '/namespaces'
     data = {"apiVersion": "v1",
             "kind": "Namespace",
@@ -339,7 +340,7 @@ def step_create_project(cluster_name, ws_name, project_name):
 
 @allure.step('在多集群企业空间查询指定的项目')
 def step_get_project(cluster_name, ws_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' \
           + ws_name + '/namespaces?name=' + project_name
     response = requests.get(url=url, headers=get_header())
     return response
@@ -347,7 +348,7 @@ def step_get_project(cluster_name, ws_name, project_name):
 
 @allure.step('在多集群企业空间删除项目')
 def step_delete_project(cluster_name, ws_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
           ws_name + '/namespaces/' + project_name
     response = requests.delete(url=url, headers=get_header())
     return response
@@ -355,9 +356,9 @@ def step_delete_project(cluster_name, ws_name, project_name):
 
 @allure.step('创建多集群项目')
 def step_create_multi_project(ws_name, project_name, clusters):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces'
-    url1 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatednamespaces?dryRun=All'
-    url2 = config.url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatednamespaces'
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces'
+    url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatednamespaces?dryRun=All'
+    url2 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatednamespaces'
     cluster_actual = []
     overrides = []
     if isinstance(clusters, str):
@@ -402,7 +403,7 @@ def step_create_multi_project(ws_name, project_name, clusters):
 
 @allure.step('查询指定的多集群项目')
 def step_get_multi_project(ws_name, project_name):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + \
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + \
           '/federatednamespaces?name=' + project_name
     response = requests.get(url=url, headers=get_header())
     return response
@@ -410,14 +411,14 @@ def step_get_multi_project(ws_name, project_name):
 
 @allure.step('删除多集群项目')
 def step_delete_multi_project(multi_project_name):
-    url = config.url + '/api/v1/namespaces/' + multi_project_name
+    url = env_url + '/api/v1/namespaces/' + multi_project_name
     response = requests.delete(url=url, headers=get_header())
     return response
 
 
 @allure.step('在多集群环境查询企业空间')
 def step_get_ws_info(ws_name):
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=' + ws_name
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=' + ws_name
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -429,7 +430,7 @@ def step_set_network_lsolation(ws_name, status):
     :param ws_name:
     :param status: True or False
     """
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
     data = {"spec": {"template": {"spec": {"networkIsolation": status}}}}
     response = requests.patch(url=url, headers=get_header(), data=json.dumps(data))
     return response

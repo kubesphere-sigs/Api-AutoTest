@@ -1182,12 +1182,3 @@ class TestCluster(object):
         # 验证数据类型为matrix
         assert result_type == 'matrix'
 
-
-@allure.step('获取集群的名称')
-def step_get_cluster_name():
-    clusters = []
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/clusters'
-    response = requests.get(url=url, headers=get_header())
-    for i in range(response.json()['totalItems']):
-        clusters.append(response.json()['items'][i]['metadata']['name'])
-    return clusters

@@ -9,10 +9,13 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 import time
 from urllib import parse
-from config import config
 from common.getHeader import get_header
 from common import commonFunction
 from step import devops_steps, platform_steps, workspace_steps, toolbox_steps, project_steps
+from step import workspace_steps
+from common.getConfig import get_config
+
+env_url = get_config()['env']['url']
 
 
 @allure.feature('DevOps')
@@ -124,7 +127,7 @@ class TestDevOps(object):
     @allure.title('创建账户凭证')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_account_credential(self):
-        url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + self.dev_name_new + '/credentials'
+        url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + self.dev_name_new + '/credentials'
         name = 'test' + str(commonFunction.get_random())
         description = '我是描述信息'
         username = 'dXNlcm5hbWU='
@@ -150,7 +153,7 @@ class TestDevOps(object):
     @allure.title('创建SSH凭证')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_ssh_credential(self):
-        url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + self.dev_name_new + '/credentials'
+        url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + self.dev_name_new + '/credentials'
         name = 'test' + str(commonFunction.get_random())
         username = 'cXdl'
         private_key = 'YXNk'
@@ -170,7 +173,7 @@ class TestDevOps(object):
     @allure.title('创建secret_text凭证')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_secret_text_credential(self):
-        url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + self.dev_name_new + '/credentials'
+        url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + self.dev_name_new + '/credentials'
         name = 'test' + str(commonFunction.get_random())
         description = '我是描述信息'
         secret = 'cXdlYXNk'
@@ -189,7 +192,7 @@ class TestDevOps(object):
     @allure.title('创建kubeconfig凭证')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_kubeconfig_credential(self):
-        url = config.url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + self.dev_name_new + '/credentials'
+        url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + self.dev_name_new + '/credentials'
         name = 'test' + str(commonFunction.get_random())
         description = '我是描述信息'
         data = {"apiVersion": "v1", "kind": "Secret",
@@ -301,7 +304,7 @@ class TestDevOps(object):
     @allure.title('模糊查找devops工程中的角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_role_fuzzy(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + \
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + \
               '/roles?name=admi&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
         r = requests.get(url, headers=get_header())
         assert r.json()['totalItems'] == 1  # 验证查询到的结果数量为2
@@ -312,7 +315,7 @@ class TestDevOps(object):
     @allure.title('在devops工程中创建角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_role_create(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.dev_name_new + '/roles'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.dev_name_new + '/roles'
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
                 "metadata": {"namespace": self.dev_name_new,
@@ -331,7 +334,7 @@ class TestDevOps(object):
     @allure.title('在devops工程中创建角色-角色名称为空')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_role_create_name_none(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.dev_name_new + '/roles'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.dev_name_new + '/roles'
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
                 "metadata": {"namespace": self.dev_name_new,
@@ -356,7 +359,7 @@ class TestDevOps(object):
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
         devops_role_name = 'Wx'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
                 "metadata": {"namespace": dev_name_new,
@@ -380,7 +383,7 @@ class TestDevOps(object):
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
         devops_role_name = 'W@x'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
                 "metadata": {"namespace": dev_name_new,
@@ -404,7 +407,7 @@ class TestDevOps(object):
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
         devops_role_name = '-Wx'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
                 "metadata": {"namespace": dev_name_new,
@@ -428,7 +431,7 @@ class TestDevOps(object):
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
         devops_role_name = 'Wx-'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
         data = {"apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
                 "metadata": {"namespace": dev_name_new,
@@ -503,7 +506,7 @@ class TestDevOps(object):
     @allure.title('查看devops工程默认的所有用户')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_user_all(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members?sortBy=createTime&limit=10'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members?sortBy=createTime&limit=10'
         r = requests.get(url, headers=get_header())
         assert r.json()['items'][0]['metadata']['name'] == 'admin'  # 验证默认的用户仅有admin
 
@@ -512,7 +515,7 @@ class TestDevOps(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_user_one(self):
         user_condition = 'admin'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members?name=' + user_condition + '&sortBy=createTime&limit=10'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members?name=' + user_condition + '&sortBy=createTime&limit=10'
         r = requests.get(url, headers=get_header())
         assert r.json()['items'][0]['metadata']['name'] == 'admin'  # 验证查找的结果为admin
 
@@ -521,7 +524,7 @@ class TestDevOps(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_user_fuzzy(self):
         user_condition = 'ad'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members?name=' + user_condition + '&sortBy=createTime&limit=10'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members?name=' + user_condition + '&sortBy=createTime&limit=10'
         r = requests.get(url, headers=get_header())
         assert r.json()['items'][0]['metadata']['name'] == 'admin'  # 验证查找的结果为admin
 
@@ -530,7 +533,7 @@ class TestDevOps(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_user_none(self):
         user_condition = 'wx-ad'
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members?name=' + user_condition + '&sortBy=createTime&limit=10'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members?name=' + user_condition + '&sortBy=createTime&limit=10'
         r = requests.get(url, headers=get_header())
         assert r.json()['totalItems'] == 0  # 验证查找的结果为空
 
@@ -538,7 +541,7 @@ class TestDevOps(object):
     @allure.title('邀请用户到devops工程')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_invite_user(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members'
         data = [{"username": self.user_name,
                  "roleRef": "viewer"}]
         r = requests.post(url, headers=get_header(), data=json.dumps(data))
@@ -552,7 +555,7 @@ class TestDevOps(object):
         # 获取创建的devops工程的别名
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + dev_name_new + '/members'
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + dev_name_new + '/members'
         data = [{"username": 'wxqw',
                  "roleRef": "viewer"}]
         r = requests.post(url, headers=get_header(), data=json.dumps(data))
@@ -562,7 +565,7 @@ class TestDevOps(object):
     @allure.title('编辑devops工程成员的角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_edit_user(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members/' + self.user_name
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members/' + self.user_name
         data = {"username": self.user_name,
                 "roleRef": "operator"}
         r = requests.put(url, headers=get_header(), data=json.dumps(data))
@@ -572,7 +575,7 @@ class TestDevOps(object):
     @allure.title('删除devops工程的成员')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_delete_user(self):
-        url = config.url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members/' + self.user_name
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + self.dev_name_new + '/members/' + self.user_name
         r = requests.delete(url, headers=get_header())
         assert r.json()['message'] == 'success'  # 验证删除成功
 

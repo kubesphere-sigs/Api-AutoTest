@@ -1,15 +1,16 @@
 import requests
 import allure
 import sys
-from config import config
 from common.getHeader import get_header
+from common.getConfig import get_config
 
+env_url = get_config()['env']['url']
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 
 @allure.step('获取集群信息')
 def step_get_cluster():
-    url = config.url + '/kapis/resources.kubesphere.io/v1alpha3/clusters'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/clusters'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -17,13 +18,13 @@ def step_get_cluster():
 @allure.step('查看资源消费历史')
 def step_get_consumption_history(cluster_name, type, start_time, end_time, step, name):
     if type == 'cluster':
-        url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/' + type + \
+        url = env_url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/' + type + \
               '?start=' + start_time + '&end=' + end_time + \
               '&step=' + step + 's&metrics_filter=meter_cluster_cpu_usage%7Cmeter_cluster_memory_usage%7C' \
                                 'meter_cluster_net_bytes_transmitted%7Cmeter_cluster_net_bytes_received%7C' \
                                 'meter_cluster_pvc_bytes_total&resources_filter=' + cluster_name
     elif type == 'node':
-        url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/nodes?' \
+        url = env_url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/nodes?' \
                                                                'start=' + start_time + '&end=' + end_time + \
               '&step=' + step + 's&metrics_filter=meter_node_cpu_usage%7Cmeter_node_memory_usage_wo_cache%7C' \
                                 'meter_node_net_bytes_transmitted%7Cmeter_node_net_bytes_received%7C' \
@@ -35,7 +36,7 @@ def step_get_consumption_history(cluster_name, type, start_time, end_time, step,
 
 @allure.step('查看资源消费历史')
 def step_get_node_consumption_history(cluster_name, start_time, end_time, step, name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/nodes?' \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/nodes?' \
                                                                'start=' + start_time + '&end=' + end_time + \
               '&step=' + step + 's&metrics_filter=meter_node_cpu_usage%7Cmeter_node_memory_usage_wo_cache%7C' \
                                 'meter_node_net_bytes_transmitted%7Cmeter_node_net_bytes_received%7C' \
@@ -46,7 +47,7 @@ def step_get_node_consumption_history(cluster_name, start_time, end_time, step, 
 
 @allure.step('查看集群资源消费历史')
 def step_get_cluster_consumption_history(cluster_name, type, start_time, end_time, step):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/' + type + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/' + type + \
           '?start=' + start_time + '&end=' + end_time + \
           '&step=' + step + 's&metrics_filter=meter_cluster_cpu_usage%7Cmeter_cluster_memory_usage%7C' \
                             'meter_cluster_net_bytes_transmitted%7Cmeter_cluster_net_bytes_received%7C' \
@@ -57,7 +58,7 @@ def step_get_cluster_consumption_history(cluster_name, type, start_time, end_tim
 
 @allure.step('查看pod的资源消费历史')
 def step_get_pod_consumption_history(cluster_name, node_name, start_time, end_time, step, pod_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/nodes/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/nodes/' + \
           node_name + '/pods?start=' + start_time + \
           '&end=' + end_time + '&step=' + step + 's&metrics_filter=meter_pod_cpu_usage%7C' \
           'meter_pod_memory_usage_wo_cache%7Cmeter_pod_net_bytes_transmitted%7C' \
@@ -68,7 +69,7 @@ def step_get_pod_consumption_history(cluster_name, node_name, start_time, end_ti
 
 @allure.step('查看项目的资源消费历史')
 def step_get_project_consumption_history(cluster_name, project_name, start_time, end_time, step):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/metering?start=' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/metering?start=' + \
           start_time + '&end=' + end_time + \
           '&step=' + step + 's&metrics_filter=meter_namespace_cpu_usage%7Cmeter_namespace_memory_usage_wo_cache%7C' \
                             'meter_namespace_net_bytes_transmitted%7Cmeter_namespace_net_bytes_received%7C' \
@@ -79,7 +80,7 @@ def step_get_project_consumption_history(cluster_name, project_name, start_time,
 
 @allure.step('查看企业空间的资源消费历史')
 def step_get_workspace_consumption_history(cluster_name, ws_name, start_time, end_time, step):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/workspaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/workspaces/' + \
           ws_name + '?start=' + start_time + \
           '&end=' + end_time + '&step=' + step + \
           's&metrics_filter=meter_workspace_cpu_usage%7C' \
@@ -91,7 +92,7 @@ def step_get_workspace_consumption_history(cluster_name, ws_name, start_time, en
 
 @allure.step('获取集群的节点信息')
 def step_get_node_info(cluster_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/nodes?' \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/nodes?' \
                        'sortBy=createTime&labelSelector=%21node-role.kubernetes.io%2Fedge'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -99,7 +100,7 @@ def step_get_node_info(cluster_name):
 
 @allure.step('查询节点的消费信息')
 def step_get_node_consumption(metric_name, node_name):
-    url = config.url + '/kapis/metering.kubesphere.io/v1alpha1/nodes?' \
+    url = env_url + '/kapis/metering.kubesphere.io/v1alpha1/nodes?' \
                        'metrics_filter=' + metric_name + '&resources_filter=' + node_name
     response = requests.get(url=url, headers=get_header())
     return response
@@ -107,7 +108,7 @@ def step_get_node_consumption(metric_name, node_name):
 
 @allure.step('查询节点的pod信息')
 def step_get_pod_info(cluster_name, node_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/pods?' \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/pods?' \
                        'labelSelector=&nodeName=' + node_name + '&sortBy=startTime'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -115,7 +116,7 @@ def step_get_pod_info(cluster_name, node_name):
 
 @allure.step('查询pod的消费信息')
 def step_get_pod_consumption(cluster_name, node_name, metric):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/nodes/' + node_name + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/nodes/' + node_name + \
                        '/pods?metrics_filter=' + metric
     response = requests.get(url=url, headers=get_header())
     return response
@@ -123,14 +124,14 @@ def step_get_pod_consumption(cluster_name, node_name, metric):
 
 @allure.step('查询集群的企业空间信息')
 def step_get_workspace_info():
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces?sortBy=createTime'
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces?sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('查询企业空间的项目信息')
 def step_get_project_info(cluster_name, ws_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
           ws_name + '/namespaces?' \
           'sortBy=createTime&labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
     response = requests.get(url=url, headers=get_header())
@@ -142,7 +143,7 @@ def step_get_project_consumption(metric, project):
     condition = ''
     for i in project:
         condition += str(i) + '%7C'
-    url = config.url + '/kapis/tenant.kubesphere.io/v1alpha2/metering?metrics_filter=' + metric + \
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/metering?metrics_filter=' + metric + \
                        '&resources_filter=' + condition + '&level=LevelNamespace'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -150,7 +151,7 @@ def step_get_project_consumption(metric, project):
 
 @allure.step('查询项目下最近1h消费的资源')
 def step_get_hierarchy_consumption(cluster_name, ws_name, project_name):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/namespaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/namespaces/' + \
           project_name + \
                        '/metering/hierarchy?workspace=' + ws_name
     response = requests.get(url=url, headers=get_header())
@@ -159,7 +160,7 @@ def step_get_hierarchy_consumption(cluster_name, ws_name, project_name):
 
 @allure.step('查询项目下资源的历史消费信息')
 def step_get_hierarchy_consumption_history(cluster_name, project_name, start_time, end_time, step, name, kind):
-    url = config.url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/namespaces/' + \
+    url = env_url + '/kapis/clusters/' + cluster_name + '/metering.kubesphere.io/v1alpha1/namespaces/' + \
           project_name + \
           '/workloads?start=' + start_time + '&end=' + end_time + '&step=' + step + \
           's&metrics_filter=meter_workload_cpu_usage%7Cmeter_workload_memory_usage_wo_cache%7C' \

@@ -1,7 +1,6 @@
 import requests
 import json
 import random
-from config import config
 from step import project_steps
 import time
 import datetime
