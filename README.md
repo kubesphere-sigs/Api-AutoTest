@@ -58,7 +58,9 @@ step
 
 ## 使用指南
 一、通过devops触发流水线
+
 1、替换devops-jenkins的镜像为 ghcr.io/linuxsuren/ks-jenkins:allure
+
 2、修改 deployment devops-jenkins的JAVA_TOOL_OPTIONS为
 ```
 -Xms1200m -Xmx1600m -XX:MaxRAM=2g
@@ -73,6 +75,7 @@ step
 -Djenkins.install.runSetupWizard=false
 ```
 3、在jenkins页面/系统管理/全局工具配置，新增Allure Commandline
+
 ![Image text](https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/4.png)
 
 4、使用如下jenkinsfile创建流水线
