@@ -1,5 +1,5 @@
 # Api-AutoTest
-本工程是基于kubesphere3.1版本编写的接口自动化测试用例，通过访问apiserver的方式运行，目前已基本覆盖ks3.0的基础功能。仍在持续优化中...
+本工程是基于kubesphere编写的接口自动化测试用例，通过访问apiserver的方式运行，目前已基本覆盖ks的基础功能。仍在持续优化中...
 ## 目录结构
 
 ```
@@ -29,7 +29,6 @@ TestCase
 ├── testUser.py
 ├── testWorkbench.py
 ├── testWorkspace.py
-└── wx-test.py
 common
 ├── commonFunction.py
 ├── getConfig.py
@@ -38,7 +37,7 @@ common
 ├── getHeader.py
 ├── getProxy.py
 └── logFormat.py
-requirements.txt [error opening dir]
+requirements.txt 
 config
 ├── config.py
 ├── config.yaml
