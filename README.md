@@ -94,6 +94,7 @@ pipeline {
       '''
       label 'default'
     }
+
   }
   stages {
     stage('拉取测试代码') {
@@ -101,15 +102,19 @@ pipeline {
         container('python') {
           git(url: 'https://github.com/kubesphere-sigs/Api-AutoTest.git', branch: 'master', changelog: true, poll: false)
         }
+
       }
     }
+
     stage('安装第三方python依赖') {
       steps {
         container('python') {
           sh 'pip install -r requirements.txt'
         }
+
       }
     }
+
     stage('运行测试脚本') {
       environment {
         ENV_URL = "${apiserver}"
@@ -122,14 +127,6 @@ pipeline {
           string(name: 'apiserver')
         }
       }
-      post {
-        always {
-            container('python') {
-              sh 'chmod -R o+xw result'
-              allure results: [[path: 'result']]
-            }
-        }
-      }
       steps {
         container('python') {
           sh '''
@@ -139,9 +136,19 @@ pipeline {
               exit 0
              '''
         }
+
       }
     }
+
   }
+  post('report') {
+        always {
+            container('python') {
+              sh 'chmod -R o+xw result'
+              allure results: [[path: 'result']]
+            }
+        }
+      }
 }
 ```
 ```
