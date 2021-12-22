@@ -27,7 +27,7 @@ class TestCluster(object):
             # 获取版本号
             cluster_version = r.json()['gitVersion']
             # 验证获取版本号成功
-            assert cluster_version == 'v3.2.1-rc.3'
+            assert cluster_version == 'v3.2.1'
 
     @allure.story("概览")
     @allure.title('查看每个集群的clusterrole信息')
