@@ -3,35 +3,160 @@
 ## 目录结构
 
 ```
-.
-├── README.md
-├── TestCase
-│   ├── allure-report   //测试报告
-|       |── index.html  //查看html测试报告
-│   ├── testAppManage.py    //测试应用管理          
-│   ├── testAppStore.py     //测试appstore            
-│   ├── testAppStoreManage.py   //测试应用管理
-│   ├── testDevops.py   //测试devops
-│   ├── testProject.py  //测试项目管理
-│   ├── testRole.py     //测试系统级角色管理
-│   ├── testUser.py     //测试系统级用户管理
-│   └── testWorkspace.py    //测试企业空间
-├── common  //公共方法
-│   ├── commonFunction.py
-│   ├── getCookie.py
-│   ├── getData.py
-│   ├── getHeader.py
-│   └── logFormat.py
-├── config
-│   ├── config.py   //配置文件
-│   └── note    //说明文档
-├── data
-|   ├── photo //测试图片
-│   ├── data.xlsx   //测试用例
-└── requirements.txt    //依赖库
+data
+├── data.xlsx
+├── jenkinsfile
+TestCase
+├── sonar-project.properties
+├── testAppManage.py
+├── testAppStore.py
+├── testAppStoreManage.py
+├── testAuditingOperating.py
+├── testClusterManage.py
+├── testDevops.py
+├── testEventSearch.py
+├── testHelp.py
+├── testLogSearch.py
+├── testMetering.py
+├── testMultiAppStore.py
+├── testMultiClusterManage.py
+├── testMultiMetering.py
+├── testMultiProject.py
+├── testMultiWorkbench.py
+├── testMultiWorkspace.py
+├── testProject.py
+├── testRole.py
+├── testUser.py
+├── testWorkbench.py
+├── testWorkspace.py
+└── wx-test.py
+common
+├── commonFunction.py
+├── getConfig.py
+├── getCookie.py
+├── getData.py
+├── getHeader.py
+├── getProxy.py
+└── logFormat.py
+requirements.txt [error opening dir]
+config
+├── config.py
+├── config.yaml
+├── config_new.yaml
+└── note
+step
+├── app_steps.py
+├── cluster_steps.py
+├── devops_steps.py
+├── multi_cluster_steps.py
+├── multi_meter_steps.py
+├── multi_worksapce_steps.py
+├── platform_steps.py
+├── project_steps.py
+├── toolbox_steps.py
+└── workspace_steps.py
 ``` 
 
 ## 使用指南
+一、通过devops触发流水线
+1、替换devops-jenkins的镜像为 ghcr.io/linuxsuren/ks-jenkins:allure
+2、修改 deployment devops-jenkins的JAVA_TOOL_OPTIONS为
+```
+-Xms1200m -Xmx1600m -XX:MaxRAM=2g
+-Dhudson.slaves.NodeProvisioner.initialDelay=20
+-Dhudson.slaves.NodeProvisioner.MARGIN=50
+-Dhudson.slaves.NodeProvisioner.MARGIN0=0.85
+-Dhudson.model.LoadStatistics.clock=5000
+-Dhudson.model.LoadStatistics.decay=0.2
+-Dhudson.slaves.NodeProvisioner.recurrencePeriod=5000
+-Dhudson.security.csrf.DefaultCrumbIssuer.EXCLUDE_SESSION_ID=true
+-Dio.jenkins.plugins.casc.ConfigurationAsCode.initialDelay=10000
+-Djenkins.install.runSetupWizard=false
+```
+3、在jenkins页面/系统管理/全局工具配置，新增Allure Commandline
+![Image text](https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/4.png)
+
+4、使用如下jenkinsfile创建流水线
+```
+pipeline {
+  agent {
+    kubernetes {
+      inheritFrom 'base'
+      yaml '''
+      spec:
+        containers:
+        - name: python
+          image: kubespheredev/builder-python:v3.2.0
+          command: [\'sleep\']
+          args: [\'1d\']
+      '''
+      label 'default'
+    }
+  }
+  stages {
+    stage('拉取测试代码') {
+      steps {
+        container('python') {
+          git(url: 'https://github.com/kubesphere-sigs/Api-AutoTest.git', branch: 'master', changelog: true, poll: false)
+        }
+      }
+    }
+    stage('安装第三方python依赖') {
+      steps {
+        container('python') {
+          sh 'pip install -r requirements.txt'
+        }
+      }
+    }
+    stage('运行测试脚本') {
+      environment {
+        ENV_URL = "${apiserver}"
+        PATH = "$PATH:/usr/local/src/allure-2.17.2/bin"
+      }
+      input {
+        message '请输入apiserver地址(http://ip:port)'
+        id 'Yes'
+        parameters {
+          string(name: 'apiserver')
+        }
+      }
+      post {
+        always {
+            container('python') {
+              sh 'chmod -R o+xw result'
+              allure results: [[path: 'result']]
+            }
+        }
+      }
+      steps {
+        container('python') {
+          sh '''
+              envsubst < ${WORKSPACE}/config/config.yaml > ${WORKSPACE}/config/config_new.yaml
+              cd ${WORKSPACE}/TestCase
+              pytest test*.py -s  --reruns=1 --reruns-delay=5 --alluredir ../result --clean-alluredir
+              exit 0
+             '''
+        }
+      }
+    }
+  }
+}
+```
+```
+ks-apiserver地址，可直接使用内网地址
+```
+![Image text](https://github.com/kubesphere-sigs/Api-Autotest/blob/master/data/photo/3.png)
+
+
+```
+pytest test*.py -s  --reruns=1 --reruns-delay=5 --alluredir ../result --clean-alluredir
+
+通过修改'test*.py',可指定运行的测试脚本
+```
+
+
+二、在本地环境运行
+
 1、安装python3环境
 
 2、安装allure 
