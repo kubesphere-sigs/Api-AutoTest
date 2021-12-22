@@ -94,7 +94,6 @@ pipeline {
       '''
       label 'default'
     }
-
   }
   stages {
     stage('拉取测试代码') {
@@ -102,19 +101,15 @@ pipeline {
         container('python') {
           git(url: 'https://github.com/kubesphere-sigs/Api-AutoTest.git', branch: 'master', changelog: true, poll: false)
         }
-
       }
     }
-
     stage('安装第三方python依赖') {
       steps {
         container('python') {
           sh 'pip install -r requirements.txt'
         }
-
       }
     }
-
     stage('运行测试脚本') {
       environment {
         ENV_URL = "${apiserver}"
@@ -132,21 +127,27 @@ pipeline {
           sh '''
               envsubst < ${WORKSPACE}/config/config.yaml > ${WORKSPACE}/config/config_new.yaml
               cd ${WORKSPACE}/TestCase
-              pytest test*.py -s  --reruns=1 --reruns-delay=5 --alluredir ../result --clean-alluredir
+              pytest testClusterManage.py -s  --reruns=1 --reruns-delay=5 --alluredir ../result --clean-alluredir
               exit 0
              '''
         }
-
       }
     }
-
   }
-  post('report') {
-        always {
-            container('python') {
-              sh 'chmod -R o+xw result'
-              allure results: [[path: 'result']]
+  post{
+      always {
+        container('python') {
+          sh 'chmod -R o+xw result'
+          script {
+            allure([
+                    includeProperties: false,
+                    jdk: '',
+                    properties: [],
+                    reportBuildPolicy: 'ALWAYS',
+                    results: [[path: 'result']]
+              ])
             }
+          }
         }
       }
 }
