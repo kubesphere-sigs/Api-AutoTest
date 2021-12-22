@@ -1,10 +1,7 @@
-import requests
 import pytest
 import allure
 import sys
-from config import config
 from common.getData import DoexcleByPandas
-from common.getHeader import get_header
 from common import commonFunction
 from step import cluster_steps
 import time
