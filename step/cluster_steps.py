@@ -4,7 +4,6 @@ import sys
 import json
 from common.getConfig import get_config
 
-env_url = get_config()['env']['url']
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from config import config

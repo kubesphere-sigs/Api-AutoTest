@@ -5,11 +5,10 @@ import sys
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
-from config import config
 from common.getHeader import get_header, get_header_for_patch, get_header_for_urlencoded
-from common.getConfig import get_config
+from common.getConfig import get_apiserver
 
-env_url = get_config()['env']['url']
+env_url = get_apiserver()
 
 
 @allure.step('创建devops工程并获取工程名称')

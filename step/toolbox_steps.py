@@ -7,9 +7,9 @@ import time
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from common.getHeader import get_header
-from common.getConfig import get_config
+from common.getConfig import get_apiserver
 
-env_url = get_config()['env']['url']
+env_url = get_apiserver()
 
 
 @allure.step('查询集群的操作审计总量')

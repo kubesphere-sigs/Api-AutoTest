@@ -7,7 +7,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 yamlPath = '../config/config_new.yaml'
 
 
-def get_config():
+def get_apiserver():
     # open方法打开直接读出来
     f = open(yamlPath, 'r', encoding='utf-8')
     cfg = f.read()
@@ -15,6 +15,11 @@ def get_config():
     # print(cfg)
 
     d = yaml.safe_load(cfg)  # 用load方法转字典
-    # print(d['env']['url'])
-    # print(type(d))
-    return d
+    url = d['env']['url']
+    if 'http://' in url:
+        return url
+    elif 'https://' in url:
+        return url
+    else:
+        url = 'http://' + url
+    return url

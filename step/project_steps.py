@@ -9,9 +9,9 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 from common.getHeader import get_header, get_header_for_patch
 from common import commonFunction
 from step import workspace_steps
-from common.getConfig import get_config
+from common.getConfig import get_apiserver
 
-env_url = get_config()['env']['url']
+env_url = get_apiserver()
 
 
 @allure.step('创建一个计算圆周率的任务')

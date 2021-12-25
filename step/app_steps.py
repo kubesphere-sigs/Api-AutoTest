@@ -5,14 +5,13 @@ import sys
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
-from config import config
 from common.getHeader import get_header, get_header_for_patch
 from step import project_steps
 from common import commonFunction
 from math import ceil
-from common.getConfig import get_config
+from common.getConfig import get_apiserver
 
-env_url = get_config()['env']['url']
+env_url = get_apiserver()
 
 
 @allure.step('创建应用模板')
