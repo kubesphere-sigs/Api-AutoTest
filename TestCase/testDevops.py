@@ -11,11 +11,11 @@ import time
 from urllib import parse
 from common.getHeader import get_header
 from common import commonFunction
-from step import devops_steps, platform_steps, workspace_steps, toolbox_steps, project_steps
+from step import devops_steps, platform_steps, toolbox_steps, project_steps
 from step import workspace_steps
-from common.getConfig import get_config
+from common.getConfig import get_apiserver
 
-env_url = get_config()['env']['url']
+env_url = get_apiserver()
 
 
 @allure.feature('DevOps')

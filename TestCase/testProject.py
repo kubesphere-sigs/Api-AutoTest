@@ -10,11 +10,12 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 from common.getData import DoexcleByPandas
 from common.getHeader import get_header
 from common import commonFunction
-from step import project_steps, workspace_steps, platform_steps
+from step import project_steps, platform_steps
 from step import workspace_steps
-from common.getConfig import get_config
+from common.getConfig import get_apiserver
 
-env_url = get_config()['env']['url']
+env_url = get_apiserver()
+
 
 @allure.feature('Project')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
