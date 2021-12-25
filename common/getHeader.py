@@ -1,7 +1,7 @@
 from common.getCookie import get_token
-from common.getConfig import get_config
+from common.getConfig import get_apiserver
 
-env_url = get_config()['env']['url']
+env_url = get_apiserver()
 
 
 def get_header():
