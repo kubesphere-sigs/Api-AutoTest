@@ -135,7 +135,7 @@ def step_get_job_pods(project_name, uid):
     return r.json()['items'][0]['metadata']['name']
 
 
-@allure.step('获取容器组的日志，并验证任务运行结果')
+@allure.step('获取容器组的日志')
 def step_get_pods_log(project_name, pod_name, job_name):
     """
     :param project_name: 项目名称
@@ -144,10 +144,8 @@ def step_get_pods_log(project_name, pod_name, job_name):
     """
     container_name = 'container-' + job_name
     url = env_url + '/api/v1/namespaces/' + project_name + '/pods/' + pod_name + '/log?container=' + container_name + '&tailLines=1000&timestamps=true&follow=false'
-    r = requests.get(url=url, headers=get_header())
-
-    print(r.text)
-    assert '3.1415926' in r.text
+    response = requests.get(url=url, headers=get_header())
+    return response.text
 
 
 @allure.step('创建deployment')
@@ -409,7 +407,6 @@ def step_get_work_pod_status(project_name, work_name):
 @allure.step('获取指定的工作负载')
 def step_get_workload(project_name, type, condition):
     """
-
     :param project_name: 项目名称
     :param type: 负载类型
     :param condition: 查询条件  如：name=test

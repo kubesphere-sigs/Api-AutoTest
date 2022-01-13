@@ -10,8 +10,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 from common.getData import DoexcleByPandas
 from common.getHeader import get_header
 from common import commonFunction
-from step import project_steps, platform_steps
-from step import workspace_steps
+from step import project_steps, platform_steps, workspace_steps, cluster_steps
 from common.getConfig import get_apiserver
 
 env_url = get_apiserver()
@@ -77,12 +76,17 @@ class TestProject(object):
                                          container_name=container_name, volume_info=volume_info, ports=port,
                                          volumemount=volumeMounts, strategy=strategy_info)
         # 验证资源创建成功
-        time.sleep(10)  # 等待资源创建成功
-        # 获取工作负载的状态
-        response = project_steps.step_get_workload(self.project_name, type='deployments', condition=condition)
-        status = response.json()['items'][0]['status']
-        # 验证资源的所有副本已就绪
-        assert 'unavailableReplicas' not in status
+        i = 0
+        while i < 120:
+            # 获取工作负载的状态
+            response = project_steps.step_get_workload(self.project_name, type='deployments', condition=condition)
+            status = response.json()['items'][0]['status']
+            # 验证资源的所有副本已就绪
+            if 'unavailableReplicas' not in status:
+                break
+            else:
+                time.sleep(1)
+                i += 1
         # 获取存储卷状态
         response = project_steps.step_get_volume_status(self.project_name, volume_name)
         status = response.json()['items'][0]['status']['phase']
@@ -112,14 +116,22 @@ class TestProject(object):
                                            container_name=container_name,
                                            image=image, replicas=replicas, ports=port, service_ports=service_port,
                                            volumemount=volumemounts, volume_info=volume_info, service_name=service_name)
-
         # 验证资源创建成功
-        time.sleep(10)  # 等待资源创建成功
-        # 获取工作负载的状态
-        response = project_steps.step_get_workload(self.project_name, type='statefulsets', condition=condition)
-        readyReplicas = response.json()['items'][0]['status']['readyReplicas']
-        # 验证资源的所有副本已就绪
-        assert readyReplicas == replicas
+        readyReplicas = 0
+        i = 0
+        while i < 120:
+            # 获取工作负载的状态
+            response = project_steps.step_get_workload(self.project_name, type='statefulsets', condition=condition)
+            try:
+                readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+            except Exception as e:
+                print(e)
+            # 验证资源的所有副本已就绪
+            if readyReplicas == replicas:
+                break
+            else:
+                time.sleep(1)
+                i += 1
         # 获取存储卷状态
         response = project_steps.step_get_volume_status(self.project_name, volume_name)
         status = response.json()['items'][0]['status']['phase']
@@ -127,35 +139,35 @@ class TestProject(object):
         assert status == 'Bound'
 
     @allure.story('存储管理-存储卷')
-    @allure.title('创建存储卷，然后将存储卷绑定到新建的daemonsets上，最后验证资源和存储卷的状态正常')
+    @allure.title('创建daemonsets并使用hostpath存储卷，最后验证资源和存储卷的状态正常')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_volume_for_daemonsets(self):
         volume_name = 'volume-deamon'  # 存储卷的名称
-        type_name = 'volume-type'  # 存储卷的类型
         work_name = 'daemonsets' + str(commonFunction.get_random())  # 工作负载的名称
         image = 'redis'  # 镜像名称
         container_name = 'container-daemon'  # 容器名称
         condition = 'name=' + work_name  # 查询条件
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-        volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
-        volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
-        # 创建存储卷
-        project_steps.step_create_volume(self.project_name, volume_name)
+        volumeMounts = [{"name": volume_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+        volume_info = [{"hostPath": {"path": "/data"}, "name": volume_name}]  # 存储卷的信息
+        # 获取集群节点数
+        cluster_node = cluster_steps.step_get_nodes().json()['totalItems']
         # 创建资源并将存储卷绑定到资源
         project_steps.step_create_daemonset(self.project_name, work_name=work_name, image=image,
                                             container_name=container_name, volume_info=volume_info, ports=port,
                                             volumemount=volumeMounts)
         # 验证资源创建成功
-        time.sleep(10)  # 等待资源创建成功
-        # 获取工作负载的状态
-        response = project_steps.step_get_workload(self.project_name, type='daemonsets', condition=condition)
-        numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
-        assert numberReady == 1
-        # 获取存储卷状态
-        response = project_steps.step_get_volume_status(self.project_name, volume_name)
-        status = response.json()['items'][0]['status']['phase']
-        # 验证存储卷状态正常
-        assert status == 'Bound'
+        i = 0
+        while i < 120:
+            # 获取工作负载的状态
+            response = project_steps.step_get_workload(self.project_name, type='daemonsets', condition=condition)
+            numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
+            if numberReady == cluster_node:
+                break
+            else:
+                time.sleep(1)
+                i += 1
+        assert numberReady == cluster_node
 
     @allure.story('存储管理-存储卷')
     @allure.title('创建存储卷，然后将存储卷绑定到新建的service上，最后验证资源和存储卷的状态正常')
@@ -187,11 +199,20 @@ class TestProject(object):
         name = response.json()['items'][0]['metadata']['name']
         assert name == service_name
         # 验证deploy创建成功
-        time.sleep(3)
-        re = project_steps.step_get_workload(self.project_name, type='deployments', condition=condition)
-        # 获取并验证deployment的名称正确
-        name = re.json()['items'][0]['metadata']['name']
-        assert name == service_name
+        readyReplicas = 0
+        i = 0
+        while i < 120:
+            re = project_steps.step_get_workload(self.project_name, type='deployments', condition=condition)
+            # 获取并验证deployment创建成功
+            try:
+                readyReplicas = re.json()['items'][0]['status']['readyReplicas']
+            except Exception as e:
+                print(e)
+            if readyReplicas == replicas:
+                break
+            else:
+                time.sleep(1)
+                i += 1
         # 获取存储卷状态
         response = project_steps.step_get_volume_status(self.project_name, volume_name)
         status = response.json()['items'][0]['status']['phase']
@@ -213,8 +234,6 @@ class TestProject(object):
         # 创建存储卷快照
         r = requests.post(url=url, headers=get_header(), data=json.dumps(data))
 
-        print("actual_result:r.json()['metadata']['name'] = " + r.json()['metadata']['name'])
-        print("expect_result:" + self.snapshot_name)
         assert r.json()['metadata']['name'] == self.snapshot_name
 
         # 查询创建的存储卷快照
@@ -226,13 +245,10 @@ class TestProject(object):
             r1 = requests.get(url=url1, headers=get_header())
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
             if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                print("创建存储卷快照耗时:" + str(i) + '秒')
                 break
             time.sleep(1)
             i = i + 1
-        print("actual_result:r1.json()['items'][0]['status']['readyToUse'] = " + str(
-            r1.json()['items'][0]['status']['readyToUse']))
-        print("expect_result: True")
+        print("创建存储卷快照耗时:" + str(i) + '秒')
         # 验证存储卷快照的状态为准备就绪
         assert str(r1.json()['items'][0]['status']['readyToUse']) == 'True'
 
@@ -242,8 +258,6 @@ class TestProject(object):
     def test_project_role_all(self):
         role_name = ''
         r = project_steps.step_get_role(self.project_name, role_name)
-        print("actual_result:r.json()['totalItems']=" + str(r.json()['totalItems']))  # 在日志中打印出实际结果
-        print('expect_result: 3')  # 在日志中打印出预期结果
         assert r.json()['totalItems'] == 3  # 验证初始的角色数量为3
 
     @allure.story("项目设置-项目角色")
@@ -252,9 +266,6 @@ class TestProject(object):
     def test_project_role_one(self):
         role_name = 'viewer'
         r = project_steps.step_get_role(self.project_name, role_name)
-        print("actual_result:r.json()['items'][0]['metadata']['name']=" + r.json()['items'][0]['metadata'][
-            'name'])  # 在日志中打印出实际结果
-        print('expect_result:' + role_name)  # 在日志中打印出预期结果
         assert r.json()['items'][0]['metadata']['name'] == role_name  # 验证查询的角色结果为viewer
 
     @allure.story("项目设置-项目角色")
@@ -263,8 +274,6 @@ class TestProject(object):
     def test_project_role_none(self):
         role_name = 'viewer123'
         r = project_steps.step_get_role(self.project_name, role_name)
-        print("actual_result:r.json()['totalItems'] =" + str(r.json()['totalItems']))  # 在日志中打印出实际结果
-        print('expect_result: 0')  # 在日志中打印出预期结果
         assert r.json()['totalItems'] == 0  # 验证查询到的结果为空
 
     @allure.story("项目设置-项目角色")
@@ -275,9 +284,6 @@ class TestProject(object):
         r = project_steps.step_get_role(self.project_name, role_name)
         assert r.json()['totalItems'] == 1  # 验证查询到的结果数量为2
         # 验证查找到的角色
-        print("actual_result:r.json()['items'][0]['metadata']['name']=" + r.json()['items'][0]['metadata'][
-            'name'])  # 在日志中打印出实际结果
-        print('expect_result: operator')  # 在日志中打印出预期结果
         assert r.json()['items'][0]['metadata']['name'] == 'admin'
 
     @allure.story("项目设置-项目角色")
@@ -286,8 +292,6 @@ class TestProject(object):
     def test_project_role_create(self):
         role_name = 'role' + str(commonFunction.get_random())
         r = project_steps.step_create_role(self.project_name, role_name)
-        print("actual_result:r.json()['metadata']['name']=" + r.json()['metadata']['name'])  # 在日志中打印出实际结果
-        print('expect_result:' + role_name)  # 在日志中打印出预期结果
         assert r.json()['metadata']['name'] == role_name  # 验证新建的角色名称
 
     @allure.story("项目设置-项目角色")
@@ -297,9 +301,6 @@ class TestProject(object):
         role_name = ''
         r = project_steps.step_create_role(self.project_name, role_name)
         # 验证创建角色失败的异常提示信息
-        print("actual_result:" + r.text.strip())  # 在日志中打印出实际结果
-        print(
-            'expect_result:Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required')  # 在日志中打印出预期结果
         assert r.text.strip() == 'Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required'
 
     @allure.story("项目设置-项目角色")
@@ -318,9 +319,6 @@ class TestProject(object):
         project_steps.step_create_role(self.project_name, role_name)
 
         r = project_steps.step_edit_project_role(self.project_name, role_name, resourceVersion, annotations)
-        print("actual_result:r.json()['metadata']['annotations']['kubesphere.io/alias-name']=" +
-              r.json()['metadata']['annotations']['kubesphere.io/alias-name'])  # 在日志中打印出实际结果
-        print('expect_result:' + alias_name)  # 在日志中打印出预期结果
         assert r.json()['metadata']['annotations']['kubesphere.io/alias-name'] == '我是别名'  # 验证修改后的别名
         assert r.json()['metadata']['annotations']['kubesphere.io/description'] == '我是描述信息'  # 验证修改后的描述信息
 
@@ -341,9 +339,6 @@ class TestProject(object):
                        "kubesphere.io/alias-name": "",
                        "kubesphere.io/creator": "admin", "kubesphere.io/description": ""}
         r = project_steps.step_edit_project_role(self.project_name, role_name, resourceVersion, annotations)
-        print("actual_result:r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']=" +
-              r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'])  # 在日志中打印出实际结果
-        print('expect_result:' + authority)  # 在日志中打印出预期结果
         assert r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority  # 验证修改后的权限信息
 
     @allure.story("项目设置-项目角色")
@@ -370,10 +365,6 @@ class TestProject(object):
     def test_project_user_all(self):
         url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/members'
         r = requests.get(url, headers=get_header())
-
-        print("actual_result:r.json()['items'][0]['metadata']['name']=" + r.json()['items'][0]['metadata'][
-            'name'])  # 在日志中打印出实际结果
-        print('expect_result: admin')  # 在日志中打印出预期结果
         assert r.json()['items'][0]['metadata']['name'] == 'admin'  # 验证默认的用户仅有admin
 
     @allure.story("项目设置-项目成员")
@@ -382,10 +373,6 @@ class TestProject(object):
     def test_project_user_one(self):
         user_condition = 'admin'
         r = project_steps.step_get_project_user(self.project_name, user_condition)
-
-        print("actual_result:r.json()['items'][0]['metadata']['name']=" + r.json()['items'][0]['metadata'][
-            'name'])  # 在日志中打印出实际结果
-        print('expect_result:' + user_condition)  # 在日志中打印出预期结果
         assert r.json()['items'][0]['metadata']['name'] == user_condition  # 验证查找的结果为admin
 
     @allure.story("项目设置-项目成员")
@@ -394,9 +381,6 @@ class TestProject(object):
     def test_project_user_fuzzy(self):
         user_condition = 'ad'
         r = project_steps.step_get_project_user(self.project_name, user_condition)
-        print("actual_result:r.json()['items'][0]['metadata']['name']=" + r.json()['items'][0]['metadata'][
-            'name'])  # 在日志中打印出实际结果
-        print('expect_result: admin')  # 在日志中打印出预期结果
         assert r.json()['items'][0]['metadata']['name'] == 'admin'  # 验证查找的结果为admin
 
     @allure.story("项目设置-项目成员")
@@ -405,8 +389,6 @@ class TestProject(object):
     def test_project_user_none(self):
         user_condition = 'wx-ad'
         r = project_steps.step_get_project_user(self.project_name, user_condition)
-        print("actual_result:r.json()['totalItems']=" + str(r.json()['totalItems']))  # 在日志中打印出实际结果
-        print('expect_result: 0')  # 在日志中打印出预期结果
         assert r.json()['totalItems'] == 0  # 验证查找的结果为空
 
     @allure.story("项目设置-项目成员")
@@ -418,9 +400,6 @@ class TestProject(object):
                  "roleRef": 'viewer'
                  }]
         r = requests.post(url, headers=get_header(), data=json.dumps(data))
-
-        print("actual_result:r.json()[0]['username']=" + r.json()[0]['username'])  # 在日志中打印出实际结果
-        print('expect_result:' + self.user_name)  # 在日志中打印出预期结果
         assert r.json()[0]['username'] == self.user_name  # 验证邀请后的用户名称
 
     # 用例的执行结果应当为false。接口没有对不存在的用户做限制
@@ -526,7 +505,8 @@ class TestProject(object):
         project_steps.step_create_job(self.project_name, job_name)  # 创建任务
         uid = project_steps.step_get_job_status(self.project_name, job_name)  # 验证任务的运行状态为完成,并获取uid
         pod_name = project_steps.step_get_job_pods(self.project_name, uid)  # 查看任务的资源状态，并获取容器组名称
-        project_steps.step_get_pods_log(self.project_name, pod_name, job_name)  # 查看任务的第一个容器的运行日志，并验证任务的运行结果
+        response = project_steps.step_get_pods_log(self.project_name, pod_name, job_name)  # 查看任务的第一个容器的运行日志，并验证任务的运行结果
+        assert '3.1415926' in response
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
 
@@ -582,8 +562,6 @@ class TestProject(object):
         # 在项目中查询pod信息
         r = project_steps.step_get_pod_info(self.project_name, pod_name)
         # 验证查询到的容器名称
-        print("actual_result:r.json()['items'][0]['metadata']['name'] = " + r.json()['items'][0]['metadata']['name'])
-        print("expect_result:" + pod_name)
         assert r.json()['items'][0]['metadata']['name'] == pod_name
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
@@ -600,8 +578,6 @@ class TestProject(object):
         # 在项目中查询pod信息
         r = project_steps.step_get_pod_info(self.project_name, pod_name)
         # 验证查询到的容器名称
-        print("actual_result:r.json()['totalItems'] = " + str(r.json()['totalItems']))
-        print("expect_result:" + str(4))
         assert r.json()['totalItems'] == 4
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
@@ -615,8 +591,6 @@ class TestProject(object):
                                                                                                        'name=' + pod_name + '&sortBy=startTime&limit=10'
         r = requests.get(url=url, headers=get_header())
         # 验证查询到的容器名称
-        print("actual_result:r.json()['totalItems'] = " + str(r.json()['totalItems']))
-        print("expect_result:" + str(0))
         assert r.json()['totalItems'] == 0
 
     @allure.story('应用负载-容器组')
@@ -631,8 +605,6 @@ class TestProject(object):
         url = env_url + '/api/v1/namespaces/' + self.project_name + '/pods/' + pod_name
         r = requests.get(url=url, headers=get_header())
         # 验证查询结果
-        print("actual_result:r.json()['status']['phase'] = " + r.json()['status']['phase'])
-        print("expect_result: Succeeded")
         assert r.json()['status']['phase'] == 'Succeeded'
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
@@ -649,8 +621,6 @@ class TestProject(object):
         url = env_url + '/api/v1/namespaces/' + self.project_name + '/pods/' + pod_name
         r = requests.delete(url=url, headers=get_header())
         # 验证删除操作成功
-        print("actual_result:r.json()['status']['phase'] = " + r.json()['status']['phase'])
-        print("expect_result: Succeeded")
         assert r.json()['status']['phase'] == 'Succeeded'
 
     @allure.story('应用负载-容器组')
@@ -661,8 +631,6 @@ class TestProject(object):
         url = env_url + '/api/v1/namespaces/' + self.project_name + '/pods/' + pod_name
         r = requests.delete(url=url, headers=get_header())
         # 验证删除失败
-        print("actual_result:r.json()['status'] = " + r.json()['status'])
-        print("expect_result: Failure")
         assert r.json()['status'] == 'Failure'
 
     @allure.story('应用负载-任务')
@@ -704,8 +672,6 @@ class TestProject(object):
         # 删除任务
         result = project_steps.step_delete_job(self.project_name, job_name)
         # 验证删除结果
-        print("actual_result: " + result)
-        print("expect_result: Failure")
         assert result == 'Failure'
 
     @allure.story('应用负载-工作负载')
@@ -735,10 +701,10 @@ class TestProject(object):
             status = response.json()['items'][0]['status']
             # 验证资源的所有副本已就绪
             if 'unavailableReplicas' not in status:
-                print('创建工作负载耗时:' + str(i) + 's')
                 break
             time.sleep(1)
             i = i + 1
+        print('创建工作负载耗时:' + str(i) + 's')
         assert 'unavailableReplicas' not in status
 
     @allure.story('应用负载-工作负载')
@@ -829,10 +795,10 @@ class TestProject(object):
             readyReplicas = response.json()['items'][0]['status']['readyReplicas']
             # 验证资源的所有副本已就绪
             if readyReplicas == replicas:
-                print('创建工作负载耗时:' + str(i) + 's')
                 break
             time.sleep(1)
             i = i + 1
+        print('创建工作负载耗时:' + str(i) + 's')
         assert readyReplicas == replicas
 
     @allure.story('应用负载-工作负载')
@@ -908,31 +874,32 @@ class TestProject(object):
     @allure.title('创建未绑定存储卷的DaemonSets，并验证运行成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_daemonsets(self):
-        workload_name = 'workload4'  # 工作负载名称
+        workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
         container_name = 'container-nginx'  # 容器名称
         image = 'nginx'  # 镜像名称
         condition = 'name=' + workload_name  # 查询条件
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
         volume_info = []
         volumemount = []
+        # 获取集群的节点数
+        cluster_node = cluster_steps.step_get_nodes().json()['totalItems']
         # 创建工作负载
         project_steps.step_create_daemonset(project_name=self.project_name, work_name=workload_name,
                                             container_name=container_name, image=image, ports=port,
                                             volume_info=volume_info, volumemount=volumemount)
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
-        time.sleep(3)
-        i = 3
+        i = 0
         while i < 60:
             response = project_steps.step_get_workload(project_name=self.project_name, type='daemonsets',
                                                        condition=condition)
             numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
             # 验证资源的所有副本已就绪
-            if numberReady == 1:
-                print('创建工作负载耗时:' + str(i) + 's')
+            if numberReady == cluster_node:
                 break
             time.sleep(1)
             i = i + 1
-        assert numberReady == 1
+        print('创建工作负载耗时:' + str(i) + 's')
+        assert numberReady == cluster_node
 
     @allure.story('应用负载-工作负载')
     @allure.title('按名称查询存在的DaemonSets')
@@ -955,6 +922,7 @@ class TestProject(object):
         response = project_steps.step_get_workload(self.project_name, type=type, condition=condition)
         # 获取并验证deployment的名称正确
         name = response.json()['items'][0]['metadata']['name']
+        assert name == workload_name
         # 删除创建的daemonsets
         re = project_steps.step_delete_workload(project_name=self.project_name, type=type, work_name=workload_name)
         assert re.json()['status'] == 'Success'
@@ -1175,7 +1143,6 @@ class TestProject(object):
     def test_query_work_by_name(self):
         url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + self.project_name + '/deployments' \
                                                                                                        '?name=' + self.work_name
-
         r = requests.get(url=url, headers=get_header())
         # 验证查询结果
         assert r.json()['items'][0]['metadata']['name'] == self.work_name
@@ -1294,12 +1261,10 @@ class TestProject(object):
             response = project_steps.step_get_volume_status(self.project_name, self.snapshot_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
             if response.json()['totalItems'] == 0:
-                print("删除存储卷快照耗时:" + str(i) + '秒')
                 break
             time.sleep(1)
             i = i + 1
-        print("actual_result:r1.json()['totalItems'] = " + str(response.json()['totalItems']))
-        print("expect_result: 0")
+        print("删除存储卷快照耗时:" + str(i) + '秒')
         assert response.json()['totalItems'] == 0
 
     @allure.story('存储管理-存储卷')
@@ -1318,12 +1283,10 @@ class TestProject(object):
             response = project_steps.step_get_volume(self.project_name, volume_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
             if response.json()['totalItems'] == 0:
-                print("删除存储卷耗时:" + str(i) + '秒')
                 break
             time.sleep(1)
             i = i + 1
-        print("actual_result:r1.json()['totalItems'] = " + str(response.json()['totalItems']))
-        print("expect_result: 0")
+        print("删除存储卷耗时:" + str(i) + '秒')
         # 验证存储卷成功
         assert response.json()['totalItems'] == 0
 
@@ -1542,7 +1505,6 @@ class TestProject(object):
         project_steps.step_edit_project_quota(self.project_name, hard, resource_version)
         # 获取修改后的配额信息
         response = project_steps.step_get_project_quota(self.project_name)
-        # print(response.text)
         hard_actual = response.json()['data']['hard']
         # 验证配额修改成功
         assert hard_actual == hard
@@ -1742,10 +1704,10 @@ class TestProject(object):
         while i < 60:
             response = project_steps.step_get_project(self.ws_name, self.project_name)
             if response.json()['totalItems'] == 0:
-                print("删除项目耗时:" + str(i) + '秒')
                 break
             time.sleep(1)
             i = i + 1
+        print("删除项目耗时:" + str(i) + '秒')
         assert response.json()['totalItems'] == 0
 
 
