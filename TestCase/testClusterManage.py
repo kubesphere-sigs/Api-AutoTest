@@ -1019,7 +1019,6 @@ class TestCluster(object):
         response = cluster_steps.step_get_component_health()
         # 获取组件的数量
         component_count = len(response.json()['kubesphereStatus'])
-        print(component_count)
         for i in range(0, component_count):
             # 获取每个组件的totalBackends
             totalBackends = response.json()['kubesphereStatus'][i]['totalBackends']
