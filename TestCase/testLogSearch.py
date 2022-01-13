@@ -26,12 +26,13 @@ class TestLogSearch(object):
         pod_count = response.json()['statistics']['containers']
         # 获取收集到的日志数量
         log_counts = response.json()['statistics']['logs']
+        print(log_counts)
         # 验证容器数量大于0
         assert pod_count > 0
         # 查询当天的日志变化趋势
         interval = '1800'   # 时间间隔,单位是秒
         re = toolbox_steps.step_get_logs_trend(day_timestamp, now_timestamp, interval)
-        # 获取日志总量
+        # 获取当天日志总量
         logs_count = re.json()['histogram']['total']
         # 获取日志趋势图中的横坐标数量
         count = len(re.json()['histogram']['histograms'])
@@ -205,7 +206,6 @@ class TestLogSearch(object):
         # 获取企业空间的名称
         for i in range(0, ws_count):
             ws_name = response.json()['items'][i]['metadata']['name']
-            # print(ws_name)
             # 查询每个企业空间的项目信息
             re = workspace_steps.step_get_project_info(ws_name)
             # 获取项目的数量
