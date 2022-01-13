@@ -708,14 +708,5 @@ class TestDevOps(object):
         devops_steps.step_run_pipeline(dev_name_new, pipeline_name)
 
 
-
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
     pytest.main(['-s', 'testDevops.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
