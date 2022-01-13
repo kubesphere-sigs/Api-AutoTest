@@ -94,10 +94,10 @@ class TestAppTemplate(object):
             re = app_steps.step_get_app_repository(self.ws_name, repo_name)
             status = re.json()['items'][0]['status']
             if status == 'successful':
-                print('应用仓库同步耗时：' + str(i))
                 break
             time.sleep(2)
             i = i + 2
+        print('应用仓库同步耗时：' + str(i))
         # 删除应用仓库
         app_steps.step_delete_app_repo(self.ws_name, repo_id)
         # 验证仓库添加成功
@@ -263,10 +263,10 @@ class TestAppTemplate(object):
             r = app_steps.step_get_app_status(self.ws_name, self.project_name, app_name)
             status = r.json()['items'][0]['cluster']['status']
             if status == 'active':
-                print('应用部署耗时:' + str(i) + '秒')
                 break
             time.sleep(10)
             i = i + 10
+        print('应用部署耗时:' + str(i) + '秒')
         assert status == 'active'
         # 获取部署的应用的cluster_id
         r = app_steps.step_get_app(self.ws_name, self.project_name, app_name)
@@ -315,10 +315,10 @@ class TestAppTemplate(object):
             r = app_steps.step_get_app_status(self.ws_name, self.project_name, app_name)
             status = r.json()['items'][0]['cluster']['status']
             if status == 'active':
-                print('应用部署耗时:' + str(i) + '秒')
                 break
             time.sleep(10)
             i = i + 10
+        print('应用部署耗时:' + str(i) + '秒')
         # 获取部署的应用的cluster_id
         re = app_steps.step_get_app(self.ws_name, self.project_name, app_name)
         cluster_id = re.json()['items'][0]['cluster']['cluster_id']
