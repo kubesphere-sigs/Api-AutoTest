@@ -456,18 +456,23 @@ class TestCluster(object):
         assert status == 'Failure'
 
     @allure.story('应用负载')
-    @allure.title('查看集群所有的deployments，并验证其运行正常')
+    @allure.title('查看集群所有系统项目的deployments，并验证其运行正常')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_check_deployments_of_cluster(self):
-        # 查询集群所有的deployments
-        response = cluster_steps.step_get_resource_of_cluster('deployments')
-        # 获取集群deployments的数量
-        count = response.json()['totalItems']
-        # 获取集群所有的deployments的状态
-        for i in range(0, count):
-            state = response.json()['items'][i]['status']['conditions'][0]['status']
-            # 验证deployment的状态为True
-            assert state == 'True'
+        # 查询集群中所有的系统项目
+        response = cluster_steps.step_get_system_of_cluster()
+        system_count = response.json()['totalItems']
+        # 查询集群中所有系统项目的deployments
+        for i in range(0, system_count):
+            system_name = response.json()['items'][i]['metadata']['name']
+            re = cluster_steps.step_get_resource_of_cluster_by_project('deployments', system_name)
+            # 获取集群deployments的数量
+            count = re.json()['totalItems']
+            # 获取集群所有的deployments的状态
+            for j in range(0, count):
+                state = re.json()['items'][j]['status']['conditions'][0]['status']
+                # 验证deployment的状态为True
+                assert state == 'True'
 
     @allure.story('应用负载')
     @allure.title('查看集群所有的deployments的Revision Records')
@@ -497,34 +502,44 @@ class TestCluster(object):
             assert kind == 'ReplicaSetList'
 
     @allure.story('应用负载')
-    @allure.title('查看集群所有的statefulSets，并验证其运行正常')
+    @allure.title('查看集群所有系统项目的statefulSets，并验证其运行正常')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_check_statefulsets_of_cluster(self):
-        # 查询集群所有的statefulSets
-        response = cluster_steps.step_get_resource_of_cluster('statefulsets')
-        # 获取集群statefulSets的数量
-        count = response.json()['totalItems']
-        # 获取集群所有的statefulSets的副本数和ready的副本数
-        for i in range(0, count):
-            replica = response.json()['items'][i]['status']['replicas']
-            readyReplicas = response.json()['items'][i]['status']['readyReplicas']
-            # 验证每个statefulSets的ready的副本数=副本数
-            assert replica == readyReplicas
+        # 查询集群中所有的系统项目
+        response = cluster_steps.step_get_system_of_cluster()
+        system_count = response.json()['totalItems']
+        # 查询集群所有系统项目的statefulSets
+        for i in range(0, system_count):
+            system_name = response.json()['items'][i]['metadata']['name']
+            re = cluster_steps.step_get_resource_of_cluster_by_project('statefulsets', system_name)
+            # 获取集群statefulSets的数量
+            count = re.json()['totalItems']
+            # 获取集群所有的statefulSets的副本数和ready的副本数
+            for j in range(0, count):
+                replica = re.json()['items'][j]['status']['replicas']
+                readyReplicas = re.json()['items'][j]['status']['readyReplicas']
+                # 验证每个statefulSets的ready的副本数=副本数
+                assert replica == readyReplicas
 
     @allure.story('应用负载')
-    @allure.title('查看集群所有的daemonSets，并验证其运行正常')
+    @allure.title('查看集群所有系统项目的daemonSets，并验证其运行正常')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_check_daemonsets_of_cluster(self):
-        # 查询集群所有的daemonSets
-        response = cluster_steps.step_get_resource_of_cluster('daemonsets')
-        # 获取集群daemonSets的数量
-        count = response.json()['totalItems']
-        # 获取集群所有的daemonSets的currentNumberScheduled和desiredNumberScheduled
-        for i in range(0, count):
-            currentNumberScheduled = response.json()['items'][i]['status']['currentNumberScheduled']
-            desiredNumberScheduled = response.json()['items'][i]['status']['desiredNumberScheduled']
-            # 验证每个daemonSets的currentNumberScheduled=desiredNumberScheduled
-            assert currentNumberScheduled == desiredNumberScheduled
+        # 查询集群中所有的系统项目
+        response = cluster_steps.step_get_system_of_cluster()
+        system_count = response.json()['totalItems']
+        # 查询集群所有系统项目的daemonSets
+        for i in range(0, system_count):
+            system_name = response.json()['items'][i]['metadata']['name']
+            re = cluster_steps.step_get_resource_of_cluster_by_project('daemonsets', system_name)
+            # 获取集群daemonSets的数量
+            count = re.json()['totalItems']
+            # 获取集群所有的daemonSets的currentNumberScheduled和desiredNumberScheduled
+            for j in range(0, count):
+                currentNumberScheduled = re.json()['items'][j]['status']['currentNumberScheduled']
+                desiredNumberScheduled = re.json()['items'][j]['status']['desiredNumberScheduled']
+                # 验证每个daemonSets的currentNumberScheduled=desiredNumberScheduled
+                assert currentNumberScheduled == desiredNumberScheduled
 
     @allure.story('应用负载')
     @allure.title('查看集群所有的daemonSets的详情信息')
