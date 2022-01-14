@@ -123,20 +123,20 @@ class TestMetering(object):
         count = response.json()['totalItems']
         # 获取节点的名称
         for i in range(0, count):
-            name = response.json()['items'][0]['metadata']['name']
+            name = response.json()['items'][i]['metadata']['name']
             # 获取截止到昨天的最近7天的消费历史
-            response = toolbox_steps.step_get_consumption_history(type='node', start_time=before_timestamp,
+            re = toolbox_steps.step_get_consumption_history(type='node', start_time=before_timestamp,
                                                                   end_time=now_timestamp,
                                                                   step=step, name=name)
             # 获取查询结果的数据类型
             for j in range(0, 5):
                 try:
-                    result_type = response.json()['results'][j]['data']['resultType']
+                    result_type = re.json()['results'][j]['data']['resultType']
                     # 验证数据类型为matrix
                     assert result_type == 'matrix'
                     # 获取趋势图数据的时间间隔
-                    time_1 = response.json()['results'][j]['data']['result'][0]['values'][0][0]
-                    time_2 = response.json()['results'][j]['data']['result'][0]['values'][1][0]
+                    time_1 = re.json()['results'][j]['data']['result'][0]['values'][0][0]
+                    time_2 = re.json()['results'][j]['data']['result'][0]['values'][1][0]
                     time_interval = time_2 - time_1
                     # 验证时间间隔正确
                     assert time_interval == int(step)
