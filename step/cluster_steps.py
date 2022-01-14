@@ -129,6 +129,13 @@ def step_query_system_project(project_name):
     return response
 
 
+@allure.step('获取集群中所有的系统项目')
+def step_get_system_of_cluster():
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces?sortBy=createTime&labelSelector=kubesphere.io%2Fworkspace%3Dsystem-workspace'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
 @allure.step('查询集群所有的项目')
 def step_get_project_of_cluster():
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/'
