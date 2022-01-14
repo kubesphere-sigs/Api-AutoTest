@@ -26,7 +26,6 @@ class TestLogSearch(object):
         pod_count = response.json()['statistics']['containers']
         # 获取收集到的日志数量
         log_counts = response.json()['statistics']['logs']
-        print(log_counts)
         # 验证容器数量大于0
         assert pod_count > 0
         # 查询当天的日志变化趋势
