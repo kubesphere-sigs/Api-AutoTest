@@ -119,17 +119,24 @@ pipeline {
         message '请输入apiserver地址(http://ip:port)'
         id 'Yes'
         parameters {
-          string(name: 'apiserver')
+          string(name: 'apiserver', defaultValue: '10.233.90.224:9090')
         }
       }
       steps {
         container('python') {
-          sh '''
-              envsubst < ${WORKSPACE}/config/config.yaml > ${WORKSPACE}/config/config_new.yaml
-              cd ${WORKSPACE}/TestCase
-              pytest testClusterManage.py -s  --reruns=1 --reruns-delay=5 --alluredir ../result --clean-alluredir
-              exit 0
-             '''
+          script {
+            try {
+            sh '''
+                envsubst < ${WORKSPACE}/config/config.yaml > ${WORKSPACE}/config/config_new.yaml
+                cd ${WORKSPACE}/TestCase
+                pytest test*.py --reruns=5 --reruns-delay=12 --alluredir ../result
+                exit 0
+               '''
+            }
+            catch (Exception err) {
+              echo 'test failed'
+            }
+          }
         }
       }
     }
