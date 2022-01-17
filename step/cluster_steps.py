@@ -5,10 +5,8 @@ import json
 from common.getHeader import get_header, get_header_for_patch
 from common.getConfig import get_apiserver
 
-
 env_url = get_apiserver()
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
-
 
 
 @allure.step('获取集群的名称')
@@ -24,8 +22,8 @@ def step_get_cluster_name():
 @allure.step('查询容器的日志')
 def step_get_container_log(pod_name, container_name, start_time, end_time):
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=query&log_query=&pods=' + pod_name + \
-                '&sort=desc&containers=' + container_name + '&from=0&size=100' \
-                '&start_time=' + start_time + '&end_time=' + end_time
+          '&sort=desc&containers=' + container_name + '&from=0&size=100' \
+                                                      '&start_time=' + start_time + '&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -33,7 +31,7 @@ def step_get_container_log(pod_name, container_name, start_time, end_time):
 @allure.step('获取集群的节点信息')
 def step_get_node_info():
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/nodes?' \
-                       'sortBy=createTime&labelSelector=%21node-role.kubernetes.io%2Fedge'
+                    'sortBy=createTime&labelSelector=%21node-role.kubernetes.io%2Fedge'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -41,7 +39,7 @@ def step_get_node_info():
 @allure.step('查询节点的pod信息')
 def step_get_pod_info(node_name):
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/pods?' \
-                       'labelSelector=&nodeName=' + node_name + '&sortBy=startTime'
+                    'labelSelector=&nodeName=' + node_name + '&sortBy=startTime'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -54,7 +52,7 @@ def step_get_nodes():
 
 
 @allure.step('为节点设置污点')
-def step_ste_taints(node_name, taints):
+def step_set_taints(node_name, taints):
     url = env_url + '/api/v1/nodes/' + node_name
     data = {"spec": {"taints": taints}}
     response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
@@ -356,9 +354,9 @@ def step_get_component_health():
 def step_get_metrics_of_cluster(start_time, end_time, step, times):
     url = env_url + '/kapis/monitoring.kubesphere.io/v1alpha3/cluster?start=' + start_time + '&end=' + end_time + \
           '&step=' + step + '&times=' + times + '&metrics_filter=cluster_cpu_usage%7Ccluster_cpu_total' \
-                            '%7Ccluster_cpu_utilisation%7Ccluster_memory_usage_wo_cache%7Ccluster_memory_total%7C' \
-                            'cluster_memory_utilisation%7Ccluster_disk_size_usage%7Ccluster_disk_size_capacity%7C' \
-                            'cluster_disk_size_utilisation%7Ccluster_pod_running_count%7Ccluster_pod_quota%24'
+                                                '%7Ccluster_cpu_utilisation%7Ccluster_memory_usage_wo_cache%7Ccluster_memory_total%7C' \
+                                                'cluster_memory_utilisation%7Ccluster_disk_size_usage%7Ccluster_disk_size_capacity%7C' \
+                                                'cluster_disk_size_utilisation%7Ccluster_pod_running_count%7Ccluster_pod_quota%24'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -367,7 +365,7 @@ def step_get_metrics_of_cluster(start_time, end_time, step, times):
 def step_get_metrics_of_apiserver(start_time, end_time, step, times):
     url = env_url + '/kapis/monitoring.kubesphere.io/v1alpha3/components/apiserver?start=' + start_time + \
           '&end=' + end_time + '&step=' + step + '&times=' + times + '&metrics_filter=apiserver_request_latencies%7C' \
-                                                'apiserver_request_by_verb_latencies%7Capiserver_request_rate%24'
+                                                                     'apiserver_request_by_verb_latencies%7Capiserver_request_rate%24'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -384,11 +382,11 @@ def step_get_metrics_of_scheduler(start_time, end_time, step, times):
 @allure.step('查询集群的 node usage ranking信息')
 def step_get_node_usage_rank(sort):
     url = env_url + '/kapis/monitoring.kubesphere.io/v1alpha3/nodes?type=rank&' \
-            'metrics_filter=node_cpu_utilisation%7Cnode_cpu_usage%7Cnode_cpu_total%7Cnode_memory_utilisation%7C' \
-            'node_memory_usage_wo_cache%7Cnode_memory_total%7Cnode_disk_size_utilisation%7Cnode_disk_size_usage%7C' \
-            'node_disk_size_capacity%7Cnode_pod_utilisation%7Cnode_pod_running_count%7Cnode_pod_quota%7C' \
-            'node_disk_inode_utilisation%7Cnode_disk_inode_total%7Cnode_disk_inode_usage%7C' \
-            'node_load1%24&sort_type=desc&sort_metric=' + sort
+                    'metrics_filter=node_cpu_utilisation%7Cnode_cpu_usage%7Cnode_cpu_total%7Cnode_memory_utilisation%7C' \
+                    'node_memory_usage_wo_cache%7Cnode_memory_total%7Cnode_disk_size_utilisation%7Cnode_disk_size_usage%7C' \
+                    'node_disk_size_capacity%7Cnode_pod_utilisation%7Cnode_pod_running_count%7Cnode_pod_quota%7C' \
+                    'node_disk_inode_utilisation%7Cnode_disk_inode_total%7Cnode_disk_inode_usage%7C' \
+                    'node_load1%24&sort_type=desc&sort_metric=' + sort
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -416,7 +414,93 @@ def step_get_app_usage_of_cluster(start_time, end_time, step, times):
 @allure.step('查询集群项目变化趋势')
 def step_get_project_trend_of_cluster(start_time, end_time, step, times):
     url = env_url + '/kapis/monitoring.kubesphere.io/v1alpha3/cluster' \
-          '?start=' + start_time + '&end=' + end_time + '&step=' + step + '&times=' + times + \
+                    '?start=' + start_time + '&end=' + end_time + '&step=' + step + '&times=' + times + \
           '&metrics_filter=cluster_namespace_count%24'
     response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('添加日志收集器')
+def step_add_log_receiver(type, log_type):
+    """
+    :param type: fluentd、kafka
+    :param log_type: logging、events、auditing
+    :return:
+    """
+    if type == 'fluentd':
+        spec = {"match": "kube.*", "forward": {"port": 24224, "host": "192.168.0.10"}}
+    elif type == 'kafka':
+        spec = {"match": "kube.*", "kafka": {"topics": "test-kafka", "brokers": "192.168.0.10:9092"}}
+
+    url = env_url + '/apis/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs'
+    data = {"apiVersion": "logging.kubesphere.io/v1alpha2", "kind": "Output",
+            "metadata": {"name": "forward-" + log_type, "namespace": "kubesphere-logging-system",
+                         "labels": {"logging.kubesphere.io/enabled": "true",
+                                    "logging.kubesphere.io/component": log_type},
+                         "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": spec}
+    print(data)
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+
+@allure.step('查看日志接收器')
+def step_get_log_receiver(type):
+    """
+    :param type: logging、events、auditing
+    :return:
+    """
+    url = env_url + '/apis/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs?' \
+                    'labelSelector=logging.kubesphere.io%2Fcomponent%3D' + type
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查看日志接收器详情')
+def step_get_log_receiver_detail(name):
+    """
+    :param name: 日志接收器的名称
+    :return:
+    """
+    url = env_url + '/apis/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs/' + name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('更改日志接收器的状态')
+def step_modify_log_receiver_status(name, status):
+    """
+    :param name: 日志接收器名称
+    :param status: 日志接收器状态
+    :return:
+    """
+    url = env_url + '/apis/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs/' + name
+    data = {"metadata": {"labels": {"logging.kubesphere.io/enabled": status}}}
+    response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    return response
+
+
+@allure.step('编辑日志接收器的地址')
+def step_modify_log_receiver_address(name, host, port):
+    """
+    :param host:
+    :param port:
+    :param name: 日志接收器名称
+    :return:
+    """
+    url = env_url + '/apis/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs/' + name
+    data = {"spec": {"forward": {"host": host, "port": port}}}
+    response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    return response
+
+
+@allure.step('删除日志接收器')
+def step_delete_log_receiver(name):
+    """
+    :param name: 日志接收器名称
+    :return:
+    """
+    url = env_url + '/apis/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs/' + name
+    response = requests.delete(url=url, headers=get_header())
     return response
