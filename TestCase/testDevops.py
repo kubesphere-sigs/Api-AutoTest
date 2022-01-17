@@ -590,8 +590,8 @@ class TestDevOps(object):
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
         # 创建凭证
-        username = 'YWRtaW4='
-        password = 'Z2hwX2RsVUpBNm1wRmg3VFFRVWtLVTBkMzBNYTNZbEplUTIzUm5jNw=='
+        username = ''
+        password = ''
         devops_steps.step_create_account_credential(dev_name_new, credential_name, username, password)
         # 创建流水线
         devops_steps.step_create_pipeline_base_github(self.dev_name, dev_name_new, pipeline_name,
@@ -621,8 +621,8 @@ class TestDevOps(object):
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         dev_name_new = response.json()['items'][0]['metadata']['name']
         # 创建凭证
-        username = 'YWRtaW4='
-        password = 'Z2hwX2RsVUpBNm1wRmg3VFFRVWtLVTBkMzBNYTNZbEplUTIzUm5jNw=='
+        username = ''
+        password = ''
         devops_steps.step_create_account_credential(dev_name_new, credential_name, username, password)
         # 创建流水线
         devops_steps.step_create_pipeline_base_github(self.dev_name, dev_name_new, pipeline_name,
