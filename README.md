@@ -119,7 +119,7 @@ pipeline {
         message '请输入apiserver地址(http://ip:port)'
         id 'Yes'
         parameters {
-          string(name: 'apiserver', defaultValue: '10.233.90.224:9090')
+          string(name: 'apiserver')
         }
       }
       steps {
@@ -129,7 +129,7 @@ pipeline {
             sh '''
                 envsubst < ${WORKSPACE}/config/config.yaml > ${WORKSPACE}/config/config_new.yaml
                 cd ${WORKSPACE}/TestCase
-                pytest test*.py --reruns=5 --reruns-delay=12 --alluredir ../result
+                pytest test*.py -v -n 4 --dist=loadfile --reruns=2 --reruns-delay=10 --alluredir ../result
                 exit 0
                '''
             }
