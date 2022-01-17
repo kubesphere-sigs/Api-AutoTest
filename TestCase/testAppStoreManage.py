@@ -91,7 +91,7 @@ class TestManageAppStore(object):
     @pytest.mark.parametrize('id,url,params,data, story, title,method,severity,condition,except_result', parametrize)
     def test_manage_app_store(self, id, url, params, data, story, title, method, severity, condition, except_result):
 
-        '''
+        """
         :param id: 用例编号
         :param url: 用例请求的URL地址
         :param data: 用例使用的请求数据
@@ -100,7 +100,7 @@ class TestManageAppStore(object):
         :param severity: 用例优先级
         :param condition: 用例的校验条件
         :param except_result: 用例的预期结果
-        '''
+        """
 
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
