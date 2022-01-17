@@ -10,6 +10,7 @@ from common.getConfig import get_apiserver
 
 env_url = get_apiserver()
 
+
 # 创建系统用户
 @allure.step('创建系统用户')
 def step_create_user(user_name):
@@ -471,3 +472,12 @@ def replace_str(*targets, actual_value, expect_value):
             target_new.append('')
     return target_new
 
+
+# 创建随机ip
+def random_ip():
+    m = random.randint(0, 255)
+    n = random.randint(0, 255)
+    x = random.randint(0, 255)
+    y = random.randint(0, 255)
+    randomIP = str(m) + '.' + str(n) + '.' + str(x) + '.' + str(y)
+    return randomIP
