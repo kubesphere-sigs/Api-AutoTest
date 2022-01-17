@@ -47,14 +47,14 @@ class TestCluster(object):
         response = cluster_steps.step_get_nodes()
         node_name = response.json()['items'][0]['metadata']['name']
         # 为节点设置污点
-        cluster_steps.step_ste_taints(node_name, taints)
+        cluster_steps.step_set_taints(node_name, taints)
         # 获取节点的污点信息
         r = cluster_steps.step_get_node_detail_info(node_name)
         taints_actual = r.json()['spec']['taints']
         # 验证污点设置成功
         assert taints == taints_actual
         # 清空设置的污点
-        cluster_steps.step_ste_taints(node_name=node_name, taints=[])
+        cluster_steps.step_set_taints(node_name=node_name, taints=[])
 
     @allure.story("节点")
     @allure.title('为节点添加标签')
@@ -1193,3 +1193,80 @@ class TestCluster(object):
         # 验证数据类型为matrix
         assert result_type == 'matrix'
 
+    @allure.story('集群设置')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('type, log_type, title',
+                             [('fluentd', 'logging', '为容器日志添加日志接收器，并验证添加成功'),
+                              ('fluentd','events', '为资源事件添加日志接受器，并验证添加成功'),
+                              ('fluentd', 'auditing', '为审计日志添加日志接收器，并验证添加成功'),
+                              ('kafka', 'logging', '为容器日志添加日志接收器，并验证添加成功'),
+                              ('kafka', 'events', '为资源事件添加日志接受器，并验证添加成功'),
+                              ('kafka', 'auditing', '为审计日志添加日志接收器，并验证添加成功')
+                              ])
+    def test_add_log_receiver(self, type, log_type, title):
+        # 添加日志收集器
+        cluster_steps.step_add_log_receiver(type, log_type)
+        # 查看日志收集器
+        response = cluster_steps.step_get_log_receiver(log_type)
+        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        # 验证日志接收器添加成功
+        assert log_receiver_name == 'forward-' + log_type
+        # 删除创建的日志接收器
+        cluster_steps.step_delete_log_receiver(log_receiver_name)
+
+
+    @allure.story('集群设置')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('log_type, title',
+                             [('logging', '将容器日志的日志接收器状态更改为false'),
+                              ('events', '将资源事件的日志接受器状态更改为false'),
+                              ('auditing', '将审计日志的日志接收器状态更改为false')
+                              ])
+    def test_modify_log_receiver_status(self, log_type, title):
+        # 添加日志收集器
+        cluster_steps.step_add_log_receiver('fluentd', log_type)
+        # 查看日志收集器，并获取新增日志接收器名称
+        response = cluster_steps.step_get_log_receiver(log_type)
+        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        # 查看日志接收器详情
+        cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        # 更改日志接收器状态
+        cluster_steps.step_modify_log_receiver_status(log_receiver_name, 'false')
+        # 查看日志接受器详情并验证更改成功
+        re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        status = re.json()['metadata']['labels']['logging.kubesphere.io/enabled']
+        assert status == 'false'
+        # 删除创建的日志接收器
+        cluster_steps.step_delete_log_receiver(log_receiver_name)
+
+
+    @allure.story('集群设置')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('log_type, title',
+                             [('logging', '修改容器日志的日志接收器的服务地址'),
+                              ('events', '修改资源事件的日志接受器的服务地址'),
+                              ('auditing', '修改审计日志的日志接收器的服务地址')
+                              ])
+    def test_modify_log_receiver_address(self, log_type, title):
+        # 添加日志收集器
+        cluster_steps.step_add_log_receiver('fluentd', log_type)
+        # 查看日志收集器，并获取新增日志接收器名称
+        response = cluster_steps.step_get_log_receiver(log_type)
+        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        # 查看日志接收器详情
+        cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        # 修改日志接收器的服务地址
+        host = commonFunction.random_ip()
+        port = random.randint(1, 65535)
+        cluster_steps.step_modify_log_receiver_address(log_receiver_name, host, port)
+        # 查看日志接受器详情并验证修改成功
+        re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        host_actual = re.json()['spec']['forward']['host']
+        port_actual = re.json()['spec']['forward']['port']
+        assert host_actual == host
+        assert port_actual == port
+        # 删除创建的日志接收器
+        cluster_steps.step_delete_log_receiver(log_receiver_name)
