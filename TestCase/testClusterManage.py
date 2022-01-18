@@ -1270,3 +1270,63 @@ class TestCluster(object):
         assert port_actual == port
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
+
+
+    @allure.story('集群设置')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('type, title',
+                             [('NodePort', '开启集群网关并设置类型为NodePort'),
+                              ('LoadBalancer', '开启集群网关并设置类型为LoadBalancer')
+                              ])
+    def test_open_cluster_gateway(self, type, title):
+        # 开启集群网关
+        cluster_steps.step_open_cluster_gateway(type)
+        # 查看集群网关，并验证网关类型
+        response = cluster_steps.step_get_cluster_gateway()
+        gateway_type = response.json()[0]['spec']['service']['type']
+        assert gateway_type == type
+        # 关闭集群网关
+        cluster_steps.step_delete_cluster_gateway()
+
+
+    @allure.story('集群设置')
+    @allure.title('修改网关信息')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_edit_cluster_gateway(self):
+        # 开启集群网关
+        cluster_steps.step_open_cluster_gateway(type='NodePort')
+        # 查看集群网关，并获取获取uid和resourceversion
+        response = cluster_steps.step_get_cluster_gateway()
+        uid = response.json()[0]['metadata']['uid']
+        resourceVersion = response.json()[0]['metadata']['resourceVersion']
+        # 编辑集群config信息
+        config = {"4": "5"}
+        status = 'true'
+        cluster_steps.step_edit_cluster_gateway(uid, resourceVersion, config, status)
+        # 查看集群网关，并获取config信息
+        re = cluster_steps.step_get_cluster_gateway()
+        config_actual = re.json()[0]['spec']['controller']['config']
+        status_actual = re.json()[0]['spec']['deployment']['annotations']['servicemesh.kubesphere.io/enabled']
+        # 验证config信息编辑成功
+        assert config_actual == config
+        # 验证集群网关的链路追踪的状态
+        assert status_actual == status
+        # 关闭集群网关
+        cluster_steps.step_delete_cluster_gateway()
+
+
+    @allure.story('集群设置')
+    @allure.title('在网管设置中查询项目网关')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_project_gateway(self):
+        # 开启集群网关
+        cluster_steps.step_open_cluster_gateway(type='LoadBalancer')
+        # 查询项目网关
+        response = cluster_steps.step_get_project_gateway('kubesphere-router-kubesphere-system')
+        gateway_name = response.json()['items'][0]['metadata']['name']
+        # 验证查询结果
+        assert gateway_name == 'kubesphere-router-kubesphere-system'
+        # 关闭集群网关
+        cluster_steps.step_delete_cluster_gateway()
+
