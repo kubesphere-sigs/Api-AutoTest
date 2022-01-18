@@ -339,33 +339,93 @@ def step_create_route(project_name, ingress_name, host, service_info):
     return response
 
 
-@allure.step('设置网关')
-def step_create_gateway(project_name, type, annotations):
-    url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
-    data = {"type": type, "annotations": annotations}
+@allure.step('开启项目网关')
+def step_create_gateway(project_name, type, status):
+    url = env_url + '/kapis/gateway.kubesphere.io/v1alpha1/namespaces/' + project_name + '/gateways/'
+    if type == 'NodePort':
+        data = {"apiVersion": "gateway.kubesphere.io/v1alpha1", "kind": "Gateway",
+                "metadata": {"namespace": project_name, "name": "", "creator": "admin",
+                             "annotations": {"kubesphere.io/annotations": "", "kubesphere.io/creator": "admin"}},
+                "spec": {
+                    "controller": {"replicas": 1, "annotations": {}, "config": {},
+                                   "scope": {"enabled": True, "namespace": project_name}},
+                    "deployment": {"annotations": {"servicemesh.kubesphere.io/enabled": status}, "replicas": 1},
+                    "service": {"annotations": {}, "type": type}}}
+    elif type == 'LoadBalancer':
+        data = {"apiVersion": "gateway.kubesphere.io/v1alpha1", "kind": "Gateway",
+                "metadata": {"namespace": project_name, "name": "", "creator": "admin",
+                             "annotations": {"kubesphere.io/annotations": "QingCloud Kubernetes Engine",
+                                             "kubesphere.io/creator": "admin"}}, "spec": {
+                "controller": {"replicas": 1, "annotations": {}, "config": {},
+                               "scope": {"enabled": True, "namespace": project_name}},
+                "deployment": {"annotations": {"servicemesh.kubesphere.io/enabled": status}, "replicas": 1},
+                "service": {
+                    "annotations": {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
+                                    "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0"},
+                    "type": type}}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
 
-@allure.step('编辑网关')
-def step_edit_gateway(project_name, type, annotations):
-    url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
-    data = {"type": type, "annotations": annotations}
+@allure.step('编辑类型为LoadBalancer的网关')
+def step_edit_gateway_lb(project_name, uid, resourceversion, provider, annotations, configuration, status):
+    """
+    :param project_name:
+    :param uid:
+    :param resourceversion:
+    :param provider: 负载均衡器提供商 ex "QingCloud Kubernetes Engine"、"Huawei Cloud CCE"
+    :param annotations: 注解 ex {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
+                                "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0"}
+    :param configuration: 配置选项 ex {"qw":"12"}
+    :param status: 链路追踪开启状态
+    :return:
+    """
+    url = env_url + '/kapis/gateway.kubesphere.io/v1alpha1/namespaces/' + project_name + '/gateways/'
+    data = {"metadata": {"name": "kubesphere-router-" + project_name, "namespace": "kubesphere-controls-system",
+                         "uid": uid, "resourceVersion": resourceversion, "generation": 1,
+                         "annotations": {"kubesphere.io/annotations": provider,
+                                         "kubesphere.io/creator": "admin"}, "managedFields": [
+            {"manager": "ks-apiserver", "operation": "Update", "apiVersion": "gateway.kubesphere.io/v1alpha1",
+             "fieldsType": "FieldsV1"}]},
+            "spec": {"controller": {"replicas": 1,
+                                    "config": configuration,
+                                    "scope": {"enabled": True, "namespace": project_name}},
+                     "service": {"type": "LoadBalancer",
+                                 "annotations": annotations},
+                     "deployment": {"replicas": 1, "annotations": {"servicemesh.kubesphere.io/enabled": status}}}}
     response = requests.put(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
 
-@allure.step('删除网关')
+@allure.step('编辑类型为NodePort的网关')
+def step_edit_gateway_np(project_name, uid, resourceversion, configuration, status):
+    url = env_url + '/kapis/gateway.kubesphere.io/v1alpha1/namespaces/' + project_name + '/gateways/'
+    data = {"metadata": {"name": "kubesphere-router-" + project_name, "namespace": "kubesphere-controls-system",
+                         "uid": uid, "resourceVersion": resourceversion, "generation": 1,
+                         "annotations": {"kubesphere.io/annotations": "", "kubesphere.io/creator": "admin"},
+                         "managedFields": [{"manager": "ks-apiserver", "operation": "Update",
+                                            "apiVersion": "gateway.kubesphere.io/v1alpha1",
+                                            "fieldsType": "FieldsV1"}]},
+            "spec": {"controller": {"replicas": 1,
+                                    "config": configuration,
+                                    "scope": {"enabled": True, "namespace": project_name}},
+                     "service": {"annotations": {}, "type": "NodePort"},
+                     "deployment": {"replicas": 1, "annotations": {"servicemesh.kubesphere.io/enabled": status}}},
+            "apiVersion": "gateway.kubesphere.io/v1alpha1", "kind": "Gateway"}
+    response = requests.put(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('关闭网关')
 def step_delete_gateway(project_name):
-    url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
-    data = {}
-    response = requests.delete(url=url, headers=get_header(), data=json.dumps(data))
+    url = env_url + '/kapis/gateway.kubesphere.io/v1alpha1/namespaces/' + project_name + '/gateways/'
+    response = requests.delete(url=url, headers=get_header())
     return response
 
 
 @allure.step('查看项目网关')
 def step_get_gateway(project_name):
-    url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/namespaces/' + project_name + '/router'
+    url = env_url + '/kapis/gateway.kubesphere.io/v1alpha1/namespaces/' + project_name + '/gateways/'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -395,7 +455,7 @@ def step_modify_work_replicas(project_name, work_name, replicas):
 def step_get_work_pod_status(project_name, work_name):
     status = []
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods' \
-                                                                                              '?ownerKind=ReplicaSet&labelSelector=app%3' + work_name + '&name=' + work_name + '&sortBy=startTime'
+                                                                                           '?ownerKind=ReplicaSet&labelSelector=app%3' + work_name + '&name=' + work_name + '&sortBy=startTime'
 
     r = requests.get(url=url, headers=get_header())
     for i in range(r.json()['totalItems']):
@@ -820,7 +880,7 @@ def step_get_pod_info_of_project(project_name):
 @allure.step('查询企业空间的项目信息')
 def step_get_project_info(ws_name):
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces?' \
-                                                                                      'sortBy=createTime&labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
+                                                                                   'sortBy=createTime&labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -828,7 +888,7 @@ def step_get_project_info(ws_name):
 @allure.step('在项目中查询pod')
 def step_get_pod_info(project_name, pod_name):
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods?' \
-                                                                                              'name=' + pod_name + '&sortBy=startTime&limit=10'
+                                                                                           'name=' + pod_name + '&sortBy=startTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -842,7 +902,6 @@ def step_get_host_name():
         return response.json()['items'][0]['metadata']['name']
     except IndexError as e:
         print(e)
-
 
 
 @allure.step('在多集群环境查询项目的federatedlimitranges')
@@ -1588,10 +1647,10 @@ def step_get_system_project(cluster_name):
     # 判断环境是否是多集群环境
     if commonFunction.check_multi_cluster() is True:
         url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces?' \
-                           'sortBy=createTime&labelSelector=kubesphere.io%2Fworkspace%3Dsystem-workspace'
+                                                            'sortBy=createTime&labelSelector=kubesphere.io%2Fworkspace%3Dsystem-workspace'
     else:
         url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces?' \
-                           'sortBy=createTime&labelSelector=kubesphere.io%2Fworkspace%3Dsystem-workspace'
+                        'sortBy=createTime&labelSelector=kubesphere.io%2Fworkspace%3Dsystem-workspace'
     response = requests.get(url=url, headers=get_header())
     count = response.json()['totalItems']
     ns = []
