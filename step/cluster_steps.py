@@ -439,10 +439,8 @@ def step_add_log_receiver(type, log_type):
                                     "logging.kubesphere.io/component": log_type},
                          "annotations": {"kubesphere.io/creator": "admin"}},
             "spec": spec}
-    print(data)
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
-
 
 
 @allure.step('查看日志接收器')
@@ -503,4 +501,89 @@ def step_delete_log_receiver(name):
     """
     url = env_url + '/apis/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs/' + name
     response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('开启集群网关')
+def step_open_cluster_gateway(type):
+    url = env_url + '/apis/gateway.kubesphere.io/v1alpha1/namespaces/kubesphere-controls-system/gateways/kubesphere-router-kubesphere-system'
+    if type == 'NodePort':
+        data = {"apiVersion": "gateway.kubesphere.io/v1alpha1", "kind": "Gateway",
+                "metadata": {"namespace": "kubesphere-controls-system", "name": "kubesphere-router-kubesphere-system",
+                             "creator": "admin",
+                             "annotations": {"kubesphere.io/annotations": "", "kubesphere.io/creator": "admin"}},
+                "spec": {
+                    "controller": {"replicas": 1, "annotations": {}, "config": {},
+                                   "scope": {"enabled": False, "namespace": ""}},
+                    "deployment": {"annotations": {"servicemesh.kubesphere.io/enabled": "false"}, "replicas": 1},
+                    "service": {"annotations": {},
+                                "type": "NodePort"}}
+                }
+    elif type == 'LoadBalancer':
+        data = {"apiVersion": "gateway.kubesphere.io/v1alpha1", "kind": "Gateway",
+                "metadata": {"namespace": "kubesphere-controls-system", "name": "kubesphere-router-kubesphere-system",
+                             "creator": "admin",
+                             "annotations": {"kubesphere.io/annotations": "QingCloud Kubernetes Engine",
+                                             "kubesphere.io/creator": "admin"}}, "spec": {
+                "controller": {"replicas": 1, "annotations": {}, "config": {},
+                               "scope": {"enabled": False, "namespace": ""}},
+                "deployment": {"annotations": {"servicemesh.kubesphere.io/enabled": "false"}, "replicas": 1},
+                "service": {
+                    "annotations": {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
+                                    "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0"},
+                    "type": "LoadBalancer"}}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('查询集群网关')
+def step_get_cluster_gateway():
+    url = env_url + '/kapis/gateway.kubesphere.io/v1alpha1/namespaces/kubesphere-system/gateways'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('关闭集群网关')
+def step_delete_cluster_gateway():
+    url = env_url + '/apis/gateway.kubesphere.io/v1alpha1/namespaces/kubesphere-controls-system/gateways/kubesphere-router-kubesphere-system'
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查看集群网关详情')
+def step_get_cluster_gateway_detail():
+    url = env_url + '/kapis/gateway.kubesphere.io/v1alpha1/namespaces/kubesphere-system/gateways'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('编辑集群网关')
+def step_edit_cluster_gateway(uid, resourceVersion, config, status):
+    """
+    :param uid:
+    :param resourceVersion:
+    :param config: ex {"4": "5"}
+    :param status: 链路追踪状态 true、false
+    :return:
+    """
+    url = env_url + '/apis/gateway.kubesphere.io/v1alpha1/namespaces/kubesphere-controls-system/gateways/kubesphere-router-kubesphere-system'
+    data = {"metadata": {"name": "kubesphere-router-kubesphere-system", "namespace": "kubesphere-controls-system",
+                         "uid": uid, "resourceVersion": resourceVersion, "generation": 2,
+                         "annotations": {"kubesphere.io/annotations": "", "kubesphere.io/creator": "admin"},
+                         "finalizers": ["uninstall-helm-release"], "managedFields": [
+            {"manager": "controller-manager", "operation": "Update", "apiVersion": "gateway.kubesphere.io/v1alpha1",
+            "fieldsType": "FieldsV1"},
+            ]},
+            "spec": {"controller": {"replicas": 1, "config": config, "scope": {}}, "service": {"type": "NodePort"},
+                     "deployment": {"replicas": 1, "annotations": {"servicemesh.kubesphere.io/enabled": status}}},
+            "apiVersion": "gateway.kubesphere.io/v1alpha1", "kind": "Gateway"}
+    response = requests.put(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+
+@allure.step('在集群设置/网关设置中查询项目网关')
+def step_get_project_gateway(name):
+    url = env_url + '/kapis/gateway.kubesphere.io/v1alpha1/gateways?name=' + name + '&sortBy=createTime'
+    response = requests.get(url=url, headers=get_header())
     return response
