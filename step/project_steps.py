@@ -893,6 +893,27 @@ def step_get_pod_info(project_name, pod_name):
     return response
 
 
+@allure.step('在项目设置中设置日志收集状态')
+def step_set_logsidecar(ws_name, project_name, status):
+    """
+    :param ws_name:
+    :param project_name:
+    :param status: ex "enabled"、"disabled"
+    :return:
+    """
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
+    data = {"metadata": {"labels": {"logging.kubesphere.io/logsidecar-injection": status}}}
+    response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    return response
+
+
+@allure.step('在项目设置中查看日志收集状态')
+def step_get_status_logsidecar(project_name):
+    url = env_url + '/api/v1/namespaces/' + project_name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
 #####多集群######
 @allure.step('获取host集群的名称')
 def step_get_host_name():
