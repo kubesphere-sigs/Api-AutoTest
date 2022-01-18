@@ -1046,61 +1046,124 @@ class TestProject(object):
         # 验证路由创建成功
         assert name == service_name
 
-    @allure.story('项目设置-高级设置')
-    @allure.title('设置网关-NodePort')
+    @allure.story('项目设置-网关设置')
+    @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_gateway(self):
-        type = 'NodePort'  # 网关类型
-        annotations = {"servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
+    @pytest.mark.parametrize('type, title',
+                             [('NodePort', '在未开启集群网关的前提下开启项目网关并设置类型为NodePort'),
+                              ('LoadBalancer', '在未开启集群网关的前提下开启项目网关并设置类型为LoadBalancer')
+                              ])
+    def test_create_project_gateway(self, type, title):
+        status = 'true'  # 链路追踪开启状态
         # 创建网关
-        response = project_steps.step_create_gateway(self.project_name, type, annotations)
-        # 验证网关创建成功
-        assert response.status_code == 200
-        # 删除网关
-        project_steps.step_delete_gateway(self.project_name)
-        # 验证网关删除成功
+        project_steps.step_create_gateway(self.project_name, type, status)
+        # 查看项目网关，并验证网关类型
         response = project_steps.step_get_gateway(self.project_name)
-        assert response.json()['message'] == 'service \"kubesphere-router-' + self.project_name + '\" not found'
-
-    @allure.story('项目设置-高级设置')
-    @allure.title('设置网关-LoadBalancer')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_gateway(self):
-        type = 'LoadBalancer'  # 网关类型
-        annotations = {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
-                       "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0",
-                       "servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
-        # 创建网关
-        response = project_steps.step_create_gateway(self.project_name, type, annotations)
-        # 验证网关创建成功
-        assert response.status_code == 200
-        # 删除网关
+        type_actual = response.json()[0]['spec']['service']['type']
+        assert type_actual == type
+        # 关闭网关
         project_steps.step_delete_gateway(self.project_name)
-        # 验证网关删除成功
-        response = project_steps.step_get_gateway(self.project_name)
-        assert response.json()['message'] == 'service \"kubesphere-router-' + self.project_name + '\" not found'
 
-    @allure.story('项目设置-高级设置')
-    @allure.title('编辑网关')
+
+    @allure.story('项目设置-网关设置')
+    @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_edit_gateway(self):
-        type = 'LoadBalancer'  # 网关类型
-        type_new = 'NodePort'
-        annotations = {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
-                       "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0",
-                       "servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
-
-        annotations_new = {"servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
+    @pytest.mark.parametrize('project_type, cluster_type, title',
+                             [('NodePort', 'NodePort', '在已开启集群网关的前提下开启项目网关并设置类型为NodePort'),
+                              ('LoadBalancer', 'NodePort', '在已开启集群网关的前提下开启项目网关并设置类型为LoadBalancer'),
+                              ('NodePort', 'LoadBalancer', '在已开启集群网关的前提下开启项目网关并设置类型为NodePort'),
+                              ('LoadBalancer', 'LoadBalancer', '在已开启集群网关的前提下开启项目网关并设置类型为LoadBalancer')
+                              ])
+    def test_create_gateway(self, project_type, cluster_type,title):
+        # 开启集群网关
+        cluster_steps.step_open_cluster_gateway(cluster_type)
+        status = 'true'  # 链路追踪开启状态
         # 创建网关
-        project_steps.step_create_gateway(self.project_name, type, annotations)
-        # 编辑网关
-        project_steps.step_edit_gateway(self.project_name, type_new, annotations_new)
+        response = project_steps.step_create_gateway(self.project_name, project_type, status)
+        result = response.text
+        # 验证创建结果
+        assert result == "can't create project gateway if global gateway enabled\n"
+        # 关闭集群网关
+        cluster_steps.step_delete_cluster_gateway()
+
+
+    @allure.story('项目设置-网关设置')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('project_type, cluster_type, title',
+                             [('NodePort', 'LoadBalancer', '在已开启项目网关的前提下开启集群网关并设置类型为NodePort'),
+                              ('LoadBalancer', 'LoadBalancer', '在已开启项目网关的前提下开启集群网关并设置类型为LoadBalancer'),
+                              ('NodePort', 'NodePort', '在已开启项目网关的前提下开启集群网关并设置类型为NodePort'),
+                              ('LoadBalancer', 'NodePort', '在已开启项目网关的前提下开启集群网关并设置类型为LoadBalancer')
+                              ])
+    def test_create_gateway_after_project(self, project_type, cluster_type, title):
+        status = 'true'  # 链路追踪开启状态
+        # 创建项目网关
+        project_steps.step_create_gateway(self.project_name, project_type, status)
+        # 创建集群网关
+        cluster_steps.step_open_cluster_gateway(cluster_type)
+        # 在项目中查看网关信息
+        response = project_steps.step_get_gateway(self.project_name)
+        cluster_gateway_name = response.json()[0]['metadata']['name']
+        project_gateway_name = response.json()[1]['metadata']['name']
+        # 验证网关名称
+        assert cluster_gateway_name == 'kubesphere-router-kubesphere-system'
+        assert project_gateway_name == 'kubesphere-router-' + self.project_name
+        # 关闭项目网关
+        project_steps.step_delete_gateway(self.project_name)
+        # 关闭集群网关
+        cluster_steps.step_delete_cluster_gateway()
+
+    @allure.story('项目设置-网关设置')
+    @allure.title('将网关类型修改为LoadBalancer并编辑供应商、注解和配置信息')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_edit_gateway_lb(self):
+        type_old = 'NodePort'
+        status = 'false'
+        # 创建网关
+        project_steps.step_create_gateway(self.project_name, type_old, status)
+        # 查询网关并获取网关的uid和resourceversion
+        response = project_steps.step_get_gateway(self.project_name)
+        uid = response.json()[0]['metadata']['uid']
+        reVersion = response.json()[0]['metadata']['resourceVersion']
+        # 修改网关类型为LoadBalancer,并编辑供应商、注解和配置信息
+        provider = 'QingCloud Kubernetes Engine'
+        annotations = {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
+                                "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0"}
+        configuration = {"qw": "12"}
+        status_new = 'true'
+        project_steps.step_edit_gateway_lb(self.project_name, uid, reVersion, provider, annotations, configuration, status_new)
         # 验证网关编辑成功
         response = project_steps.step_get_gateway(self.project_name)
-        type_actual = response.json()['spec']['type']
-        assert type_actual == type_new
+        type_actual = response.json()[0]['spec']['service']['type']
+        assert type_actual == 'LoadBalancer'
         # 删除网关
         project_steps.step_delete_gateway(self.project_name)
+
+
+    @allure.story('项目设置-网关设置')
+    @allure.title('将网关类型修改为NodePort并编辑配置信息')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_edit_gateway_np(self):
+        type_old = 'LoadBalancer'
+        status = 'true'
+        # 创建网关
+        project_steps.step_create_gateway(self.project_name, type_old, status)
+        # 查询网关并获取网关的uid和resourceversion
+        response = project_steps.step_get_gateway(self.project_name)
+        uid = response.json()[0]['metadata']['uid']
+        reVersion = response.json()[0]['metadata']['resourceVersion']
+        # 修改网关类型为NodePort,并编辑配置信息
+        configuration = {"qa": "test"}
+        status_new = 'false'
+        qa = project_steps.step_edit_gateway_np(self.project_name, uid, reVersion, configuration, status_new)
+        # 验证网关编辑成功
+        re = project_steps.step_get_gateway(self.project_name)
+        type_actual = re.json()[0]['spec']['service']['type']
+        assert type_actual == 'NodePort'
+        # 删除网关
+        project_steps.step_delete_gateway(self.project_name)
+
 
     @allure.story('应用负载-工作负载')
     @allure.title('修改工作负载副本并验证运行正常')
