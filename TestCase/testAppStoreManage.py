@@ -6,7 +6,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 from common.getData import DoexcleByPandas
 from common import commonFunction
-from step import app_steps
+from step import app_steps, workspace_steps
 
 
 @allure.feature('应用商店管理')
@@ -64,25 +64,39 @@ class TestManageAppStore(object):
     @allure.title('删除包含应用的分类')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_app_category(self):
+        # 创建企业空间
+        ws_name = 'ws-for-test-app-store-manage' + str(commonFunction.get_random())
+        workspace_steps.step_create_workspace(ws_name)
+        version = 'v0.1 [v1.0]'  # 部署的应用的版本名称
+        update_log = 'test'  # 部署应用的更新日志
+        app_name = 'test-app' + str(commonFunction.get_random())  # 应用模版名称
+        # 创建应用模板
+        app_steps.step_create_app_template(ws_name, app_name)
+        # 获取应用的app_id和version_id
+        response = app_steps.step_get_app_template(ws_name, app_name)
+        app_id = response.json()['items'][0]['app_id']
+        version_id = response.json()['items'][0]['latest_app_version']['version_id']
+        # 应用模版提交审核
+        app_steps.step_app_template_submit(app_id, version_id, version, update_log)
+        # 应用审核通过
+        app_steps.step_app_pass(app_id, version_id)
+        # 发布模板到应用商店
+        app_steps.step_release(app_id, version_id)
         category_name = 'category' + str(commonFunction.get_random())
         # 新建应用分类
         response = app_steps.step_create_category(category_name)
         # 获取新建分类的category_id
         category_id = response.json()['category_id']
         # 获取应用商店页面所有应用的app_id
-        apps_id = app_steps.step_get_apps_id()
-        # 向分类中添加所有内置应用
-        for app_id in apps_id:
-            app_steps.step_app_to_category(app_id, category_id)
+        # apps_id = app_steps.step_get_apps_id()
+        # 向分类中添加新上架的应用
+        app_steps.step_app_to_category(app_id + '-store', category_id)
         # 删除分类
         result = app_steps.step_delete_app_category(category_id)
         # 验证删除结果
         assert result == 'category ' + category_name + ' owns application'
-        # 获取未分类的category_id
-        uncategorized_id = app_steps.step_get_category_id_by_name('uncategorized')
-        # 将所有的内置应用移动到未分类中
-        for app_id in apps_id:
-            app_steps.step_app_to_category(app_id, uncategorized_id)
+        # 下架新上架的应用
+        app_steps.step_suspend_app(app_id)
         # 删除新建的分类
         app_steps.step_delete_category(category_id)
 
