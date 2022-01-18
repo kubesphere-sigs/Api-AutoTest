@@ -1773,6 +1773,23 @@ class TestProject(object):
         print("删除项目耗时:" + str(i) + '秒')
         assert response.json()['totalItems'] == 0
 
+    @allure.story('项目设置-日志收集')
+    @allure.title('开启日志收集，然后将其关闭')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_open_logsidecar(self):
+        # 开启日志收集
+        project_steps.step_set_logsidecar(self.ws_name, self.project_name, status='enabled')
+        # 查看并验证日志收集状态
+        response = project_steps.step_get_status_logsidecar(self.project_name)
+        status_actual = response.json()['metadata']['labels']['logging.kubesphere.io/logsidecar-injection']
+        assert status_actual == 'enabled'
+        # 关闭日志收集
+        project_steps.step_set_logsidecar(self.ws_name, self.project_name, status='disabled')
+        # 查看并验证日志收集状态
+        response = project_steps.step_get_status_logsidecar(self.project_name)
+        status_actual = response.json()['metadata']['labels']['logging.kubesphere.io/logsidecar-injection']
+        assert status_actual == 'disabled'
+
 
 if __name__ == "__main__":
     pytest.main(['-s', 'testProject.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
