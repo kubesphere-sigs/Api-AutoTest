@@ -1026,7 +1026,8 @@ class TestCluster(object):
         # 验证结果为true
         assert result == 'true'
 
-    @allure.story('监控&告警')
+    @allure.feature('监控告警')
+    @allure.story('集群状态')
     @allure.title('查看组件的运行状态并验证组件均健康运行')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_component_health(self):
@@ -1047,7 +1048,8 @@ class TestCluster(object):
                 # 校验失败仍能继续运行
                 pytest.assume(totalBackends == healthyBackends)
 
-    @allure.story('监控&告警')
+    @allure.feature('监控告警')
+    @allure.story('集群状态')
     @allure.title('查看组件的运行状态并验证组件均健康运行')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_node_health(self):
@@ -1060,7 +1062,8 @@ class TestCluster(object):
         # 验证totalNodes = healthyNodes
         assert totalNodes == healthyNodes
 
-    @allure.story('监控&告警')
+    @allure.feature('监控告警')
+    @allure.story('集群状态')
     @allure.title('查看集群的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_metrics(self):
@@ -1079,7 +1082,8 @@ class TestCluster(object):
             except Exception as e:
                 print(e)
 
-    @allure.story('监控&告警')
+    @allure.feature('监控告警')
+    @allure.story('集群状态')
     @allure.title('查看apiserver的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_apiserver_metrics(self):
@@ -1098,7 +1102,8 @@ class TestCluster(object):
             except Exception as e:
                 print(e)
 
-    @allure.story('监控&告警')
+    @allure.feature('监控告警')
+    @allure.story('集群状态')
     @allure.title('查看schedule的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_schedule_metrics(self):
@@ -1117,7 +1122,8 @@ class TestCluster(object):
             except Exception as e:
                 print(e)
 
-    @allure.story('监控&告警')
+    @allure.feature('监控告警')
+    @allure.story('集群状态')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('sort, title',
@@ -1140,7 +1146,8 @@ class TestCluster(object):
             except Exception as e:
                 print(e)
 
-    @allure.story('监控&告警')
+    @allure.feature('监控告警')
+    @allure.story('应用资源')
     @allure.title('查看集群资源使用情况')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_resource_usage(self):
@@ -1159,7 +1166,8 @@ class TestCluster(object):
             except Exception as e:
                 print(e)
 
-    @allure.story('监控&告警')
+    @allure.feature('监控告警')
+    @allure.story('应用资源')
     @allure.title('查看集群应用资源用量')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_app_usage(self):
@@ -1178,7 +1186,8 @@ class TestCluster(object):
             except Exception as e:
                 print(e)
 
-    @allure.story('监控&告警')
+    @allure.feature('监控告警')
+    @allure.story('应用资源')
     @allure.title('查看集群项目变化趋势')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_app_usage(self):
@@ -1192,6 +1201,12 @@ class TestCluster(object):
         result_type = response.json()['results'][0]['data']['resultType']
         # 验证数据类型为matrix
         assert result_type == 'matrix'
+
+    @allure.feature('监控告警')
+    @allure.story('告警策略')
+    @allure.title('')
+    @allure.severity(allure.severity_level.CRITICAL)
+
 
     @allure.story('集群设置')
     @allure.title('{title}')
