@@ -1026,8 +1026,7 @@ class TestCluster(object):
         # 验证结果为true
         assert result == 'true'
 
-    @allure.feature('监控告警')
-    @allure.story('集群状态')
+    @allure.story('监控告警/集群状态')
     @allure.title('查看组件的运行状态并验证组件均健康运行')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_component_health(self):
@@ -1048,8 +1047,7 @@ class TestCluster(object):
                 # 校验失败仍能继续运行
                 pytest.assume(totalBackends == healthyBackends)
 
-    @allure.feature('监控告警')
-    @allure.story('集群状态')
+    @allure.story('监控告警/集群状态')
     @allure.title('查看组件的运行状态并验证组件均健康运行')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_node_health(self):
@@ -1062,8 +1060,7 @@ class TestCluster(object):
         # 验证totalNodes = healthyNodes
         assert totalNodes == healthyNodes
 
-    @allure.feature('监控告警')
-    @allure.story('集群状态')
+    @allure.story('监控告警/集群状态')
     @allure.title('查看集群的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_metrics(self):
@@ -1082,8 +1079,7 @@ class TestCluster(object):
             except Exception as e:
                 print(e)
 
-    @allure.feature('监控告警')
-    @allure.story('集群状态')
+    @allure.story('监控告警/集群状态')
     @allure.title('查看apiserver的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_apiserver_metrics(self):
@@ -1102,8 +1098,7 @@ class TestCluster(object):
             except Exception as e:
                 print(e)
 
-    @allure.feature('监控告警')
-    @allure.story('集群状态')
+    @allure.story('监控告警/集群状态')
     @allure.title('查看schedule的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_schedule_metrics(self):
@@ -1122,8 +1117,7 @@ class TestCluster(object):
             except Exception as e:
                 print(e)
 
-    @allure.feature('监控告警')
-    @allure.story('集群状态')
+    @allure.story('监控告警/集群状态')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('sort, title',
@@ -1146,8 +1140,7 @@ class TestCluster(object):
             except Exception as e:
                 print(e)
 
-    @allure.feature('监控告警')
-    @allure.story('应用资源')
+    @allure.story('监控告警/应用资源')
     @allure.title('查看集群资源使用情况')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_resource_usage(self):
@@ -1166,8 +1159,7 @@ class TestCluster(object):
             except Exception as e:
                 print(e)
 
-    @allure.feature('监控告警')
-    @allure.story('应用资源')
+    @allure.story('监控告警/应用资源')
     @allure.title('查看集群应用资源用量')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_app_usage(self):
@@ -1186,8 +1178,7 @@ class TestCluster(object):
             except Exception as e:
                 print(e)
 
-    @allure.feature('监控告警')
-    @allure.story('应用资源')
+    @allure.story('监控告警/应用资源')
     @allure.title('查看集群项目变化趋势')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_app_usage(self):
@@ -1202,10 +1193,65 @@ class TestCluster(object):
         # 验证数据类型为matrix
         assert result_type == 'matrix'
 
-    @allure.feature('监控告警')
-    @allure.story('告警策略')
-    @allure.title('')
+
+    @allure.story('监控告警/告警策略')
+    @allure.title('创建告警策略（节点的cpu使用率大于0）')
     @allure.severity(allure.severity_level.CRITICAL)
+    def test_create_alert_policy(self):
+        # 获取集群的节点名称
+        response = cluster_steps.step_get_nodes()
+        node_count = response.json()['totalItems']  #节点数量
+        node_names = []
+        for i in range(0, node_count):
+            node_names.append(response.json()['items'][i]['metadata']['name'])
+        # 获取任意节点名称
+        node_name = node_names[random.randint(0,node_count-1)]
+        # 创建告警策略（节点的cpu使用率大于0）
+        alert_name = 'test-alert' + str(commonFunction.get_random())
+        cluster_steps.step_create_alert_policy(alert_name, node_name)
+        # 等待150s后查看新建的告警策略，并验证其状态为firing
+        time.sleep(150)
+        re = cluster_steps.step_get_alert_custom_policy(alert_name)
+        state = re.json()['items'][0]['state']
+        assert state == 'firing'
+        # 查看告警消息，并验证告警消息正确
+        r = cluster_steps.step_get_alert_custom_message()
+        message_count = r.json()['total']
+        policy_names = []
+        for i in range(0, message_count):
+            policy_names.append(r.json()['items'][i]['ruleName'])
+        assert alert_name in policy_names
+        # 删除告警策略
+        cluster_steps.step_delete_alert_custom_policy(alert_name)
+
+
+    @allure.story('监控告警/告警策略')
+    @allure.title('修改告警策略中的持续时间')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_edit_alert_custom_policy(self):
+        # 获取集群的节点名称
+        response = cluster_steps.step_get_nodes()
+        node_count = response.json()['totalItems']  #节点数量
+        node_names = []
+        for i in range(0, node_count):
+            node_names.append(response.json()['items'][i]['metadata']['name'])
+        # 获取任意节点名称
+        node_name = node_names[random.randint(0,node_count-1)]
+        # 创建告警策略（节点的cpu使用率大于0）
+        alert_name = 'test-alert' + str(commonFunction.get_random())
+        cluster_steps.step_create_alert_policy(alert_name, node_name)
+        # 查询新建的自定义告警策略，并获取其id
+        re = cluster_steps.step_get_alert_custom_policy(alert_name)
+        id  = re.json()['items'][0]['id']
+        # 修改自定义策略的持续时间为5min
+        cluster_steps.step_edit_alert_custom_policy(alert_name, id, node_name)
+        # 查看告警策略的详情，并验证持续时间修改成功
+        r = cluster_steps.step_get_alert_custom_policy_detail(alert_name)
+        duration = r.json()['duration']
+        assert duration == '5m'
+        # 删除告警策略
+        cluster_steps.step_delete_alert_custom_policy(alert_name)
+
 
 
     @allure.story('集群设置')
