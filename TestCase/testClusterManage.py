@@ -1048,7 +1048,7 @@ class TestCluster(object):
                 pytest.assume(totalBackends == healthyBackends)
 
     @allure.story('监控告警/集群状态')
-    @allure.title('查看组件的运行状态并验证组件均健康运行')
+    @allure.title('查看节点的运行状态并验证节点均健康运行')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_node_health(self):
         # 查询节点的健康状况
