@@ -709,21 +709,25 @@ class TestCluster(object):
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('type, title',
-                             [('deployments', '按状态和名称查询存在的deployments'),
-                              ('statefulsets', '按状态和名称查询存在的statefulSets'),
-                              ('daemonsets', '按状态和名称查询存在的daemonSets')])
+                             [('deployments', '按状态为运行中和名称查询存在的deployments'),
+                              ('statefulsets', '按状态为运行中和名称查询存在的statefulSets'),
+                              ('daemonsets', '按状态为运行中和名称查询存在的daemonSets')])
     def test_query_app_workload_by_status_and_name(self, type, title):
         # 查询集群中所有的资源
         response = cluster_steps.step_get_resource_of_cluster(type)
         # 获取资源的数量
         count = response.json()['totalItems']
         running_resource = []
+        readyReplicas = 0
         for i in range(0, count):
             if type == 'daemonsets':
                 readyReplicas = response.json()['items'][i]['status']['numberReady']
                 replicas = response.json()['items'][i]['status']['numberAvailable']
             else:
-                readyReplicas = response.json()['items'][i]['status']['readyReplicas']
+                try:
+                    readyReplicas = response.json()['items'][i]['status']['readyReplicas']
+                except Exception as e:
+                    print(e)
                 replicas = response.json()['items'][i]['status']['replicas']
             if readyReplicas == replicas:
                 running_resource.append(response.json()['items'][i]['metadata']['name'])
