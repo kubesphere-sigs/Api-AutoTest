@@ -1678,3 +1678,14 @@ def step_get_system_project(cluster_name):
     for i in range(0, count):
         ns.append(response.json()['items'][i]['metadata']['name'])
     return ns
+
+
+@allure.step('获取应用负载')
+def step_get_deployment(project_name, type):
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/' + type + '?'
+    params = {
+        'sortBy': 'updateTime',
+        'limit': '10'
+    }
+    r = requests.get(url=url, headers=get_header(), params=params)
+    return r

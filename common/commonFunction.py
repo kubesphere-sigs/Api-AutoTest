@@ -400,6 +400,17 @@ def check_multi_cluster():
         return False
 
 
+# 获取ippool组件状态
+def get_ippool_status():
+    url = env_url + '/apis/installer.kubesphere.io/v1alpha1/clusterconfigurations?limit=8'
+    response = requests.get(url=url, headers=get_header())
+    te = response.json()['items'][0]['spec']['network']['ippool']
+    if te == 'calico':
+        return True
+    else:
+        return False
+
+
 # 测试方法、发起请求、结果校验
 def request_resource(url, params, data, story, title, method, severity, condition, except_result):
     if 'http' not in url:
