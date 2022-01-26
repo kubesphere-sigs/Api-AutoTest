@@ -402,9 +402,9 @@ def check_multi_cluster():
 
 # 获取ippool组件状态
 def get_ippool_status():
-    url = env_url + '/apis/installer.kubesphere.io/v1alpha1/clusterconfigurations?limit=8'
+    url = env_url + '/apis/installer.kubesphere.io/v1alpha1/clusterconfigurations'
     response = requests.get(url=url, headers=get_header())
-    te = response.json()['items'][0]['spec']['network']['ippool']
+    te = response.json()['items'][0]['spec']['network']['ippool']['type']
     if te == 'calico':
         return True
     else:

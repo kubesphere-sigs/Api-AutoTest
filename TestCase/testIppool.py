@@ -134,7 +134,7 @@ class Test_ippool:
         assert r.json()['reason'] == 'ippool is in use, please remove the workload before deleting'
         # 删除部署
         r = project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
-        sleep(5)
+        sleep(15)
         res = ippool_steps.step_delete_ippool(ippool_name)
         assert res.status_code == 200
 
