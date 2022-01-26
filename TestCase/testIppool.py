@@ -13,7 +13,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 
 @allure.feature('ippool')
-@pytest.mark.skipif(get_ippool_status() is True, reason='ippool未开启不执行')
+@pytest.mark.skipif(get_ippool_status() is False, reason='ippool未开启不执行')
 class Test_ippool:
     ippool_name = 'ippool-test'
     cidr = '192.168.100.0/24'
