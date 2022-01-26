@@ -3,6 +3,8 @@ from time import sleep
 
 import allure
 import pytest
+
+from common import commonFunction
 from common.commonFunction import *
 
 from common.commonFunction import get_ippool_status
@@ -13,10 +15,10 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 
 @allure.feature('ippool')
-@pytest.mark.skipif(get_ippool_status() is True, reason='ippool未开启不执行')
+@pytest.mark.skipif(get_ippool_status() is False, reason='ippool未开启不执行')
 class Test_ippool:
-    ippool_name = 'ippool-test'
-    cidr = '192.168.100.0/24'
+    ippool_name = 'ippool-' + str(get_random())
+    cidr = random_ip() + '/24'
     ws_name = 'test-ippool-ws'
     pro_name = 'test-ippool-pro'
 
@@ -37,13 +39,19 @@ class Test_ippool:
     def test_ippool(self, id, url, params, data, story, title, method, severity, condition, except_result):
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
-        request_resource(url, params, data, story, title, method, severity, condition, except_result)
+        targets = commonFunction.replace_str(url, params, data, title, condition, except_result,
+                                             actual_value='${ippool_name}', expect_value=self.ippool_name)
+        targets_new = commonFunction.replace_str(targets[0], targets[1], targets[2], targets[3],
+                                                 targets[4], targets[5], actual_value='${cidr}', expect_value=self.cidr)
+
+        request_resource(targets_new[0], targets_new[1], targets_new[2], story, targets_new[3], method, severity,
+                         targets_new[4], targets_new[5])
 
     @allure.title('创建ippool')
     @allure.severity('critical')
     def test_create_ippool(self):
         ippool_name = 'ippool-' + str(get_random())
-        cidr = '192.168.101.0/24'
+        cidr = random_ip() + '/24'
         description = ' '
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
         res = ippool_steps.step_search_by_name(ippool_name)
@@ -56,7 +64,7 @@ class Test_ippool:
     @allure.severity('critical')
     def test_assign_ws(self):
         ippool_name = 'ippool-' + str(get_random())
-        cidr = '192.168.103.0/24'
+        cidr = random_ip() + '/24'
         description = ''
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
         r = ippool_steps.step_assign_ws(ippool_name, self.ws_name)
@@ -68,7 +76,7 @@ class Test_ippool:
     @allure.severity('normal')
     def test_assign_ws_ippool(self):
         ippool = 'ippool-' + str(get_random())
-        cidr = '192.168.104.0/24'
+        cidr = random_ip() + '/24'
         description = ''
         ws_name_new = 'test-ws-' + str(get_random())
         workspace_steps.step_create_workspace(ws_name_new)
@@ -86,7 +94,7 @@ class Test_ippool:
     @allure.severity('critical')
     def test_delete_ippool(self):
         ippool_name = 'ippool-' + str(get_random())
-        cidr = '192.168.105.0/24'
+        cidr = random_ip() + '/24'
         description = ''
         # 创建ippool
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
@@ -100,7 +108,7 @@ class Test_ippool:
     @allure.severity('critical')
     def test_delete_ippool_assign_ws(self):
         ippool_name = 'ippool-' + str(get_random())
-        cidr = '192.168.102.0/24'
+        cidr = random_ip() + '/24'
         description = ' '
         # 创建ippool
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
@@ -120,7 +128,7 @@ class Test_ippool:
         ippool = '[\"' + ippool_name + '\"]'
         deploy_name = 'deploy-' + str(get_random())
         container_name = 'test-ippool-' + str(get_random())
-        cidr = '192.168.106.0/24'
+        cidr = random_ip() + '/24'
         description = ''
         # 创建ippool
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
@@ -134,7 +142,7 @@ class Test_ippool:
         assert r.json()['reason'] == 'ippool is in use, please remove the workload before deleting'
         # 删除部署
         r = project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
-        sleep(5)
+        sleep(15)
         res = ippool_steps.step_delete_ippool(ippool_name)
         assert res.status_code == 200
 
@@ -162,7 +170,7 @@ class Test_ippool:
     @allure.severity('critical')
     def test_ippool_num(self):
         ippool_name = 'ippool-' + str(get_random())
-        cider = '192.100.110.0/24'
+        cider = random_ip() + '/24'
         describe = ''
         # 创建ippool
         ippool_steps.step_create_ippool(ippool_name, cider, describe)
