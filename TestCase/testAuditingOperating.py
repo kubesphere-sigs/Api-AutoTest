@@ -13,7 +13,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 class TestAuditingOperatingSearch(object):
 
     @allure.story('审计总量')
-    @allure.title('验证当天的操作审计总量正确')
+    @allure.title('验证当天的操作审计总量与最近12小时的审计总量关系正确')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_total_audits(self):
         # 获取当前时间的10位时间戳
@@ -24,21 +24,27 @@ class TestAuditingOperatingSearch(object):
         response = toolbox_steps.step_get_audits(day_timestamp, now_timestamp)
         # 获取收集审计的资源数量
         resources_count = response.json()['statistics']['resources']
-        # 获取收集到的日志数量
-        event_counts = response.json()['statistics']['events']
+        # 获取收集到的审计数量
+        audit_counts = response.json()['statistics']['events']
         # 验证资源数量数量大于0
         assert resources_count > 0
-        # 查询最近当天审计总数变化趋势
-        re = toolbox_steps.step_get_audits_trend(day_timestamp, now_timestamp)
-        # 获取趋势图的横坐标数量
-        count = len(re.json()['histogram']['buckets'])
-        # 获取每个时间段的操作审计数量之和
-        audit_count_actual = 0
-        for i in range(0, count):
-            number = re.json()['histogram']['buckets'][i]['count']
-            audit_count_actual += number
-        # 验证接口返回的总量信息和趋势图中的数量之和一致
-        assert event_counts == audit_count_actual
+        # 获取12小时之前的时间戳
+        before_timestamp = commonFunction.get_before_timestamp(720)
+        # 查询最近12小时审计总数变化趋势
+        re = toolbox_steps.step_get_audits_trend(before_timestamp, now_timestamp)
+        # 获取最近12小时的审计总量
+        audit_count = re.json()['histogram']['total']
+        # 验证今日事件总量和最近12小时事件总量的关系
+        # 获取当前日期
+        today = commonFunction.get_today()
+        # 获取当天12点的时间戳
+        tamp = commonFunction.get_custom_timestamp(today, '12:00:00')
+        if int(now_timestamp) > int(tamp):  # 如果当前时间大于12点，则当天的事件总数大于等于最近12小时的事件总数
+            assert audit_counts >= audit_count
+        elif int(now_timestamp) < int(tamp):  # 如果当前时间小于12点，则当天的事件总数小于等于最近12小时的事件总数
+            assert audit_count >= audit_counts
+        else:  # 如果当前时间等于12点，则当天的事件总数等于最近12小时的事件总数
+            assert audit_count == audit_counts
 
     @allure.story('审计总量')
     @allure.title('验证最近 12 小时操作审计总数正确')
