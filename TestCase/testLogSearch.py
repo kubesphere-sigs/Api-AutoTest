@@ -13,7 +13,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 class TestLogSearch(object):
 
     @allure.story('日志总量')
-    @allure.title('验证当天的日志总量信息正确')
+    @allure.title('验证当天的日志总量与最近12小时的日志总量关系正确')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_total_logs(self):
         # 获取当前时间的10位时间戳
@@ -28,20 +28,24 @@ class TestLogSearch(object):
         log_counts = response.json()['statistics']['logs']
         # 验证容器数量大于0
         assert pod_count > 0
-        # 查询当天的日志变化趋势
-        interval = '1800'   # 时间间隔,单位是秒
-        re = toolbox_steps.step_get_logs_trend(day_timestamp, now_timestamp, interval)
-        # 获取当天日志总量
+        # 查询最近12小时的日志变化趋势
+        interval = '30m'   # 时间间隔 30分钟
+        # 获取12小时之前的时间戳
+        before_timestamp = commonFunction.get_before_timestamp(720)
+        re = toolbox_steps.step_get_logs_trend(before_timestamp, now_timestamp, interval)
+        # 获取最近12小时的日志总量
         logs_count = re.json()['histogram']['total']
-        # 获取日志趋势图中的横坐标数量
-        count = len(re.json()['histogram']['histograms'])
-        # 获取日志趋势图中的每个时间段的日志数量
-        logs_count_actual = 0
-        for i in range(0, count):
-            number = re.json()['histogram']['histograms'][i]['count']
-            logs_count_actual += number
-        # 验证接口返回的日志总量和趋势图中的日志数量之和一致
-        assert log_counts == logs_count_actual == logs_count
+        # 验证今日日志总量和最近12小时日志总量的关系
+        # 获取当前日期
+        today = commonFunction.get_today()
+        # 获取当天12点的时间戳
+        tamp = commonFunction.get_custom_timestamp(today, '12:00:00')
+        if int(now_timestamp) > int(tamp):   # 如果当前时间大于12点，则当天的日志总数大于等于最近12小时的日志总数
+            assert log_counts >= logs_count
+        elif int(now_timestamp) < int(tamp): # 如果当前时间小于12点，则当天的日志总数小于等于最近12小时的日志总数
+            assert logs_count >= log_counts
+        else:                                # 如果当前时间等于12点，则当天的日志总数等于最近12小时的日志总数
+            assert logs_count == log_counts
 
     @allure.story('日志总量')
     @allure.title('验证最近 12 小时日志总量正确')
