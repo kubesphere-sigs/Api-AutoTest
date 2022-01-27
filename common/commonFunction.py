@@ -329,6 +329,15 @@ def get_timestamp():
     return timestamp
 
 
+# 获取当前日期
+def get_today():
+    now = datetime.datetime.now()
+    return str(now)[0:10]
+
+# 获取指定时间的时间戳
+def get_custom_timestamp(day, clock):
+    return time.mktime(time.strptime(day + ' ' + clock, '%Y-%m-%d %H:%M:%S'))
+
 # 获取x天前日期的时间戳
 def get_before_timestamp_day(day):
     before = (datetime.datetime.now() - datetime.timedelta(days=day))
