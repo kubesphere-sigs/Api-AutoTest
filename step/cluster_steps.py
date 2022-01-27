@@ -180,6 +180,13 @@ def step_get_project_workload(project_name):
     return response
 
 
+@allure.step('查询集群指定项目的存储卷信息')
+def step_get_project_pvc(project_name):
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/persistentvolumeclaims'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
 @allure.step('创建用户项目')
 def step_create_user_project(project_name, alias_name, description):
     url = env_url + '/api/v1/namespaces'

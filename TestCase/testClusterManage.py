@@ -952,23 +952,28 @@ class TestCluster(object):
     @allure.title('查询每一个存储卷的pod信息,并验证pod运行正常')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_pvc_pods(self):
-        # 查询集群存在的存储卷信息
-        response = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims')
-        # 获取存储卷的数量
-        count = response.json()['totalItems']
-        # 获取所有存储卷的名称和所在namespace
-        for i in range(0, count):
-            name = response.json()['items'][i]['metadata']['name']
-            namespace = response.json()['items'][i]['metadata']['namespace']
-            # 查询存储卷的pod信息
-            r = cluster_steps.step_get_pods_of_project(namespace, 'pvcName=' + name)
-            # 获取pod的数量
-            count_pod = r.json()['totalItems']
-            # 获取所有pod的运行状态
-            for j in range(0, count_pod):
-                status = r.json()['items'][j]['status']['phase']
-                # 验证pod的状态为Running
-                assert status == 'Running'
+        # 获取集群中所有的系统项目名称
+        re = cluster_steps.step_get_system_of_cluster()
+        project_count = re.json()['totalItems']
+        for i in range(0, project_count):
+            project = re.json()['items'][i]['metadata']['name']
+            # 查询项目中存在的存储卷信息
+            response = cluster_steps.step_get_project_pvc(project)
+            # 获取存储卷的数量
+            count = response.json()['totalItems']
+            if count > 0:
+                # 获取所有存储卷的名称和所在namespace
+                for j in range(0, count):
+                    name = response.json()['items'][j]['metadata']['name']
+                    # 查询存储卷的pod信息
+                    r = cluster_steps.step_get_pods_of_project(project, 'pvcName=' + name)
+                    # 获取pod的数量
+                    count_pod = r.json()['totalItems']
+                    # 获取所有pod的运行状态
+                    for k in range(0, count_pod):
+                        status = r.json()['items'][k]['status']['phase']
+                        # 验证pod的状态为Running
+                        assert status == 'Running'
 
     @allure.story('存储')
     @allure.title('查看所有存储卷的快照信息')
@@ -1197,7 +1202,6 @@ class TestCluster(object):
         # 验证数据类型为matrix
         assert result_type == 'matrix'
 
-
     @allure.story('监控告警/告警策略')
     @allure.title('创建告警策略（节点的cpu使用率大于0）')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -1228,7 +1232,6 @@ class TestCluster(object):
         # 删除告警策略
         cluster_steps.step_delete_alert_custom_policy(alert_name)
 
-
     @allure.story('监控告警/告警策略')
     @allure.title('修改告警策略中的持续时间')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -1256,8 +1259,6 @@ class TestCluster(object):
         # 删除告警策略
         cluster_steps.step_delete_alert_custom_policy(alert_name)
 
-
-
     @allure.story('集群设置')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -1279,7 +1280,6 @@ class TestCluster(object):
         assert log_receiver_name == 'forward-' + log_type
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
-
 
     @allure.story('集群设置')
     @allure.title('{title}')
@@ -1305,7 +1305,6 @@ class TestCluster(object):
         assert status == 'false'
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
-
 
     @allure.story('集群设置')
     @allure.title('{title}')
@@ -1336,7 +1335,6 @@ class TestCluster(object):
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
 
-
     @allure.story('集群设置')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -1353,7 +1351,6 @@ class TestCluster(object):
         assert gateway_type == type
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
-
 
     @allure.story('集群设置')
     @allure.title('修改网关信息')
@@ -1379,7 +1376,6 @@ class TestCluster(object):
         assert status_actual == status
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
-
 
     @allure.story('集群设置')
     @allure.title('在网管设置中查询项目网关')
