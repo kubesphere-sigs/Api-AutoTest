@@ -40,7 +40,7 @@ tblib==1.7.0
 termcolor==1.1.0
 toml==0.10.1
 typing-extensions==3.10.0.0
-urllib3==1.25.11
+urllib3==1.26.5
 utils==1.0.1
 xlrd==1.2.0
 zipp==3.3.0
