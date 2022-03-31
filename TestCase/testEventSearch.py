@@ -152,13 +152,13 @@ class TestEventSearch(object):
                               (1440, '48m', '按容器模糊查询最近一天事件趋势')
                               ])
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_logs_by_time_limit(self, limit, interval, title):
+    def test_get_events_by_time_limit(self, limit, interval, title):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
         # 获取开始时间
         start_time = commonFunction.get_before_timestamp(limit)
         # 按时间范围查询事件
-        res = toolbox_steps.step_get_logs_by_time(interval, start_time, now_timestamp)
+        res = toolbox_steps.step_get_events_by_time(interval, start_time, now_timestamp)
         event_num = res.json()['query']['total']
         print(event_num)
         # 验证查询成功
