@@ -8,7 +8,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 from common.getData import DoexcleByPandas
 from common.logFormat import log_format
 from common import commonFunction
-from step import workspace_steps, platform_steps
+from step import workspace_steps, platform_steps, project_steps, devops_steps
 
 
 @allure.feature('企业空间')
@@ -60,6 +60,109 @@ class TestWorkSpace(object):
     以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
     '''
 
+    @allure.story('企业空间列表')
+    @allure.title('删除企业空间')
+    @allure.severity('critical')
+    def test_delete_ws(self):
+        ws_name = 'test-ws' + str(commonFunction.get_random())
+        # 创建企业空间
+        workspace_steps.step_create_workspace(ws_name)
+        # 删除创建的企业空间
+        res = workspace_steps.step_delete_workspace(ws_name)
+        mes = res.json()['message']
+        # 判断删除成功
+        assert mes == 'success'
+
+    @allure.story('企业空间概览')
+    @allure.title('资源用量-项目数量验证')
+    @allure.severity('critical')
+    def test_get_project_num(self):
+        ws_name = 'test-ws' + str(commonFunction.get_random())
+        # 创建企业空间
+        workspace_steps.step_create_workspace(ws_name)
+        # 获取概览信息
+        res = workspace_steps.step_get_ws_num_info(ws_name)
+        pro_num = res.json()['results'][0]['data']['result'][0]['value'][1]
+        # 验证项目数量正确
+        assert pro_num == '0'
+        # 在企业空间中创建项目
+        pro_name = 'pro-' + str(commonFunction.get_random())
+        project_steps.step_create_project(ws_name, pro_name)
+        # 获取项目数量
+        res_new = workspace_steps.step_get_ws_num_info(ws_name)
+        new_pro_num = res_new.json()['results'][0]['data']['result'][0]['value'][1]
+        assert new_pro_num == '1'
+        #删除项目
+        project_steps.step_delete_project(ws_name,pro_name)
+        # 删除企业空间
+        workspace_steps.step_delete_workspace(ws_name)
+
+    @allure.story('企业空间概览')
+    @allure.title('资源用量-devops工程数量验证')
+    @allure.severity('critical')
+    def test_get_devops_project_num(self):
+        ws_name = 'test-ws' + str(commonFunction.get_random())
+        # 创建企业空间
+        workspace_steps.step_create_workspace(ws_name)
+        # 获取概览信息
+        res = workspace_steps.step_get_ws_num_info(ws_name)
+        devops_num = res.json()['results'][1]['data']['result'][0]['value'][1]
+        assert devops_num == '0'
+        # 在企业空间创建devops工程
+        devops_name = 'devops-' + str(commonFunction.get_random())
+        devops_steps.step_create_devops(ws_name, devops_name)
+        time.sleep(3)
+        # 获取概览信息
+        res_new = workspace_steps.step_get_ws_num_info(ws_name)
+        new_devops_num = res_new.json()['results'][1]['data']['result'][0]['value'][1]
+        assert new_devops_num == '1'
+        # 删除devops工程
+        devops_steps.step_delete_devops(ws_name, devops_name)
+        # 删除企业空间
+        workspace_steps.step_delete_workspace(ws_name)
+
+    @allure.story('企业空间概览')
+    @allure.title('资源用量-角色数量验证')
+    @allure.severity('critical')
+    def test_get_ws_role_num(self):
+        ws_name = 'test-ws' + str(commonFunction.get_random())
+        # 创建企业空间
+        workspace_steps.step_create_workspace(ws_name)
+        # 获取概览信息
+        res = workspace_steps.step_get_ws_num_info(ws_name)
+        role_num = res.json()['results'][2]['data']['result'][0]['value'][1]
+        assert role_num == '1'
+        # 在企业空间创建角色
+        role_name = 'role-' + str(commonFunction.get_random())
+        workspace_steps.step_create_ws_role(ws_name,role_name)
+        # 获取概览信息
+        res_new = workspace_steps.step_get_ws_num_info(ws_name)
+        new_role_num = res_new.json()['results'][2]['data']['result'][0]['value'][1]
+        assert new_role_num == '2'
+        # 删除企业空间
+        workspace_steps.step_delete_workspace(ws_name)
+
+    @allure.story('企业空间概览')
+    @allure.title('资源用量-用户数量验证')
+    @allure.severity('critical')
+    def test_get_ws_role_num(self):
+        ws_name = 'test-ws' + str(commonFunction.get_random())
+        # 创建企业空间
+        workspace_steps.step_create_workspace(ws_name)
+        # 获取概览信息
+        res = workspace_steps.step_get_ws_num_info(ws_name)
+        user_num = res.json()['results'][3]['data']['result'][0]['value'][1]
+        assert user_num == '4'
+        # 在企业空间创建用户
+        user_name = 'user-' + str(commonFunction.get_random())
+        workspace_steps.step_create_user(ws_name, user_name)
+        # 获取概览信息
+        res_new = workspace_steps.step_get_ws_num_info(ws_name)
+        new_user_num = res_new.json()['results'][3]['data']['result'][0]['value'][1]
+        assert new_user_num == '5'
+        # 删除企业空间
+        workspace_steps.step_delete_workspace(ws_name)
+
     @allure.story('企业空间设置-企业角色')
     @allure.title('在企业空间编辑角色的权限信息')
     @allure.severity('critical')
@@ -104,6 +207,32 @@ class TestWorkSpace(object):
         workspace_steps.step_delete_ws_user(self.ws_name, user_name)
         # 删除创建的用户
         platform_steps.step_delete_user(user_name)
+
+    @allure.story('企业空间设置-企业角色')
+    @allure.title('在企业空间创建角色，关联到用户，验证权限正确')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_ws_role_authorized_user(self):
+        authority_create = '["role-template-view-basic"]'
+        role_name = 'role-' + str(commonFunction.get_random())
+        # 创建角色
+        workspace_steps.step_create_ws_role(self.ws_name, role_name, authority_create)
+        # 在平台创建用户
+        user_name = 'user' + str(commonFunction.get_random())
+        user_role = 'platform-regular'
+        platform_steps.step_create_user(user_name, user_role)
+        # 邀请用户到企业空间
+        workspace_steps.step_invite_user(self.ws_name, user_name, role_name)
+        # 查询角色授权用户
+        res = workspace_steps.step_get_role_user(self.ws_name, role_name)
+        user = res.json()['items'][0]['metadata']['name']
+        user_num = res.json()['totalItems']
+        # 验证授权用户正确
+        assert user == user_name
+        assert user_num == 1
+        # 删除用户
+        workspace_steps.step_delete_user(user_name)
+        # 删除角色
+        workspace_steps.step_delete_role(self.ws_name, role_name)
 
     @allure.story('企业空间设置-企业角色')
     @allure.title('在企业空间编辑邀请成员的角色')
@@ -411,6 +540,28 @@ class TestWorkSpace(object):
         network_lsolation = response.json()['items'][0]['spec']['template']['spec']['networkIsolation']
         # 验证设置成功
         assert network_lsolation is True
+
+    @allure.story('概览/用量排行')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('sort, title',
+                             [('namespace_cpu_usage', 'Sort by CPU查看Namespace Usage Ranking'),
+                              ('namespace_memory_usage_wo_cache', 'Sort by Memory查看Namespace Usage Ranking'),
+                              ('namespace_pod_count', 'Sort by Pod Count查看Namespace Usage Ranking'),
+                              ('namespace_net_bytes_received', 'Sort by Received查看Namespace Usage Ranking'),
+                              ('namespace_net_bytes_transmitted', 'Sort by Pod Transmitted查看Namespace Usage Ranking')
+                              ])
+    def test_get_namespace_usage_rank(self, sort, title):
+        # 查询Node Usage Ranking
+        response = workspace_steps.step_get_namespace_usage_rank(self.ws_name, sort)
+        # 获取结果中的数据类型
+        for i in range(0, 15):
+            try:
+                result_type = response.json()['results'][i]['data']['resultType']
+                # 验证数据类型为vector
+                assert result_type == 'vector'
+            except Exception as e:
+                print(e)
 
 
 if __name__ == "__main__":

@@ -224,6 +224,34 @@ class TestCluster(object):
         assert items == []
 
     @allure.story('项目')
+    @allure.title('按名称精确查询集群中不存在的用户项目')
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_precise_non_existent_user_project(self):
+        project_name = 'non-existent-project'
+        # 查询指定的集群的用户项目
+        response = cluster_steps.step_query_user_system(project_name)
+        # 获取查询结果
+        items = response.json()['items']
+        # 验证查询结果为空
+        assert items == []
+
+    @allure.story('项目')
+    @allure.title('按名称精确查询集群中存在的用户项目')
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_precise_query_existent_user_project(self):
+        # 创建用户项目
+        project_name = 'pro-' + str(commonFunction.get_random())
+        alias_name = ''
+        description = ''
+        cluster_steps.step_create_user_project(project_name, alias_name, description)
+        # 按名称精确查询用户项目
+        re = cluster_steps.step_query_user_system(project_name)
+        # 获取查询结果
+        project_name_actual = re.json()['items'][0]['metadata']['name']
+        # 验证查询结果
+        assert project_name_actual == project_name
+
+    @allure.story('项目')
     @allure.title('按名称精确查询集群中存在的系统项目')
     @allure.severity(allure.severity_level.NORMAL)
     def test_precise_query_existent_system_project(self):
@@ -236,6 +264,8 @@ class TestCluster(object):
         project_name_actual = re.json()['items'][0]['metadata']['name']
         # 验证查询结果
         assert project_name_actual == project_name
+        # 删除项目
+        cluster_steps.step_delete_user_system(project_name)
 
     @allure.story('项目')
     @allure.title('按名称模糊查询集群中存在的系统项目')
@@ -251,6 +281,24 @@ class TestCluster(object):
         project_name_actual = re.json()['items'][0]['metadata']['name']
         # 验证查询结果
         assert project_name_actual == project_name
+
+    @allure.story('项目')
+    @allure.title('按名称模糊查询集群中存在的用户项目')
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_precise_query_existent_user_project(self):
+        # 创建用户项目
+        project_name = 'pro-' + str(commonFunction.get_random())
+        alias_name = ''
+        description = ''
+        cluster_steps.step_create_user_project(project_name, alias_name, description)
+        # 按名称精确查询用户项目
+        re = cluster_steps.step_query_user_system('pro')
+        # 获取查询结果
+        project_name_actual = re.json()['items'][0]['metadata']['name']
+        # 验证查询结果
+        assert project_name_actual == project_name
+        # 删除项目
+        cluster_steps.step_delete_user_system(project_name)
 
     @allure.story('项目')
     @allure.title('查询集群中所有系统项目的详情信息,并验证其状态为活跃')
@@ -591,6 +639,27 @@ class TestCluster(object):
 
     @allure.story('应用负载')
     @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('type, title',
+                             [('jobs', '查看集群所有的jobs,并验证运行状态正常'),
+                              ('cronjobs', '查看集群所有的cronjobs,并验证运行状态正常')])
+    def test_check_jobs_of_cluster(self, type, title):
+        # 查询集群中所有的系统项目
+        response = cluster_steps.step_get_system_of_cluster()
+        system_count = response.json()['totalItems']
+        # 查询集群所有系统项目的Jobs
+        for i in range(0, system_count):
+            system_name = response.json()['items'][i]['metadata']['name']
+            re = cluster_steps.step_get_resource_of_cluster_by_project(type, system_name)
+            # 获取集群Jobs的数量
+            count = re.json()['totalItems']
+            # 获取集群所有的Jobs的type
+            for j in range(0, count):
+                state = re.json()['items'][j]['status']['conditions'][0]['status']
+                # 验证运行状态正常
+                assert state == 'True'
+
+    @allure.story('应用负载')
+    @allure.severity(allure.severity_level.CRITICAL)
     @allure.title('{title}')
     @pytest.mark.parametrize('type, title',
                              [('deployments', '查看集群所有的deployments的Monitoring'),
@@ -620,6 +689,8 @@ class TestCluster(object):
                              [('应用负载', 'deployments', '查看集群所有的deployments的event'),
                               ('应用负载', 'statefulsets', '查看集群所有的statefulSets的event'),
                               ('应用负载', 'daemonsets', '查看集群所有的daemonSets的event'),
+                              ('应用负载', 'jobs', '查看集群所有jobs的event'),
+                              ('应用负载', 'cronjobs', '查看集群所有cronjobs的event'),
                               ('应用负载', 'pods', '查看集群所有pod的event'),
                               ('应用负载', 'services', '查看集群所有service的event'),
                               ('存储', 'persistentvolumeclaims', '查看集群所有pvc的event')
@@ -649,8 +720,10 @@ class TestCluster(object):
                              [('deployments', '按名称精确查询存在的deployments'),
                               ('statefulsets', '按名称精确查询存在的statefulSets'),
                               ('daemonsets', '按名称精确查询存在的daemonSets'),
-                              ('pods', '按名称模糊查询存在的pod'),
-                              ('services', '按名称模糊查询存在的service')])
+                              ('jobs', '按名称精确查询存在的job'),
+                              ('cronjobs', '按名称精确查询存在的cronjob'),
+                              ('pods', '按名称精确查询存在的pod'),
+                              ('services', '按名称精确查询存在的service')])
     def test_precise_query_app_workload_by_name(self, type, title):
         # 获取集群中存在的资源的名称
         response = cluster_steps.step_get_resource_of_cluster(type)
@@ -669,6 +742,8 @@ class TestCluster(object):
                              [('deployments', '按名称模糊查询存在的deployments'),
                               ('statefulsets', '按名称模糊查询存在的statefulSets'),
                               ('daemonsets', '按名称模糊查询存在的daemonSets'),
+                              ('jobs', '按名称模糊查询存在的job'),
+                              ('cronjobs', '按名称模糊查询存在的cronjob'),
                               ('pods', '按名称模糊查询存在的pod'),
                               ('services', '按名称模糊查询存在的service')])
     def test_fuzzy_query_app_workload_by_name(self, type, title):
@@ -704,6 +779,34 @@ class TestCluster(object):
                 replicas = r.json()['items'][i]['status']['replicas']
             # 验证readyReplicas=replicas，从而判断资源的状态为running
             assert readyReplicas == replicas
+
+    @allure.story('应用负载')
+    @allure.title('按状态查询存在的jobs')
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_query_app_jobs_by_status(self):
+        # 查询状态为completed的jobs
+        r = cluster_steps.step_get_resource_of_cluster('jobs', 'status=completed')
+        # 获取资源的数量
+        count = r.json()['totalItems']
+        # 获取资源的status
+        for i in range(0, count):
+            status = r.json()['items'][i]['status']
+            # 验证状态里面有完成时间，判断job状态为已完成
+            assert 'completionTime' in status
+
+    @allure.story('应用负载')
+    @allure.title('按状态查询存在的cronjobs')
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_query_app_cronjobs_by_status(self):
+        # 查询状态为completed的cronjobs
+        r = cluster_steps.step_get_resource_of_cluster('cronjobs', 'status=running')
+        # 获取资源的数量
+        count = r.json()['totalItems']
+        # 获取资源的status
+        for i in range(0, count):
+            status = r.json()['items'][i]['status']
+            # 验证状态里面有lastScheduleTime，判断job状态为运行中
+            assert 'lastScheduleTime' in status
 
     @allure.story('应用负载')
     @allure.title('{title}')
@@ -1007,6 +1110,29 @@ class TestCluster(object):
             assert kind == 'StorageClass'
 
     @allure.story('存储')
+    @allure.title('按名称查询存储类型中存在的存储卷')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_storage_class_pv(self):
+        # 查询集群存在的存储类型
+        response = cluster_steps.step_get_resource_of_cluster('storageclasses')
+        # 获取任意一个存储类型
+        sc_name = response.json()['items'][0]['metadata']['name']
+        # 获取存储卷信息
+        re = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims', 'storageClassName='+sc_name)
+        # 获取存储卷名称
+        pv_name = re.json()['items'][0]['metadata']['name']
+        # 根据名称精确查询存储卷
+        response = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims',
+                                                              'storageClassName='+sc_name+'&name='+pv_name)
+        # 验证查询结果
+        assert response.json()['totalItems'] == 1
+        # 根据名称模糊查询
+        response = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims',
+                                                              'storageClassName=' + sc_name + '&name=' + pv_name[:1])
+        # 验证查询结果
+        assert response.json()['totalItems'] != 0
+
+    @allure.story('存储')
     @allure.title('将存储类型设置为默认的存储类型')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_set_default_storage_class(self):
@@ -1255,8 +1381,6 @@ class TestCluster(object):
         assert duration == '5m'
         # 删除告警策略
         cluster_steps.step_delete_alert_custom_policy(alert_name)
-
-
 
     @allure.story('集群设置')
     @allure.title('{title}')

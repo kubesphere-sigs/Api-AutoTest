@@ -200,6 +200,14 @@ def step_get_user_system(project_name):
     return response
 
 
+@allure.step('名称查询指定的用户项目')
+def step_query_user_system(project_name):
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces?name=' + project_name +\
+                    '&sortBy=createTime&limit=10&labelSelector=kubesphere.io%2Fworkspace%21%3Dsystem-workspace%2C%21kubesphere.io%2Fdevopsproject'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
 @allure.step('删除用户项目')
 def step_delete_user_system(project_name):
     url = env_url + '/api/v1/namespaces/' + project_name

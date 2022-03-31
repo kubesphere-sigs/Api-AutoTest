@@ -107,11 +107,31 @@ class TestAuditingOperatingSearch(object):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
         # 按不同条件查询审计
-        response = toolbox_steps.step_get_events_trend_by_search(search_rule, now_timestamp)
+        response = toolbox_steps.step_get_audits_trend_by_search(search_rule, now_timestamp)
         # 获取查询结果中的总审计条数
         log_count = response.json()['histogram']['total']
         # 验证查询成功
         assert log_count >= 0
+
+    @allure.story('日志查询规则')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(('limit', 'interval', 'title'),
+                             [(10, '1m', '按时间范围查询最近10分钟审计趋势'),
+                              (180, '6m', '按容器模糊查询最近3小时审计趋势'),
+                              (1440, '48m', '按容器模糊查询最近一天审计趋势')
+                              ])
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_audits_trend_by_time_limit(self, limit, interval, title):
+        # 获取当前时间的10位时间戳（结束时间）
+        now_timestamp = str(time.time())[0:10]
+        # 获取开始时间
+        start_time = commonFunction.get_before_timestamp(limit)
+        # 按时间范围查询容器日志
+        res = toolbox_steps.step_get_audits_trend_by_time(interval, start_time, now_timestamp)
+        audits_num = res.json()['query']['total']
+        print(audits_num)
+        # 验证查询成功
+        assert audits_num >= 0
 
     @allure.story('审计查询规则')
     @allure.title('{title}')
@@ -140,5 +160,26 @@ class TestAuditingOperatingSearch(object):
         logs_count = response.json()['query']['total']
         # 验证查询成功
         assert logs_count >= 0
+
+    @allure.story('日志查询规则')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(('limit', 'interval', 'title'),
+                             [(10, '1m', '按时间范围查询最近10分钟审计详情'),
+                              (180, '6m', '按容器模糊查询最近3小时审计详情'),
+                              (1440, '48m', '按容器模糊查询最近一天审计详情')
+                              ])
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_audits_trend_by_time_limit(self, limit, interval, title):
+        # 获取当前时间的10位时间戳（结束时间）
+        now_timestamp = str(time.time())[0:10]
+        # 获取开始时间
+        start_time = commonFunction.get_before_timestamp(limit)
+        # 按时间范围查询容器日志
+        res = toolbox_steps.step_get_audits_by_time(interval, start_time, now_timestamp)
+        audits_num = res.json()['query']['total']
+        print(audits_num)
+        # 验证查询成功
+        assert audits_num >= 0
+
 
 

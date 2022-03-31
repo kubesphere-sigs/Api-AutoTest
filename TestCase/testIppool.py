@@ -59,6 +59,7 @@ class Test_ippool:
         assert synced is True
         response = ippool_steps.step_delete_ippool(ippool_name)
         assert response.status_code == 200
+        ippool_steps.step_delete_ippool(ippool_name)
 
     @allure.title('给ippool分配企业空间')
     @allure.severity('critical')
@@ -66,10 +67,13 @@ class Test_ippool:
         ippool_name = 'ippool-' + str(get_random())
         cidr = random_ip() + '/24'
         description = ''
+        # 创建ippool
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
+        # 给ippool分配企业空间
         r = ippool_steps.step_assign_ws(ippool_name, self.ws_name)
         r_new = ippool_steps.step_search_by_name(ippool_name)
         assert r_new.json()['items'][0]['metadata']['labels']['kubesphere.io/workspace'] == self.ws_name
+        # 删除ippool
         ippool_steps.step_delete_ippool(ippool_name)
 
     @allure.title('给已分配企业空间的ippool分配企业空间')
@@ -87,8 +91,39 @@ class Test_ippool:
         ippool_steps.step_assign_ws(ippool, ws_name_new)
         r_new = ippool_steps.step_search_by_name(ippool)
         assert r_new.json()['items'][0]['metadata']['labels']['kubesphere.io/workspace'] == ws_name_new
+        # 删除ippo
         ippool_steps.step_delete_ippool(ippool)
+        # 删除企业空间
         workspace_steps.step_delete_workspace(ws_name_new)
+
+    @allure.title('给已被使用的ippool分配企业空间')
+    @allure.severity('normal')
+    def test_assign_ws_ippool_again(self):
+        ippool_name = 'ippool-' + str(get_random())
+        ippool = '[\"' + ippool_name + '\"]'
+        deploy_name = 'deploy-' + str(get_random())
+        container_name = 'test-ippool-' + str(get_random())
+        cidr = random_ip() + '/24'
+        description = ''
+        # 创建ippool
+        ippool_steps.step_create_ippool(ippool_name, cidr, description)
+        # 分配企业空间
+        ippool_steps.step_assign_ws(ippool_name, self.ws_name)
+        # 创建部署
+        ippool_steps.step_create_deploy(ippool, deploy_name, container_name, self.pro_name)
+        sleep(15)
+        # 创建新的企业空间
+        ws_name_new = 'test-ws-' + str(get_random())
+        workspace_steps.step_create_workspace(ws_name_new)
+        # 给ippool分配企业空间
+        re = ippool_steps.step_assign_ws(ippool_name, ws_name_new)
+        project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
+        sleep(5)
+        workspace_steps.step_delete_workspace(ws_name_new)
+        sleep(5)
+        # 删除ippool
+        ippool_steps.step_delete_ippool(ippool_name)
+
 
     @allure.title('删除ippool')
     @allure.severity('critical')
@@ -121,6 +156,30 @@ class Test_ippool:
         res = ippool_steps.step_search_by_name(ippool_name)
         assert res.json()['totalItems'] == 0
 
+    @allure.title('删除后创建相同的ippool')
+    @allure.severity('critical')
+    def test_create_ippool_again(self):
+        ippool_name = 'ippool-' + str(get_random())
+        cidr = random_ip() + '/24'
+        description = ' '
+        # 创建ippool
+        ippool_steps.step_create_ippool(ippool_name, cidr, description)
+        # 验证创建成功
+        res = ippool_steps.step_search_by_name(ippool_name)
+        assert res.json()['items'][0]['status']['synced'] is True
+        # 删除ippool
+        ippool_steps.step_delete_ippool(ippool_name)
+        # 验证删除成功
+        re = ippool_steps.step_search_by_name(ippool_name)
+        assert  re.json()['totalItems'] == 0
+        # 再次创建相同的ippool
+        ippool_steps.step_create_ippool(ippool_name, cidr, description)
+        # 验证创建成功
+        res = ippool_steps.step_search_by_name(ippool_name)
+        assert res.json()['items'][0]['status']['synced'] is True
+        # 删除创建的ippool
+        ippool_steps.step_delete_ippool(ippool_name)
+
     @allure.title('删除已使用的ippool')
     @allure.severity('critical')
     def test_delete_ippool_used(self):
@@ -141,8 +200,9 @@ class Test_ippool:
         r = ippool_steps.step_delete_ippool(ippool_name)
         assert r.json()['reason'] == 'ippool is in use, please remove the workload before deleting'
         # 删除部署
-        r = project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
+        project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
         sleep(15)
+        # 删除ippool
         res = ippool_steps.step_delete_ippool(ippool_name)
         assert res.status_code == 200
 
@@ -201,6 +261,7 @@ class Test_ippool:
         ws_num_new = ippool_steps.step_get_used_ws_number(ippool_name)
         # 验证使用ippool的企业空间数量
         assert ws_num_new == 0
+        # 删除ippool
         ippool_steps.step_delete_ippool(ippool_name)
 
     @allure.title('查询ippool的容器组')
