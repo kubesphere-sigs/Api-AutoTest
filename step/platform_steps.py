@@ -57,6 +57,20 @@ def step_get_role_info(role_name):
     return response
 
 
+@allure.step('获取角色权限列表')
+def step_get_role_authority(role_name):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles/' + role_name
+    response = requests.get(url=url, headers=get_header())
+    return response.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']
+
+
+@allure.step('获取角色授权用户')
+def step_get_role_user(role_name):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users?globalrole=' + role_name + '&sortBy=createTime&limit=10'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
 @allure.step('删除角色')
 def step_delete_role(role_name):
     """

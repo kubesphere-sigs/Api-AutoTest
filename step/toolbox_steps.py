@@ -29,9 +29,17 @@ def step_get_audits_trend(start_time, end_time):
 
 
 @allure.step('按不同条件查询集群审计总数的变化趋势')
-def step_get_events_trend_by_search(search_rule, end_time):
+def step_get_audits_trend_by_search(search_rule, end_time):
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=histogram&' \
                        'start_time=0&end_time=' + end_time + '&interval=1d&' + search_rule
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('按时间范围查询集群审计总数的变化趋势')
+def step_get_audits_trend_by_time(interval, start_time, end_time):
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=histogram&' \
+                       'start_time=' + start_time + '&end_time=' + end_time + '&interval=' + interval
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -40,6 +48,14 @@ def step_get_events_trend_by_search(search_rule, end_time):
 def step_get_audits_by_search(search_rule, end_time):
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=query&from=0&size=50&' \
                        '' + search_rule + '&start_time=0&end_time=' + end_time + '&interval=1d'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('按时间范围查询审计的信息')
+def step_get_audits_by_time(interval, start_time, end_time):
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=query&from=0&size=50&' \
+                       + '&start_time=' + start_time + '&end_time=' + end_time + '&interval=' + interval
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -75,6 +91,13 @@ def step_get_events_by_search(search_rule, end_time):
     response = requests.get(url=url, headers=get_header())
     return response
 
+
+@allure.step('按时间范围查询事件的信息')
+def step_get_events_by_time(interval, start_time, end_time):
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/events?operation=query&from=0&size=50' + \
+                       '&start_time=' + start_time + '&end_time=' + end_time + '&interval=' + interval
+    response = requests.get(url=url, headers=get_header())
+    return response
 
 
 @allure.step('查询集群的日志总量')
@@ -141,6 +164,14 @@ def step_get_logs_by_pod(query_rule, pod_name, end_time):
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=query&log_query=&' + condition + '=' + pod_name + \
                        '&containers=&from=0&size=50&interval=1d&end_time=' + end_time
     print(url)
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('按时间范围查询日志的详情信息')
+def step_get_logs_by_time(interval, start_time, end_time):
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=query&log_query=&pods=&' \
+                    'containers=&from=0&size=50&interval=' + interval + '&start_time=' + start_time + '&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 

@@ -28,6 +28,7 @@ class TestEventSearch(object):
         event_counts = response.json()['statistics']['events']
         # 验证事件数量大于0
         assert resources_count > 0
+<<<<<<< HEAD
         # 获取最近12小时的事件趋势图
         interval = '30m'  # 时间间隔 30分钟
         # 获取12小时之前的时间戳
@@ -46,6 +47,20 @@ class TestEventSearch(object):
             assert event_count >= event_counts
         else:  # 如果当前时间等于12点，则当天的事件总数等于最近12小时的事件总数
             assert event_count == event_counts
+=======
+        # 获取当天的事件趋势图
+        interval = '1800'  # 时间间隔,单位是秒
+        re = toolbox_steps.step_get_events_trend(day_timestamp, now_timestamp, interval)
+        # 获取趋势图的横坐标数量
+        count = len(re.json()['histogram']['buckets'])
+        # 获取每个时间段的事件数量之和
+        events_count_actual = 0
+        for i in range(0, count):
+            number = re.json()['histogram']['buckets'][i]['count']
+            events_count_actual += number
+        # 验证接口返回的事件数量和趋势图中的事件之和一致
+        assert events_count_actual == event_counts
+>>>>>>> 48ff5d13df5d696fd463354e8c691dea7258d438
 
     @allure.story('事件总量')
     @allure.title('验证最近 12 小时事件总数正确')
@@ -87,8 +102,8 @@ class TestEventSearch(object):
         time_1 = response.json()['histogram']['buckets'][0]['time']
         try:
             time_2 = response.json()['histogram']['buckets'][1]['time']
-            time_interval = (time_2 - time_1)/1000  # 换算成秒
-        # 验证时间间隔正确
+            time_interval = (time_2 - time_1) / 1000  # 换算成秒
+            # 验证时间间隔正确
             assert time_interval == int(interval)
         except Exception as e:
             print(e)
@@ -150,4 +165,22 @@ class TestEventSearch(object):
         # 验证查询成功
         assert logs_count >= 0
 
-
+    @allure.story('事件查询规则')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(('limit', 'interval', 'title'),
+                             [(10, '1m', '按时间范围查询最近10分钟事件趋势'),
+                              (180, '6m', '按容器模糊查询最近3小时事件趋势'),
+                              (1440, '48m', '按容器模糊查询最近一天事件趋势')
+                              ])
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_events_by_time_limit(self, limit, interval, title):
+        # 获取当前时间的10位时间戳
+        now_timestamp = str(time.time())[0:10]
+        # 获取开始时间
+        start_time = commonFunction.get_before_timestamp(limit)
+        # 按时间范围查询事件
+        res = toolbox_steps.step_get_events_by_time(interval, start_time, now_timestamp)
+        event_num = res.json()['query']['total']
+        print(event_num)
+        # 验证查询成功
+        assert event_num >= 0

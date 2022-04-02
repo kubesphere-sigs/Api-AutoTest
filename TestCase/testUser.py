@@ -124,6 +124,33 @@ class TestUser(object):
         # 删除创建的用户
         platform_steps.step_delete_user(user_name)
 
+    @allure.story('用户')
+    @allure.severity('critical')
+    @allure.title('用户历史登陆时间')
+    def test_user_login_history(self):
+        user_name = 'modify' + str(commonFunction.get_random())
+        role = 'platform-admin'
+        platform_steps.step_create_user(user_name, role)
+        # 等待创建的用户被激活
+        time.sleep(3)
+        # 验证用户还未登陆
+        res = platform_steps.step_get_user_info(user_name)
+        assert 'lastLoginTime' not in res.json()['items'][0]['status']
+        # 使用新创建的用户登陆，并获取headers
+        try:
+            headers = platform_steps.step_get_headers(user_name, pwd='P@88w0rd')
+        except Exception as e:
+            print(e)
+            print("新创建的用户登陆失败")
+        # 验证登陆成功
+        assert headers
+        # 查询新用户信息
+        res = platform_steps.step_get_user_info(user_name)
+        # 验证已有登陆时间信息
+        assert 'lastLoginTime' in res.json()['items'][0]['status']
+        # 删除用户
+        platform_steps.step_delete_user(user_name)
+
 
 if __name__ == "__main__":
     pytest.main(['-s', 'testUser.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程

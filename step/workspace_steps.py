@@ -30,6 +30,13 @@ def step_edit_role_authory(ws_name, role_name, version, authory):
     return response
 
 
+@allure.step('企业空间概览信息')
+def step_get_ws_num_info(ws_name):
+    url = env_url + '/kapis/monitoring.kubesphere.io/v1alpha3/workspaces/' + ws_name + '?type=statistics'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
 @allure.step('创建企业空间的角色')
 def step_create_ws_role(ws_name, ws_role_name, authory):
     """
@@ -74,6 +81,13 @@ def step_get_ws_user(ws_name, user_name):
 def step_delete_role(ws_name, role_name):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspaceroles/' + role_name
     response = requests.delete(url, headers=get_header())
+    return response
+
+
+@allure.step('查询角色授权用户')
+def step_get_role_user(ws_name, role_name):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers?workspacerole=' + role_name + '&sortBy=createTime&limit=10'
+    response = requests.get(url=url, headers=get_header())
     return response
 
 
@@ -261,7 +275,8 @@ def step_create_workspace(ws_name):
             "metadata": {"name": ws_name,
                          "annotations": {"kubesphere.io/creator": "admin"}},
             "spec": {"template": {"spec": {"manager": "admin"}}}}
-    requests.post(url, headers=get_header(), data=json.dumps(data))
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
 
 
 @allure.step('创建多集群企业空间')
@@ -330,7 +345,7 @@ def step_get_ws_info(ws_name):
 @allure.step('查询企业空间的项目信息')
 def step_get_project_info(ws_name):
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces?' \
-          'sortBy=createTime&labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
+                                                                                   'sortBy=createTime&labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -359,4 +374,8 @@ def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
     return response
 
 
-
+@allure.step('查询集群的 namespace usage ranking信息')
+def step_get_namespace_usage_rank(ws_name, sort):
+    url = env_url + '/kapis/monitoring.kubesphere.io/v1alpha3/workspaces/' + ws_name + '/namespaces?type=rank&metrics_filter=namespace_memory_usage_wo_cache%7Cnamespace_memory_limit_hard%7Cnamespace_cpu_usage%7Cnamespace_cpu_limit_hard%7Cnamespace_pod_count%7Cnamespace_pod_count_hard%7Cnamespace_net_bytes_received%7Cnamespace_net_bytes_transmitted&page=1&limit=10&sort_type=desc&sort_metric=' + sort
+    response = requests.get(url=url, headers=get_header())
+    return response
