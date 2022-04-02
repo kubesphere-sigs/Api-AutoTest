@@ -196,6 +196,26 @@ class TestLogSearch(object):
         assert logs_count >= 0
 
     @allure.story('日志查询规则')
+    @allure.title('{title}')
+    @pytest.mark.parametrize(('limit', 'interval', 'title'),
+                             [(10, '1m', '按时间范围查询最近10分钟日志的详情信息'),
+                              (180, '6m', '按容器模糊查询最近3小时日志的详情信息'),
+                              (1440, '48m', '按容器模糊查询最近一天日志的详情信息')
+                              ])
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_logs_by_time_limit(self, limit, interval, title):
+        # 获取当前时间的10位时间戳（结束时间）
+        now_timestamp = str(time.time())[0:10]
+        # 获取开始时间
+        start_time = commonFunction.get_before_timestamp(limit)
+        # 按时间范围查询容器日志
+        res = toolbox_steps.step_get_logs_by_time(interval, start_time, now_timestamp)
+        log_num = res.json()['query']['total']
+        print(log_num)
+        # 验证查询成功
+        assert log_num >= 0
+
+    @allure.story('日志查询规则')
     @allure.title('查询所有KS自带容器的日志详情')
     def test_get_all_containers_log(self):
         # 获取当前时间的10位时间戳

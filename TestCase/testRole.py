@@ -1,3 +1,5 @@
+import time
+
 import pytest
 import allure
 import sys
@@ -66,6 +68,60 @@ class TestRole(object):
         response = platform_steps.step_get_role_info(role_name)
         # 验证查询结果为空
         assert response.json()['totalItems'] == 0
+
+    @allure.story('角色详情')
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.title('查询角色权限列表')
+    def test_query_role_permission_list(self):
+        role_name = 'role' + str(commonFunction.get_random())
+        authority = '["role-template-manage-clusters","role-template-view-clusters","role-template-view-basic"]'
+        # 创建角色
+        platform_steps.step_create_role(role_name)
+        # 查询权限列表
+        authority_list = platform_steps.step_get_role_authority(role_name)
+        # 验证权限正确
+        assert authority == authority_list
+        # 删除角色
+        platform_steps.step_delete_role(role_name)
+
+    @allure.story('角色详情')
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.title('查询角色授权用户')
+    def test_query_role_Authorized_user(self):
+        role_name = 'role' + str(commonFunction.get_random())
+        user_name = 'user' + str(commonFunction.get_random())
+        # 创建角色
+        platform_steps.step_create_role(role_name)
+        # 使用新创建的角色创建用户
+        platform_steps.step_create_user(user_name, role_name)
+        time.sleep(3)
+        # 查询角色授权用户
+        res = platform_steps.step_get_role_user(role_name)
+        # 验证用户数量
+        assert res.json()['totalItems'] == 1
+        # 验证用户名称
+        assert res.json()['items'][0]['metadata']['name'] == user_name
+        # 删除用户
+        platform_steps.step_delete_user(user_name)
+        # 删除角色
+        platform_steps.step_delete_role(role_name)
+
+    @allure.story('角色列表')
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.title('删除已关联用户的角色')
+    def test_delete_role_Authorized(self):
+        role_name = 'role' + str(commonFunction.get_random())
+        user_name = 'user' + str(commonFunction.get_random())
+        # 创建角色
+        platform_steps.step_create_role(role_name)
+        # 使用新创建的角色创建用户
+        platform_steps.step_create_user(user_name, role_name)
+        time.sleep(3)
+        # 删除角色
+        res = platform_steps.step_delete_role(role_name)
+        print(res.json())
+        # 删除用户
+        platform_steps.step_delete_user(user_name)
 
 
 if __name__ == "__main__":
