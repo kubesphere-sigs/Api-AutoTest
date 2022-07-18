@@ -1,9 +1,12 @@
-import pytest
-import allure
+import random
 import sys
-from common import commonFunction
-from step import toolbox_steps
 import time
+
+import allure
+import pytest
+
+from common import commonFunction
+from step import toolbox_steps, cluster_steps
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -187,5 +190,119 @@ class TestAuditingOperatingSearch(object):
         # 验证查询成功
         assert audits_num >= 0
 
+    @allure.story("集群设置")
+    @allure.title('查看日志接收器中的审计日志')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
+    def test_get_log_receiver_audit(self):
+        # 查询日志接收器/审计日志
+        response = cluster_steps.step_get_log_receiver('auditing')
+        # 获取接收器类型和启用状态
+        component = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/component']
+        enabled = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/enabled']
+        # 校验接收器类型和启用状态，启用状态默认为开启
+        assert component == 'auditing'
+        assert enabled == 'true'
 
+    @allure.story('集群设置/日志接收器')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
+    @pytest.mark.parametrize('type, log_type, title',
+                             [
+                                 ('fluentd', 'auditing', '为审计日志添加日志接收器，并验证添加成功'),
+                                 ('kafka', 'auditing', '为审计日志添加日志接收器，并验证添加成功')
+                             ])
+    def test_add_log_receiver_auditing(self, type, log_type, title):
+        # 添加日志收集器
+        cluster_steps.step_add_log_receiver(type, log_type)
+        # 查看日志收集器
+        response = cluster_steps.step_get_log_receiver(log_type)
+        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        # 验证日志接收器添加成功
+        assert log_receiver_name == 'forward-' + log_type
+        # 删除创建的日志接收器
+        cluster_steps.step_delete_log_receiver(log_receiver_name)
 
+    @allure.story('集群设置/日志接收器')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
+    @pytest.mark.parametrize('log_type, title',
+                             [
+                                 ('auditing', '将审计日志的日志接收器状态更改为false')
+                             ])
+    def test_modify_log_receiver_auditing_status(self, log_type, title):
+        # 添加日志收集器
+        cluster_steps.step_add_log_receiver('fluentd', log_type)
+        # 查看日志收集器，并获取新增日志接收器名称
+        response = cluster_steps.step_get_log_receiver(log_type)
+        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        # 查看日志接收器详情
+        cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        # 更改日志接收器状态
+        cluster_steps.step_modify_log_receiver_status(log_receiver_name, 'false')
+        # 查看日志接受器详情并验证更改成功
+        re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        status = re.json()['metadata']['labels']['logging.kubesphere.io/enabled']
+        assert status == 'false'
+        # 删除创建的日志接收器
+        cluster_steps.step_delete_log_receiver(log_receiver_name)
+
+    @allure.story('集群设置/日志接收器')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
+    @pytest.mark.parametrize('log_type, title',
+                             [
+                                 ('auditing', '修改审计日志的日志接收器的服务地址')
+                             ])
+    def test_modify_log_receiver_auditing_address(self, log_type, title):
+        # 添加日志收集器
+        cluster_steps.step_add_log_receiver('fluentd', log_type)
+        # 查看日志收集器，并获取新增日志接收器名称
+        response = cluster_steps.step_get_log_receiver(log_type)
+        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        # 查看日志接收器详情
+        cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        # 修改日志接收器的服务地址
+        host = commonFunction.random_ip()
+        port = random.randint(1, 65535)
+        cluster_steps.step_modify_log_receiver_address(log_receiver_name, host, port)
+        # 查看日志接受器详情并验证修改成功
+        re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        host_actual = re.json()['spec']['forward']['host']
+        port_actual = re.json()['spec']['forward']['port']
+        assert host_actual == host
+        assert port_actual == port
+        # 删除创建的日志接收器
+        cluster_steps.step_delete_log_receiver(log_receiver_name)
+
+    @allure.story('集群设置/日志接收器')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
+    @pytest.mark.parametrize('log_type, title',
+                             [
+                                 ('auditing', '修改资源事件的日志接受器的服务地址')
+                             ])
+    def test_modify_log_receiver_auditing_address(self, log_type, title):
+        # 添加日志收集器
+        cluster_steps.step_add_log_receiver('fluentd', log_type)
+        # 查看日志收集器，并获取新增日志接收器名称
+        response = cluster_steps.step_get_log_receiver(log_type)
+        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        # 查看日志接收器详情
+        cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        # 修改日志接收器的服务地址
+        host = commonFunction.random_ip()
+        port = random.randint(1, 65535)
+        cluster_steps.step_modify_log_receiver_address(log_receiver_name, host, port)
+        # 查看日志接受器详情并验证修改成功
+        re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        host_actual = re.json()['spec']['forward']['host']
+        port_actual = re.json()['spec']['forward']['port']
+        assert host_actual == host
+        assert port_actual == port
+        # 删除创建的日志接收器
+        cluster_steps.step_delete_log_receiver(log_receiver_name)
