@@ -3,7 +3,8 @@ import allure
 import sys
 from common.getData import DoexcleByPandas
 from common import commonFunction
-from step import cluster_steps
+from step import cluster_steps, platform_steps
+from time import sleep
 import time
 import random
 
@@ -36,6 +37,115 @@ class TestCluster(object):
         allure.dynamic.severity(severity)  # 动态生成用例等级
 
         commonFunction.request_resource(url, params, data, story, title, method, severity, condition, except_result)
+
+    @allure.story("监控告警")
+    @allure.title('按名称查询内置的告警策略')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
+    def test_get_alert_policies_by_name(self):
+        # 按名称查询告警策略
+        response = cluster_steps.step_get_alert_policies('builtin/', 'name=KubeletServerCertificateExpiration')
+        # 获取告警策略数量
+        count = response.json()['total']
+        # 验证时数量为2
+        assert count == 2
+
+    @allure.story("监控告警")
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.NORMAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
+    @pytest.mark.parametrize('title, state, type',
+                             [('按告警状态/未激活查询内置的告警策略', 'inactive', 'builtin/'),
+                              ('按告警状态/待发送查询内置的告警策略', 'pending', 'builtin/'),
+                              ('按告警状态/发送中查询内置的告警策略', 'firing', 'builtin/'),
+                              ('按告警状态/未激活查询自定义的告警策略', 'inactive', ''),
+                              ('按告警状态/待发送查询自定义的告警策略', 'pending', ''),
+                              ('按告警状态/发送中查询自定义的告警策略', 'firing', '')
+                              ])
+    def test_get_alert_policies_by_state(self, title, state, type):
+        # 按告警状态查询告警策略
+        response = cluster_steps.step_get_alert_policies(type, 'state=' + state)
+        # 获取告警策略的数量
+        count = response.json()['total']
+        # 如果告警策略数量大于0，便判断策略的状态
+        if count > 0:
+            # 获取第一个告警策略的状态
+            state_actual = response.json()['items'][0]['state']
+            # 验证状态
+            assert state_actual == state
+        else:
+            assert response.status_code == 200
+
+    @allure.story("监控告警")
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.NORMAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
+    @pytest.mark.parametrize('title, level, type',
+                             [('按告警级别/危险告警查询内置的告警策略', 'critical', 'builtin/'),
+                              ('按告警级别/重要告警送查询内置的告警策略', 'error', 'builtin/'),
+                              ('按告警级别/一般告警查询内置的告警策略', 'warning', 'builtin/'),
+                              ('按告警级别/危险告警查询自定义的告警策略', 'critical', ''),
+                              ('按告警级别/重要告警查询自定义的告警策略', 'error', ''),
+                              ('按告警级别/一般告警查询自定义的告警策略', 'warning', '')
+                              ])
+    def test_get_alert_policies_by_level(self, title, level, type):
+        pass
+        # 按告警级别查询告警策略
+        response = cluster_steps.step_get_alert_policies(type, 'label_filters=severity%3D' + level)
+        # 获取告警策略的数量
+        count = response.json()['total']
+        # 如果告警策略数量大于0，便判断策略的状态
+        if count > 0:
+            # 获取第一个告警策略的状态
+            state_actual = response.json()['items'][0]['labels']['severity']
+            # 验证状态
+            assert state_actual == level
+        else:
+            assert response.status_code == 200
+
+    @allure.story("监控告警")
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.NORMAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
+    @pytest.mark.parametrize('title, condition, type',
+                             [('按告警级别、名称和告警状态查询内置的告警策略', 'name=kube&state=inactive&label_filters=severity%3Dcritical',
+                               'builtin/'),
+                              ('按告警级别、名称查询内置的告警策略', 'name=kube&label_filters=severity%3Dwarning', 'builtin/'),
+                              ('按告警级别、告警状态查询内置的告警策略', 'state=inactive&label_filters=severity%3Derror', 'builtin/'),
+                              ('按告警级别、名称和告警状态查询自定义的告警策略', 'name=kube&state=inactive&label_filters=severity%3Dcritical',
+                               ''),
+                              ('按告警级别、名称查询自定义的告警策略', 'name=kube&label_filters=severity%3Dwarning', ''),
+                              ('按告警级别、告警状态查询自定义的告警策略', 'state=inactive&label_filters=severity%3Derror', ''),
+                              ])
+    def test_get_alert_policies_by_condition(self, title, condition, type):
+        # 查询告警策略
+        response = cluster_steps.step_get_alert_policies(type, condition)
+        # 获取告警策略的数量
+        count = response.json()['total']
+        # 验证数量>=0
+        assert count >= 0
+
+    @allure.story("监控告警")
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.NORMAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
+    @pytest.mark.parametrize('title, condition, type',
+                             [('查看所有内置告警策略的告警消息', '', 'builtin/'),
+                              ('按告警状态查询内置告警策略的告警消息', 'state=pending', 'builtin/'),
+                              ('按告警级别查询内置告警策略的告警消息', 'label_filters=severity%3Dwarning', 'builtin/'),
+                              ('按告警级别、告警状态查询内置告警策略的告警消息', 'state=inactive&label_filters=severity%3Derror', 'builtin/'),
+                              ('查看所有自定义告警策略的告警消息', '', ''),
+                              ('按告警状态查询自定义告警策略的告警消息', 'state=pending', ''),
+                              ('按告警级别查询自定义告警策略的告警消息', 'label_filters=severity%3Dwarning', ''),
+                              ('按告警级别、告警状态查询自定义告警策略的告警消息', 'state=inactive&label_filters=severity%3Derror', ''),
+                              ])
+    def test_get_alert_message_by_condition(self, title, condition, type):
+        # 查询告警消息
+        response = cluster_steps.step_get_alert_message(type, condition)
+        # 获取告警消息的数量
+        count = response.json()['total']
+        # 验证数量>=0
+        assert count >= 0
 
     @allure.story("节点")
     @allure.title('为节点设置污点')
@@ -135,8 +245,9 @@ class TestCluster(object):
         # 获取10分钟之前的戳
         before_timestamp = commonFunction.get_before_timestamp(10)
         # 查看最近十分钟的监控信息
-        r = cluster_steps.step_get_metrics_of_node(node_name=node_name, start_time=before_timestamp, end_time=now_timestamp,
-                                     step='60s', times='10')
+        r = cluster_steps.step_get_metrics_of_node(node_name=node_name, start_time=before_timestamp,
+                                                   end_time=now_timestamp,
+                                                   step='60s', times='10')
         # 获取查询到的数据的结果类型
         resultType = r.json()['results'][0]['data']['resultType']
         # 验证查询到的数据的结果类型
@@ -154,8 +265,9 @@ class TestCluster(object):
         # 获取20分钟之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp(20)
         # 查看节点的状态信息
-        response = cluster_steps.step_get_status_of_node(node_name=node_name, start_time=before_timestamp, end_time=now_timestamp,
-                                           step='180s', times='20')
+        response = cluster_steps.step_get_status_of_node(node_name=node_name, start_time=before_timestamp,
+                                                         end_time=now_timestamp,
+                                                         step='180s', times='20')
         # 获取查询结果中的节点信息
         node = response.json()['results'][0]['data']['result'][0]['metric']['node']
         # 验证查询结果正确
@@ -179,12 +291,12 @@ class TestCluster(object):
     @allure.story('节点')
     @allure.title('按名称精确查询节点中存在的pod')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_precise_query_existent_pod(self):
+    def test_precise_query_existent_pod_in_node(self):
         # 获取节点列表中第一个节点的名称
         response = cluster_steps.step_get_nodes()
         node_name = response.json()['items'][0]['metadata']['name']
         # 获取节点的任意一个pod的名称
-        re = cluster_steps.step_get_pod_of_node(node_name)
+        re = cluster_steps.step_query_pod(node_name, '')
         pod_name = re.json()['items'][0]['metadata']['name']
         # 按名称精确查询存在的pod
         re = cluster_steps.step_query_pod(node_name, pod_name)
@@ -264,8 +376,6 @@ class TestCluster(object):
         project_name_actual = re.json()['items'][0]['metadata']['name']
         # 验证查询结果
         assert project_name_actual == project_name
-        # 删除项目
-        cluster_steps.step_delete_user_system(project_name)
 
     @allure.story('项目')
     @allure.title('按名称模糊查询集群中存在的系统项目')
@@ -398,12 +508,10 @@ class TestCluster(object):
     @allure.title('使用名称精确查询项目中存在的pod')
     @allure.severity(allure.severity_level.NORMAL)
     def test_precise_query_existent_pod(self):
+        project_name = 'kubesphere-system'
         # 用于存放pod的名称
         pod_names = []
-        # 获取集群中任一系统项目的名称
-        response = cluster_steps.step_query_system_project('')
-        project_name = response.json()['items'][0]['metadata']['name']
-        # 查询项目的所有的pod信息
+        # 查询项目kubesphere-system的所有的pod信息
         re = cluster_steps.step_get_pods_of_project(project_name=project_name)
         # 获取pod的数量
         pod_count = re.json()['totalItems']
@@ -640,8 +748,7 @@ class TestCluster(object):
     @allure.story('应用负载')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('type, title',
-                             [('jobs', '查看集群所有的jobs,并验证运行状态正常'),
-                              ('cronjobs', '查看集群所有的cronjobs,并验证运行状态正常')])
+                             [('jobs', '查看集群所有的jobs,并验证运行状态正常')])
     def test_check_jobs_of_cluster(self, type, title):
         # 查询集群中所有的系统项目
         response = cluster_steps.step_get_system_of_cluster()
@@ -727,13 +834,19 @@ class TestCluster(object):
     def test_precise_query_app_workload_by_name(self, type, title):
         # 获取集群中存在的资源的名称
         response = cluster_steps.step_get_resource_of_cluster(type)
-        # 获取第一个资源的名称
-        name = response.json()['items'][0]['metadata']['name']
-        r = cluster_steps.step_get_resource_of_cluster(type, 'name=' + name)
-        # 获取查询结果的名称
-        name_actual = r.json()['items'][0]['metadata']['name']
-        # 验证查询结果正确
-        assert name == name_actual
+        # 获取工作负载的数量
+        count = response.json()['totalItems']
+        # 如果数量大于0
+        if count > 0:
+            # 获取第一个资源的名称
+            name = response.json()['items'][0]['metadata']['name']
+            r = cluster_steps.step_get_resource_of_cluster(type, 'name=' + name)
+            # 获取查询结果的名称
+            name_actual = r.json()['items'][0]['metadata']['name']
+            # 验证查询结果正确
+            assert name == name_actual
+        else:
+            assert response.status_code == 200
 
     @allure.story('应用负载')
     @allure.title('{title}')
@@ -749,13 +862,19 @@ class TestCluster(object):
     def test_fuzzy_query_app_workload_by_name(self, type, title):
         # 获取集群中存在的资源的名称
         response = cluster_steps.step_get_resource_of_cluster(type)
-        # 获取第一个资源的名称
-        name = response.json()['items'][0]['metadata']['name']
-        r = cluster_steps.step_get_resource_of_cluster(type, 'name=' + name[2:])
-        # 获取查询结果的名称
-        name_actual = r.json()['items'][0]['metadata']['name']
-        # 验证查询结果正确
-        assert name == name_actual
+        # 获取工作负载的数量
+        count = response.json()['totalItems']
+        # 如果数量大于0
+        if count > 0:
+            # 获取第一个资源的名称
+            name = response.json()['items'][0]['metadata']['name']
+            r = cluster_steps.step_get_resource_of_cluster(type, 'name=' + name[2:])
+            # 获取查询结果的名称
+            name_actual = r.json()['items'][0]['metadata']['name']
+            # 验证查询结果正确
+            assert name == name_actual
+        else:
+            response.status_code == 200
 
     @allure.story('应用负载')
     @allure.title('{title}')
@@ -804,9 +923,9 @@ class TestCluster(object):
         count = r.json()['totalItems']
         # 获取资源的status
         for i in range(0, count):
-            status = r.json()['items'][i]['status']
-            # 验证状态里面有lastScheduleTime，判断job状态为运行中
-            assert 'lastScheduleTime' in status
+            status = r.json()['items'][i]['spec']['suspend']
+            # false 为 Running ，true 为 Paused
+            assert status == False
 
     @allure.story('应用负载')
     @allure.title('{title}')
@@ -879,13 +998,18 @@ class TestCluster(object):
         allure.dynamic.story(story)
         # 获取集群中存在的任一资源的名称
         response = cluster_steps.step_get_resource_of_cluster(resource_type=type)
+        # 获取工作负载的数量
         count = response.json()['totalItems']
-        name = response.json()['items'][random.randint(0, count - 1)]['metadata']['name']
-        # 按名称精确查询存在的资源
-        r = cluster_steps.step_get_resource_of_cluster(type, 'name=' + name)
-        name_actual = r.json()['items'][0]['metadata']['name']
-        # 验证查询结果正确
-        assert name_actual in name
+        # 如果数量大于0
+        if count > 0:
+            name = response.json()['items'][random.randint(0, count - 1)]['metadata']['name']
+            # 按名称精确查询存在的资源
+            r = cluster_steps.step_get_resource_of_cluster(type, 'name=' + name)
+            name_actual = r.json()['items'][0]['metadata']['name']
+            # 验证查询结果正确
+            assert name_actual in name
+        else:
+            assert response.status_code == 200
 
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
@@ -906,11 +1030,11 @@ class TestCluster(object):
         # 获取集群中存在的任一资源的名称
         name = response.json()['items'][random.randint(0, count - 1)]['metadata']['name']
         fuzzy_name = name[1:]
-        # 按名称精确查询存在的资源
+        # 按名称模糊查询存在的资源
         r = cluster_steps.step_get_resource_of_cluster(type, 'name=' + fuzzy_name)
         name_actual = r.json()['items'][0]['metadata']['name']
         # 验证查询结果正确
-        assert name_actual == name
+        assert name in name_actual
 
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
@@ -945,16 +1069,19 @@ class TestCluster(object):
         response = cluster_steps.step_get_resource_of_cluster_by_project(type=type, project_name='kubesphere-system')
         # 获取资源数量
         count = response.json()['totalItems']
-        # 获取任一资源的名称
-        name = response.json()['items'][random.randint(0, count - 1)]['metadata']['name']
-        # 按项目和名称查询资源
-        r = cluster_steps.step_get_resource_of_cluster_by_project(type, 'kubesphere-system', 'name=' + name)
-        # 在查询结果中获取资源名称和数量
-        name_actual = r.json()['items'][0]['metadata']['name']
-        count = r.json()['totalItems']
-        # 验证查询结果正确
-        assert name_actual == name
-        assert count == 1
+        if count > 0:
+            # 获取任一资源的名称
+            name = response.json()['items'][random.randint(0, count - 1)]['metadata']['name']
+            # 按项目和名称查询资源
+            r = cluster_steps.step_get_resource_of_cluster_by_project(type, 'kubesphere-system', 'name=' + name)
+            # 在查询结果中获取资源名称和数量
+            name_actual = r.json()['items'][0]['metadata']['name']
+            count = r.json()['totalItems']
+            # 验证查询结果正确
+            assert name_actual == name
+            assert count == 1
+        else:
+            assert response.status_code == 200
 
     @allure.story('CRDs')
     @allure.title('查询所有CRD的详情信息')
@@ -989,7 +1116,7 @@ class TestCluster(object):
             # 获取crd的group,version和kind
             re = cluster_steps.step_get_crd_detail(name)
             group = re.json()['spec']['group']
-            version = re.json()['spec']['version']
+            version = re.json()['spec']['versions'][0]['name']
             kind = response.json()['items'][i]['spec']['names']['kind']
             # 查询crd的FederatedGroupList信息
             r = cluster_steps.step_get_crd_federated_group_list(group, version, kind.lower())
@@ -1092,7 +1219,7 @@ class TestCluster(object):
             namespace = response.json()['items'][i]['metadata']['namespace']
             # 查询每个pvc的快照信息
             r = cluster_steps.step_get_resource_of_cluster_by_project('volumesnapshots', namespace,
-                                                        'persistentVolumeClaimName=' + name)
+                                                                      'persistentVolumeClaimName=' + name)
             # 验证查询成功
             assert r.status_code == 200
 
@@ -1123,12 +1250,12 @@ class TestCluster(object):
         # 获取任意一个存储类型
         sc_name = response.json()['items'][0]['metadata']['name']
         # 获取存储卷信息
-        re = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims', 'storageClassName='+sc_name)
+        re = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims', 'storageClassName=' + sc_name)
         # 获取存储卷名称
         pv_name = re.json()['items'][0]['metadata']['name']
         # 根据名称精确查询存储卷
         response = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims',
-                                                              'storageClassName='+sc_name+'&name='+pv_name)
+                                                              'storageClassName=' + sc_name + '&name=' + pv_name)
         # 验证查询结果
         assert response.json()['totalItems'] == 1
         # 根据名称模糊查询
@@ -1331,15 +1458,16 @@ class TestCluster(object):
     @allure.story('监控告警/告警策略')
     @allure.title('创建告警策略（节点的cpu使用率大于0）')
     @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
     def test_create_alert_policy(self):
         # 获取集群的节点名称
         response = cluster_steps.step_get_nodes()
-        node_count = response.json()['totalItems']  #节点数量
+        node_count = response.json()['totalItems']  # 节点数量
         node_names = []
         for i in range(0, node_count):
             node_names.append(response.json()['items'][i]['metadata']['name'])
         # 获取任意节点名称
-        node_name = node_names[random.randint(0,node_count-1)]
+        node_name = node_names[random.randint(0, node_count - 1)]
         # 创建告警策略（节点的cpu使用率大于0）
         alert_name = 'test-alert' + str(commonFunction.get_random())
         cluster_steps.step_create_alert_policy(alert_name, node_name)
@@ -1349,7 +1477,7 @@ class TestCluster(object):
         state = re.json()['items'][0]['state']
         assert state == 'firing'
         # 查看告警消息，并验证告警消息正确
-        r = cluster_steps.step_get_alert_custom_message()
+        r = cluster_steps.step_get_alert_message('', 'label_filters=severity%3Dwarning')
         message_count = r.json()['total']
         policy_names = []
         for i in range(0, message_count):
@@ -1361,21 +1489,22 @@ class TestCluster(object):
     @allure.story('监控告警/告警策略')
     @allure.title('修改告警策略中的持续时间')
     @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
     def test_edit_alert_custom_policy(self):
         # 获取集群的节点名称
         response = cluster_steps.step_get_nodes()
-        node_count = response.json()['totalItems']  #节点数量
+        node_count = response.json()['totalItems']  # 节点数量
         node_names = []
         for i in range(0, node_count):
             node_names.append(response.json()['items'][i]['metadata']['name'])
         # 获取任意节点名称
-        node_name = node_names[random.randint(0,node_count-1)]
+        node_name = node_names[random.randint(0, node_count - 1)]
         # 创建告警策略（节点的cpu使用率大于0）
         alert_name = 'test-alert' + str(commonFunction.get_random())
         cluster_steps.step_create_alert_policy(alert_name, node_name)
         # 查询新建的自定义告警策略，并获取其id
         re = cluster_steps.step_get_alert_custom_policy(alert_name)
-        id  = re.json()['items'][0]['id']
+        id = re.json()['items'][0]['id']
         # 修改自定义策略的持续时间为5min
         cluster_steps.step_edit_alert_custom_policy(alert_name, id, node_name)
         # 查看告警策略的详情，并验证持续时间修改成功
@@ -1385,83 +1514,7 @@ class TestCluster(object):
         # 删除告警策略
         cluster_steps.step_delete_alert_custom_policy(alert_name)
 
-    @allure.story('集群设置')
-    @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.parametrize('type, log_type, title',
-                             [('fluentd', 'logging', '为容器日志添加日志接收器，并验证添加成功'),
-                              ('fluentd','events', '为资源事件添加日志接受器，并验证添加成功'),
-                              ('fluentd', 'auditing', '为审计日志添加日志接收器，并验证添加成功'),
-                              ('kafka', 'logging', '为容器日志添加日志接收器，并验证添加成功'),
-                              ('kafka', 'events', '为资源事件添加日志接受器，并验证添加成功'),
-                              ('kafka', 'auditing', '为审计日志添加日志接收器，并验证添加成功')
-                              ])
-    def test_add_log_receiver(self, type, log_type, title):
-        # 添加日志收集器
-        cluster_steps.step_add_log_receiver(type, log_type)
-        # 查看日志收集器
-        response = cluster_steps.step_get_log_receiver(log_type)
-        log_receiver_name = response.json()['items'][1]['metadata']['name']
-        # 验证日志接收器添加成功
-        assert log_receiver_name == 'forward-' + log_type
-        # 删除创建的日志接收器
-        cluster_steps.step_delete_log_receiver(log_receiver_name)
-
-    @allure.story('集群设置')
-    @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.parametrize('log_type, title',
-                             [('logging', '将容器日志的日志接收器状态更改为false'),
-                              ('events', '将资源事件的日志接受器状态更改为false'),
-                              ('auditing', '将审计日志的日志接收器状态更改为false')
-                              ])
-    def test_modify_log_receiver_status(self, log_type, title):
-        # 添加日志收集器
-        cluster_steps.step_add_log_receiver('fluentd', log_type)
-        # 查看日志收集器，并获取新增日志接收器名称
-        response = cluster_steps.step_get_log_receiver(log_type)
-        log_receiver_name = response.json()['items'][1]['metadata']['name']
-        # 查看日志接收器详情
-        cluster_steps.step_get_log_receiver_detail(log_receiver_name)
-        # 更改日志接收器状态
-        cluster_steps.step_modify_log_receiver_status(log_receiver_name, 'false')
-        # 查看日志接受器详情并验证更改成功
-        re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
-        status = re.json()['metadata']['labels']['logging.kubesphere.io/enabled']
-        assert status == 'false'
-        # 删除创建的日志接收器
-        cluster_steps.step_delete_log_receiver(log_receiver_name)
-
-    @allure.story('集群设置')
-    @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.parametrize('log_type, title',
-                             [('logging', '修改容器日志的日志接收器的服务地址'),
-                              ('events', '修改资源事件的日志接受器的服务地址'),
-                              ('auditing', '修改审计日志的日志接收器的服务地址')
-                              ])
-    def test_modify_log_receiver_address(self, log_type, title):
-        # 添加日志收集器
-        cluster_steps.step_add_log_receiver('fluentd', log_type)
-        # 查看日志收集器，并获取新增日志接收器名称
-        response = cluster_steps.step_get_log_receiver(log_type)
-        log_receiver_name = response.json()['items'][1]['metadata']['name']
-        # 查看日志接收器详情
-        cluster_steps.step_get_log_receiver_detail(log_receiver_name)
-        # 修改日志接收器的服务地址
-        host = commonFunction.random_ip()
-        port = random.randint(1, 65535)
-        cluster_steps.step_modify_log_receiver_address(log_receiver_name, host, port)
-        # 查看日志接受器详情并验证修改成功
-        re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
-        host_actual = re.json()['spec']['forward']['host']
-        port_actual = re.json()['spec']['forward']['port']
-        assert host_actual == host
-        assert port_actual == port
-        # 删除创建的日志接收器
-        cluster_steps.step_delete_log_receiver(log_receiver_name)
-
-    @allure.story('集群设置')
+    @allure.story('集群设置/网关设置')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('type, title',
@@ -1477,17 +1530,17 @@ class TestCluster(object):
         assert gateway_type == type
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
+        sleep(10)
 
-    @allure.story('集群设置')
+    @allure.story('集群设置/网关设置')
     @allure.title('修改网关信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_edit_cluster_gateway(self):
         # 开启集群网关
-        cluster_steps.step_open_cluster_gateway(type='NodePort')
-        # 查看集群网关，并获取获取uid和resourceversion
-        response = cluster_steps.step_get_cluster_gateway()
-        uid = response.json()[0]['metadata']['uid']
-        resourceVersion = response.json()[0]['metadata']['resourceVersion']
+        response = cluster_steps.step_open_cluster_gateway(type='NodePort')
+        # 并获取获取uid和resourceversio
+        uid = response.json()['metadata']['uid']
+        resourceVersion = response.json()['metadata']['resourceVersion']
         # 编辑集群config信息
         config = {"4": "5"}
         status = 'true'
@@ -1502,8 +1555,9 @@ class TestCluster(object):
         assert status_actual == status
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
+        sleep(10)
 
-    @allure.story('集群设置')
+    @allure.story('集群设置/网关设置')
     @allure.title('在网管设置中查询项目网关')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_project_gateway(self):
@@ -1517,3 +1571,38 @@ class TestCluster(object):
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
 
+    @allure.story('集群设置/集群成员')
+    @allure.title('查看集群默认成员')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_cluster_member_by_name(self):
+        # 查询集群所有成员
+        response = cluster_steps.step_get_cluster_member('')
+        # 获取集群成员的数量和名称
+        count = response.json()['totalItems']
+        name = response.json()['items'][0]['metadata']['name']
+        # 集群默认的成员仅有admin
+        assert count == 1
+        assert name == 'admin'
+
+    @allure.story('集群设置/集群成员')
+    @allure.title('邀请集群成员/移出集群成员')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_invite_cluster_member(self):
+        # 创建平台用户
+        user_name = 'user' + str(commonFunction.get_random())
+        platform_steps.step_create_user(user_name, 'platform-regular')
+        # 邀请用户到集群成员
+        cluster_steps.step_invite_cluster_member(user_name, 'cluster-viewer')
+        # 查询集群成员
+        response = cluster_steps.step_get_cluster_member('name=' + user_name)
+        # 验证集群成员邀请成功
+        name = response.json()['items'][0]['metadata']['name']
+        assert name == user_name
+        # 将用户从集群成员中移出
+        cluster_steps.step_remove_cluster_member(user_name)
+        # 查询集群成员，验证移出成功
+        re = cluster_steps.step_get_cluster_member('name=' + user_name)
+        count = re.json()['totalItems']
+        assert count == 0
+        # 删除创建的用户
+        platform_steps.step_delete_user(user_name)

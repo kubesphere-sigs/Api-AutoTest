@@ -209,8 +209,8 @@ def step_get_user_system(project_name):
 
 @allure.step('名称查询指定的用户项目')
 def step_query_user_system(project_name):
-    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces?name=' + project_name +\
-                    '&sortBy=createTime&limit=10&labelSelector=kubesphere.io%2Fworkspace%21%3Dsystem-workspace%2C%21kubesphere.io%2Fdevopsproject'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces?name=' + project_name + \
+          '&sortBy=createTime&limit=10&labelSelector=kubesphere.io%2Fworkspace%21%3Dsystem-workspace%2C%21kubesphere.io%2Fdevopsproject'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -297,7 +297,7 @@ def step_get_resource_of_cluster_by_project(type, project_name, *name):
 
 @allure.step('查询CRD的详情信息')
 def step_get_crd_detail(crd_name):
-    url = env_url + '/apis/apiextensions.k8s.io/v1beta1/customresourcedefinitions/' + crd_name
+    url = env_url + '/apis/apiextensions.k8s.io/v1/customresourcedefinitions/' + crd_name
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -547,6 +547,7 @@ def step_open_cluster_gateway(type):
                     "annotations": {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
                                     "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0"},
                     "type": "LoadBalancer"}}}
+
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
@@ -561,7 +562,8 @@ def step_get_cluster_gateway():
 @allure.step('关闭集群网关')
 def step_delete_cluster_gateway():
     url = env_url + '/apis/gateway.kubesphere.io/v1alpha1/namespaces/kubesphere-controls-system/gateways/kubesphere-router-kubesphere-system'
-    response = requests.delete(url=url, headers=get_header())
+    data = {}
+    response = requests.delete(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
 
@@ -587,8 +589,8 @@ def step_edit_cluster_gateway(uid, resourceVersion, config, status):
                          "annotations": {"kubesphere.io/annotations": "", "kubesphere.io/creator": "admin"},
                          "finalizers": ["uninstall-helm-release"], "managedFields": [
             {"manager": "controller-manager", "operation": "Update", "apiVersion": "gateway.kubesphere.io/v1alpha1",
-            "fieldsType": "FieldsV1"},
-            ]},
+             "fieldsType": "FieldsV1"},
+        ]},
             "spec": {"controller": {"replicas": 1, "config": config, "scope": {}}, "service": {"type": "NodePort"},
                      "deployment": {"replicas": 1, "annotations": {"servicemesh.kubesphere.io/enabled": status}}},
             "apiVersion": "gateway.kubesphere.io/v1alpha1", "kind": "Gateway"}
@@ -606,10 +608,11 @@ def step_get_project_gateway(name):
 @allure.step('在监控告警/告警策略中创建告警策略(节点cpu利用率大于0)')
 def step_create_alert_policy(alert_name, node_name):
     url = env_url + '/kapis/alerting.kubesphere.io/v2alpha1/rules'
-    data = {"name": alert_name,"query":"node:node_cpu_utilisation:avg1m{node=\"" + node_name + "\"} > 0",
-            "duration":"1m","labels":{"severity":"warning"},"annotations":{"summary":"Node " + node_name + " CPU usage > 0%",
-            "message":"","kind":"Node","resources":"[\"" + node_name + "\"]",
-            "rules":"[{\"_metricType\":\"node:node_cpu_utilisation:avg1m{$1}\",\"condition_type\":\">\",\"thresholds\":\"0\",\"unit\":\"%\"}]"}}
+    data = {"name": alert_name, "query": "node:node_cpu_utilisation:avg1m{node=\"" + node_name + "\"} > 0",
+            "duration": "1m", "labels": {"severity": "warning"},
+            "annotations": {"summary": "Node " + node_name + " CPU usage > 0%",
+                            "message": "", "kind": "Node", "resources": "[\"" + node_name + "\"]",
+                            "rules": "[{\"_metricType\":\"node:node_cpu_utilisation:avg1m{$1}\",\"condition_type\":\">\",\"thresholds\":\"0\",\"unit\":\"%\"}]"}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
@@ -620,23 +623,26 @@ def step_get_alert_custom_policy(alert_name):
     response = requests.get(url=url, headers=get_header())
     return response
 
+
 @allure.step('在监控告警/查看用户自定义告警详情')
 def step_get_alert_custom_policy_detail(alert_name):
     url = env_url + '/kapis/alerting.kubesphere.io/v2alpha1/rules/' + alert_name
     response = requests.get(url=url, headers=get_header())
     return response
 
+
 @allure.step('在监控告警/修改用户自定义告警策略的持续时间为5min')
 def step_edit_alert_custom_policy(alert_name, id, node_name):
     url = env_url + '/kapis/alerting.kubesphere.io/v2alpha1/rules/' + alert_name
-    data = {"cluster":"default",
-            "name": alert_name,"type":"",
+    data = {"cluster": "default",
+            "name": alert_name, "type": "",
             "id": id,
-            "query":"node:node_cpu_utilisation:avg1m{node=\"" + node_name + "\"} > 0",
-            "duration":"5m","labels":{"alerttype":"metric","rule_id": id,"severity":"warning"},
-            "state":"inactive","health":"unknown"}
-    response = requests.put(url=url, headers=get_header(),data=json.dumps(data))
+            "query": "node:node_cpu_utilisation:avg1m{node=\"" + node_name + "\"} > 0",
+            "duration": "5m", "labels": {"alerttype": "metric", "rule_id": id, "severity": "warning"},
+            "state": "inactive", "health": "unknown"}
+    response = requests.put(url=url, headers=get_header(), data=json.dumps(data))
     return response
+
 
 @allure.step('在监控告警/删除用户自定义告警')
 def step_delete_alert_custom_policy(alert_name):
@@ -645,10 +651,52 @@ def step_delete_alert_custom_policy(alert_name):
     return response
 
 
-@allure.step('在监控告警/查看用户自定义策略生成的告警消息')
-def step_get_alert_custom_message():
-    url = env_url + '/kapis/alerting.kubesphere.io/v2alpha1/alerts?sortBy=createTime'
+@allure.step('在监控告警/查看告警策略生成的告警消息')
+def step_get_alert_message(type, condition):
+    url = env_url + '/kapis/alerting.kubesphere.io/v2alpha1/' + type + 'alerts?' + condition + '&sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
+@allure.step('查看告警策略')
+def step_get_alert_policies(type, condition):
+    """
+    :param type: 'builtin/' 表示内置策略，传入''表示用户自定义策略。
+    :param condition: 查询条件
+    :return:
+    """
+    url = env_url + '/kapis/alerting.kubesphere.io/v2alpha1/' + type + 'rules?' + condition + '&sortBy=createTime'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查询集群成员')
+def step_get_cluster_member(condition):
+    """
+
+    :param condition: 查询条件  如name=admin
+    :return:
+    """
+    if len(condition) > 0:
+        new_condition = condition + '&'
+    else:
+        new_condition = condition
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/clustermembers?' + new_condition + 'sortBy=createTime'
+    print(url)
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('邀请用户到集群成员')
+def step_invite_cluster_member(user_name, role):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/clustermembers'
+    data = [{"username": user_name, "roleRef": role}]
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('将用户从集群成员中移出')
+def step_remove_cluster_member(user_name):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/clustermembers/' + user_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
