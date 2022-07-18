@@ -193,7 +193,6 @@ class TestAuditingOperatingSearch(object):
     @allure.story("集群设置")
     @allure.title('查看日志接收器中的审计日志')
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
     def test_get_log_receiver_audit(self):
         # 查询日志接收器/审计日志
         response = cluster_steps.step_get_log_receiver('auditing')
@@ -207,7 +206,6 @@ class TestAuditingOperatingSearch(object):
     @allure.story('集群设置/日志接收器')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
     @pytest.mark.parametrize('type, log_type, title',
                              [
                                  ('fluentd', 'auditing', '为审计日志添加日志接收器，并验证添加成功'),
@@ -227,7 +225,6 @@ class TestAuditingOperatingSearch(object):
     @allure.story('集群设置/日志接收器')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
     @pytest.mark.parametrize('log_type, title',
                              [
                                  ('auditing', '将审计日志的日志接收器状态更改为false')
@@ -252,7 +249,6 @@ class TestAuditingOperatingSearch(object):
     @allure.story('集群设置/日志接收器')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
     @pytest.mark.parametrize('log_type, title',
                              [
                                  ('auditing', '修改审计日志的日志接收器的服务地址')
@@ -281,7 +277,6 @@ class TestAuditingOperatingSearch(object):
     @allure.story('集群设置/日志接收器')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
     @pytest.mark.parametrize('log_type, title',
                              [
                                  ('auditing', '修改资源事件的日志接受器的服务地址')
