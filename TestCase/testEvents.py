@@ -1,9 +1,11 @@
 import pytest
 import allure
 import sys
-from common import commonFunction
-from step import toolbox_steps
 import time
+import random
+from common import commonFunction
+from step import toolbox_steps, cluster_steps
+
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -28,7 +30,6 @@ class TestEventSearch(object):
         event_counts = response.json()['statistics']['events']
         # 验证事件数量大于0
         assert resources_count > 0
-<<<<<<< HEAD
         # 获取最近12小时的事件趋势图
         interval = '30m'  # 时间间隔 30分钟
         # 获取12小时之前的时间戳
@@ -47,7 +48,6 @@ class TestEventSearch(object):
             assert event_count >= event_counts
         else:  # 如果当前时间等于12点，则当天的事件总数等于最近12小时的事件总数
             assert event_count == event_counts
-=======
         # 获取当天的事件趋势图
         interval = '1800'  # 时间间隔,单位是秒
         re = toolbox_steps.step_get_events_trend(day_timestamp, now_timestamp, interval)
@@ -60,7 +60,6 @@ class TestEventSearch(object):
             events_count_actual += number
         # 验证接口返回的事件数量和趋势图中的事件之和一致
         assert events_count_actual == event_counts
->>>>>>> 48ff5d13df5d696fd463354e8c691dea7258d438
 
     @allure.story('事件总量')
     @allure.title('验证最近 12 小时事件总数正确')
@@ -184,3 +183,87 @@ class TestEventSearch(object):
         print(event_num)
         # 验证查询成功
         assert event_num >= 0
+
+    @allure.story("集群设置")
+    @allure.title('查看日志接收器中的资源事件')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_log_receiver_event(self):
+        # 查询日志接收器/资源事件
+        response = cluster_steps.step_get_log_receiver('events')
+        # 获取接收器类型和启用状态
+        component = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/component']
+        enabled = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/enabled']
+        # 校验接收器类型和启用状态，启用状态默认为开启
+        assert component == 'events'
+        assert enabled == 'true'
+
+    @allure.story('集群设置/日志接收器')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('type, log_type, title',
+                             [
+                                 ('fluentd', 'events', '为资源事件添加日志接受器，并验证添加成功'),
+                                 ('kafka', 'events', '为资源事件添加日志接受器，并验证添加成功')
+                             ])
+    def test_add_log_receiver_events(self, type, log_type, title):
+        # 添加日志收集器
+        cluster_steps.step_add_log_receiver(type, log_type)
+        # 查看日志收集器
+        response = cluster_steps.step_get_log_receiver(log_type)
+        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        # 验证日志接收器添加成功
+        assert log_receiver_name == 'forward-' + log_type
+        # 删除创建的日志接收器
+        cluster_steps.step_delete_log_receiver(log_receiver_name)
+
+    @allure.story('集群设置/日志接收器')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('log_type, title',
+                             [
+                                 ('events', '将资源事件的日志接受器状态更改为false')
+                             ])
+    def test_modify_log_receiver_events_status(self, log_type, title):
+        # 添加日志收集器
+        cluster_steps.step_add_log_receiver('fluentd', log_type)
+        # 查看日志收集器，并获取新增日志接收器名称
+        response = cluster_steps.step_get_log_receiver(log_type)
+        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        # 查看日志接收器详情
+        cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        # 更改日志接收器状态
+        cluster_steps.step_modify_log_receiver_status(log_receiver_name, 'false')
+        # 查看日志接受器详情并验证更改成功
+        re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        status = re.json()['metadata']['labels']['logging.kubesphere.io/enabled']
+        assert status == 'false'
+        # 删除创建的日志接收器
+        cluster_steps.step_delete_log_receiver(log_receiver_name)
+
+    @allure.story('集群设置/日志接收器')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('log_type, title',
+                             [
+                                 ('events', '修改资源事件的日志接受器的服务地址')
+                             ])
+    def test_modify_log_receiver_events_address(self, log_type, title):
+        # 添加日志收集器
+        cluster_steps.step_add_log_receiver('fluentd', log_type)
+        # 查看日志收集器，并获取新增日志接收器名称
+        response = cluster_steps.step_get_log_receiver(log_type)
+        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        # 查看日志接收器详情
+        cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        # 修改日志接收器的服务地址
+        host = commonFunction.random_ip()
+        port = random.randint(1, 65535)
+        cluster_steps.step_modify_log_receiver_address(log_receiver_name, host, port)
+        # 查看日志接受器详情并验证修改成功
+        re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        host_actual = re.json()['spec']['forward']['host']
+        port_actual = re.json()['spec']['forward']['port']
+        assert host_actual == host
+        assert port_actual == port
+        # 删除创建的日志接收器
+        cluster_steps.step_delete_log_receiver(log_receiver_name)
