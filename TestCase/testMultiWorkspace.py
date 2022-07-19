@@ -2,6 +2,7 @@ import pytest
 import allure
 import sys
 import time
+import random
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -9,7 +10,6 @@ from common.getData import DoexcleByPandas
 from common.logFormat import log_format
 from common import commonFunction
 from step import multi_worksapce_steps
-import random
 
 
 @allure.feature('多集群环境企业空间')
@@ -35,9 +35,10 @@ class TestWorkSpace(object):
         multi_worksapce_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()),
                              self.alias_name, self.description, clusters)
         # 创建若干个多集群企业空间（只部署在单个集群）
-        for i in range(len(clusters)):
-            multi_worksapce_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()),
-                                                       self.alias_name, self.description, clusters[i])
+        if len(clusters) > 1:
+            for i in range(len(clusters)):
+                multi_worksapce_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()),
+                                                           self.alias_name, self.description, clusters[i])
         # 创建一个多集群企业空间,供excle文件中的用例使用
         multi_worksapce_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, clusters)
         time.sleep(3)
@@ -439,10 +440,8 @@ class TestWorkSpace(object):
                 clusters_name = []
                 res = multi_worksapce_steps.step_get_ws_info(ws_name)
                 clusters = res.json()['items'][0]['spec']['placement']['clusters']
-                print(clusters)
                 for i in range(0, len(clusters)):
                     clusters_name.append(clusters[i]['name'])
-                print(clusters_name)
                 # 遍历集群名称，在每个集群创建项目
                 for cluster in clusters_name:
                     # 初始化企业配额
@@ -476,13 +475,10 @@ class TestWorkSpace(object):
                 clusters_name = []
                 res = multi_worksapce_steps.step_get_ws_info(ws_name)
                 clusters = res.json()['items'][0]['spec']['placement']['clusters']
-                print(clusters)
                 for i in range(0, len(clusters)):
                     clusters_name.append(clusters[i]['name'])
-                print(clusters_name)
                 # 遍历集群名称，在每个集群创建项目
                 for cluster in clusters_name:
-                    print(k, ws_name, cluster)
                     project_name = 'test-pro' + str(commonFunction.get_random())
                     multi_worksapce_steps.step_create_project(cluster, ws_name, project_name)
                     # 查询项目并验证项目创建成功
