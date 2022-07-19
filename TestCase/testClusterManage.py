@@ -1257,7 +1257,7 @@ class TestCluster(object):
         response = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims',
                                                               'storageClassName=' + sc_name + '&name=' + pv_name)
         # 验证查询结果
-        assert response.json()['totalItems'] == 1
+        assert response.json()['totalItems'] >= 1
         # 根据名称模糊查询
         response = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims',
                                                               'storageClassName=' + sc_name + '&name=' + pv_name[:1])
