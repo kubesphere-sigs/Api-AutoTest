@@ -31,7 +31,15 @@ def step_get_cluster_name():
     return cluster_names
 
 
-@allure.step('获取集群的节点列表信息')
+@allure.step('获取host集群的名称')
+def step_get_host_cluster_name():
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/clusters?labelSelector=cluster-role.kubesphere.io%2Fhost%3D'
+    response = requests.get(url=url, headers=get_header())
+    host_cluster_name = response.json()['items'][0]['metadata']['name']
+    return host_cluster_name
+
+
+@allure.step('获取指定集群的节点列表信息')
 def step_get_nodes(cluster_name):
     url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/nodes'
     response = requests.get(url=url, headers=get_header())
@@ -281,7 +289,7 @@ def step_get_resource_of_cluster_by_project(cluster_name, type, project_name, *n
 @allure.step('查询CRD的详情信息')
 def step_get_crd_detail(cluster_name, crd_name):
     url = env_url + '/apis/clusters/' + cluster_name + \
-          '/apiextensions.k8s.io/v1beta1/customresourcedefinitions/' + crd_name
+          '/apiextensions.k8s.io/v1/customresourcedefinitions/' + crd_name
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -358,9 +366,9 @@ def step_get_metrics_of_cluster(cluster_name, start_time, end_time, step, times)
     url = env_url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/cluster?start=' + \
           start_time + '&end=' + end_time + \
           '&step=' + step + '&times=' + times + '&metrics_filter=cluster_cpu_usage%7Ccluster_cpu_total' \
-        '%7Ccluster_cpu_utilisation%7Ccluster_memory_usage_wo_cache%7Ccluster_memory_total%7C' \
-        'cluster_memory_utilisation%7Ccluster_disk_size_usage%7Ccluster_disk_size_capacity%7C' \
-        'cluster_disk_size_utilisation%7Ccluster_pod_running_count%7Ccluster_pod_quota%24'
+                                                '%7Ccluster_cpu_utilisation%7Ccluster_memory_usage_wo_cache%7Ccluster_memory_total%7C' \
+                                                'cluster_memory_utilisation%7Ccluster_disk_size_usage%7Ccluster_disk_size_capacity%7C' \
+                                                'cluster_disk_size_utilisation%7Ccluster_pod_running_count%7Ccluster_pod_quota%24'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -389,11 +397,11 @@ def step_get_metrics_of_scheduler(cluster_name, start_time, end_time, step, time
 @allure.step('查询集群的 node usage ranking信息')
 def step_get_node_usage_rank(cluster_name, sort):
     url = env_url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/nodes?type=rank&' \
-        'metrics_filter=node_cpu_utilisation%7Cnode_cpu_usage%7Cnode_cpu_total%7Cnode_memory_utilisation%7C' \
-        'node_memory_usage_wo_cache%7Cnode_memory_total%7Cnode_disk_size_utilisation%7Cnode_disk_size_usage%7C' \
-        'node_disk_size_capacity%7Cnode_pod_utilisation%7Cnode_pod_running_count%7Cnode_pod_quota%7C' \
-        'node_disk_inode_utilisation%7Cnode_disk_inode_total%7Cnode_disk_inode_usage%7Cnode_load1%24&sort_type=desc&' \
-        'sort_metric=' + sort
+                                                        'metrics_filter=node_cpu_utilisation%7Cnode_cpu_usage%7Cnode_cpu_total%7Cnode_memory_utilisation%7C' \
+                                                        'node_memory_usage_wo_cache%7Cnode_memory_total%7Cnode_disk_size_utilisation%7Cnode_disk_size_usage%7C' \
+                                                        'node_disk_size_capacity%7Cnode_pod_utilisation%7Cnode_pod_running_count%7Cnode_pod_quota%7C' \
+                                                        'node_disk_inode_utilisation%7Cnode_disk_inode_total%7Cnode_disk_inode_usage%7Cnode_load1%24&sort_type=desc&' \
+                                                        'sort_metric=' + sort
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -423,7 +431,7 @@ def step_get_app_usage_of_cluster(cluster_name, start_time, end_time, step, time
 @allure.step('查询集群项目变化趋势')
 def step_get_project_trend_of_cluster(cluster_name, start_time, end_time, step, times):
     url = env_url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/cluster' \
-                       '?start=' + start_time + '&end=' + end_time + '&step=' + step + '&times=' + times + \
+                                                        '?start=' + start_time + '&end=' + end_time + '&step=' + step + '&times=' + times + \
           '&metrics_filter=cluster_namespace_count%24'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -447,7 +455,7 @@ def step_get_cluster_roles(cluster_name):
 @allure.step('查询集群的namespace')
 def step_get_cluster_namespace(cluster_name):
     url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces?' \
-                       'labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
+                                                        'labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -462,9 +470,9 @@ def step_get_cluster_components(cluster_name):
 @allure.step('查询集群的监控metrics')
 def step_get_cluster_monitoring_metrics(cluster_name):
     url = env_url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/cluster?' \
-                       'metrics_filter=cluster_cpu_usage%7Ccluster_cpu_total%7Ccluster_memory_usage_wo_cache%7C' \
-                       'cluster_memory_total%7Ccluster_disk_size_usage%7Ccluster_disk_size_capacity%7C' \
-                       'cluster_pod_running_count%7Ccluster_pod_quota%24'
+                                                        'metrics_filter=cluster_cpu_usage%7Ccluster_cpu_total%7Ccluster_memory_usage_wo_cache%7C' \
+                                                        'cluster_memory_total%7Ccluster_disk_size_usage%7Ccluster_disk_size_capacity%7C' \
+                                                        'cluster_pod_running_count%7Ccluster_pod_quota%24'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -472,7 +480,7 @@ def step_get_cluster_monitoring_metrics(cluster_name):
 @allure.step('查看集群apiserver的监控metrics信息')
 def step_get_cluster_apiserver_monitoring_metrics(cluster_name):
     url = env_url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/components/apiserver?' \
-                       'metrics_filter=apiserver_request_latencies%7Capiserver_request_rate%24'
+                                                        'metrics_filter=apiserver_request_latencies%7Capiserver_request_rate%24'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -480,12 +488,12 @@ def step_get_cluster_apiserver_monitoring_metrics(cluster_name):
 @allure.step('查看集群节点的监控metrics')
 def step_get_cluster_node_monitoring_metrics(cluster_name):
     url = env_url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/nodes?type=rank&' \
-                'metrics_filter=node_cpu_utilisation%7Cnode_cpu_usage%7Cnode_cpu_total%7C' \
-                'node_memory_utilisation%7Cnode_memory_usage_wo_cache%7Cnode_memory_total%7C' \
-                'node_disk_size_utilisation%7Cnode_disk_size_usage%7Cnode_disk_size_capacity%7C' \
-                'node_pod_utilisation%7Cnode_pod_running_count%7Cnode_pod_quota%7Cnode_disk_inode_utilisation%7C' \
-                'node_disk_inode_total%7Cnode_disk_inode_usage%7Cnode_load1%24&sort_type=desc&' \
-                'sort_metric=node_cpu_utilisation'
+                                                        'metrics_filter=node_cpu_utilisation%7Cnode_cpu_usage%7Cnode_cpu_total%7C' \
+                                                        'node_memory_utilisation%7Cnode_memory_usage_wo_cache%7Cnode_memory_total%7C' \
+                                                        'node_disk_size_utilisation%7Cnode_disk_size_usage%7Cnode_disk_size_capacity%7C' \
+                                                        'node_pod_utilisation%7Cnode_pod_running_count%7Cnode_pod_quota%7Cnode_disk_inode_utilisation%7C' \
+                                                        'node_disk_inode_total%7Cnode_disk_inode_usage%7Cnode_load1%24&sort_type=desc&' \
+                                                        'sort_metric=node_cpu_utilisation'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -496,3 +504,118 @@ def step_get_cluster_scheduler(cluster_name):
           '/monitoring.kubesphere.io/v1alpha3/components/scheduler?metrics_filter=scheduler_schedule_attempts%24'
     response = requests.get(url=url, headers=get_header())
     return response
+
+
+@allure.step('在监控告警/查看指定集群的告警信息')
+def step_get_alert_message(cluster_name, type, condition):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/' + type + 'alerts?' + \
+          condition + '&sortBy=createTime'
+    print(url)
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在监控告警/告警策略中创建告警策略(节点cpu利用率大于0)')
+def step_create_alert_policy(cluster_name, alert_name, node_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules'
+    data = {"name": alert_name, "query": "node:node_cpu_utilisation:avg1m{node=\"" + node_name + "\"} > 0",
+            "duration": "1m", "labels": {"severity": "warning"},
+            "annotations": {"summary": "Node " + node_name + " CPU usage > 0%",
+                            "message": "", "kind": "Node", "resources": "[\"" + node_name + "\"]",
+                            "rules": "[{\"_metricType\":\"node:node_cpu_utilisation:avg1m{$1}\","
+                                     "\"condition_type\":\">\",\"thresholds\":\"0\",\"unit\":\"%\"}]"}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('在监控告警/查看用户自定义告警')
+def step_get_alert_custom_policy(cluster_name, alert_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules?name=' \
+          + alert_name + '&sortBy=createTime'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在监控告警/删除用户自定义告警')
+def step_delete_alert_custom_policy(cluster_name, alert_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules/' + alert_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在监控告警/修改用户自定义告警策略的持续时间为5min')
+def step_edit_alert_custom_policy(cluster_name, alert_name, id, node_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules/' + alert_name
+    data = {"cluster": "default",
+            "name": alert_name, "type": "",
+            "id": id,
+            "query": "node:node_cpu_utilisation:avg1m{node=\"" + node_name + "\"} > 0",
+            "duration": "5m", "labels": {"alerttype": "metric", "rule_id": id, "severity": "warning"},
+            "state": "inactive", "health": "unknown"}
+    response = requests.put(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('在监控告警/查看用户自定义告警详情')
+def step_get_alert_custom_policy_detail(cluster_name, alert_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules/' + alert_name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('集群设置/基本信息，查看基本信息')
+def step_get_information(cluster_name):
+    url = env_url + '/kapis/clusters/host/monitoring.kubesphere.io/v1alpha3/cluster?' \
+                    'cluster=' + cluster_name + '&metrics_filter=cluster_cpu_total%7Ccluster_memory_total%7Ccluster_disk_size_capacity%7Ccluster_node_total%24'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('集群设置/基本信息，编辑信息')
+def step_edit_information(cluster_name, group, description, provider):
+    url = env_url + '/apis/cluster.kubesphere.io/v1alpha1/clusters/' + cluster_name
+    data = {"metadata": {"name": "host",
+                         "labels": {"cluster-role.kubesphere.io/host": "",
+                                    "kubesphere.io/managed": "true",
+                                    "cluster.kubesphere.io/group": group
+                                    }, "annotations": {
+            "kubesphere.io/description": description},
+                         "finalizers": ["finalizer.cluster.kubesphere.io"]},
+            "spec": {"joinFederation": True, "enable": True, "provider": provider,
+                     "connection": {"type": "direct", "kubernetesAPIEndpoint": "https://10.233.0.1:443"}}}
+    response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    return response
+
+
+@allure.step('集群设置/基本信息，查看集群的基本信息')
+def step_get_base_information(cluster_name):
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/clusters/' + cluster_name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('集群设置/集群可见性，查看集群可见性')
+def step_get_cluster_visibility(cluster_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/workspaces?labelSelector=kubefed.io%2Fmanaged%3Dtrue'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('集群设置/集群可见性，取消企业空间在指定集群的授权')
+def step_unauthorized_cluster_visibility(cluster_name, ws_name):
+    url = env_url + '/apis/cluster.kubesphere.io/v1alpha1/clusters/' + cluster_name
+    url_1 = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates/' + ws_name
+    data = {"metadata": {"labels": {"cluster.kubesphere.io/visibility": "private"}}}
+    data_1 = {"spec": {"placement": {"clusters": []}}}
+    requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    requests.patch(url=url_1, headers=get_header_for_patch(), data=json.dumps(data_1))
+
+
+@allure.step('集群设置/集群可见性，添加企业空间在指定集群的授权')
+def step_authorized_cluster_visibility(cluster_name, ws_name):
+    url = env_url + '/apis/cluster.kubesphere.io/v1alpha1/clusters/' + cluster_name
+    url_1 = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates/' + ws_name
+    data = {"metadata": {"labels": {"cluster.kubesphere.io/visibility": "private"}}}
+    data_1 = {"spec": {"placement": {"clusters": [{"name": cluster_name}]}}}
+    requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    requests.patch(url=url_1, headers=get_header_for_patch(), data=json.dumps(data_1))
