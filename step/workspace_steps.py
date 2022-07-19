@@ -245,25 +245,6 @@ def step_edit_quota(ws_name, hard_data, cluster, resource_version):
     return response
 
 
-@allure.step('创建用户')
-def step_create_user(user_name):
-    """
-    :param user_name: 系统用户的名称
-    """
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users'
-    email = 'stevewen' + str(commonFunction.get_random()) + '@yunify.com'
-    data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
-            "kind": "User",
-            "metadata": {"name": user_name,
-                         "annotations": {"kubesphere.io/creator": "admin"}
-                         },
-            "spec": {"email": email,
-                     "password": "P@88w0rd"}
-            }
-    response = requests.post(url, headers=get_header(), data=json.dumps(data))
-    return response
-
-
 @allure.step('创建企业空间')
 def step_create_workspace(ws_name):
     """
@@ -312,14 +293,6 @@ def step_delete_workspace(ws_name):
     response = requests.delete(url, headers=get_header())
     return response
 
-
-@allure.step('删除用户')
-def step_delete_user(user_name):
-    """
-    :param user_name: 系统用户的名称
-    """
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users/' + user_name
-    requests.delete(url, headers=get_header())
 
 
 @allure.step('开关企业空间网络隔离')
