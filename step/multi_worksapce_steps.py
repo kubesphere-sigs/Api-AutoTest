@@ -260,9 +260,8 @@ def step_delete_department(ws_name, group_name):
     :return:
     """
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groups/' + group_name
-    print(url)
-    r = requests.delete(url=url, headers=get_header())
-    return r
+    response = requests.delete(url=url, headers=get_header())
+    return response
 
 
 @allure.step('初始化企业配额')
@@ -347,7 +346,6 @@ def step_create_project(cluster_name, ws_name, project_name):
                 "annotations": {"kubesphere.io/creator": "admin"}
             },
             "cluster": cluster_name}
-    print(url)
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
