@@ -393,6 +393,24 @@ def get_components_status_of_cluster(component):
     return component_status
 
 
+# 获取多集群环境中各个集群的组件开启情况
+def get_components_status_of_multi_cluster(cluster_name, component):
+    url = env_url + '/apis/clusters/' + cluster_name + '/installer.kubesphere.io/v1alpha1/clusterconfigurations'
+    response = requests.get(url=url, headers=get_header())
+    # 获取组件的配置信息
+    spec = response.json()['items'][0]['spec']
+    # 获取组件信息
+    if component == 'openpitrix':
+        component_status = spec[component]['store']['enabled']
+    elif component == 'network':
+        component_status = spec[component]['networkpolicy']['enabled']
+    else:
+        component_status = spec[component]['enabled']
+    return component_status
+
+
+
+
 # 判断环境是否开启多集群功能
 def check_multi_cluster():
     url = env_url + '/apis/installer.kubesphere.io/v1alpha1/clusterconfigurations'
