@@ -30,13 +30,27 @@ def step_get_cluster_name():
 
 @allure.step('创建多集群企业空间')
 def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
+    """
+    :param ws_name:
+    :param alias_name:
+    :param description:
+    :param cluster_names:  多集群时需要传入list
+    :return:
+    """
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
     clusters = []
-    if isinstance(cluster_names, str):
+    spec = ''
+    if isinstance(cluster_names, str) and len(cluster_names) > 0:
         clusters.append({'name': cluster_names})
+        spec = {"template": {"spec": {"manager": "admin"}},
+                "placement": {"clusters": clusters}}
+    elif len(cluster_names) == 0:
+        spec = {"template": {"spec": {"manager": "admin"}}}
     else:
         for cluster_name in cluster_names:
             clusters.append({'name': cluster_name})
+        spec = {"template": {"spec": {"manager": "admin"}},
+                "placement": {"clusters": clusters}}
     data = {"apiVersion": "tenant.kubesphere.io/v1alpha2",
             "kind": "WorkspaceTemplate",
             "metadata":
@@ -46,8 +60,7 @@ def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
                      "kubesphere.io/description": description,
                      "kubesphere.io/creator": "admin"}
                  },
-            "spec": {"template": {"spec": {"manager": "admin"}},
-                     "placement": {"clusters": clusters}}}
+            "spec": spec}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
@@ -55,6 +68,7 @@ def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
 @allure.step('创建企业空间的角色')
 def step_create_ws_role(ws_name, ws_role_name, authory):
     """
+    :param authory:
     :param ws_name: 企业空间的名称
     :param ws_role_name: 企业空间的角色的名称
     """
@@ -372,9 +386,9 @@ def step_create_multi_project(ws_name, project_name, clusters):
         for cluster in clusters:
             cluster_actual.append({"name": cluster})
             overrides.append({"clusterName": cluster,
-                                   "clusterOverrides": [
-                                       {"path": "/metadata/annotations",
-                                        "value": {"kubesphere.io/creator": "admin"}}]})
+                              "clusterOverrides": [
+                                  {"path": "/metadata/annotations",
+                                   "value": {"kubesphere.io/creator": "admin"}}]})
     data = {"apiVersion": "v1",
             "kind": "Namespace",
             "metadata": {
