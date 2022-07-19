@@ -38,7 +38,7 @@ class TestCluster(object):
 
         commonFunction.request_resource(url, params, data, story, title, method, severity, condition, except_result)
 
-    @allure.story("监控告警")
+    @allure.story("监控告警/告警策略")
     @allure.title('按名称查询内置的告警策略')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
@@ -50,7 +50,7 @@ class TestCluster(object):
         # 验证时数量为2
         assert count == 2
 
-    @allure.story("监控告警")
+    @allure.story("监控告警/告警策略")
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
@@ -76,7 +76,7 @@ class TestCluster(object):
         else:
             assert response.status_code == 200
 
-    @allure.story("监控告警")
+    @allure.story("监控告警/告警策略")
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
@@ -103,7 +103,7 @@ class TestCluster(object):
         else:
             assert response.status_code == 200
 
-    @allure.story("监控告警")
+    @allure.story("监控告警/告警策略")
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
@@ -125,7 +125,7 @@ class TestCluster(object):
         # 验证数量>=0
         assert count >= 0
 
-    @allure.story("监控告警")
+    @allure.story("监控告警/告警消息")
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
@@ -147,7 +147,7 @@ class TestCluster(object):
         # 验证数量>=0
         assert count >= 0
 
-    @allure.story("节点")
+    @allure.story("节点/集群节点")
     @allure.title('为节点设置污点')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_set_taints(self):
@@ -166,7 +166,7 @@ class TestCluster(object):
         # 清空设置的污点
         cluster_steps.step_set_taints(node_name=node_name, taints=[])
 
-    @allure.story("节点")
+    @allure.story("节点/集群节点")
     @allure.title('为节点添加标签')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_add_labels(self):
@@ -190,7 +190,7 @@ class TestCluster(object):
         labels_old['tester/label'] = None
         cluster_steps.step_add_labels_for_node(node_name, labels_old)
 
-    @allure.story('节点')
+    @allure.story('节点/集群节点')
     @allure.title('设置节点为停止调度, 然后设置为启用调度')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_set_uncordon_node(self):
@@ -207,7 +207,7 @@ class TestCluster(object):
         # 设置节点为启用调度
         cluster_steps.step_cordon_node(node_name, False)
 
-    @allure.story('节点')
+    @allure.story('节点/集群节点')
     @allure.title('查看节点的pod信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_pods(self):
@@ -219,7 +219,7 @@ class TestCluster(object):
         # 验证pod信息查询成功
         assert response.status_code == 200
 
-    @allure.story('节点')
+    @allure.story('节点/集群节点')
     @allure.title('查看节点的event信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_events(self):
@@ -233,7 +233,7 @@ class TestCluster(object):
         # 验证event信息查询成功
         assert kind == 'EventList'
 
-    @allure.story('节点')
+    @allure.story('节点/集群节点')
     @allure.title('查看节点的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_monitoring(self):
@@ -253,7 +253,7 @@ class TestCluster(object):
         # 验证查询到的数据的结果类型
         assert resultType == 'matrix'
 
-    @allure.story('节点')
+    @allure.story('节点/集群节点')
     @allure.title('查看节点的状态信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_status(self):
@@ -273,7 +273,7 @@ class TestCluster(object):
         # 验证查询结果正确
         assert node == node_name
 
-    @allure.story('节点')
+    @allure.story('节点/集群节点')
     @allure.title('查询节点中不存在的pod')
     @allure.severity(allure.severity_level.NORMAL)
     def test_query_non_existent_pod(self):
@@ -288,7 +288,7 @@ class TestCluster(object):
         # 验证查询结果
         assert totalItems == 0
 
-    @allure.story('节点')
+    @allure.story('节点/集群节点')
     @allure.title('按名称精确查询节点中存在的pod')
     @allure.severity(allure.severity_level.NORMAL)
     def test_precise_query_existent_pod_in_node(self):
@@ -305,7 +305,7 @@ class TestCluster(object):
         # 验证查询结果
         assert name_actual == pod_name
 
-    @allure.story('节点')
+    @allure.story('节点/集群节点')
     @allure.title('按名称模糊查询节点中存在的pod')
     @allure.severity(allure.severity_level.NORMAL)
     def test_fuzzy_query_existent_pod(self):
@@ -1606,3 +1606,18 @@ class TestCluster(object):
         assert count == 0
         # 删除创建的用户
         platform_steps.step_delete_user(user_name)
+
+    @allure.story('集群设置/集群角色')
+    @allure.title('查看默认的集群角色')
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_get__cluster_role(self):
+        # 查看集群角色
+        response = cluster_steps.step_get_cluster_role()
+        count = response.json()['totalItems']
+        # 验证角色数量
+        assert count == 2
+        name_1 = response.json()['items'][0]['metadata']['name']
+        name_2 = response.json()['items'][1]['metadata']['name']
+        # 验证角色名称
+        assert name_1 == 'cluster-viewer'
+        assert name_2 == 'cluster-admin'
