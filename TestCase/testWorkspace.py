@@ -2,13 +2,12 @@ import pytest
 import allure
 import sys
 import time
-
-sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
-
 from common.getData import DoexcleByPandas
 from common.logFormat import log_format
 from common import commonFunction
 from step import workspace_steps, platform_steps, project_steps, devops_steps
+
+sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 
 @allure.feature('企业空间')
@@ -100,6 +99,9 @@ class TestWorkSpace(object):
     @allure.story('企业空间概览')
     @allure.title('资源用量-devops工程数量验证')
     @allure.severity('critical')
+    @pytest.mark.skipif(commonFunction.get_component_health_of_cluster('kubesphere-devops-system') is False,
+                        reason='集群devops功能未准备好')
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('devops') is False, reason='集群未开启devops功能')
     def test_get_devops_project_num(self):
         ws_name = 'test-ws' + str(commonFunction.get_random())
         # 创建企业空间
@@ -133,8 +135,9 @@ class TestWorkSpace(object):
         role_num = res.json()['results'][2]['data']['result'][0]['value'][1]
         assert role_num == '1'
         # 在企业空间创建角色
+        authory = '[\"role-template-create-projects\",\"role-template-view-basic\"]'
         role_name = 'role-' + str(commonFunction.get_random())
-        workspace_steps.step_create_ws_role(ws_name,role_name)
+        workspace_steps.step_create_ws_role(ws_name, role_name, authory)
         # 获取概览信息
         res_new = workspace_steps.step_get_ws_num_info(ws_name)
         new_role_num = res_new.json()['results'][2]['data']['result'][0]['value'][1]
@@ -151,17 +154,19 @@ class TestWorkSpace(object):
         workspace_steps.step_create_workspace(ws_name)
         # 获取概览信息
         res = workspace_steps.step_get_ws_num_info(ws_name)
-        user_num = res.json()['results'][3]['data']['result'][0]['value'][1]
-        assert user_num == '4'
-        # 在企业空间创建用户
-        user_name = 'user-' + str(commonFunction.get_random())
-        workspace_steps.step_create_user(ws_name, user_name)
+        # 获取用户数量
+        user_num = res.json()['results'][2]['data']['result'][0]['value'][1]
+        assert user_num == '1'
+        # 将用户邀请到企业空间
+        role = ws_name + '-viewer'
+        workspace_steps.step_invite_user(ws_name, self.user_name, role)
         # 获取概览信息
         res_new = workspace_steps.step_get_ws_num_info(ws_name)
-        new_user_num = res_new.json()['results'][3]['data']['result'][0]['value'][1]
-        assert new_user_num == '5'
+        # 获取用户数量
+        new_user_num = res_new.json()['results'][2]['data']['result'][0]['value'][1]
+        assert new_user_num == '2'
         # 删除企业空间
-        workspace_steps.step_delete_workspace(ws_name)
+        # workspace_steps.step_delete_workspace(ws_name)
 
     @allure.story('企业空间设置-企业角色')
     @allure.title('在企业空间编辑角色的权限信息')
@@ -230,7 +235,7 @@ class TestWorkSpace(object):
         assert user == user_name
         assert user_num == 1
         # 删除用户
-        workspace_steps.step_delete_user(user_name)
+        platform_steps.step_delete_user(user_name)
         # 删除角色
         workspace_steps.step_delete_role(self.ws_name, role_name)
 
