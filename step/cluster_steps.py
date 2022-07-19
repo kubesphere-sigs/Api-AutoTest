@@ -700,3 +700,10 @@ def step_remove_cluster_member(user_name):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/clustermembers/' + user_name
     response = requests.delete(url=url, headers=get_header())
     return response
+
+
+@allure.step('查看集群角色')
+def step_get_cluster_role():
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/clusterroles?sortBy=createTime&annotation=kubesphere.io%2Fcreator'
+    response = requests.get(url=url, headers=get_header())
+    return response
