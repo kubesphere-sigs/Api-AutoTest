@@ -1,10 +1,11 @@
 import pytest
 import allure
 import sys
-from common import commonFunction
-from step import multi_cluster_steps, project_steps
 import time
 import random
+from common import commonFunction
+from step import multi_cluster_steps, project_steps, multi_worksapce_steps, platform_steps
+
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -14,11 +15,13 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 class TestCluster(object):
 
-    # 获取集群的名称
+    # 获取所有集群的名称
     cluster_names = multi_cluster_steps.step_get_cluster_name()
+    # 获取host集群的名称
+    cluster_name = multi_cluster_steps.step_get_host_cluster_name()
 
     @allure.story("概览")
-    @allure.title('查看每个集群的版本信息')
+    @allure.title('查看host集群的版本信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_version(self):
         for cluster_name in self.cluster_names:
@@ -26,8 +29,8 @@ class TestCluster(object):
             r = multi_cluster_steps.step_get_cluster_version(cluster_name)
             # 获取版本号
             cluster_version = r.json()['gitVersion']
-            # 验证获取版本号成功
-            assert cluster_version == 'v3.2.1'
+            # 验证版本号获取成功
+            assert cluster_version
 
     @allure.story("概览")
     @allure.title('查看每个集群的clusterrole信息')
@@ -1025,7 +1028,7 @@ class TestCluster(object):
                 # 获取crd的group,version和kind
                 re = multi_cluster_steps.step_get_crd_detail(cluster_name, name)
                 group = re.json()['spec']['group']
-                version = re.json()['spec']['version']
+                version = re.json()['spec']['versions'][0]['name']
                 kind = res.json()['items'][j]['spec']['names']['kind']
                 # 查询crd的FederatedGroupList信息
                 r = multi_cluster_steps.step_get_crd_federated_group_list(cluster_name, group, version, kind.lower())
@@ -1176,7 +1179,7 @@ class TestCluster(object):
             # 验证结果为true
             assert result == 'true'
 
-    @allure.story('监控&告警')
+    @allure.story('监控告警/集群状态')
     @allure.title('在每个集群查看组件的运行状态并验证组件均健康运行')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_component_health(self):
@@ -1198,8 +1201,8 @@ class TestCluster(object):
                     # 校验失败仍能继续运行
                     pytest.assume(totalBackends == healthyBackends)
 
-    @allure.story('监控&告警')
-    @allure.title('在每个集群查看组件的运行状态并验证组件均健康运行')
+    @allure.story('监控告警/集群状态')
+    @allure.title('在每个集群查看节点的运行状态并验证节点均健康运行')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_node_health(self):
         for cluster_name in self.cluster_names:
@@ -1212,7 +1215,7 @@ class TestCluster(object):
             # 验证totalNodes = healthyNodes
             assert totalNodes == healthyNodes
 
-    @allure.story('监控&告警')
+    @allure.story('监控告警/集群状态')
     @allure.title('查看每个集群的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_metrics(self):
@@ -1232,7 +1235,7 @@ class TestCluster(object):
                 except Exception as e:
                     print(e)
 
-    @allure.story('监控&告警')
+    @allure.story('监控告警/集群状态')
     @allure.title('查看每个集群的apiserver的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_apiserver_metrics(self):
@@ -1252,7 +1255,7 @@ class TestCluster(object):
                 except Exception as e:
                     print(e)
 
-    @allure.story('监控&告警')
+    @allure.story('监控告警/集群状态')
     @allure.title('查看每个集群的schedule的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_schedule_metrics(self):
@@ -1272,7 +1275,7 @@ class TestCluster(object):
                 except Exception as e:
                     print(e)
 
-    @allure.story('监控&告警')
+    @allure.story('监控告警/应用资源')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('sort, title',
@@ -1296,7 +1299,7 @@ class TestCluster(object):
                 except Exception as e:
                     print(e)
 
-    @allure.story('监控&告警')
+    @allure.story('监控告警/应用资源')
     @allure.title('查看每个集群资源使用情况')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_resource_usage(self):
@@ -1316,7 +1319,7 @@ class TestCluster(object):
                 except Exception as e:
                     print(e)
 
-    @allure.story('监控&告警')
+    @allure.story('监控告警/应用资源')
     @allure.title('查看每个集群应用资源用量')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_app_usage(self):
@@ -1336,7 +1339,7 @@ class TestCluster(object):
                 except Exception as e:
                     print(e)
 
-    @allure.story('监控&告警')
+    @allure.story('监控告警/应有资源')
     @allure.title('查看每个集群项目变化趋势')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_app_usage(self):
@@ -1345,9 +1348,321 @@ class TestCluster(object):
             now_timestamp = str(time.time())[0:10]
             # 获取1440分钟之前的时间
             before_timestamp = commonFunction.get_before_timestamp(1440)
-            # 查询最近一天的集群应用资源使用情况
+            # 查询最近一天的集群项目变化趋势
             r = multi_cluster_steps.step_get_project_trend_of_cluster(cluster_name, before_timestamp, now_timestamp, '3600s', '24')
             # 获取结果中的数据类型
             result_type = r.json()['results'][0]['data']['resultType']
             # 验证数据类型为matrix
             assert result_type == 'matrix'
+
+    @allure.story("监控告警/告警消息")
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.NORMAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_multi_cluster(cluster_name, 'alerting') is False, reason='集群未开启alerting功能')
+    @pytest.mark.parametrize('title, condition, type',
+                             [('查看所有内置告警策略的告警消息', '', 'builtin/'),
+                              ('按告警状态查询内置告警策略的告警消息', 'state=pending', 'builtin/'),
+                              ('按告警级别查询内置告警策略的告警消息', 'label_filters=severity%3Dwarning', 'builtin/'),
+                              ('按告警级别、告警状态查询内置告警策略的告警消息', 'state=inactive&label_filters=severity%3Derror', 'builtin/'),
+                              ('查看所有自定义告警策略的告警消息', '', ''),
+                              ('按告警状态查询自定义告警策略的告警消息', 'state=pending', ''),
+                              ('按告警级别查询自定义告警策略的告警消息', 'label_filters=severity%3Dwarning', ''),
+                              ('按告警级别、告警状态查询自定义告警策略的告警消息', 'state=inactive&label_filters=severity%3Derror', ''),
+                              ])
+    def test_get_alert_message_by_condition(self, title, condition, type):
+        # 查询告警消息
+        response = multi_cluster_steps.step_get_alert_message(self.cluster_name, type, condition)
+        # 获取告警消息的数量
+        count = response.json()['total']
+        # 验证数量>=0
+        assert count >= 0
+
+    @allure.story('监控告警/告警策略')
+    @allure.title('创建告警策略（节点的cpu使用率大于0）')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_multi_cluster(cluster_name, 'alerting') is False, reason='集群未开启alerting功能')
+    def test_create_alert_policy(self):
+        # 获取集群的节点名称
+        response = multi_cluster_steps.step_get_nodes(self.cluster_name)
+        node_count = response.json()['totalItems']  # 节点数量
+        node_names = []
+        for i in range(0, node_count):
+            node_names.append(response.json()['items'][i]['metadata']['name'])
+        # 获取任意节点名称
+        node_name = node_names[random.randint(0, node_count - 1)]
+        # 创建告警策略（节点的cpu使用率大于0）
+        alert_name = 'test-alert' + str(commonFunction.get_random())
+        multi_cluster_steps.step_create_alert_policy(self.cluster_name, alert_name, node_name)
+        # 等待180s后查看新建的告警策略，并验证其状态为firing
+        time.sleep(180)
+        re = multi_cluster_steps.step_get_alert_custom_policy(self.cluster_name, alert_name)
+        state = re.json()['items'][0]['state']
+        assert state == 'firing'
+        # 查看告警消息，并验证告警消息正确
+        r = multi_cluster_steps.step_get_alert_message(self.cluster_name, '', 'label_filters=severity%3Dwarning')
+        message_count = r.json()['total']
+        policy_names = []
+        for i in range(0, message_count):
+            policy_names.append(r.json()['items'][i]['ruleName'])
+        assert alert_name in policy_names
+        # 删除告警策略
+        multi_cluster_steps.step_delete_alert_custom_policy(self.cluster_name, alert_name)
+
+    @allure.story('监控告警/告警策略')
+    @allure.title('修改告警策略中的持续时间')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_multi_cluster(cluster_name, 'alerting') is False, reason='集群未开启alerting功能')
+    def test_edit_alert_custom_policy(self):
+        # 获取集群的节点名称
+        response = multi_cluster_steps.step_get_nodes(self.cluster_name)
+        node_count = response.json()['totalItems']  # 节点数量
+        node_names = []
+        for i in range(0, node_count):
+            node_names.append(response.json()['items'][i]['metadata']['name'])
+        # 获取任意节点名称
+        node_name = node_names[random.randint(0, node_count - 1)]
+        # 创建告警策略（节点的cpu使用率大于0）
+        alert_name = 'test-alert' + str(commonFunction.get_random())
+        multi_cluster_steps.step_create_alert_policy(self.cluster_name, alert_name, node_name)
+        # 查询新建的自定义告警策略，并获取其id
+        re = multi_cluster_steps.step_get_alert_custom_policy(self.cluster_name, alert_name)
+        id = re.json()['items'][0]['id']
+        # 修改自定义策略的持续时间为5min
+        multi_cluster_steps.step_edit_alert_custom_policy(self.cluster_name, alert_name, id, node_name)
+        # 查看告警策略的详情，并验证持续时间修改成功
+        r = multi_cluster_steps.step_get_alert_custom_policy_detail(self.cluster_name, alert_name)
+        duration = r.json()['duration']
+        assert duration == '5m'
+        # 删除告警策略
+        multi_cluster_steps.step_delete_alert_custom_policy(self.cluster_name, alert_name)
+
+    @allure.story('集群设置/基本信息')
+    @allure.title('查看集群基本信息')
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_get_information(self):
+        # 查看host集群的基本信息
+        response = multi_cluster_steps.step_get_information(self.cluster_name)
+        # 获取指标
+        metric_name_1 = response.json()['results'][0]['metric_name']
+        metric_name_2 = response.json()['results'][1]['metric_name']
+        metric_name_3 = response.json()['results'][2]['metric_name']
+        metric_name_4 = response.json()['results'][3]['metric_name']
+        # 验证指标名称
+        metric_name = ['cluster_node_total', 'cluster_disk_size_capacity', 'cluster_memory_total', 'cluster_cpu_total' ]
+        assert metric_name_1 in metric_name
+        assert metric_name_2 in metric_name
+        assert metric_name_3 in metric_name
+        assert metric_name_4 in metric_name
+
+    @allure.story('集群设置/基本信息')
+    @allure.title('编辑集群基本信息')
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_edit_information(self):
+        # 编辑host集群的基本信息
+        group = 'production'
+        description = 'test'
+        provider = 'QingCloud Kubernetes Engine'
+        multi_cluster_steps.step_edit_information(self.cluster_name, group, description, provider)
+        # 查看集群基本信息
+        response = multi_cluster_steps.step_get_base_information(self.cluster_name)
+        group_actual = response.json()['metadata']['labels']['cluster.kubesphere.io/group']
+        description_actual = response.json()['metadata']['annotations']['kubesphere.io/description']
+        provider_actual = response.json()['spec']['provider']
+        # 验证编辑成功
+        assert group == group_actual
+        assert description == description_actual
+        assert provider == provider_actual
+
+    @allure.story('集群设置/集群可见性')
+    @allure.title('创建企业空间并验证其集群可见性')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_cluster_visibility(self):
+        # 创建企业空间，其所在集群为host集群
+        ws_name = 'test-ws' + str(commonFunction.get_random())
+        alias_name = ''
+        description = ''
+        cluster_name = self.cluster_name
+        r = multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
+        # 查看集群可见性
+        response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_name)
+        # 获取所有已授权的企业空间名称
+        ws_names = []
+        count = response.json()['totalItems']
+        for i in range(0, count):
+            name = response.json()['items'][i]['metadata']['name']
+            ws_names.append(name)
+        # 验证集群可见性
+        assert ws_name in ws_names
+        # 删除创建的企业空间
+        multi_worksapce_steps.step_delete_workspace(ws_name)
+
+    @allure.story('集群设置/集群可见性')
+    @allure.title('编辑集群可见性/取消企业空间授权')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_unauthorized_cluster_visibility(self):
+        # 创建企业空间，其所在集群为host集群
+        ws_name = 'test-ws' + str(commonFunction.get_random())
+        alias_name = ''
+        description = ''
+        cluster_name = self.cluster_name
+        multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
+        # 取消企业空间在host集群的授权
+        multi_cluster_steps.step_unauthorized_cluster_visibility(self.cluster_name, ws_name)
+        # 查看集群可见性
+        response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_name)
+        # 获取所有的企业空间名称
+        ws_names = []
+        count = response.json()['totalItems']
+        for i in range(0, count):
+            name = response.json()['items'][i]['metadata']['name']
+            ws_names.append(name)
+        # 验证授权取消成功
+        assert ws_name not in ws_names
+        # 删除创建的企业空间
+        multi_worksapce_steps.step_delete_workspace(ws_name)
+
+    @allure.story('集群设置/集群可见性')
+    @allure.title('编辑集群可见性/添加企业空间在集群的授权')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_authorized_cluster_visibility(self):
+        # 创建企业空间，其所在集群为host集群
+        ws_name = 'test-ws' + str(commonFunction.get_random())
+        alias_name = ''
+        description = ''
+        cluster_name = ''
+        multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
+        # 添加企业空间在host集群的授权
+        multi_cluster_steps.step_authorized_cluster_visibility(self.cluster_name, ws_name)
+        # 查看集群可见性
+        time.sleep(1)
+        response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_name)
+        # 获取所有授权的企业空间名称
+        ws_names = []
+        count = response.json()['totalItems']
+        for i in range(0, count):
+            name = response.json()['items'][i]['metadata']['name']
+            ws_names.append(name)
+        # 验证授权取消成功
+        assert ws_name in ws_names
+        # 删除创建的企业空间
+        multi_worksapce_steps.step_delete_workspace(ws_name)
+
+    @allure.story('集群设置/集群成员')
+    @allure.title('查看所有集群默认成员')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_cluster_member_by_name(self):
+        # 遍历所有集群
+        for cluster_name in self.cluster_names:
+            # 查询集群所有成员
+            response = multi_cluster_steps.step_get_cluster_member(cluster_name, '')
+            # 获取集群成员的数量和名称
+            count = response.json()['totalItems']
+            name = response.json()['items'][0]['metadata']['name']
+            # 集群默认的成员仅有admin
+            assert count == 1
+            assert name == 'admin'
+
+    @allure.story('集群设置/集群成员')
+    @allure.title('邀请集群成员/移出集群成员')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_invite_cluster_member(self):
+        # 创建平台用户
+        user_name = 'user' + str(commonFunction.get_random())
+        platform_steps.step_create_user(user_name, 'platform-regular')
+        # 遍历所有集群
+        for cluster_name in self.cluster_names:
+            # 邀请用户到集群成员
+            multi_cluster_steps.step_invite_cluster_member(cluster_name, user_name, 'cluster-viewer')
+            # 查询集群成员
+            response = multi_cluster_steps.step_get_cluster_member(cluster_name, 'name=' + user_name)
+            # 验证集群成员邀请成功
+            name = response.json()['items'][0]['metadata']['name']
+            assert name == user_name
+            # 将用户从集群成员中移出
+            multi_cluster_steps.step_remove_cluster_member(cluster_name, user_name)
+            # 查询集群成员，验证移出成功
+            re = multi_cluster_steps.step_get_cluster_member(cluster_name, 'name=' + user_name)
+            count = re.json()['totalItems']
+            assert count == 0
+        # 删除创建的用户
+        platform_steps.step_delete_user(user_name)
+
+    @allure.story('集群设置/集群角色')
+    @allure.title('查看默认的集群角色')
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_get__cluster_role(self):
+        # 遍历所有集群
+        for cluster_name in self.cluster_names:
+            # 查看集群角色
+            response = multi_cluster_steps.step_get_cluster_role(cluster_name)
+            count = response.json()['totalItems']
+            # 验证角色数量
+            assert count == 2
+            name_1 = response.json()['items'][0]['metadata']['name']
+            name_2 = response.json()['items'][1]['metadata']['name']
+            # 验证角色名称
+            assert name_1 == 'cluster-viewer'
+            assert name_2 == 'cluster-admin'
+
+    @allure.story('集群设置/网关设置')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('type, title',
+                             [('NodePort', '开启集群网关并设置类型为NodePort'),
+                              ('LoadBalancer', '开启集群网关并设置类型为LoadBalancer')
+                              ])
+    def test_open_cluster_gateway(self, type, title):
+        # 遍历所有集群
+        for cluster_name in self.cluster_names:
+            # 开启集群网关
+            multi_cluster_steps.step_open_cluster_gateway(cluster_name, type)
+            # 查看集群网关，并验证网关类型
+            response = multi_cluster_steps.step_get_cluster_gateway(cluster_name)
+            gateway_type = response.json()[0]['spec']['service']['type']
+            assert gateway_type == type
+            # 关闭集群网关
+            multi_cluster_steps.step_delete_cluster_gateway(cluster_name)
+            time.sleep(10)
+
+    @allure.story('集群设置/网关设置')
+    @allure.title('修改网关信息')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_edit_cluster_gateway(self):
+        # 遍历所有集群
+        for cluster_name in self.cluster_names:
+            # 开启集群网关
+            response = multi_cluster_steps.step_open_cluster_gateway(cluster_name, type='NodePort')
+            # 并获取获取uid和resourceversio
+            uid = response.json()['metadata']['uid']
+            resourceVersion = response.json()['metadata']['resourceVersion']
+            # 编辑集群config信息
+            config = {"4": "5"}
+            status = 'true'
+            multi_cluster_steps.step_edit_cluster_gateway(cluster_name, uid, resourceVersion, config, status)
+            # 查看集群网关，并获取config信息
+            re = multi_cluster_steps.step_get_cluster_gateway(cluster_name)
+            config_actual = re.json()[0]['spec']['controller']['config']
+            status_actual = re.json()[0]['spec']['deployment']['annotations']['servicemesh.kubesphere.io/enabled']
+            # 验证config信息编辑成功
+            assert config_actual == config
+            # 验证集群网关的链路追踪的状态
+            assert status_actual == status
+            # 关闭集群网关
+            multi_cluster_steps.step_delete_cluster_gateway(cluster_name)
+            time.sleep(10)
+
+    @allure.story('集群设置/网关设置')
+    @allure.title('在网管设置中查询项目网关')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_project_gateway(self):
+        # 遍历所有集群
+        for cluster_name in self.cluster_names:
+            # 开启集群网关
+            multi_cluster_steps.step_open_cluster_gateway(cluster_name, type='LoadBalancer')
+            # 查询项目网关
+            response = multi_cluster_steps.step_get_project_gateway(cluster_name, 'kubesphere-router-kubesphere-system')
+            gateway_name = response.json()['items'][0]['metadata']['name']
+            # 验证查询结果
+            assert gateway_name == 'kubesphere-router-kubesphere-system'
+            # 关闭集群网关
+            multi_cluster_steps.step_delete_cluster_gateway(cluster_name)
