@@ -6,7 +6,6 @@ import random
 from common import commonFunction
 from step import multi_cluster_steps, project_steps, multi_worksapce_steps, platform_steps
 
-
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 
@@ -14,7 +13,6 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='未开启多集群功能')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 class TestCluster(object):
-
     # 获取所有集群的名称
     cluster_names = multi_cluster_steps.step_get_cluster_name()
     # 获取host集群的名称
@@ -204,9 +202,10 @@ class TestCluster(object):
             # 获取10分钟之前的戳
             before_timestamp = commonFunction.get_before_timestamp(10)
             # 查看最近十分钟的监控信息
-            r = multi_cluster_steps.step_get_metrics_of_node(cluster_name=cluster_name, node_name=node_name, start_time=before_timestamp,
-                                         end_time=now_timestamp,
-                                         step='60s', times='10')
+            r = multi_cluster_steps.step_get_metrics_of_node(cluster_name=cluster_name, node_name=node_name,
+                                                             start_time=before_timestamp,
+                                                             end_time=now_timestamp,
+                                                             step='60s', times='10')
             # 获取查询到的数据的结果类型
             resultType = r.json()['results'][0]['data']['resultType']
             # 验证查询到的数据的结果类型
@@ -225,8 +224,9 @@ class TestCluster(object):
             # 获取20分钟之前的时间戳
             before_timestamp = commonFunction.get_before_timestamp(20)
             # 查看节点的状态信息
-            r = multi_cluster_steps.step_get_status_of_node(cluster_name=cluster_name, node_name=node_name, start_time=before_timestamp,
-                                        end_time=now_timestamp, step='180s', times='20')
+            r = multi_cluster_steps.step_get_status_of_node(cluster_name=cluster_name, node_name=node_name,
+                                                            start_time=before_timestamp,
+                                                            end_time=now_timestamp, step='180s', times='20')
             # 获取查询结果中的节点信息
             node = r.json()['results'][0]['data']['result'][0]['metric']['node']
             # 验证查询结果正确
@@ -616,7 +616,7 @@ class TestCluster(object):
                 if ns in system_ns:
                     replica = re.json()['items'][j]['status']['replicas']
                     readyReplicas = re.json()['items'][j]['status']['readyReplicas']
-                # 验证每个statefulSets的ready的副本数=副本数
+                    # 验证每个statefulSets的ready的副本数=副本数
                     assert replica == readyReplicas
                 else:
                     break
@@ -651,7 +651,8 @@ class TestCluster(object):
                 resource_name = re.json()['items'][j]['metadata']['name']
                 project_name = re.json()['items'][j]['metadata']['namespace']
                 # 查询daemonSets的详细信息
-                r = multi_cluster_steps.step_get_app_workload_detail(cluster_name, project_name, 'daemonsets', resource_name)
+                r = multi_cluster_steps.step_get_app_workload_detail(cluster_name, project_name, 'daemonsets',
+                                                                     resource_name)
                 # 验证信息查询成功
                 assert r.json()['kind'] == 'DaemonSet'
 
@@ -687,7 +688,8 @@ class TestCluster(object):
                 # 获取daemonSets的名称和所在的项目名称
                 project_name = res.json()['items'][i]['metadata']['namespace']
                 # 查看daemonSets的revision Records 信息
-                r = multi_cluster_steps.step_get_app_workload_revision_records(cluster_name, project_name, label_selector)
+                r = multi_cluster_steps.step_get_app_workload_revision_records(cluster_name, project_name,
+                                                                               label_selector)
                 # 获取请求的资源类型
                 kind = r.json()['kind']
                 # 验证请求的资源类型为ControllerRevisionList
@@ -713,7 +715,8 @@ class TestCluster(object):
                 project_name = re.json()['items'][j]['metadata']['namespace']
                 resource_name = re.json()['items'][j]['metadata']['name']
                 # 查看监控信息
-                r = multi_cluster_steps.step_get_app_workload_monitoring(cluster_name, project_name, type, resource_name)
+                r = multi_cluster_steps.step_get_app_workload_monitoring(cluster_name, project_name, type,
+                                                                         resource_name)
                 # 获取请求结果中监控数据的类型
                 resultType = r.json()['results'][0]['data']['resultType']
                 # 验证请求结果中监控数据的类型为vector
@@ -748,7 +751,8 @@ class TestCluster(object):
                 resource_name = re.json()['items'][j]['metadata']['name']
                 resource_uid = response.json()['items'][i]['metadata']['uid']
                 # 查询daemonSets的event信息
-                r = multi_cluster_steps.step_get_resource_event(cluster_name, project_name, type, resource_name, resource_uid)
+                r = multi_cluster_steps.step_get_resource_event(cluster_name, project_name, type, resource_name,
+                                                                resource_uid)
                 # 获取请求结果的类型
                 kind = r.json()['kind']
                 # 验证请求结果的类型为EventList
@@ -852,7 +856,8 @@ class TestCluster(object):
                     running_resource.append(re.json()['items'][i]['metadata']['name'])
             # 使用名称和状态查询资源
             for name in running_resource:
-                r = multi_cluster_steps.step_get_resource_of_cluster(cluster_name, type, 'name=' + name, 'status=running')
+                r = multi_cluster_steps.step_get_resource_of_cluster(cluster_name, type, 'name=' + name,
+                                                                     'status=running')
                 # 获取查询结果中的name
                 name_actual = r.json()['items'][0]['metadata']['name']
                 # 验证查询的结果正确
@@ -944,7 +949,7 @@ class TestCluster(object):
         for cluster_name in self.cluster_names:
             # 查询项目为kube-system的所有资源
             r = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name=cluster_name, type=type,
-                                                        project_name='kubesphere-system')
+                                                                            project_name='kubesphere-system')
             # 获取资源数量
             count = r.json()['totalItems']
             # 遍历所有资源，验证资源的项目为kubesphere-system
@@ -966,26 +971,28 @@ class TestCluster(object):
             # 查询项目为kube-system的所有资源
             if type == 'persistentvolumeclaims':
                 re = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name=cluster_name, type=type,
-                                                         project_name='kubesphere-monitoring-system')
+                                                                                 project_name='kubesphere-monitoring-system')
                 # 获取资源数量
                 count = re.json()['totalItems']
                 # 获取任一资源的名称
                 name = re.json()['items'][0]['metadata']['name']
                 # 按项目和名称查询资源
-                r = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name, type, 'kubesphere-monitoring-system',
-                                                            'name=' + name)
+                r = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name, type,
+                                                                                'kubesphere-monitoring-system',
+                                                                                'name=' + name)
                 # 在查询结果中获取资源名称和数量
                 name_actual = r.json()['items'][0]['metadata']['name']
                 count = r.json()['totalItems']
             else:
                 re = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name=cluster_name, type=type,
-                                                             project_name='kubesphere-system')
+                                                                                 project_name='kubesphere-system')
                 # 获取资源数量
                 count = re.json()['totalItems']
                 # 获取任一资源的名称
                 name = re.json()['items'][random.randint(0, count - 1)]['metadata']['name']
                 # 按项目和名称查询资源
-                r = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name, type, 'kubesphere-system', 'name=' + name)
+                r = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name, type, 'kubesphere-system',
+                                                                                'name=' + name)
                 # 在查询结果中获取资源名称和数量
                 name_actual = r.json()['items'][0]['metadata']['name']
                 count = r.json()['totalItems']
@@ -999,7 +1006,8 @@ class TestCluster(object):
     def test_get_crd_detail(self):
         for cluster_name in self.cluster_names:
             # 查询集群中的crd
-            re = multi_cluster_steps.step_get_resource_of_cluster(cluster_name=cluster_name, resource_type='customresourcedefinitions')
+            re = multi_cluster_steps.step_get_resource_of_cluster(cluster_name=cluster_name,
+                                                                  resource_type='customresourcedefinitions')
             # 获取crd的数量
             count = re.json()['totalItems']
             # 获取crd的名称
@@ -1018,7 +1026,8 @@ class TestCluster(object):
     def test_get_crd_federated_group_list(self):
         for cluster_name in self.cluster_names:
             # 查询集群中的crd
-            res = multi_cluster_steps.step_get_resource_of_cluster(cluster_name=cluster_name, resource_type='customresourcedefinitions')
+            res = multi_cluster_steps.step_get_resource_of_cluster(cluster_name=cluster_name,
+                                                                   resource_type='customresourcedefinitions')
             # 获取crd的数量
             count = res.json()['totalItems']
             # 获取crd的group和kind
@@ -1087,7 +1096,8 @@ class TestCluster(object):
                 # 获取60分钟之前的时间时间戳
                 before_timestamp = commonFunction.get_before_timestamp(60)
                 # 查询每个pvc最近1个小时的监控信息
-                r = multi_cluster_steps.step_get_metrics_of_pvc(cluster_name, namespace, name, before_timestamp, now_timestamp, '60s', '60')
+                r = multi_cluster_steps.step_get_metrics_of_pvc(cluster_name, namespace, name, before_timestamp,
+                                                                now_timestamp, '60s', '60')
                 # 获取查询到的数据的结果类型
                 resultType = r.json()['results'][0]['data']['resultType']
                 # 验证查询到的数据的结果类型
@@ -1130,8 +1140,9 @@ class TestCluster(object):
                 name = re.json()['items'][j]['metadata']['name']
                 namespace = re.json()['items'][j]['metadata']['namespace']
                 # 查询每个pvc的快照信息
-                r = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name, 'volumesnapshots', namespace,
-                                                            'persistentVolumeClaimName=' + name)
+                r = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name, 'volumesnapshots',
+                                                                                namespace,
+                                                                                'persistentVolumeClaimName=' + name)
                 # 验证查询成功
                 assert r.status_code == 200
 
@@ -1225,7 +1236,8 @@ class TestCluster(object):
             # 获取210分钟之前的时间戳
             before_timestamp = commonFunction.get_before_timestamp(210)
             # 查询集群的最近210分钟的监控信息
-            re = multi_cluster_steps.step_get_metrics_of_cluster(cluster_name, before_timestamp, now_timestamp, '300s', '100')
+            re = multi_cluster_steps.step_get_metrics_of_cluster(cluster_name, before_timestamp, now_timestamp, '300s',
+                                                                 '100')
             # 获取查询结果的数据类型
             for j in range(0, 10):
                 try:
@@ -1245,7 +1257,8 @@ class TestCluster(object):
             # 获取240分钟之前的时间戳
             before_timestamp = commonFunction.get_before_timestamp(240)
             # 查询集群的最近240分钟的监控信息
-            r = multi_cluster_steps.step_get_metrics_of_apiserver(cluster_name, before_timestamp, now_timestamp, '300s', '100')
+            r = multi_cluster_steps.step_get_metrics_of_apiserver(cluster_name, before_timestamp, now_timestamp, '300s',
+                                                                  '100')
             # 获取查询结果的数据类型
             for j in range(0, 3):
                 try:
@@ -1265,7 +1278,8 @@ class TestCluster(object):
             # 获取240分钟之前的时间
             before_timestamp = commonFunction.get_before_timestamp(240)
             # 查询集群的最近240分钟的监控信息
-            r = multi_cluster_steps.step_get_metrics_of_scheduler(cluster_name, before_timestamp, now_timestamp, '300s', '100')
+            r = multi_cluster_steps.step_get_metrics_of_scheduler(cluster_name, before_timestamp, now_timestamp, '300s',
+                                                                  '100')
             # 获取查询结果的数据类型
             for j in range(0, 2):
                 try:
@@ -1309,7 +1323,8 @@ class TestCluster(object):
             # 获取1440分钟之前的时间
             before_timestamp = commonFunction.get_before_timestamp(1440)
             # 查询最近一天的集群应用资源使用情况
-            r = multi_cluster_steps.step_get_resource_usage_of_cluster(cluster_name, before_timestamp, now_timestamp, '3600s', '24')
+            r = multi_cluster_steps.step_get_resource_usage_of_cluster(cluster_name, before_timestamp, now_timestamp,
+                                                                       '3600s', '24')
             # 获取结果中的数据类型
             for j in range(0, 3):
                 try:
@@ -1329,7 +1344,8 @@ class TestCluster(object):
             # 获取1440分钟之前的时间
             before_timestamp = commonFunction.get_before_timestamp(1440)
             # 查询最近一天的集群应用资源使用情况
-            r = multi_cluster_steps.step_get_app_usage_of_cluster(cluster_name, before_timestamp, now_timestamp, '3600s', '24')
+            r = multi_cluster_steps.step_get_app_usage_of_cluster(cluster_name, before_timestamp, now_timestamp,
+                                                                  '3600s', '24')
             # 获取结果中的数据类型
             for j in range(0, 8):
                 try:
@@ -1349,7 +1365,8 @@ class TestCluster(object):
             # 获取1440分钟之前的时间
             before_timestamp = commonFunction.get_before_timestamp(1440)
             # 查询最近一天的集群项目变化趋势
-            r = multi_cluster_steps.step_get_project_trend_of_cluster(cluster_name, before_timestamp, now_timestamp, '3600s', '24')
+            r = multi_cluster_steps.step_get_project_trend_of_cluster(cluster_name, before_timestamp, now_timestamp,
+                                                                      '3600s', '24')
             # 获取结果中的数据类型
             result_type = r.json()['results'][0]['data']['resultType']
             # 验证数据类型为matrix
@@ -1358,7 +1375,8 @@ class TestCluster(object):
     @allure.story("监控告警/告警消息")
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_multi_cluster(cluster_name, 'alerting') is False, reason='集群未开启alerting功能')
+    @pytest.mark.skipif(commonFunction.get_components_status_of_multi_cluster(cluster_name, 'alerting') is False,
+                        reason='集群未开启alerting功能')
     @pytest.mark.parametrize('title, condition, type',
                              [('查看所有内置告警策略的告警消息', '', 'builtin/'),
                               ('按告警状态查询内置告警策略的告警消息', 'state=pending', 'builtin/'),
@@ -1380,7 +1398,8 @@ class TestCluster(object):
     @allure.story('监控告警/告警策略')
     @allure.title('创建告警策略（节点的cpu使用率大于0）')
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_multi_cluster(cluster_name, 'alerting') is False, reason='集群未开启alerting功能')
+    @pytest.mark.skipif(commonFunction.get_components_status_of_multi_cluster(cluster_name, 'alerting') is False,
+                        reason='集群未开启alerting功能')
     def test_create_alert_policy(self):
         # 获取集群的节点名称
         response = multi_cluster_steps.step_get_nodes(self.cluster_name)
@@ -1411,7 +1430,8 @@ class TestCluster(object):
     @allure.story('监控告警/告警策略')
     @allure.title('修改告警策略中的持续时间')
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_multi_cluster(cluster_name, 'alerting') is False, reason='集群未开启alerting功能')
+    @pytest.mark.skipif(commonFunction.get_components_status_of_multi_cluster(cluster_name, 'alerting') is False,
+                        reason='集群未开启alerting功能')
     def test_edit_alert_custom_policy(self):
         # 获取集群的节点名称
         response = multi_cluster_steps.step_get_nodes(self.cluster_name)
@@ -1448,7 +1468,7 @@ class TestCluster(object):
         metric_name_3 = response.json()['results'][2]['metric_name']
         metric_name_4 = response.json()['results'][3]['metric_name']
         # 验证指标名称
-        metric_name = ['cluster_node_total', 'cluster_disk_size_capacity', 'cluster_memory_total', 'cluster_cpu_total' ]
+        metric_name = ['cluster_node_total', 'cluster_disk_size_capacity', 'cluster_memory_total', 'cluster_cpu_total']
         assert metric_name_1 in metric_name
         assert metric_name_2 in metric_name
         assert metric_name_3 in metric_name
@@ -1666,3 +1686,7 @@ class TestCluster(object):
             assert gateway_name == 'kubesphere-router-kubesphere-system'
             # 关闭集群网关
             multi_cluster_steps.step_delete_cluster_gateway(cluster_name)
+
+
+if __name__ == "__main__":
+    pytest.main(['-rs', 'testMultiClusterManager.py'])  # -s参数是为了显示用例的打印信息 r 显示跳过的原因。 -q参数只显示结果，不显示过程
