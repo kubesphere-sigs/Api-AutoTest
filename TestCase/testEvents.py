@@ -12,6 +12,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 @allure.feature('事件查询')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('events') is False, reason='集群未开启events功能')
+@pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 class TestEventSearch(object):
 
     @allure.story('事件总量')
