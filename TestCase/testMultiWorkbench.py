@@ -12,6 +12,8 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='未开启多集群功能')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 class TestWorkbench(object):
+    # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+    __test__ = commonFunction.check_multi_cluster()
 
     @allure.story('平台信息')
     @allure.title('查询平台的集群数量')

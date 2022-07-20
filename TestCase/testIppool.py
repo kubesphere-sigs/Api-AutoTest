@@ -1,7 +1,6 @@
 import sys
 from time import sleep
 
-import allure
 import pytest
 
 from common import commonFunction
@@ -16,7 +15,14 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 @allure.feature('ippool')
 @pytest.mark.skipif(get_ippool_status() is False, reason='ippool未开启不执行')
-class Test_ippool:
+@pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
+class TestIpPool(object):
+    if commonFunction.check_multi_cluster() is True:
+        # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+        __test__ = False
+    else:
+        __test__ = True
+
     ippool_name = 'ippool-' + str(get_random())
     cidr = random_ip() + '/24'
     ws_name = 'test-ippool-ws'
@@ -123,7 +129,6 @@ class Test_ippool:
         sleep(5)
         # 删除ippool
         ippool_steps.step_delete_ippool(ippool_name)
-
 
     @allure.title('删除ippool')
     @allure.severity('critical')

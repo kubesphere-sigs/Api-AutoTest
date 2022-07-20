@@ -13,6 +13,12 @@ from step import app_steps, cluster_steps, workspace_steps, project_steps
 @allure.feature('应用管理')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
 class TestAppTemplate(object):
+    if commonFunction.check_multi_cluster() is True:
+        # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+        __test__ = False
+    else:
+        __test__ = True
+
     ws_name = 'test-app' + str(commonFunction.get_random())
     project_name = 'project-for-test-app' + str(commonFunction.get_random())
     alias_name = 'for app store'

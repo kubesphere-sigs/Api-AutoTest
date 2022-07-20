@@ -13,6 +13,12 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 @allure.feature('企业空间')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 class TestWorkSpace(object):
+    if commonFunction.check_multi_cluster() is True:
+        # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+        __test__ = False
+    else:
+        __test__ = True
+
     user_name = 'user-for-test-ws'
     user_role = 'users-manager'
     ws_name = 'ws-for-test-ws' + str(commonFunction.get_random())

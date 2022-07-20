@@ -12,6 +12,12 @@ from step import app_steps, workspace_steps
 @allure.feature('应用商店管理')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
 class TestManageAppStore(object):
+    if commonFunction.check_multi_cluster() is True:
+        # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+        __test__ = False
+    else:
+        __test__ = True
+
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='manageapps')
 

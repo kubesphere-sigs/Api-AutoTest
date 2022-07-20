@@ -11,6 +11,9 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 @allure.feature('计量计费')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 class TestMetering(object):
+    # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+    __test__ = commonFunction.check_multi_cluster()
+
     @allure.story('集群资源消费情况')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)

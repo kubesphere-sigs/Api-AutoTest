@@ -16,6 +16,9 @@ from step import multi_worksapce_steps
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='未开启多集群功能')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 class TestWorkSpace(object):
+    # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+    __test__ = commonFunction.check_multi_cluster()
+
     user_name = 'user-for-test-ws'
     alias_name = '多集群'
     description = '用于测试多集群环境企业空间'

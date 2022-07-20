@@ -19,6 +19,12 @@ env_url = get_apiserver()
 @allure.feature('Project')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 class TestProject(object):
+    if commonFunction.check_multi_cluster() is True:
+        # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+        __test__ = False
+    else:
+        __test__ = True
+
     volume_name = 'testvolume'  # 存储卷名称，在创建、删除存储卷和创建存储卷快照时使用,excle中的用例也用到了这个存储卷
     snapshot_name = 'testshot'  # 存储卷快照的名称,在创建和删除存储卷快照时使用，在excle中的用例也用到了这个快照
     user_name = 'user-for-test-project'   # 系统用户名称

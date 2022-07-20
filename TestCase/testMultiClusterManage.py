@@ -13,10 +13,17 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='未开启多集群功能')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 class TestCluster(object):
-    # 获取所有集群的名称
-    cluster_names = multi_cluster_steps.step_get_cluster_name()
-    # 获取host集群的名称
-    cluster_name = multi_cluster_steps.step_get_host_cluster_name()
+    # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+    __test__ = commonFunction.check_multi_cluster()
+
+    cluster_names = []
+    cluster_name = ''
+
+    def setup_class(self):
+        # 获取所有集群的名称
+        self.cluster_names = multi_cluster_steps.step_get_cluster_name()
+        # 获取host集群的名称
+        self.cluster_name = multi_cluster_steps.step_get_host_cluster_name()
 
     @allure.story("概览")
     @allure.title('查看host集群的版本信息')
@@ -1371,90 +1378,6 @@ class TestCluster(object):
             result_type = r.json()['results'][0]['data']['resultType']
             # 验证数据类型为matrix
             assert result_type == 'matrix'
-
-    @allure.story("监控告警/告警消息")
-    @allure.title('{title}')
-    @allure.severity(allure.severity_level.NORMAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_multi_cluster(cluster_name, 'alerting') is False,
-                        reason='集群未开启alerting功能')
-    @pytest.mark.parametrize('title, condition, type',
-                             [('查看所有内置告警策略的告警消息', '', 'builtin/'),
-                              ('按告警状态查询内置告警策略的告警消息', 'state=pending', 'builtin/'),
-                              ('按告警级别查询内置告警策略的告警消息', 'label_filters=severity%3Dwarning', 'builtin/'),
-                              ('按告警级别、告警状态查询内置告警策略的告警消息', 'state=inactive&label_filters=severity%3Derror', 'builtin/'),
-                              ('查看所有自定义告警策略的告警消息', '', ''),
-                              ('按告警状态查询自定义告警策略的告警消息', 'state=pending', ''),
-                              ('按告警级别查询自定义告警策略的告警消息', 'label_filters=severity%3Dwarning', ''),
-                              ('按告警级别、告警状态查询自定义告警策略的告警消息', 'state=inactive&label_filters=severity%3Derror', ''),
-                              ])
-    def test_get_alert_message_by_condition(self, title, condition, type):
-        # 查询告警消息
-        response = multi_cluster_steps.step_get_alert_message(self.cluster_name, type, condition)
-        # 获取告警消息的数量
-        count = response.json()['total']
-        # 验证数量>=0
-        assert count >= 0
-
-    @allure.story('监控告警/告警策略')
-    @allure.title('创建告警策略（节点的cpu使用率大于0）')
-    @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_multi_cluster(cluster_name, 'alerting') is False,
-                        reason='集群未开启alerting功能')
-    def test_create_alert_policy(self):
-        # 获取集群的节点名称
-        response = multi_cluster_steps.step_get_nodes(self.cluster_name)
-        node_count = response.json()['totalItems']  # 节点数量
-        node_names = []
-        for i in range(0, node_count):
-            node_names.append(response.json()['items'][i]['metadata']['name'])
-        # 获取任意节点名称
-        node_name = node_names[random.randint(0, node_count - 1)]
-        # 创建告警策略（节点的cpu使用率大于0）
-        alert_name = 'test-alert' + str(commonFunction.get_random())
-        multi_cluster_steps.step_create_alert_policy(self.cluster_name, alert_name, node_name)
-        # 等待180s后查看新建的告警策略，并验证其状态为firing
-        time.sleep(180)
-        re = multi_cluster_steps.step_get_alert_custom_policy(self.cluster_name, alert_name)
-        state = re.json()['items'][0]['state']
-        assert state == 'firing'
-        # 查看告警消息，并验证告警消息正确
-        r = multi_cluster_steps.step_get_alert_message(self.cluster_name, '', 'label_filters=severity%3Dwarning')
-        message_count = r.json()['total']
-        policy_names = []
-        for i in range(0, message_count):
-            policy_names.append(r.json()['items'][i]['ruleName'])
-        assert alert_name in policy_names
-        # 删除告警策略
-        multi_cluster_steps.step_delete_alert_custom_policy(self.cluster_name, alert_name)
-
-    @allure.story('监控告警/告警策略')
-    @allure.title('修改告警策略中的持续时间')
-    @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_multi_cluster(cluster_name, 'alerting') is False,
-                        reason='集群未开启alerting功能')
-    def test_edit_alert_custom_policy(self):
-        # 获取集群的节点名称
-        response = multi_cluster_steps.step_get_nodes(self.cluster_name)
-        node_count = response.json()['totalItems']  # 节点数量
-        node_names = []
-        for i in range(0, node_count):
-            node_names.append(response.json()['items'][i]['metadata']['name'])
-        # 获取任意节点名称
-        node_name = node_names[random.randint(0, node_count - 1)]
-        # 创建告警策略（节点的cpu使用率大于0）
-        alert_name = 'test-alert' + str(commonFunction.get_random())
-        multi_cluster_steps.step_create_alert_policy(self.cluster_name, alert_name, node_name)
-        # 查询新建的自定义告警策略，并获取其id
-        re = multi_cluster_steps.step_get_alert_custom_policy(self.cluster_name, alert_name)
-        id = re.json()['items'][0]['id']
-        # 修改自定义策略的持续时间为5min
-        multi_cluster_steps.step_edit_alert_custom_policy(self.cluster_name, alert_name, id, node_name)
-        # 查看告警策略的详情，并验证持续时间修改成功
-        r = multi_cluster_steps.step_get_alert_custom_policy_detail(self.cluster_name, alert_name)
-        duration = r.json()['duration']
-        assert duration == '5m'
-        # 删除告警策略
-        multi_cluster_steps.step_delete_alert_custom_policy(self.cluster_name, alert_name)
 
     @allure.story('集群设置/基本信息')
     @allure.title('查看集群基本信息')

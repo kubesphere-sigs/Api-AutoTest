@@ -14,6 +14,11 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 @allure.feature('操作审计')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
 class TestAuditingOperatingSearch(object):
+    if commonFunction.check_multi_cluster() is True:
+        # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+        __test__ = False
+    else:
+        __test__ = True
 
     @allure.story('审计总量')
     @allure.title('验证当天的操作审计总量与最近12小时的审计总量关系正确')

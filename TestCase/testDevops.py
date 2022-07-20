@@ -24,6 +24,12 @@ env_url = get_apiserver()
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('devops') is False, reason='集群未开启devops功能')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 class TestDevOps(object):
+    if commonFunction.check_multi_cluster() is True:
+        # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+        __test__ = False
+    else:
+        __test__ = True
+
     user_name = 'wx-user' + str(commonFunction.get_random())
     user_role = 'users-manager' + str(commonFunction.get_random())
     ws_name = 'ws-dev' + str(commonFunction.get_random())

@@ -15,6 +15,9 @@ from step import app_steps, cluster_steps, workspace_steps, project_steps
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 class TestAppStore(object):
+    # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+    __test__ = commonFunction.check_multi_cluster()
+
     ws_name = 'test-deploy-from-appstore' + str(commonFunction.get_random())  # 在excle中读取的用例此名称，不能修改。
     alias_name = 'for app store'
     description = '在多集群企业空间部署app store 中的应用'
