@@ -37,9 +37,10 @@ class TestProject(object):
         workspace_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()),
                                              self.alias_name, self.description, clusters)
         # 创建若干个多集群企业空间（只部署在单个集群）
-        for i in range(len(clusters)):
-            workspace_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name,
-                                                 self.description, clusters[i])
+        if len(clusters) > 1:
+            for i in range(len(clusters)):
+                workspace_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name,
+                                                     self.description, clusters[i])
         # 在每个企业空间创建多集群项目,且将其部署在所有和单个集群上
         response = workspace_steps.step_get_ws_info('')
         ws_count = response.json()['totalItems']
@@ -172,7 +173,7 @@ class TestProject(object):
                                                                 volumemount=volumemounts, volume_info=volume_info,
                                                                 service_name=service_name)
             # 验证资源创建成功
-            time.sleep(10)  # 等待资源创建成功
+            time.sleep(30)  # 等待资源创建成功
             # 获取工作负载的状态
             response = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
                                                                         project_name=project_info[0],
@@ -257,7 +258,7 @@ class TestProject(object):
                 break
             assert name == service_name
             # 验证deploy创建成功
-            time.sleep(3)
+            time.sleep(30)
             re = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
                                                                   project_name=project_info[0],
                                                                   type='deployments', condition=condition)
