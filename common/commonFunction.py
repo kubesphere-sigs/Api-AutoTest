@@ -519,3 +519,14 @@ def random_ip():
     y = random.randint(0, 255)
     randomIP = str(m) + '.' + str(n) + '.' + str(x) + '.' + str(y)
     return randomIP
+
+
+# 查询csi-qingcloud组件
+def get_sc_qingcloud():
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/storageclasses?limit=10&page=1&sortBy=createTime'
+    response = requests.get(url=url, headers=get_header())
+    te = response.json()['items'][0]['provisioner']
+    if te == 'disk.csi.qingcloud.com':
+        return True
+    else:
+        return False
