@@ -1,6 +1,4 @@
-import requests
 import pytest
-import json
 import allure
 import sys
 import time
@@ -8,12 +6,8 @@ import time
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from common.getData import DoexcleByPandas
-from common.getHeader import get_header
 from common import commonFunction
 from step import project_steps, platform_steps, workspace_steps, cluster_steps
-from common.getConfig import get_apiserver
-
-env_url = get_apiserver()
 
 
 @allure.feature('Project')
@@ -29,8 +23,8 @@ class TestProject(object):
     user_name = 'user-for-test-project'  # 系统用户名称
     user_role = 'users-manager'  # 用户角色
     ws_name = 'ws-for-test-project' + str(commonFunction.get_random())
-    project_name_for_exel = 'test-project'  # 项目名称，从excle中获取的测试用例中用到了这个项目名称
     project_name = 'test-project' + str(commonFunction.get_random())
+    project_name_for_exel = 'test-project'  # 项目名称，从excle中获取的测试用例中用到了这个项目名称
     ws_role_name = ws_name + '-viewer'  # 企业空间角色名称
     project_role_name = 'test-project-role'  # 项目角色名称
     job_name = 'demo-job'  # 任务名称,在创建和删除任务时使用
@@ -49,17 +43,13 @@ class TestProject(object):
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
-        project_steps.step_delete_volume(self.project_name, self.volume_name)  # 删除存储卷
-        project_steps.step_delete_project(self.ws_name, self.project_name)  # 删除创建的项目
+        project_steps.step_delete_volume(self.project_name_for_exel, self.volume_name)  # 删除存储卷
+        # project_steps.step_delete_project(self.ws_name, self.project_name)  # 删除创建的项目
         time.sleep(5)
         project_steps.step_delete_project(self.ws_name, self.project_name_for_exel)  # 删除创建的项目
         time.sleep(5)
-        workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的工作空间
+        workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的企业空间
         platform_steps.step_delete_user(self.user_name)  # 删除创建的用户
-
-    '''
-    以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
-    '''
 
     @allure.story('存储管理-存储卷')
     @allure.title('创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常')
@@ -80,16 +70,16 @@ class TestProject(object):
         strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
-        project_steps.step_create_volume(project_name, volume_name)
+        project_steps.step_create_volume(self.project_name, volume_name)
         # 创建资源并将存储卷绑定到资源
-        project_steps.step_create_deploy(project_name, work_name=work_name, image=image, replicas=replicas,
+        project_steps.step_create_deploy(self.project_name, work_name=work_name, image=image, replicas=replicas,
                                          container_name=container_name, volume_info=volume_info, ports=port,
                                          volumemount=volumeMounts, strategy=strategy_info)
         # 验证资源创建成功
         i = 0
         while i < 120:
             # 获取工作负载的状态
-            response = project_steps.step_get_workload(project_name, type='deployments', condition=condition)
+            response = project_steps.step_get_workload(self.project_name, type='deployments', condition=condition)
             status = response.json()['items'][0]['status']
             # 验证资源的所有副本已就绪
             if 'unavailableReplicas' not in status:
@@ -98,14 +88,14 @@ class TestProject(object):
                 time.sleep(1)
                 i += 1
         # 获取存储卷状态
-        response = project_steps.step_get_volume_status(project_name, volume_name)
+        response = project_steps.step_get_volume_status(self.project_name, volume_name)
         status = response.json()['items'][0]['status']['phase']
         # 验证存储卷状态正常
         assert status == 'Bound'
         # 删除工作负载
-        project_steps.step_delete_deploymennt(project_name, work_name)
+        project_steps.step_delete_deploymennt(self.project_name, work_name)
         # 删除pvc
-        project_steps.step_delete_pvc(project_name, volume_name)
+        project_steps.step_delete_pvc(self.project_name, volume_name)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, project_name)
 
@@ -129,9 +119,9 @@ class TestProject(object):
         volumemounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
-        project_steps.step_create_volume(project_name, volume_name)
+        project_steps.step_create_volume(self.project_name, volume_name)
         # 创建资源并将存储卷绑定到资源
-        project_steps.step_create_stateful(project_name=project_name, work_name=work_name,
+        project_steps.step_create_stateful(project_name=self.project_name, work_name=work_name,
                                            container_name=container_name,
                                            image=image, replicas=replicas, ports=port, service_ports=service_port,
                                            volumemount=volumemounts, volume_info=volume_info, service_name=service_name)
@@ -140,7 +130,7 @@ class TestProject(object):
         i = 0
         while i < 120:
             # 获取工作负载的状态
-            response = project_steps.step_get_workload(project_name, type='statefulsets', condition=condition)
+            response = project_steps.step_get_workload(self.project_name, type='statefulsets', condition=condition)
             try:
                 readyReplicas = response.json()['items'][0]['status']['readyReplicas']
             except Exception as e:
@@ -152,14 +142,14 @@ class TestProject(object):
                 time.sleep(1)
                 i += 1
         # 获取存储卷状态
-        response = project_steps.step_get_volume_status(project_name, volume_name)
+        response = project_steps.step_get_volume_status(self.project_name, volume_name)
         status = response.json()['items'][0]['status']['phase']
         # 验证存储卷状态正常
         assert status == 'Bound'
         # 删除工作负载
-        project_steps.step_delete_workload(project_name, 'statefulsets', work_name)
+        project_steps.step_delete_workload(self.project_name, 'statefulsets', work_name)
         # 删除pvc
-        project_steps.step_delete_pvc(project_name, volume_name)
+        project_steps.step_delete_pvc(self.project_name, volume_name)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, project_name)
 
@@ -182,14 +172,14 @@ class TestProject(object):
         # 获取集群节点数
         cluster_node = cluster_steps.step_get_nodes().json()['totalItems']
         # 创建资源并将存储卷绑定到资源
-        project_steps.step_create_daemonset(project_name, work_name=work_name, image=image,
+        project_steps.step_create_daemonset(self.project_name, work_name=work_name, image=image,
                                             container_name=container_name, volume_info=volume_info, ports=port,
                                             volumemount=volumeMounts)
         # 验证资源创建成功
         i = 0
         while i < 120:
             # 获取工作负载的状态
-            response = project_steps.step_get_workload(project_name, type='daemonsets', condition=condition)
+            response = project_steps.step_get_workload(self.project_name, type='daemonsets', condition=condition)
             numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
             if numberReady == cluster_node:
                 break
@@ -199,9 +189,9 @@ class TestProject(object):
         assert numberReady == cluster_node
 
         # 删除工作负载
-        project_steps.step_delete_workload(project_name, 'daemonsets', work_name)
+        project_steps.step_delete_workload(self.project_name, 'daemonsets', work_name)
         # 删除pvc
-        project_steps.step_delete_pvc(project_name, volume_name)
+        project_steps.step_delete_pvc(self.project_name, volume_name)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, project_name)
 
@@ -434,11 +424,9 @@ class TestProject(object):
     @allure.title('邀请不存在的用户到project')
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_invite_none_user(self):
-        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/members'
-        data = [{"username": 'wxqw',
-                 "roleRef": "viewer"}]
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        print(r.text)
+        username = 'wxqw'
+        role = 'viewer'
+        project_steps.step_invite_member(self.project_name, username, role)
 
     @allure.story("项目设置-项目角色")
     @allure.title('编辑project成员的角色')
@@ -481,65 +469,25 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_role_create_name(self):
         project_role_name = 'WX'
-        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
-        data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-                "kind": "Role",
-                "metadata": {"namespace": self.project_name,
-                             "name": project_role_name,
-                             "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-basic\"]",
-                                             "kubesphere.io/creator": "admin"}
-                             },
-                "rules": []}
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        print(r.text)
+        project_steps.step_create_role(self.project_name, project_role_name)
 
     @allure.title('在project工程中创建角色-名称中包含非分隔符("-")的特殊符号')
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_role_create_name1(self):
         project_role_name = 'w@x'
-        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
-        data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-                "kind": "Role",
-                "metadata": {"namespace": self.project_name,
-                             "name": project_role_name,
-                             "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-basic\"]",
-                                             "kubesphere.io/creator": "admin"}
-                             },
-                "rules": []}
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        print(r.text)
+        project_steps.step_create_role(self.project_name, project_role_name)
 
     @allure.title('在project工程中创建角色-名称以分隔符("-")开头')
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_role_create_name2(self):
         project_role_name = '-wx'
-        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
-        data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-                "kind": "Role",
-                "metadata": {"namespace": self.project_name,
-                             "name": project_role_name,
-                             "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-basic\"]",
-                                             "kubesphere.io/creator": "admin"}
-                             },
-                "rules": []}
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        print(r.text)
+        project_steps.step_create_role(self.project_name, project_role_name)
 
     @allure.title('在project工程中创建角色-名称以分隔符("-")结尾')
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_role_create_name3(self):
         project_role_name = 'wx-'
-        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + self.project_name + '/roles'
-        data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-                "kind": "Role",
-                "metadata": {"namespace": self.project_name,
-                             "name": project_role_name,
-                             "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-basic\"]",
-                                             "kubesphere.io/creator": "admin"}
-                             },
-                "rules": []}
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        print(r.text)
+        project_steps.step_create_role(self.project_name, project_role_name)
 
     @allure.story('应用负载-任务')
     @allure.title('创建任务，并验证运行正常')
@@ -1263,7 +1211,7 @@ class TestProject(object):
         assert type_actual == type
         # 关闭网关
         project_steps.step_delete_gateway(pro_name)
-        time.sleep(3)
+        time.sleep(10)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, pro_name)
 
@@ -1323,6 +1271,7 @@ class TestProject(object):
         project_steps.step_delete_gateway(pro_name)
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
+        time.sleep(10)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, pro_name)
 
@@ -1599,44 +1548,26 @@ class TestProject(object):
     @allure.title('创建sa并验证sa内容正确、生成的密钥正确、然后删除sa')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_sa(self):
+        # 创建项目
+        project_name = 'test-pro' + str(commonFunction.get_random())
+        project_steps.step_create_project(self.ws_name, project_name)
         sa_name = 'satest'
         # 步骤1：创建sa
-        project_steps.step_create_sa(project_name=self.project_name, sa_name=sa_name)
+        project_steps.step_create_sa(project_name=project_name, sa_name=sa_name)
         # 步骤2：验证sa创建成功并返回secret
-        sa_secret = project_steps.step_get_sa(project_name=self.project_name, sa_name=sa_name)
+        sa_secret = project_steps.step_get_sa(project_name=project_name, sa_name=sa_name)
         # 步骤3：查询sa详情
-        project_steps.step_get_sa_detail(project_name=self.project_name, sa_name=sa_name)
+        project_steps.step_get_sa_detail(project_name=project_name, sa_name=sa_name)
         # 步骤4：查询sa的密钥信息并返回密钥类型
-        secret_type = project_steps.step_get_secret(project_name=self.project_name, secret_name=sa_secret).json()['items'][0]['type']
+        secret_type = project_steps.step_get_secret(project_name=project_name, secret_name=sa_secret).json()['items'][0]['type']
         assert secret_type == 'kubernetes.io/service-account-token'
         # 步骤5：删除sa
-        project_steps.step_delete_sa(project_name=self.project_name, sa_name=sa_name)
+        project_steps.step_delete_sa(project_name=project_name, sa_name=sa_name)
         # 步骤6：验证删除成功
-        num = project_steps.step_get_sa(project_name=self.project_name, sa_name=sa_name)
+        num = project_steps.step_get_sa(project_name=project_name, sa_name=sa_name)
         assert num == 0
-
-    @allure.title('{title}')  # 设置用例标题
-    @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
-    # 将用例信息以参数化的方式传入测试方法
-    @pytest.mark.parametrize('id,url,params,data,story,title,method,severity,condition,except_result', parametrize)
-    def test_project(self, id, url, params, data, story, title, method, severity, condition, except_result):
-
-        """
-        :param id: 用例编号
-        :param url: 用例请求的URL地址
-        :param data: 用例使用的请求数据
-        :param story: 用例模块
-        :param title: 用例标题
-        :param method: 用例的请求方式
-        :param severity: 用例优先级
-        :param condition: 用例的校验条件
-        :param except_result: 用例的预期结果
-        """
-
-        allure.dynamic.story(story)  # 动态生成模块
-        allure.dynamic.severity(severity)  # 动态生成用例等级
-        # 执行excel中的用例
-        commonFunction.request_resource(url, params, data, story, title, method, severity, condition, except_result)
+        # 删除项目
+        project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('存储管理-存储卷')
     @allure.title('删除存在的存储卷，并验证删除成功')
