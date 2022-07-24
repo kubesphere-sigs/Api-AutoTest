@@ -1,27 +1,15 @@
-import requests
+import yaml
+import sys
+
+sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 
-def get_token(server):
-    header = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "
-                            "Chrome/90.0.4430.212 Safari/537.36",
-              "connection": "close",
-              "verify": "false"}
-    data = {
-        'username': 'admin',
-        'password': 'P@88w0rd',
-        'grant_type': 'password',
-        'client_id': 'kubesphere',
-        'client_secret': 'kubesphere'
-    }
-    url = server + '/oauth/token'
-    try:
-        r = requests.post(url=url, headers=header, data=data)
-        if r.status_code == 200:
-            token = r.json()['access_token']
-        else:
-            raise Exception('get token failed!')
-    except requests.exceptions.ConnectionError as e:
-        print('Error', e.args)
+def get_token():
+    # yaml文件路径
+    yamlPath = '../config/token.yaml'
+    yamlPath_1 = 'config/config_new.yaml'
 
-    ks_token = 'Bearer ' + token
-    return ks_token
+    with open(yamlPath, 'r', encoding='utf-8') as f:
+        result = yaml.load(f.read(), Loader=yaml.FullLoader)
+    token = result["token"]
+    return token
