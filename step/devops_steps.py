@@ -76,7 +76,7 @@ def step_search_credential(devops_name, condition):
     :return: 查询结果
     """
     url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/credentials?' \
-                                                                                      'name=' + condition + '&limit=10&sortBy=createTime'
+                                                                                   'name=' + condition + '&limit=10&sortBy=createTime'
     r = requests.get(url=url, headers=get_header())
     if r.json()['totalItems'] != 0:
         return r.json()['items'][0]['metadata']['name']
@@ -92,7 +92,7 @@ def step_get_credential(devops_name, condition):
     :return: 查询结果
     """
     url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/credentials?' \
-                                                                                      'name=' + condition + '&limit=10&sortBy=createTime'
+                                                                                   'name=' + condition + '&limit=10&sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -123,24 +123,6 @@ def step_delete_credential(devops_name, credential_name):
     """
     url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/credentials/' + credential_name
     response = requests.delete(url=url, headers=get_header())
-    return response
-
-
-@allure.step('创建devops工程角色')
-def step_create_role(devops_name, role_name):
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + devops_name + '/roles'
-    data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-            "kind": "Role",
-            "metadata":
-                {"namespace": devops_name,
-                 "name": role_name,
-                 "annotations":
-                     {"iam.kubesphere.io/aggregation-roles": "[\"role-template-manage-pipelines\","
-                                                             "\"role-template-view-pipelines\","
-                                                             "\"role-template-view-credentials\","
-                                                             "\"role-template-view-basic\"]",
-                      "kubesphere.io/creator": "admin"}}, "rules": []}
-    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
 
@@ -179,7 +161,7 @@ def step_edit_role_info(devops_name, role_name, alias, description):
 @allure.step('查询指定的devops角色')
 def step_get_role(devope_name, role_name):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devope_name + '/roles?' \
-                                                                                   'name=' + role_name + '&sortBy=createTime&limit=10&annotation=kubesphere.io%2Fcreator'
+                                                                                'name=' + role_name + '&sortBy=createTime&annotation=kubesphere.io%2Fcreator'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -408,37 +390,37 @@ def step_edit_jenkinsfile_put(devops_name, uid, pipeline_name, version, jenkinsf
 
     data = {"metadata":
                 {"name": pipeline_name,
-                         "namespace": devops_name,
-                         "uid": uid,
-                         "resourceVersion": version,
-                         "generation": 1,
-                         "annotations": {"kubesphere.io/creator": "admin",
-                                         "pipeline.devops.kubesphere.io/jenkins-metadata":
-                                             "{\"weatherScore\":100,\"estimatedDurationInMillis\":-1,\"name\":\"" + pipeline_name + "\"}",
-                                         "pipeline.devops.kubesphere.io/spechash": hash,
-                                         "pipeline.devops.kubesphere.io/syncstatus": "successful"},
-                         "finalizers": ["pipeline.finalizers.kubesphere.io"],
-                         "managedFields": [{"manager": "apiserver",
-                                            "operation": "Update",
-                                            "apiVersion": "devops.kubesphere.io/v1alpha3",
-                                            "fieldsType": "FieldsV1",
-                                            "fieldsV1": {"f:metadata": {
-                                                "f:annotations": {".": {}, "f:kubesphere.io/creator": {}}},
-                                                         "f:spec": {".": {}, "f:pipeline": {".": {},
-                                                                                            "f:discarder": {".": {},
-                                                                                                            "f:days_to_keep": {},
-                                                                                                            "f:num_to_keep": {}},
-                                                                                            "f:name": {}},
-                                                                    "f:type": {}}, "f:status": {}}},
-                                           {"manager": "controller-manager", "operation": "Update",
-                                            "apiVersion": "devops.kubesphere.io/v1alpha3",
-                                            "fieldsType": "FieldsV1", "fieldsV1": {
-                                               "f:metadata": {"f:annotations": {
-                                                   "f:pipeline.devops.kubesphere.io/jenkins-metadata": {},
-                                                   "f:pipeline.devops.kubesphere.io/spechash": {},
-                                                   "f:pipeline.devops.kubesphere.io/syncstatus": {}},
-                                                              "f:finalizers": {".": {},
-                                                                               "v:\"pipeline.finalizers.kubesphere.io\"": {}}}}}]},
+                 "namespace": devops_name,
+                 "uid": uid,
+                 "resourceVersion": version,
+                 "generation": 1,
+                 "annotations": {"kubesphere.io/creator": "admin",
+                                 "pipeline.devops.kubesphere.io/jenkins-metadata":
+                                     "{\"weatherScore\":100,\"estimatedDurationInMillis\":-1,\"name\":\"" + pipeline_name + "\"}",
+                                 "pipeline.devops.kubesphere.io/spechash": hash,
+                                 "pipeline.devops.kubesphere.io/syncstatus": "successful"},
+                 "finalizers": ["pipeline.finalizers.kubesphere.io"],
+                 "managedFields": [{"manager": "apiserver",
+                                    "operation": "Update",
+                                    "apiVersion": "devops.kubesphere.io/v1alpha3",
+                                    "fieldsType": "FieldsV1",
+                                    "fieldsV1": {"f:metadata": {
+                                        "f:annotations": {".": {}, "f:kubesphere.io/creator": {}}},
+                                        "f:spec": {".": {}, "f:pipeline": {".": {},
+                                                                           "f:discarder": {".": {},
+                                                                                           "f:days_to_keep": {},
+                                                                                           "f:num_to_keep": {}},
+                                                                           "f:name": {}},
+                                                   "f:type": {}}, "f:status": {}}},
+                                   {"manager": "controller-manager", "operation": "Update",
+                                    "apiVersion": "devops.kubesphere.io/v1alpha3",
+                                    "fieldsType": "FieldsV1", "fieldsV1": {
+                                       "f:metadata": {"f:annotations": {
+                                           "f:pipeline.devops.kubesphere.io/jenkins-metadata": {},
+                                           "f:pipeline.devops.kubesphere.io/spechash": {},
+                                           "f:pipeline.devops.kubesphere.io/syncstatus": {}},
+                                           "f:finalizers": {".": {},
+                                                            "v:\"pipeline.finalizers.kubesphere.io\"": {}}}}}]},
             "spec": {"type": "pipeline",
                      "pipeline": {"name": pipeline_name, "discarder": {"days_to_keep": "7", "num_to_keep": "10"},
                                   "jenkinsfile": jenkinsfile}},
@@ -490,4 +472,115 @@ def step_get_pipeline_branch(devops_name, pipeline_name):
 def step_delete_pipeline(devops_name, pipeline_name):
     url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/pipelines/' + pipeline_name
     response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('创建凭证')
+def step_create_credential(dev_name, name, description, type, data):
+    url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + dev_name + '/credentials'
+    data = {"apiVersion": "v1", "kind": "Secret",
+            "metadata": {"namespace": dev_name,
+                         "labels": {"app": name},
+                         "annotations": {"kubesphere.io/description": description,
+                                         "kubesphere.io/creator": "admin"},
+                         "name": name},
+            "type": "credential.devops.kubesphere.io/" + type,
+            "data": data
+            }
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('项目设置/创建角色')
+def step_create_role(dev_name, name):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name + '/roles'
+    data = {"apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "Role",
+            "metadata": {"namespace": dev_name,
+                         "name": name,
+                         "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
+                                                                                "\"role-template-view-credentials\","
+                                                                                "\"role-template-view-basic\"]",
+                                         "kubesphere.io/creator": "admin"}
+                         },
+            "rules": []
+            }
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('项目设置/项目角色，删除角色')
+def step_delete_role(dev_name, name):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name + '/roles/' + name
+    response = requests.delete(url, headers=get_header())
+    return response
+
+
+@allure.step('项目设置/项目成员，查询项目成员')
+def step_get_member(dev_name, name):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + dev_name + '/members?name=' + name + '&sortBy=createTime'
+    response = requests.get(url, headers=get_header())
+    return response
+
+
+@allure.step('项目设置/项目成员，邀请用户到devops工程')
+def step_invite_member(dev_name, name, role):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + dev_name + '/members'
+    data = [{"username": name,
+             "roleRef": role}]
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('项目设置/项目成员，编辑devops工程成员的角色')
+def step_edit_member(dev_name, name, role):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + dev_name + '/members/' + name
+    data = {"username": name,
+            "roleRef": role}
+    response = requests.put(url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('项目设置/项目成员，删除devops工程成员')
+def step_remove_member(dev_name, name):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + dev_name + '/members/' + name
+    response = requests.delete(url, headers=get_header())
+    return response
+
+
+@allure.step('代码仓库，导入代码仓库')
+def step_import_code_repository(dev_name, name, provider, code_url):
+    url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/namespaces/' + dev_name + '/gitrepositories'
+    data = {"kind": "GitRepository", "apiVersion": "devops.kubesphere.io/v1alpha3",
+            "metadata": {"name": name, "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": {"provider": provider, "url": code_url,
+                     "secret": {"namespace": dev_name}}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('代码仓库，查询代码仓库')
+def step_get_code_repository(dev_name, name):
+    url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/namespaces/' + dev_name + '/gitrepositories?name=' + name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('代码仓库，删除代码仓库')
+def step_delete_code_repository(dev_name, name):
+    url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/namespaces/' + dev_name + '/gitrepositories/' + name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('代码仓库，编辑代码仓库')
+def step_edit_code_repository(dev_name, name, provider, annotations, code_url):
+    url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/namespaces/' + dev_name + '/gitrepositories/' + name
+    data = {"kind": "GitRepository", "apiVersion": "devops.kubesphere.io/v1alpha3",
+            "metadata": {"name": name, "namespace": dev_name,
+                         "annotations": annotations,
+                         "finalizers": ["finalizer.gitrepository.devops.kubesphere.io"]},
+            "spec": {"provider": provider, "url": code_url,
+                     "secret": {"namespace": dev_name}}}
+    response = requests.put(url=url, headers=get_header_for_patch(), data=json.dumps(data))
     return response
