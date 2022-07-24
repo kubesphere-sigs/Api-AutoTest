@@ -81,6 +81,8 @@ class TestProject(object):
             # 获取企业空间的集群信息
             if ws_name != 'system-workspace':
                 commonFunction.delete_workspace(ws_name)  # 删除创建的工作空间
+        # 删除创建的用户
+        platform_steps.step_delete_user(self.user_name)
 
     @allure.story('存储管理-存储卷')
     @allure.title('在多集群项目创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常')
