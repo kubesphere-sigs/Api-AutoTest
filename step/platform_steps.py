@@ -210,28 +210,4 @@ def step_get_kubeconfig():
     return response
 
 
-@allure.step('登录ks,并返回token')
-def step_login(server, user):
-    header = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "
-                            "Chrome/90.0.4430.212 Safari/537.36",
-              "connection": "close",
-              "verify": "false"}
-    data = {
-        'username': user,
-        'password': 'P@88w0rd',
-        'grant_type': 'password',
-        'client_id': 'kubesphere',
-        'client_secret': 'kubesphere'
-    }
-    url = server + '/oauth/token'
-    try:
-        r = requests.post(url=url, headers=header, data=data)
-        if r.status_code == 200:
-            token = r.json()['access_token']
-        else:
-            raise Exception('get token failed!')
-    except requests.exceptions.ConnectionError as e:
-        print('Error', e.args)
 
-    ks_token = 'Bearer ' + token
-    return ks_token
