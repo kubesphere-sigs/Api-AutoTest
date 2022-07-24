@@ -409,8 +409,6 @@ def get_components_status_of_multi_cluster(cluster_name, component):
     return component_status
 
 
-
-
 # 判断环境是否开启多集群功能
 def check_multi_cluster():
     url = env_url + '/apis/installer.kubesphere.io/v1alpha1/clusterconfigurations'
