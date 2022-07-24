@@ -1,4 +1,6 @@
 import requests
+import sys
+import yaml
 import json
 import random
 from step import project_steps
@@ -7,6 +9,8 @@ import datetime
 from common.getHeader import get_header, get_header_for_patch
 import allure
 from common.getConfig import get_apiserver
+
+sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 env_url = get_apiserver()
 
@@ -27,6 +31,38 @@ def step_create_user(user_name):
                      "password": "P@88w0rd"}
             }
     requests.post(url, headers=get_header(), data=json.dumps(data))
+
+
+@allure.step('登录ks,并将token写入config_new.yaml')
+def step_login(server, user='admin'):
+    yamlPath = '../config/token.yaml'
+    header = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "
+                            "Chrome/90.0.4430.212 Safari/537.36",
+              "connection": "close",
+              "verify": "false"}
+    data = {
+        'username': user,
+        'password': 'P@88w0rd',
+        'grant_type': 'password',
+        'client_id': 'kubesphere',
+        'client_secret': 'kubesphere'
+    }
+    url = server + '/oauth/token'
+    try:
+        r = requests.post(url=url, headers=header, data=data)
+        if r.status_code == 200:
+            token = r.json()['access_token']
+        else:
+            raise Exception('get token failed!')
+    except requests.exceptions.ConnectionError as e:
+        print('Error', e.args)
+
+    ks_token = 'Bearer ' + token
+    t_data = {
+        "token": ks_token
+    }
+    with open(yamlPath, "w", encoding="utf-8") as f:
+        yaml.dump(data=t_data, stream=f, allow_unicode=True)
 
 
 # 获取系统用户的resourceversion
