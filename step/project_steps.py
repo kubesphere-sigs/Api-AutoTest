@@ -2,7 +2,6 @@ import requests
 import json
 import allure
 import sys
-import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -34,42 +33,29 @@ def step_create_job(project_name, job_name):
             "spec": {"template": {"metadata": {"labels": {"app": job_name}},
                                   "spec": {"containers": [{"name": container_name,
                                                            "imagePullPolicy": "IfNotPresent",
-                                                           "image": "perl",
+                                                           "image": "perl:5.34",
                                                            "command": ["perl", "-Mbignum=bpi", "-wle",
                                                                        "print bpi(2000)"]}],  # 输出π，2000位
                                            "restartPolicy": "OnFailure",
                                            "serviceAccount": "default",
                                            "initContainers": [],
                                            "volumes": []}},
-                     "backoffLimit": 5, "completions": 4, "parallelism": 2, "activeDeadlineSeconds": 300}}
+                     "backoffLimit": 2, "completions": 2, "parallelism": 2, "activeDeadlineSeconds": 200}}
 
     requests.post(url=url, headers=get_header(), data=json.dumps(data))
     requests.post(url=url1, headers=get_header(), data=json.dumps(data))
 
 
-@allure.step('验证任务状态为完成,并返回任务的uid')
-def step_get_job_status(project_name, job_name):
+@allure.step('查看任务信息')
+def step_get_job_detail(project_name, job_name):
     """
     :param project_name: 项目名称
     :param job_name: 任务名称
-    :return: 任务的uid
     """
-    # 验证任务状态为完成，等待60s
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
-          '/jobs?name=' + job_name + '&sortBy=updateTime&limit=10'
-    i = 0
-    while i < 60:
-        r2 = requests.get(url=url, headers=get_header())
-        # 捕获异常，不对异常作处理
-        try:
-            if r2.json()['items'][0]['status']['succeeded'] == 4:
-                # print('任务从创建到运行完成耗时:' + str(i) + '秒')
-                break
-        except KeyError:
-            time.sleep(10)
-            i = i + 10
-    assert r2.json()['items'][0]['status']['conditions'][0]['type'] == 'Complete'
-    return r2.json()['items'][0]['metadata']['uid']
+          '/jobs?name=' + job_name + '&sortBy=updateTime'
+    response = requests.get(url=url, headers=get_header())
+    return response
 
 
 @allure.step('验证任务状态为运行中,并返回任务的uid')
@@ -83,7 +69,6 @@ def step_get_job_status_run(project_name, job_name):
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
           '/jobs?name=' + job_name + '&sortBy=updateTime&limit=10'
     r2 = requests.get(url=url, headers=get_header())
-    print(r2.json()['items'])
     # 捕获异常，不对异常作处理
     try:
         assert r2.json()['items'][0]['active'] == 2
@@ -111,28 +96,27 @@ def step_delete_job(project_name, job_name):
     """
     :param project_name: 项目名称
     :param job_name: 任务名称
-    :return: 删除结果
+    :return: 结果
     """
     url = env_url + '/apis/batch/v1/namespaces/' + project_name + '/jobs/' + job_name
     data = {"kind": "DeleteOptions",
             "apiVersion": "v1",
             "propagationPolicy": "Background"}
-    r = requests.delete(url=url, headers=get_header(), data=json.dumps(data))
+    response = requests.delete(url=url, headers=get_header(), data=json.dumps(data))
     # 返回删除结果
-    return r.json()['status']
+    return response
 
 
-@allure.step('查看任务的容器组名称信息,并获取第一个容器名称')
+@allure.step('查看任务的容器组信息')
 def step_get_job_pods(project_name, uid):
     """
     :param project_name: 项目名称
     :param uid: 容器的uid
-    :return: 第一个容器的名称
     """
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
           '/pods?limit=10&ownerKind=Job&labelSelector=controller-uid%3D' + uid + '&sortBy=startTime'
-    r = requests.get(url=url, headers=get_header())
-    return r.json()['items'][0]['metadata']['name']
+    response = requests.get(url=url, headers=get_header())
+    return response
 
 
 @allure.step('获取容器组的日志')
@@ -318,8 +302,8 @@ def step_create_service(project_name, service_name, port):
 
 @allure.step('创建路由')
 def step_create_route(project_name, ingress_name, host, service_info):
-    url = env_url + '/apis/extensions/v1beta1/namespaces/' + project_name + '/ingresses'
-    data = {"apiVersion": "extensions/v1beta1",
+    url = env_url + '/apis/networking.k8s.io/v1/namespaces/' + project_name + '/ingresses'
+    data = {"apiVersion": "networking.k8s.io/v1",
             "kind": "Ingress",
             "metadata": {
                 "namespace": project_name,
@@ -327,14 +311,14 @@ def step_create_route(project_name, ingress_name, host, service_info):
                 "name": ingress_name,
                 "annotations": {"kubesphere.io/creator": "admin"}},
             "spec": {
-                "rules": [{
-                    "protocol": "http",
-                    "host": host,
-                    "http": {
-                        "paths": [{
-                            "path": "/",
-                            "backend": service_info}]}}],
-                "tls": []}}
+                "rules": [
+                    {"protocol": "http",
+                     "host": host,
+                     "http": {
+                         "paths": [
+                             {"path": "/",
+                              "backend": {"service": service_info},
+                              "pathType": "ImplementationSpecific"}]}}], "tls": []}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
@@ -446,9 +430,8 @@ def step_modify_work_replicas(project_name, work_name, replicas):
     """
     url = env_url + '/apis/apps/v1/namespaces/' + project_name + '/deployments/' + work_name
     data = {"spec": {"replicas": replicas}}
-    r = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
-    # 验证修改后的副本数
-    assert r.json()['spec']['replicas'] == replicas
+    response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    return response
 
 
 @allure.step('获取工作负载中所有的容器组的运行状态')
@@ -596,7 +579,7 @@ def step_project_delete_role(project_name, role_name):
 
 
 @allure.step('查看指定用户')
-def step_get_project_user(project_name, user_name):
+def step_get_project_member(project_name, user_name):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/members?name=' + user_name
     response = requests.get(url, headers=get_header())
     return response
@@ -705,7 +688,6 @@ def step_edit_project_quota(project_name, hard, resource_version):
         "spec": {
             "hard": hard}}
     if resource_version is None:
-        print('post')
         response = requests.post(url=url_post, headers=get_header(), data=json.dumps(data_post))
     else:
         response = requests.put(url=url_put, headers=get_header(), data=json.dumps(data_put))
@@ -803,7 +785,6 @@ def step_create_project_for_cluster(cluster_name, ws_name, project_name):
             "metadata": {"name": project_name, "labels": {"kubesphere.io/workspace": ws_name},
                          "annotations": {"kubesphere.io/creator": "admin"}}, "cluster": cluster_name}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
-    print(response.json())
     return response
 
 
@@ -912,6 +893,95 @@ def step_get_status_logsidecar(project_name):
     url = env_url + '/api/v1/namespaces/' + project_name
     response = requests.get(url=url, headers=get_header())
     return response
+
+
+@allure.step('项目/应用负载/容器组，查看容器组详情信息')
+def step_get_pod_detail(project_name, pod_name):
+    url = env_url + '/api/v1/namespaces/' + project_name + '/pods/' + pod_name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('项目/项目设置，编辑项目成员角色')
+def step_edit_project_member_role(project_name, user_name, role):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/members/' + user_name
+    data = {"username": user_name, "roleRef": role}
+    response = requests.put(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('项目/项目设置，添加项目成员')
+def step_invite_member(project_name, user_name, role):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/members'
+    data = [{"username": user_name,
+             "roleRef": role
+             }]
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('项目/项目设置，移出项目成员')
+def step_remove_project_member(project_name, user_name):
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/members/' + user_name
+    response = requests.delete(url, headers=get_header())
+    return response
+
+
+@allure.step('项目/应用负载/容器组，查询容器组')
+def step_get_pod(project_name, pod_name):
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods?name=' + pod_name + '&sortBy=startTime'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('项目/应用负载/工作负载，查询工作负载')
+def step_get_deployment(project_name, type, **condition):
+    condition_actual = ''
+    for i in condition:
+        condition_actual += str(i) + '&'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/' + type + '?' + condition_actual + 'sortBy=updateTime'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('项目/应用负载/工作负载，删除工作负载')
+def step_delete_workload(project_name, type, work_name):
+    url = env_url + '/apis/apps/v1/namespaces/' + project_name + '/' + type + '/' + work_name
+    data = {"kind": "DeleteOptions", "apiVersion": "v1", "propagationPolicy": "Background"}
+    response = requests.delete(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('项目/应用负载/工作负载，设置弹性伸缩')
+def step_set_auto_scale(project_name, work_name):
+    url = env_url + '/apis/autoscaling/v2beta2/namespaces/' + project_name + '/horizontalpodautoscalers'
+    data = {"metadata": {"name": work_name, "namespace": project_name,
+                         "annotations": {"cpuCurrentUtilization": "0", "cpuTargetUtilization": "50",
+                                         "memoryCurrentValue": "0", "memoryTargetValue": "2Mi",
+                                         "kubesphere.io/creator": "admin"}},
+            "spec": {"scaleTargetRef": {"apiVersion": "apps/v1",
+                                        "kind": "Deployment",
+                                        "name": work_name}, "minReplicas": 1, "maxReplicas": 20,
+                     "metrics": [{"type": "Resource",
+                                  "resource": {"name": "memory",
+                                               "target": {"type": "AverageValue", "averageValue": "2Mi"}}},
+                                 {"type": "Resource", "resource": {"name": "cpu", "target":
+                                     {"type": "Utilization", "averageUtilization": 50}}}]},
+            "apiVersion": "autoscaling/v2beta2", "kind": "HorizontalPodAutoscaler"}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('项目/存储/持久卷声明，删除持久卷声明')
+def step_delete_pvc(project_name, pvc_name):
+    url = env_url + '/api/v1/namespaces/' + project_name + '/persistentvolumeclaims/' + pvc_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+
+
+
 
 
 #####多集群######
@@ -1183,7 +1253,6 @@ def step_get_workload_in_multi_project(cluster_name, project_name, type, conditi
     """
     url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces/' \
           + project_name + '/' + type + '?' + condition
-    print(url)
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -1689,3 +1758,32 @@ def step_get_deployment(project_name, type):
     }
     r = requests.get(url=url, headers=get_header(), params=params)
     return r
+
+
+@allure.step('项目/工作负载/容器组,删除pod')
+def step_delete_pod(project_name, pod_name):
+    url = env_url + '/api/v1/namespaces/' + project_name + '/pods/' + pod_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('项目/工作负载/应用路由，查询指定应用路由')
+def step_get_route(project_name, condition):
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
+          '/ingresses?' + condition + '&sortBy=createTime'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('项目/工作负载/应用路由，删除路由')
+def step_delete_route(project_name, ingress_name):
+    url = env_url + '/apis/networking.k8s.io/v1/namespaces/' + project_name + '/ingresses/' + ingress_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('项目/工作负载，删除deployment')
+def step_delete_deploymennt(project_name, deploy_name):
+    url = env_url + '/apis/apps/v1/namespaces/' + project_name + '/deployments/' + deploy_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
