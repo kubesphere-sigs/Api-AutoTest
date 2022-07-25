@@ -564,3 +564,13 @@ def get_sc_qingcloud():
         return True
     else:
         return False
+
+# 查询多集群csi-qingcloud组件
+def get_multi_cluster_sc_qingcloud(cluster_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/storageclasses?limit=10&page=1&sortBy=createTime'
+    response = requests.get(url=url, headers=get_header())
+    te = response.json()['items'][0]['provisioner']
+    if te == 'disk.csi.qingcloud.com':
+        return True
+    else:
+        return False

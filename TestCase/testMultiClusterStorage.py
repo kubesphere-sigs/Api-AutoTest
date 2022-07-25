@@ -7,9 +7,11 @@ from common.commonFunction import get_random, get_sc_qingcloud, request_resource
 from common.getData import DoexcleByPandas
 from step import multi_cluster_storages_step, project_steps, multi_cluster_steps, multi_worksapce_steps
 
+name = multi_cluster_steps.step_get_host_cluster_name()
 
 @allure.feature('multi_cluster_storage')
-@pytest.mark.skipif(get_sc_qingcloud is False, reason='csi-qingcloud存储插件不存在')
+@pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
+@pytest.mark.skipif(commonFunction.get_multi_cluster_sc_qingcloud(name) is False, reason='csi-qingcloud存储插件不存在')
 class Test_Multi_Cluster_Storage:
     # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
     __test__ = commonFunction.check_multi_cluster()
