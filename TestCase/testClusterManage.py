@@ -472,7 +472,7 @@ class TestCluster(object):
         # 创建用户项目
         cluster_steps.step_create_user_project(project_name, alias_name, description)
         # 查询创建的项目，并获取其运行状态
-        r = cluster_steps.step_get_user_system(project_name)
+        r = cluster_steps.step_get_user_project(project_name)
         state = r.json()['status']['phase']
         # 验证项目的状态为active
         assert state == 'Active'
@@ -498,7 +498,7 @@ class TestCluster(object):
         i = 0
         while i < 60:
             # 查询被删除的项目并获取查询结果
-            r = cluster_steps.step_get_user_system(project_name)
+            r = cluster_steps.step_get_user_project(project_name)
             status = r.json()['status']
             if status == {'phase': 'Terminating'}:
                 time.sleep(1)
