@@ -1451,6 +1451,7 @@ class TestCluster(object):
         multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
         # 取消企业空间在host集群的授权
         multi_cluster_steps.step_unauthorized_cluster_visibility(self.cluster_name, ws_name)
+        time.sleep(3)
         # 查看集群可见性
         response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_name)
         # 获取所有的企业空间名称
