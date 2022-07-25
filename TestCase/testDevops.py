@@ -1,9 +1,9 @@
+# -- coding: utf-8 --
 import requests
 import pytest
 import json
 import allure
 import sys
-
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -11,7 +11,7 @@ import time
 from common.getHeader import get_header
 from common import commonFunction
 from step import devops_steps, platform_steps
-from step import workspace_steps
+from step import workspace_steps, cluster_steps, project_steps
 from common.getConfig import get_apiserver
 
 env_url = get_apiserver()
@@ -612,10 +612,15 @@ class TestDevOps(object):
         devops_steps.step_create_pipeline_base_gitlab(self.dev_name, dev_name_new, pipeline_name, False)
         # 等待流水线分支拉取成功
         time.sleep(60)
+        # 查看流水线详情
+        r = devops_steps.step_get_pipeline(dev_name_new, pipeline_name)
+        # 获取流水线的 jenkins-metadata
+        jenkins_metadata = r.json()['items'][0]['metadata']['annotations'][
+            'pipeline.devops.kubesphere.io/jenkins-metadata']
         # 获取流水线的健康状态
-        weatherScore = devops_steps.step_get_pipeline_weather(dev_name_new, pipeline_name)
+        weatherScore = eval(jenkins_metadata)['weatherScore']  # jenkins_metadata是str类型，使用eval将其转化为dict
         # 获取流水线的分支数量
-        branch_count = devops_steps.step_get_pipeline_branch(dev_name_new, pipeline_name)
+        branch_count = eval(jenkins_metadata)['totalNumberOfBranches']  # jenkins_metadata是str类型，使用eval将其转化为dict
         # 验证流水线的状态和分支数量正确
         assert weatherScore == 100
         assert branch_count == 1
@@ -673,7 +678,7 @@ class TestDevOps(object):
         # 创建代码仓库
         name = 'test-git' + str(commonFunction.get_random())
         provider = 'git'
-        url = 'https://github.com/wenxin-01/open-podcasts'
+        url = 'https://gitee.com/linuxsuren/demo-go-http'
         devops_steps.step_import_code_repository(self.dev_name_new, name, provider, url)
         # 查询代码仓库
         response = devops_steps.step_get_code_repository(self.dev_name_new, name)
@@ -714,7 +719,7 @@ class TestDevOps(object):
         # 创建代码仓库
         name = 'test-git' + str(commonFunction.get_random())
         provider = 'git'
-        url = 'https://github.com/wenxin-01/open-podcasts'
+        url = 'https://gitee.com/linuxsuren/demo-go-http'
         devops_steps.step_import_code_repository(self.dev_name_new, name, provider, url)
         # 模糊查询代码仓库
         response = devops_steps.step_get_code_repository(self.dev_name_new, name[:-1])
@@ -724,10 +729,121 @@ class TestDevOps(object):
         assert url == url_actual
         # 删除代码仓库
         devops_steps.step_delete_code_repository(self.dev_name_new, name)
+        time.sleep(2)
         # 查询代码仓库
         re = devops_steps.step_get_code_repository(self.dev_name_new, name)
         # 验证仓库数量为0
         assert re.json()['totalItems'] == 0
+
+    @allure.story('持续部署')
+    @allure.title('创建持续部署任务')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_create_cd(self):
+        # 创建代码仓库
+        name = 'test-git' + str(commonFunction.get_random())
+        provider = 'git'
+        url = 'https://gitee.com/linuxsuren/demo-go-http'
+        devops_steps.step_import_code_repository(self.dev_name_new, name, provider, url)
+
+        # 创建cd任务
+        cd_name = 'test-cd' + str(commonFunction.get_random())
+        annotations = {"kubesphere.io/alias-name": "bieming", "kubesphere.io/description": "miaoshu",
+                       "kubesphere.io/creator": "admin"}
+        ns = 'test-pro' + str(commonFunction.get_random())
+        path = 'manifest'
+        devops_steps.step_create_cd(self.dev_name_new, cd_name, annotations, ns, url, path)
+        # 查看cd任务创建的资源
+        i = 0
+        while i < 60:
+            response = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
+            count = response.json()['totalItems']
+            # 验证数量为1
+            if count == 1:
+                break
+            time.sleep(1)
+            i += 1
+        assert count == 1
+        # 删除cd任务并删除创建的资源
+        devops_steps.step_delete_cd(self.dev_name_new, cd_name, 'true')
+
+    @allure.story('持续部署')
+    @allure.title('删除持续部署任务,并删除创建的资源')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_delete_cd_all(self):
+        # 创建代码仓库
+        name = 'test-git' + str(commonFunction.get_random())
+        provider = 'git'
+        url = 'https://gitee.com/linuxsuren/demo-go-http'
+        devops_steps.step_import_code_repository(self.dev_name_new, name, provider, url)
+
+        # 创建cd任务
+        cd_name = 'test-cd' + str(commonFunction.get_random())
+        annotations = {"kubesphere.io/alias-name": "bieming", "kubesphere.io/description": "miaoshu",
+                       "kubesphere.io/creator": "admin"}
+        ns = 'test-pro' + str(commonFunction.get_random())
+        path = 'manifest'
+        devops_steps.step_create_cd(self.dev_name_new, cd_name, annotations, ns, url, path)
+        # 查看cd任务创建的资源
+        i = 0
+        while i < 60:
+            response = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
+            count = response.json()['totalItems']
+            # 数量不为0 表示资源创建成功
+            if count != 0:
+                break
+            time.sleep(1)
+            i += 1
+        # 删除cd任务并删除创建的资源
+        devops_steps.step_delete_cd(self.dev_name_new, cd_name, 'true')
+        # 等待资源删除成功
+        i = 0
+        while i < 60:
+            # 查询被删除的资源并获取查询结果
+            r = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
+            count_deploy = r.json()['totalItems']
+            if count_deploy > 0:
+                time.sleep(1)
+                i += 1
+            else:
+                break
+        # 验证资源删除成功
+        assert count_deploy == 0
+
+    @allure.story('持续部署')
+    @allure.title('删除持续部署任务,但不删除创建的资源')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_delete_cd(self):
+        # 创建代码仓库
+        name = 'test-git' + str(commonFunction.get_random())
+        provider = 'git'
+        url = 'https://gitee.com/linuxsuren/demo-go-http'
+        devops_steps.step_import_code_repository(self.dev_name_new, name, provider, url)
+
+        # 创建cd任务
+        cd_name = 'test-cd' + str(commonFunction.get_random())
+        annotations = {"kubesphere.io/alias-name": "bieming", "kubesphere.io/description": "miaoshu",
+                       "kubesphere.io/creator": "admin"}
+        ns = 'test-pro' + str(commonFunction.get_random())
+        path = 'manifest'
+        devops_steps.step_create_cd(self.dev_name_new, cd_name, annotations, ns, url, path)
+        # 查看cd任务创建的资源
+        i = 0
+        while i < 60:
+            response = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
+            count = response.json()['totalItems']
+            # 数量不为0 表示资源创建成功
+            if count != 0:
+                break
+            time.sleep(1)
+            i += 1
+        # 删除cd任务并删除创建的资源
+        devops_steps.step_delete_cd(self.dev_name_new, cd_name, 'false')
+        # 查看创建的资源
+        re = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
+        count_deploy = re.json()['totalItems']
+        assert count_deploy == 1
+        # 删除项目
+        project_steps.step_delete_project_by_name(ns)
 
 
 if __name__ == "__main__":
