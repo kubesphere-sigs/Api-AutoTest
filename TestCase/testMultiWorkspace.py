@@ -24,7 +24,6 @@ class TestWorkSpace(object):
     description = '用于测试多集群环境企业空间'
     ws_name = 'ws-for-test-multi-ws' + str(commonFunction.get_random())
     ws_role_name = ws_name + '-viewer-test'
-    log_format()  # 配置日志格式
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx',
                                                         sheet_name='multi-cluster workspace')
@@ -86,32 +85,34 @@ class TestWorkSpace(object):
     @allure.title('在企业空间编辑角色的权限信息')
     @allure.severity('critical')
     def test_edit_ws_role(self):
-        # 查询企业空间
-        response = multi_worksapce_steps.step_get_ws_info('')
-        ws_count = response.json()['totalItems']
-        # 获取任一企业空间
-        k = random.randint(0, ws_count)
-        # 获取企业空间的名称
-        ws_name = response.json()['items'][k]['metadata']['name']
-        if ws_name != 'system-workspace':
-            authority_create = '["role-template-view-basic"]'  # 创建角色的权限信息
-            authority_edit = '["role-template-view-basic","role-template-create-projects"]'  # 修改目标角色的权限信息
-            ws_role_name = 'role' + str(commonFunction.get_random())  #创建的角色名称
-            time.sleep(1)  # 由于新建的角色和系统自动生成的角色的生成时间是一致。后面获取角色的resourceversion是按时间排序获取的。因此在创建企业空间后sleep 1s
-            # 在企业空间创建角色
-            multi_worksapce_steps.step_create_ws_role(ws_name, ws_role_name, authority_create)
-            # 查询并获取该角色的resourceversion
-            re = multi_worksapce_steps.step_get_ws_role(ws_name, ws_role_name)
-            version = re.json()['items'][0]['metadata']['resourceVersion']
-            # 修改角色权限
-            multi_worksapce_steps.step_edit_role_authory(ws_name, ws_role_name, version, authority_edit)
-            # 查询并获取该角色的权限信息
-            r = multi_worksapce_steps.step_get_ws_role(ws_name, ws_role_name)
-            authority_actual = r.json()['items'][0]['metadata']['annotations']["iam.kubesphere.io/aggregation-roles"]
-            # 验证修改角色权限后的权限信息
-            assert authority_actual == authority_edit
-            # 删除创建的角色
-            multi_worksapce_steps.step_delete_role(ws_name, ws_role_name)
+        # 获取集群名称
+        clusters = multi_worksapce_steps.step_get_cluster_name()
+        # 创建企业空间
+        ws_name = 'test-ws' + str(commonFunction.get_random())
+        alias_name = 'test'
+        description ='test'
+        multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, clusters)
+
+        authority_create = '["role-template-view-basic"]'  # 创建角色的权限信息
+        authority_edit = '["role-template-view-basic","role-template-create-projects"]'  # 修改目标角色的权限信息
+        ws_role_name = 'role' + str(commonFunction.get_random())  #创建的角色名称
+        time.sleep(1)  # 由于新建的角色和系统自动生成的角色的生成时间是一致。后面获取角色的resourceversion是按时间排序获取的。因此在创建企业空间后sleep 1s
+        # 在企业空间创建角色
+        multi_worksapce_steps.step_create_ws_role(ws_name, ws_role_name, authority_create)
+        # 查询并获取该角色的resourceversion
+        re = multi_worksapce_steps.step_get_ws_role(ws_name, ws_role_name)
+        version = re.json()['items'][0]['metadata']['resourceVersion']
+        # 修改角色权限
+        multi_worksapce_steps.step_edit_role_authory(ws_name, ws_role_name, version, authority_edit)
+        # 查询并获取该角色的权限信息
+        r = multi_worksapce_steps.step_get_ws_role(ws_name, ws_role_name)
+        authority_actual = r.json()['items'][0]['metadata']['annotations']["iam.kubesphere.io/aggregation-roles"]
+        # 验证修改角色权限后的权限信息
+        assert authority_actual == authority_edit
+        # 删除创建的角色
+        multi_worksapce_steps.step_delete_role(ws_name, ws_role_name)
+        # 删除企业空间
+        multi_worksapce_steps.step_delete_workspace(ws_name)
 
     @allure.story('企业空间设置-企业成员')
     @allure.title('在企业空间邀请存在的新成员')
