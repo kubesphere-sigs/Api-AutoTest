@@ -755,10 +755,6 @@ def step_edit_container_quota(project_name, name, resource_version, limit, reque
 
 @allure.step('在单集群环境删除指定的项目')
 def step_delete_project(ws_name, project_name):
-    """
-
-    :rtype: object
-    """
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
     response = requests.delete(url=url, headers=get_header())
     return response
