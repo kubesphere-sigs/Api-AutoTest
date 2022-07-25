@@ -760,6 +760,13 @@ def step_delete_project(ws_name, project_name):
     return response
 
 
+@allure.step('删除指定项目')
+def step_delete_project_by_name(project_name):
+    url = env_url + '/api/v1/namespaces/' + project_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
 @allure.step('在单集群环境创建项目')
 def step_create_project(ws_name, project_name):
     """
