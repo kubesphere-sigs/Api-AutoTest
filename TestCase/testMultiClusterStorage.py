@@ -290,8 +290,16 @@ class Test_Multi_Cluster_Storage:
         # 查询不存在的快照
         res2 = multi_cluster_storages_step.search_vs_for_vsc(self.cluster_name, vsc_name, 'kk')
         assert res2.json()['totalItems'] == 0
-        # 删除快照
-        # multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, vs_name)
+        # 删除卷快照
+        multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, vs_name)
+        j = 0
+        while j < 150:
+            r2 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
+            if r2.json()['totalItems'] == 0:
+                break
+            sleep(1)
+            j = j + 1
+        assert r2.json()['totalItems'] == 0
 
     @allure.story("存储-卷快照")
     @allure.title('创建快照')
@@ -306,6 +314,7 @@ class Test_Multi_Cluster_Storage:
         # 验证存储卷快照状态为准备就绪，最长等待时间为150s
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
+            print(r1.json())
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
             if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
                 break
@@ -314,7 +323,15 @@ class Test_Multi_Cluster_Storage:
         print("创建存储卷快照耗时:" + str(i) + '秒')
         assert str(r1.json()['items'][0]['status']['readyToUse']) == 'True'
         # 删除卷快照
-        # multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, vsc_name)
+        multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, vs_name)
+        j = 0
+        while j < 150:
+            r2 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
+            if r2.json()['totalItems'] == 0:
+                break
+            sleep(1)
+            j = j + 1
+        assert r2.json()['totalItems'] == 0
 
     @allure.story("存储-卷快照")
     @allure.title('创建同名的快照')
@@ -338,8 +355,16 @@ class Test_Multi_Cluster_Storage:
         # 再次创建同名的快照
         res = multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name, volume_name)
         assert res.json()['message'] == 'volumesnapshots.snapshot.storage.k8s.io "' + vs_name + '" already exists'
-        # 删除快照
-        # multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, vs_name)
+        # 删除卷快照
+        multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, vs_name)
+        j = 0
+        while j < 150:
+            r2 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
+            if r2.json()['totalItems'] == 0:
+                break
+            sleep(1)
+            j = j + 1
+        assert r2.json()['totalItems'] == 0
 
     @allure.story("存储-卷快照")
     @allure.title('查询卷快照')
@@ -369,8 +394,16 @@ class Test_Multi_Cluster_Storage:
         # 查询不存在的快照
         r2 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, 'kk')
         assert r2.json()['totalItems'] == 0
-        # 删除快照
-        # multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, vs_name)
+        # 删除已有卷快照
+        multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, vs_name)
+        j = 0
+        while j < 150:
+            r2 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
+            if r2.json()['totalItems'] == 0:
+                break
+            sleep(1)
+            j = j + 1
+        assert r2.json()['totalItems'] == 0
 
     @allure.story("存储-卷快照")
     @allure.title('使用卷快照创建存储卷')
@@ -403,6 +436,16 @@ class Test_Multi_Cluster_Storage:
         assert res.json()['items'][0]['status']['phase'] == 'Pending'
         # 删除存储卷
         multi_cluster_storages_step.delete_volume(self.cluster_name, self.pro_ws_name, volume)
+        # 删除已有卷快照
+        multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, vs_name)
+        j = 0
+        while j < 150:
+            r2 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
+            if r2.json()['totalItems'] == 0:
+                break
+            sleep(1)
+            j = j + 1
+        assert r2.json()['totalItems'] == 0
 
     @allure.story("存储-卷快照")
     @allure.title('使用卷快照创建同名存储卷')
@@ -429,5 +472,13 @@ class Test_Multi_Cluster_Storage:
         res = multi_cluster_storages_step.create_volumne_by_vs(self.cluster_name, self.pro_ws_name, volume_name, sc_name)
         # 验证报错信息正确
         assert res.json()['message'] == 'persistentvolumeclaims "' + volume_name + '" already exists'
-        # 删除卷快照
-        # multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, vs_name)
+        # 删除已有卷快照
+        multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, vs_name)
+        j = 0
+        while j < 150:
+            r2 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
+            if r2.json()['totalItems'] == 0:
+                break
+            sleep(1)
+            j = j + 1
+        assert r2.json()['totalItems'] == 0

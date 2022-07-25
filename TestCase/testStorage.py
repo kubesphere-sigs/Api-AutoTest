@@ -221,7 +221,7 @@ class Test_Storage:
         # 验证创建成功
         r = storage_steps.search_vsc_by_name(vsc_name)
         assert r.json()['totalItems'] == 1
-        # 刹删除卷快照类
+        # 删除卷快照类
         storage_steps.delete_vsc(vsc_name)
 
     @allure.story("存储-卷快照类")
@@ -272,7 +272,7 @@ class Test_Storage:
         # 判断快照数量
         assert r.json()['items'][0]['metadata']['annotations']['kubesphere.io/snapshot-count'] == '1'
         # 删除已有卷快照
-        rr = storage_steps.delete_vs(self.pro_ws_name, vs_name)
+        storage_steps.delete_vs(self.pro_ws_name, vs_name)
         j = 0
         while j < 150:
             r2 = storage_steps.search_vs_by_name(vs_name)
@@ -318,6 +318,16 @@ class Test_Storage:
         # 查询不存在的快照
         res2 = storage_steps.search_vs_for_vsc(vsc_name, 'kk')
         assert res2.json()['totalItems'] == 0
+        # 删除卷快照
+        storage_steps.delete_vs(self.pro_ws_name, vs_name)
+        j = 0
+        while j < 150:
+            r2 = storage_steps.search_vs_by_name(vs_name)
+            if r2.json()['totalItems'] == 0:
+                break
+            sleep(1)
+            j = j + 1
+        assert r2.json()['totalItems'] == 0
 
     @allure.story("存储-卷快照")
     @allure.title('创建快照')
@@ -340,6 +350,16 @@ class Test_Storage:
         print("创建存储卷快照耗时:" + str(i) + '秒')
         assert str(r1.json()['items'][0]['status']['readyToUse']) == 'True'
         storage_steps.delete_vs(self.pro_ws_name, vsc_name)
+        # 删除卷快照
+        storage_steps.delete_vs(self.pro_ws_name, vs_name)
+        j = 0
+        while j < 150:
+            r2 = storage_steps.search_vs_by_name(vs_name)
+            if r2.json()['totalItems'] == 0:
+                break
+            sleep(1)
+            j = j + 1
+        assert r2.json()['totalItems'] == 0
 
     @allure.story("存储-卷快照")
     @allure.title('创建同名的快照')
@@ -363,8 +383,16 @@ class Test_Storage:
         # 再次创建同名的快照
         res = storage_steps.create_volume_snapshots(self.pro_ws_name, vs_name, vsc_name, volume_name)
         assert res.json()['message'] == 'volumesnapshots.snapshot.storage.k8s.io "' + vs_name + '" already exists'
-        # 删除快照
+        # 删除已有卷快照
         storage_steps.delete_vs(self.pro_ws_name, vs_name)
+        j = 0
+        while j < 150:
+            r2 = storage_steps.search_vs_by_name(vs_name)
+            if r2.json()['totalItems'] == 0:
+                break
+            sleep(1)
+            j = j + 1
+        assert r2.json()['totalItems'] == 0
 
     @allure.story("存储-卷快照")
     @allure.title('查询卷快照')
@@ -394,8 +422,16 @@ class Test_Storage:
         # 查询不存在的快照
         r2 = storage_steps.search_vs_by_name('kk')
         assert r2.json()['totalItems'] == 0
-        # 删除快照
+        # 删除已有卷快照
         storage_steps.delete_vs(self.pro_ws_name, vs_name)
+        j = 0
+        while j < 150:
+            r2 = storage_steps.search_vs_by_name(vs_name)
+            if r2.json()['totalItems'] == 0:
+                break
+            sleep(1)
+            j = j + 1
+        assert r2.json()['totalItems'] == 0
 
     @allure.story("存储-卷快照")
     @allure.title('使用卷快照创建存储卷')
@@ -409,7 +445,8 @@ class Test_Storage:
         sc_name = storage_steps.search_volume_by_name(volume_name).json()['items'][0]['spec']['storageClassName']
         i = 0
         # 创建卷快照
-        storage_steps.create_volume_snapshots(self.pro_ws_name, vs_name, vsc_name, volume_name)
+        rr = storage_steps.create_volume_snapshots(self.pro_ws_name, vs_name, vsc_name, volume_name)
+        print(rr.json())
         # 验证存储卷快照状态为准备就绪，最长等待时间为150s
         while i < 150:
             r1 = storage_steps.search_vs_by_name(vs_name)
@@ -426,6 +463,16 @@ class Test_Storage:
         assert res.json()['items'][0]['status']['phase'] == 'Pending'
         # 删除存储卷
         project_steps.step_delete_volume(self.pro_ws_name, volume)
+        # 删除已有卷快照
+        storage_steps.delete_vs(self.pro_ws_name, vs_name)
+        j = 0
+        while j < 150:
+            r2 = storage_steps.search_vs_by_name(vs_name)
+            if r2.json()['totalItems'] == 0:
+                break
+            sleep(1)
+            j = j + 1
+        assert r2.json()['totalItems'] == 0
 
     @allure.story("存储-卷快照")
     @allure.title('使用卷快照创建同名存储卷')
@@ -452,4 +499,13 @@ class Test_Storage:
         res = storage_steps.create_volumne_by_vs(self.pro_ws_name, volume_name, sc_name)
         # 验证报错信息正确
         assert res.json()['message'] == 'persistentvolumeclaims "'+volume_name+'" already exists'
-
+        # 删除已有卷快照
+        storage_steps.delete_vs(self.pro_ws_name, vs_name)
+        j = 0
+        while j < 150:
+            r2 = storage_steps.search_vs_by_name(vs_name)
+            if r2.json()['totalItems'] == 0:
+                break
+            sleep(1)
+            j = j + 1
+        assert r2.json()['totalItems'] == 0
