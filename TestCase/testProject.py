@@ -1,3 +1,4 @@
+# -- coding: utf-8 --
 import pytest
 import allure
 import sys
@@ -44,7 +45,7 @@ class TestProject(object):
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
         project_steps.step_delete_volume(self.project_name_for_exel, self.volume_name)  # 删除存储卷
-        # project_steps.step_delete_project(self.ws_name, self.project_name)  # 删除创建的项目
+        project_steps.step_delete_project(self.ws_name, self.project_name)  # 删除创建的项目
         time.sleep(5)
         project_steps.step_delete_project(self.ws_name, self.project_name_for_exel)  # 删除创建的项目
         time.sleep(5)
@@ -77,7 +78,7 @@ class TestProject(object):
                                          volumemount=volumeMounts, strategy=strategy_info)
         # 验证资源创建成功
         i = 0
-        while i < 120:
+        while i < 300:
             # 获取工作负载的状态
             response = project_steps.step_get_workload(self.project_name, type='deployments', condition=condition)
             status = response.json()['items'][0]['status']
@@ -85,8 +86,8 @@ class TestProject(object):
             if 'unavailableReplicas' not in status:
                 break
             else:
-                time.sleep(1)
-                i += 1
+                time.sleep(10)
+                i += 10
         # 获取存储卷状态
         response = project_steps.step_get_volume_status(self.project_name, volume_name)
         status = response.json()['items'][0]['status']['phase']
@@ -373,6 +374,7 @@ class TestProject(object):
         project_name = 'test-pro' + str(commonFunction.get_random())
         project_steps.step_create_project(self.ws_name, project_name)
         # 查看项目成员，并获取成员名称
+        time.sleep(2)
         response = project_steps.step_get_project_member(project_name, '')
         name = response.json()['items'][0]['metadata']['name']
         assert name == 'admin'  # 验证默认的用户仅有admin
@@ -410,12 +412,20 @@ class TestProject(object):
         # 创建项目
         pro_name = 'test-pro' + str(commonFunction.get_random())
         project_steps.step_create_project(self.ws_name, pro_name)
+        time.sleep(3)
         # 将用户邀请到项目
         role = 'viewer'
         project_steps.step_invite_member(pro_name, self.user_name, role)
-        # 查看项目成员，并获取其角色
-        response = project_steps.step_get_project_member(pro_name, self.user_name)
-        role_actual = response.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/role']
+        i = 0
+        while i < 60:
+            try:
+                # 查看项目成员，并获取其角色
+                response = project_steps.step_get_project_member(pro_name, self.user_name)
+                role_actual = response.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/role']
+                if role_actual:
+                    break
+            except Exception as e:
+                print(e)
         assert role_actual == role
         # 删除项目
         project_steps.step_delete_project(self.ws_name, pro_name)
@@ -451,8 +461,15 @@ class TestProject(object):
         role = 'admin'
         project_steps.step_invite_member(project_name, self.user_name, role)
         # 查看项目成员，并验证添加成功
-        res = project_steps.step_get_project_member(project_name, self.user_name)
-        name = res.json()['items'][0]['metadata']['name']
+        i = 0
+        while i < 60:
+            try:
+                res = project_steps.step_get_project_member(project_name, self.user_name)
+                name = res.json()['items'][0]['metadata']['name']
+                if name:
+                    break
+            except Exception as e:
+                print(e)
         assert name == self.user_name
         # 移出项目成员
         project_steps.step_remove_project_member(project_name, self.user_name)
@@ -721,8 +738,17 @@ class TestProject(object):
         job_name = 'job' + str(commonFunction.get_random())
         project_steps.step_create_job(pro_name, job_name)
         # 查看任务并验证其状态
-        response = project_steps.step_get_job_detail(pro_name, job_name)
-        count = response.json()['items'][0]['status']['active']
+        i = 0
+        while i < 60:
+            try:
+                response = project_steps.step_get_job_detail(pro_name, job_name)
+                count = response.json()['items'][0]['status']['active']
+                if count:
+                    break
+            except Exception as e:
+                print(e)
+            i += 1
+            time.sleep(1)
         # 运行中的pod数为2
         assert count == 2
         # 删除任务
@@ -904,10 +930,13 @@ class TestProject(object):
         while i < 60:
             response = project_steps.step_get_workload(project_name=project_name, type='statefulsets',
                                                        condition=condition)
-            readyReplicas = response.json()['items'][0]['status']['readyReplicas']
-            # 验证资源的所有副本已就绪
-            if readyReplicas == replicas:
-                break
+            try:
+                readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                # 验证资源的所有副本已就绪
+                if readyReplicas == replicas:
+                    break
+            except Exception as e:
+                print(e)
             time.sleep(1)
             i = i + 1
         print('创建工作负载耗时:' + str(i) + 's')
@@ -955,7 +984,7 @@ class TestProject(object):
 
     @allure.story('应用负载-工作负载')
     @allure.title('按状态查询存在的StatefulSets')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_statefulstes_by_status(self):
         # 创建项目
         project_name = 'test-pro' + str(commonFunction.get_random())
@@ -978,17 +1007,24 @@ class TestProject(object):
                                            service_ports=service_port, volumemount=volumemounts,
                                            service_name=service_name)
 
+        # 查询工作负载，直至其状态为运行中
+        i = 0
+        while i < 60:
+            r = project_steps.step_get_workload(project_name, type=type, condition='name=' + workload_name)
+            try:
+                readyReplicas = r.json()['items'][0]['status']['readyReplicas']
+                if readyReplicas == replicas:
+                    break
+            except Exception as e:
+                print(e)
+            i += 1
+            time.sleep(1)
         # 按状态精确查询statefulsets
-        time.sleep(5)
         response = project_steps.step_get_workload(project_name, type=type, condition=condition)
-        # 获取工作负载的数量
-        count = response.json()['totalItems']
-        names = []
-        for i in range(0, count):
-            name = response.json()['items'][i]['metadata']['name']
-            names.append(name)
+        # 获取工作负载的名称
+        name = response.json()['items'][0]['metadata']['name']
         # 验证deployment的名称正确
-        assert name in names
+        assert workload_name == name
         # 删除创建的statefulsets
         re = project_steps.step_delete_workload(project_name=project_name, type=type, work_name=workload_name)
         assert re.json()['status'] == 'Success'
@@ -1053,10 +1089,18 @@ class TestProject(object):
                                             container_name=container_name, image=image, ports=port,
                                             volume_info=volume_info, volumemount=volumemount)
         # 按名称查询DaemonSets
-        time.sleep(3)
-        response = project_steps.step_get_workload(project_name, type=type, condition=condition)
-        # 获取并验证deployment的名称正确
-        name = response.json()['items'][0]['metadata']['name']
+        i = 0
+        while i < 60:
+            try:
+                response = project_steps.step_get_workload(project_name, type=type, condition=condition)
+                # 获取并验证deployment的名称正确
+                name = response.json()['items'][0]['metadata']['name']
+                if name:
+                    break
+                i += 3
+                time.sleep(3)
+            except Exception as e:
+                print(e)
         assert name == workload_name
         # 删除创建的daemonsets
         re = project_steps.step_delete_workload(project_name=project_name, type=type, work_name=workload_name)
@@ -1401,10 +1445,19 @@ class TestProject(object):
                                          image=image, replicas=replicas, volume_info=volume_info,
                                          strategy=strategy_info)
         condition = 'status=running'
-        time.sleep(5)
-        # 按状态查询工作负载
-        response = project_steps.step_get_workload(project_name, 'deployments', condition)
-        assert response.json()['totalItems'] == 1
+        i =0
+        while i < 60:
+            try:
+                # 按状态查询工作负载
+                response = project_steps.step_get_workload(project_name, 'deployments', condition)
+                count = response.json()['totalItems']
+                if count:
+                    break
+                i += 3
+                time.sleep(3)
+            except Exception as e:
+                print(e)
+        assert count == 1
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
         # 删除项目
@@ -1555,7 +1608,17 @@ class TestProject(object):
         # 步骤1：创建sa
         project_steps.step_create_sa(project_name=project_name, sa_name=sa_name)
         # 步骤2：验证sa创建成功并返回secret
-        sa_secret = project_steps.step_get_sa(project_name=project_name, sa_name=sa_name)
+        i = 0
+        while i < 60:
+            try:
+                response = project_steps.step_get_sa(project_name=project_name, sa_name=sa_name)
+                if response.json()['totalItems'] > 0:
+                    sa_secret = response.json()['items'][0]['secrets'][0]['name']
+                    break
+                i += 3
+                time.sleep(3)
+            except Exception as e:
+                print(e)
         # 步骤3：查询sa详情
         project_steps.step_get_sa_detail(project_name=project_name, sa_name=sa_name)
         # 步骤4：查询sa的密钥信息并返回密钥类型
@@ -1564,7 +1627,7 @@ class TestProject(object):
         # 步骤5：删除sa
         project_steps.step_delete_sa(project_name=project_name, sa_name=sa_name)
         # 步骤6：验证删除成功
-        num = project_steps.step_get_sa(project_name=project_name, sa_name=sa_name)
+        num = project_steps.step_get_sa(project_name=project_name, sa_name=sa_name).json()['totalItems']
         assert num == 0
         # 删除项目
         project_steps.step_delete_project(self.ws_name, project_name)
@@ -1662,15 +1725,20 @@ class TestProject(object):
     def test_edit_project_quota_memory(self):
         # 配额信息
         hard = {"limits.memory": "10Gi", "requests.memory": "1Gi"}
+        # 创建项目
+        project_name = 'test-pro' + str(commonFunction.get_random())
+        project_steps.step_create_project(self.ws_name, project_name)
         # 获取项目配额的resource_version
-        resource_version = project_steps.step_get_project_quota_version(self.project_name)
+        resource_version = project_steps.step_get_project_quota_version(project_name)
         # 编辑配额信息
-        project_steps.step_edit_project_quota(self.project_name, hard, resource_version)
+        project_steps.step_edit_project_quota(project_name, hard, resource_version)
         # 获取修改后的配额信息
-        response = project_steps.step_get_project_quota(self.project_name)
+        response = project_steps.step_get_project_quota(project_name)
         hard_actual = response.json()['data']['hard']
         # 验证配额修改成功
         assert hard_actual == hard
+        # 删除项目
+        project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('项目设置-项目配额')
     @allure.title('设置项目配额-输入错误的内存(包含非单位字母)')
@@ -1731,15 +1799,29 @@ class TestProject(object):
                 "count/ingresses.extensions": "4",
                 "count/secrets": "8",
                 "count/configmaps": "7"}
+        # 创建项目
+        project_name = 'test-pro' + str(commonFunction.get_random())
+        project_steps.step_create_project(self.ws_name, project_name)
         # 获取项目配额的resource_version
-        resource_version = project_steps.step_get_project_quota_version(self.project_name)
+        resource_version = project_steps.step_get_project_quota_version(project_name)
         # 修改资源配额
-        project_steps.step_edit_project_quota(self.project_name, hard, resource_version)
+        project_steps.step_edit_project_quota(project_name, hard, resource_version)
         # 获取修改后的配额信息
-        response = project_steps.step_get_project_quota(self.project_name)
-        hard_actual = response.json()['data']['hard']
+        i = 0
+        while i < 60:
+            try:
+                response = project_steps.step_get_project_quota(project_name)
+                hard_actual = response.json()['data']['hard']
+                if hard_actual:
+                    break
+                i += 3
+                time.sleep(3)
+            except Exception as e:
+                print(e)
         # 验证配额修改成功
         assert hard_actual == hard
+        # 删除项目
+        project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('项目设置-项目配额')
     @allure.title('只设置项目配额-输入错误的资源配额信息(包含字母)')
@@ -2037,6 +2119,29 @@ class TestProject(object):
         response = project_steps.step_get_status_logsidecar(self.project_name)
         status_actual = response.json()['metadata']['labels']['logging.kubesphere.io/logsidecar-injection']
         assert status_actual == 'disabled'
+
+    @allure.title('{title}')  # 设置用例标题
+    @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
+    # 将用例信息以参数化的方式传入测试方法
+    @pytest.mark.parametrize('id,url,params,data,story,title,method,severity,condition,except_result', parametrize)
+    def test_project(self, id, url, params, data, story, title, method, severity, condition, except_result):
+
+        """
+        :param id: 用例编号
+        :param url: 用例请求的URL地址
+        :param data: 用例使用的请求数据
+        :param story: 用例模块
+        :param title: 用例标题
+        :param method: 用例的请求方式
+        :param severity: 用例优先级
+        :param condition: 用例的校验条件
+        :param except_result: 用例的预期结果
+        """
+
+        allure.dynamic.story(story)  # 动态生成模块
+        allure.dynamic.severity(severity)  # 动态生成用例等级
+        # 执行excel中的用例
+        commonFunction.request_resource(url, params, data, story, title, method, severity, condition, except_result)
 
 
 if __name__ == "__main__":
