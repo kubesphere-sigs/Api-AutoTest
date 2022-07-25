@@ -47,13 +47,13 @@ class TestDevOps(object):
         self.dev_name_new = response.json()['items'][0]['metadata']['name']
 
     # 所有用例执行完之后执行该方法
-    # def teardown_class(self):
-    #     # 获取devops工程的id
-    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-    #     dev_name_new = response.json()['items'][0]['metadata']['name']
-    #     devops_steps.step_delete_devops(ws_name=self.ws_name, devops_name=dev_name_new)  # 删除创建的devops工程
-    #     workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的工作空间
-    #     platform_steps.step_delete_user(self.user_name)  # 删除创建的用户
+    def teardown_class(self):
+        # 获取devops工程的id
+        response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
+        dev_name_new = response.json()['items'][0]['metadata']['name']
+        devops_steps.step_delete_devops(ws_name=self.ws_name, devops_name=dev_name_new)  # 删除创建的devops工程
+        workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的工作空间
+        platform_steps.step_delete_user(self.user_name)  # 删除创建的用户
 
     '''
     以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
