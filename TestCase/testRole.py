@@ -1,5 +1,5 @@
+# -- coding: utf-8 --
 import time
-
 import pytest
 import allure
 import sys

@@ -1,3 +1,4 @@
+# -- coding: utf-8 --
 import pytest
 import allure
 import sys
@@ -7,7 +8,6 @@ import random
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from common.getData import DoexcleByPandas
-from common.logFormat import log_format
 from common import commonFunction
 from step import multi_worksapce_steps
 
