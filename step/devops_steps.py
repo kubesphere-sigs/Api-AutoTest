@@ -446,26 +446,11 @@ def step_get_pipeline(devops_name, pipeline_name):
     return response
 
 
-@allure.step('获取流水线的健康分数')
-def step_get_pipeline_weather(devops_name, pipeline_name):
-    url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/pipelines?page=1&limit=10&name=' + pipeline_name
-    r = requests.get(url=url, headers=get_header())
-    # 获取流水线的 jenkins-metadata
-    jenkins_metadata = r.json()['items'][0]['metadata']['annotations']['pipeline.devops.kubesphere.io/jenkins-metadata']
-    # 获取流水线的健康状态
-    weatherScore = eval(jenkins_metadata)['weatherScore']  # jenkins_metadata是str类型，使用eval将其转化为dict
-    return weatherScore
-
-
-@allure.step('获取流水线的分支数')
-def step_get_pipeline_branch(devops_name, pipeline_name):
-    url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/pipelines?page=1&limit=10&name=' + pipeline_name
-    r = requests.get(url=url, headers=get_header())
-    # 获取流水线的 jenkins-metadata
-    jenkins_metadata = r.json()['items'][0]['metadata']['annotations']['pipeline.devops.kubesphere.io/jenkins-metadata']
-    # 获取流水线的健康状态
-    branch = eval(jenkins_metadata)['totalNumberOfBranches']  # jenkins_metadata是str类型，使用eval将其转化为dict
-    return branch
+@allure.step('获取流水线的详情')
+def step_get_pipeline(devops_name, pipeline_name):
+    url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/pipelines?page=1&name=' + pipeline_name
+    response = requests.get(url=url, headers=get_header())
+    return response
 
 
 @allure.step('删除流水线')
@@ -583,4 +568,34 @@ def step_edit_code_repository(dev_name, name, provider, annotations, code_url):
             "spec": {"provider": provider, "url": code_url,
                      "secret": {"namespace": dev_name}}}
     response = requests.put(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    return response
+
+
+@allure.step('持续部署，创建持续部署')
+def step_create_cd(dev_name, cd_name, annotations, ns, cd_url, path):
+    url = env_url + '/kapis/gitops.kubesphere.io/v1alpha1/namespaces/' + dev_name + '/applications'
+    data = {"kind": "Application", "apiVersion": "gitops.kubesphere.io/v1alpha1", "metadata": {"name": cd_name,
+                                                                                               "annotations": annotations},
+            "spec": {"kind": "argo-project", "argoApp": {"spec": {
+                "destination": {"name": "in-cluster", "server": "https://kubernetes.default.svc", "namespace": ns},
+                "source": {"repoURL": cd_url, "targetRevision": "HEAD",
+                           "path": path},
+                "syncPolicy": {"automated": {}, "syncOptions": ["CreateNamespace=true"]}}}}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('持续部署，删除持续部署任务')
+def step_delete_cd(dev_name, cd_name, cascade):
+    """
+    :param dev_name:
+    :param cd_name:
+    :param cascade: 是否删除部署的资源，true表示删除
+    :return:
+    """
+    if cascade == 'true':
+        url = env_url + '/kapis/gitops.kubesphere.io/v1alpha1/namespaces/' + dev_name + '/applications/' + cd_name + '?cascade=true'
+    else:
+        url = env_url + '/kapis/gitops.kubesphere.io/v1alpha1/namespaces/' + dev_name + '/applications/' + cd_name
+    response = requests.delete(url=url, headers=get_header())
     return response
