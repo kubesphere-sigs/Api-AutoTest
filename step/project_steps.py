@@ -455,8 +455,7 @@ def step_get_workload(project_name, type, condition):
     :param condition: 查询条件  如：name=test
     :return:
     """
-    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' \
-          + project_name + '/' + type + '?' + condition
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/' + type + '?' + condition
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -514,14 +513,11 @@ def step_create_sa(project_name, sa_name):
     requests.post(url=url, headers=get_header(), data=json.dumps(data))
 
 
-@allure.step('查询指定sa并返回密钥名称')
+@allure.step('查询指定sa')
 def step_get_sa(project_name, sa_name):
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/serviceaccounts?name=' + sa_name + '&sortBy=createTime&limit=10'
-    r = requests.get(url=url, headers=get_header())
-    if r.json()['totalItems'] > 0:
-        return r.json()['items'][0]['secrets'][0]['name']
-    else:
-        return r.json()['totalItems']
+    response = requests.get(url=url, headers=get_header())
+    return response
 
 
 @allure.step('查询项目的角色信息')
@@ -984,11 +980,6 @@ def step_delete_pvc(project_name, pvc_name):
     url = env_url + '/api/v1/namespaces/' + project_name + '/persistentvolumeclaims/' + pvc_name
     response = requests.delete(url=url, headers=get_header())
     return response
-
-
-
-
-
 
 
 #####多集群######
