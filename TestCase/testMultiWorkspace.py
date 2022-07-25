@@ -44,11 +44,9 @@ class TestWorkSpace(object):
                                                            self.alias_name, self.description, clusters[i])
         # 创建一个多集群企业空间,供excle文件中的用例使用
         multi_worksapce_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, clusters)
-        time.sleep(3)
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
-        time.sleep(10)
         user_ws = multi_worksapce_steps.step_get_user_ws()  # 获取所有用户创建的企业空间
         for ws in user_ws:
             multi_worksapce_steps.step_delete_workspace(ws)  # 删除创建的企业空间
@@ -91,28 +89,29 @@ class TestWorkSpace(object):
         # 查询企业空间
         response = multi_worksapce_steps.step_get_ws_info('')
         ws_count = response.json()['totalItems']
-        for k in range(0, ws_count):
-            # 获取每个企业空间的名称
-            ws_name = response.json()['items'][k]['metadata']['name']
-            if ws_name != 'system-workspace':
-                authority_create = '["role-template-view-basic"]'  # 创建角色的权限信息
-                authority_edit = '["role-template-view-basic","role-template-create-projects"]'  # 修改目标角色的权限信息
-                ws_role_name = 'role' + str(commonFunction.get_random())  #创建的角色名称
-                time.sleep(1)  # 由于新建的角色和系统自动生成的角色的生成时间是一致。后面获取角色的resourceversion是按时间排序获取的。因此在创建企业空间后sleep 1s
-                # 在企业空间创建角色
-                multi_worksapce_steps.step_create_ws_role(ws_name, ws_role_name, authority_create)
-                # 查询并获取该角色的resourceversion
-                re = multi_worksapce_steps.step_get_ws_role(ws_name, ws_role_name)
-                version = re.json()['items'][0]['metadata']['resourceVersion']
-                # 修改角色权限
-                multi_worksapce_steps.step_edit_role_authory(ws_name, ws_role_name, version, authority_edit)
-                # 查询并获取该角色的权限信息
-                r = multi_worksapce_steps.step_get_ws_role(ws_name, ws_role_name)
-                authority_actual = r.json()['items'][0]['metadata']['annotations']["iam.kubesphere.io/aggregation-roles"]
-                # 验证修改角色权限后的权限信息
-                assert authority_actual == authority_edit
-                # 删除创建的角色
-                multi_worksapce_steps.step_delete_role(ws_name, ws_role_name)
+        # 获取任一企业空间
+        k = random.randint(0, ws_count)
+        # 获取企业空间的名称
+        ws_name = response.json()['items'][k]['metadata']['name']
+        if ws_name != 'system-workspace':
+            authority_create = '["role-template-view-basic"]'  # 创建角色的权限信息
+            authority_edit = '["role-template-view-basic","role-template-create-projects"]'  # 修改目标角色的权限信息
+            ws_role_name = 'role' + str(commonFunction.get_random())  #创建的角色名称
+            time.sleep(1)  # 由于新建的角色和系统自动生成的角色的生成时间是一致。后面获取角色的resourceversion是按时间排序获取的。因此在创建企业空间后sleep 1s
+            # 在企业空间创建角色
+            multi_worksapce_steps.step_create_ws_role(ws_name, ws_role_name, authority_create)
+            # 查询并获取该角色的resourceversion
+            re = multi_worksapce_steps.step_get_ws_role(ws_name, ws_role_name)
+            version = re.json()['items'][0]['metadata']['resourceVersion']
+            # 修改角色权限
+            multi_worksapce_steps.step_edit_role_authory(ws_name, ws_role_name, version, authority_edit)
+            # 查询并获取该角色的权限信息
+            r = multi_worksapce_steps.step_get_ws_role(ws_name, ws_role_name)
+            authority_actual = r.json()['items'][0]['metadata']['annotations']["iam.kubesphere.io/aggregation-roles"]
+            # 验证修改角色权限后的权限信息
+            assert authority_actual == authority_edit
+            # 删除创建的角色
+            multi_worksapce_steps.step_delete_role(ws_name, ws_role_name)
 
     @allure.story('企业空间设置-企业成员')
     @allure.title('在企业空间邀请存在的新成员')
@@ -349,31 +348,32 @@ class TestWorkSpace(object):
         # 查询企业空间
         response = multi_worksapce_steps.step_get_ws_info('')
         ws_count = response.json()['totalItems']
-        for k in range(0, ws_count):
-            # 获取每个企业空间的名称
-            ws_name = response.json()['items'][k]['metadata']['name']
-            if ws_name != 'system-workspace':
-                group_name = 'group' + str(commonFunction.get_random())
-                # 创建企业组织,并获取创建的企业组织的name
-                resp = multi_worksapce_steps.step_create_department(ws_name, group_name, data)
-                name = resp.json()['metadata']['name']
-                # 获取该企业组织可分配的用户数量
-                res = multi_worksapce_steps.step_get_user_for_department(name)
-                counts = res.json()['totalItems']
-                # 将指定用户绑定到指定企业组织
-                re = multi_worksapce_steps.step_binding_user(self.ws_name, name, self.user_name)
-                # 获取绑定后返回的用户名
-                binding_user = re.json()[0]['users'][0]
-                # 校验绑定的用户名称
-                assert binding_user == self.user_name
-                # 重新获取企业组织可分配的用户名称
-                r = multi_worksapce_steps.step_get_user_for_department(name)
-                counts_new = r.json()['totalItems']
-                user_name = []
-                for i in range(0, counts_new):
-                    user_name.append(r.json()['items'][i]['metadata']['name'])
-                # 验证已分配的用户不在可分配的用户列表中
-                assert binding_user not in user_name
+        # 获取任一企业空间
+        k = random.randint(0, ws_count)
+        # 获取企业空间的名称
+        ws_name = response.json()['items'][k]['metadata']['name']
+        if ws_name != 'system-workspace':
+            group_name = 'group' + str(commonFunction.get_random())
+            # 创建企业组织,并获取创建的企业组织的name
+            resp = multi_worksapce_steps.step_create_department(ws_name, group_name, data)
+            name = resp.json()['metadata']['name']
+            # 获取该企业组织可分配的用户数量
+            res = multi_worksapce_steps.step_get_user_for_department(name)
+            counts = res.json()['totalItems']
+            # 将指定用户绑定到指定企业组织
+            re = multi_worksapce_steps.step_binding_user(self.ws_name, name, self.user_name)
+            # 获取绑定后返回的用户名
+            binding_user = re.json()[0]['users'][0]
+            # 校验绑定的用户名称
+            assert binding_user == self.user_name
+            # 重新获取企业组织可分配的用户名称
+            r = multi_worksapce_steps.step_get_user_for_department(name)
+            counts_new = r.json()['totalItems']
+            user_name = []
+            for i in range(0, counts_new):
+                user_name.append(r.json()['items'][i]['metadata']['name'])
+            # 验证已分配的用户不在可分配的用户列表中
+            assert binding_user not in user_name
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('将已绑定企业组织的用户再次绑定该企业组织')
