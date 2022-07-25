@@ -11,6 +11,9 @@ from step import multi_cluster_storages_step, project_steps, multi_cluster_steps
 @allure.feature('multi_cluster_storage')
 @pytest.mark.skipif(get_sc_qingcloud is False, reason='csi-qingcloud存储插件不存在')
 class Test_Multi_Cluster_Storage:
+    # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+    __test__ = commonFunction.check_multi_cluster()
+
     cluster_name = multi_cluster_steps.step_get_host_cluster_name()
     sc_name = 'test-multi-cluster-sc'
     sc_name1 = 'test-multi-cluster-vsc'

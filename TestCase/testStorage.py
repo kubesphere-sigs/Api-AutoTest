@@ -12,6 +12,12 @@ from step import workspace_steps, project_steps, storage_steps
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 @pytest.mark.skipif(commonFunction.get_sc_qingcloud() is False, reason='csi-qingcloud存储插件不存在')
 class Test_Storage:
+    if commonFunction.check_multi_cluster() is True:
+        # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+        __test__ = False
+    else:
+        __test__ = True
+
     sc_name = 'test-sc'
     sc_name1 = 'test-vsc'
     ws_name = 'ws-' + str(get_random())
