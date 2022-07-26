@@ -3,7 +3,7 @@ from time import sleep
 import allure
 import pytest
 from common import commonFunction
-from common.commonFunction import get_random, get_sc_qingcloud, request_resource
+from common.commonFunction import get_random, request_resource
 from common.getData import DoexcleByPandas
 from step import workspace_steps, project_steps, storage_steps
 
@@ -412,8 +412,7 @@ class Test_Storage:
         sc_name = storage_steps.search_volume_by_name(volume_name).json()['items'][0]['spec']['storageClassName']
         i = 0
         # 创建卷快照
-        rr = storage_steps.create_volume_snapshots(self.pro_ws_name, vs_name, vsc_name, volume_name)
-        print(rr.json())
+        storage_steps.create_volume_snapshots(self.pro_ws_name, vs_name, vsc_name, volume_name)
         # 验证存储卷快照状态为准备就绪，最长等待时间为150s
         while i < 150:
             r1 = storage_steps.search_vs_by_name(vs_name)
