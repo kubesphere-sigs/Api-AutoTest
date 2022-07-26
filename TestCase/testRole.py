@@ -118,8 +118,7 @@ class TestRole(object):
         platform_steps.step_create_user(user_name, role_name)
         time.sleep(3)
         # 删除角色
-        res = platform_steps.step_delete_role(role_name)
-        print(res.json())
+        platform_steps.step_delete_role(role_name)
         # 删除用户
         platform_steps.step_delete_user(user_name)
 
