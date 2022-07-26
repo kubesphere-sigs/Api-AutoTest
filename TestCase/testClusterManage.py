@@ -326,80 +326,80 @@ class TestCluster(object):
             assert status == 'Active'
 
     @allure.story('项目')
-    @allure.title('查询集群中所有系统项目的配额信息')
+    @allure.title('查询集群中任一系统项目的配额信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_one_system_project_quota(self):
         # 获取集群中系统项目的数量
         response = cluster_steps.step_query_system_project('')
         project_count = response.json()['totalItems']
-        for i in range(0, project_count):
-            # 获取集群任意系统项目的名称
-            project_name = response.json()['items'][i]['metadata']['name']
-            # 查询项目的配额信息
-            r = cluster_steps.step_get_project_quota(project_name)
-            # 获取项目的配额信息
-            used = r.json()['data']['used']
-            # 验证项目配额信息获取成功
-            assert 'count/pods' in used
+        i = random.randint(0, project_count-1)
+        # 获取集群任一系统项目的名称
+        project_name = response.json()['items'][i]['metadata']['name']
+        # 查询项目的配额信息
+        r = cluster_steps.step_get_project_quota(project_name)
+        # 获取项目的配额信息
+        used = r.json()['data']['used']
+        # 验证项目配额信息获取成功
+        assert 'count/pods' in used
 
     @allure.story('项目')
-    @allure.title('查询集群中所有系统项目的LimitRanges信息')
+    @allure.title('查询集群中任一系统项目的LimitRanges信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_one_system_project_detail(self):
         # 获取集群中系统项目的数量
         response = cluster_steps.step_query_system_project('')
         project_count = response.json()['totalItems']
-        for i in range(0, project_count):
-            # 获取集群任意系统项目的名称
-            project_name = response.json()['items'][i]['metadata']['name']
-            # 查询项目的LimitRanges
-            r = cluster_steps.step_get_project_limit_ranges(project_name)
-            # 获取请求资源的kind
-            kind = r.json()['kind']
-            # 验证请求资源的kind为LimitRangeList
-            assert kind == 'LimitRangeList'
+        i = random.randint(0, project_count-1)
+        # 获取集群任一系统项目的名称
+        project_name = response.json()['items'][i]['metadata']['name']
+        # 查询项目的LimitRanges
+        r = cluster_steps.step_get_project_limit_ranges(project_name)
+        # 获取请求资源的kind
+        kind = r.json()['kind']
+        # 验证请求资源的kind为LimitRangeList
+        assert kind == 'LimitRangeList'
 
     @allure.story('项目')
-    @allure.title('查询集群中所有系统项目的工作负载信息')
+    @allure.title('查询集群中任一系统项目的工作负载信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_system_project_workload(self):
         # 获取集群中系统项目的数量
         response = cluster_steps.step_query_system_project('')
         project_count = response.json()['totalItems']
-        for i in range(0, project_count):
-            # 获取集群任意系统项目的名称
-            response = cluster_steps.step_query_system_project('')
-            project_name = response.json()['items'][i]['metadata']['name']
-            # 查询项目的工作负载信息
-            response = cluster_steps.step_get_project_workload(project_name)
-            # 获取接口的响应数据
-            data = response.json()['data']
-            # 验证接口响应数据正确
-            data_except = ['daemonsets', 'deployments', 'jobs', 'persistentvolumeclaims', 'statefulsets']
-            assert data_except[random.randint(0, 4)] in data
+        i = random.randint(0, project_count-1)
+        # 获取集群任一系统项目的名称
+        response = cluster_steps.step_query_system_project('')
+        project_name = response.json()['items'][i]['metadata']['name']
+        # 查询项目的工作负载信息
+        response = cluster_steps.step_get_project_workload(project_name)
+        # 获取接口的响应数据
+        data = response.json()['data']
+        # 验证接口响应数据正确
+        data_except = ['daemonsets', 'deployments', 'jobs', 'persistentvolumeclaims', 'statefulsets']
+        assert data_except[random.randint(0, 4)] in data
 
     @allure.story('项目')
-    @allure.title('验证集群中所有系统项目的pod运行正常')
+    @allure.title('验证集群中任一系统项目的pod运行正常')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_check_system_project_pods(self):
         # 获取集群中系统项目的数量
         response = cluster_steps.step_query_system_project('')
         project_count = response.json()['totalItems']
-        # 获取集群中所有系统项目的名称
-        for i in range(0, project_count):
-            project_name = response.json()['items'][i]['metadata']['name']
-            # 查询项目的pods信息
-            r = cluster_steps.step_get_pods_of_project(project_name=project_name)
-            # 获取pod的数量
-            pod_count = r.json()['totalItems']
-            # 获取所有pod的状态
-            for j in range(0, pod_count):
-                state = r.json()['items'][j]['status']['phase']
-                # 获取pod的名称
-                pod_name = r.json()['items'][j]['metadata']['name']
-                if state not in ['Running', 'Succeeded']:
-                    print(pod_name)
-                # 验证pod的运行状态
+        # 获取集群中任一系统项目的名称
+        i = random.randint(0, project_count-1)
+        project_name = response.json()['items'][i]['metadata']['name']
+        # 查询项目的pods信息
+        r = cluster_steps.step_get_pods_of_project(project_name=project_name)
+        # 获取pod的数量
+        pod_count = r.json()['totalItems']
+        # 获取所有pod的状态
+        for j in range(0, pod_count):
+            state = r.json()['items'][j]['status']['phase']
+            # 获取pod的名称
+            pod_name = r.json()['items'][j]['metadata']['name']
+            if state not in ['Running', 'Succeeded']:
+                print(pod_name)
+            # 验证pod的运行状态
                 pytest.assume(state in ['Running', 'Succeeded'])
 
     @allure.story('项目')
@@ -510,195 +510,201 @@ class TestCluster(object):
         assert status == 'Failure'
 
     @allure.story('应用负载')
-    @allure.title('查看集群所有系统项目的deployments，并验证其运行正常')
+    @allure.title('查看集群任一系统项目的deployments，并验证其运行正常')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_check_deployments_of_cluster(self):
         # 查询集群中所有的系统项目
         response = cluster_steps.step_get_system_of_cluster()
         system_count = response.json()['totalItems']
-        # 查询集群中所有系统项目的deployments
-        for i in range(0, system_count):
-            system_name = response.json()['items'][i]['metadata']['name']
-            re = cluster_steps.step_get_resource_of_cluster_by_project('deployments', system_name)
-            # 获取集群deployments的数量
+        # 查询集群中任一系统项目的deployments
+        i = random.randint(0, system_count - 1)
+        system_name = response.json()['items'][i]['metadata']['name']
+        re = cluster_steps.step_get_resource_of_cluster_by_project('deployments', system_name)
+        # 获取集群deployments的数量
+        try:
             count = re.json()['totalItems']
-            # 获取集群所有的deployments的状态
-            for j in range(0, count):
-                state = re.json()['items'][j]['status']['conditions'][0]['status']
-                # 验证deployment的状态为True
-                assert state == 'True'
+        except Exception as e:
+            print(e)
+        # 获取集群所有的deployments的状态
+        for j in range(0, count):
+            state = re.json()['items'][j]['status']['conditions'][0]['status']
+            # 验证deployment的状态为True
+            assert state == 'True'
 
     @allure.story('应用负载')
-    @allure.title('查看集群所有的deployments的Revision Records')
+    @allure.title('查看集群任一的deployments的Revision Records')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_check_deployments_revision_records(self):
         # 查询集群所有的deployments
         response = cluster_steps.step_get_resource_of_cluster('deployments')
         # 获取集群deployments的数量
         count = response.json()['totalItems']
-        # 获取集群所有的deployments的labels
-        for i in range(0, count):
-            label_selector = ''
-            project_name = response.json()['items'][i]['metadata']['namespace']
-            labels = response.json()['items'][i]['spec']['selector']['matchLabels']
-            # 将labels的key和value拼接为label_selector
-            keys = list(labels.keys())
-            values = list(labels.values())
-            for j in range(0, len(keys)):
-                label_selector += keys[j] + '=' + values[j] + ','
-            # 去掉最后的逗号
-            label_selector = label_selector[:-1]
-            # 查看deployments的revision records信息
-            r = cluster_steps.step_get_deployment_revision_records(project_name, label_selector)
-            # 获取请求的资源类型
-            kind = r.json()['kind']
-            # 验证请求的资源类型为ReplicaSetList
-            assert kind == 'ReplicaSetList'
+        # 获取集群任一的deployments的labels
+        i = random.randint(0, count-1)
+        label_selector = ''
+        project_name = response.json()['items'][i]['metadata']['namespace']
+        labels = response.json()['items'][i]['spec']['selector']['matchLabels']
+        # 将labels的key和value拼接为label_selector
+        keys = list(labels.keys())
+        values = list(labels.values())
+        for j in range(0, len(keys)):
+            label_selector += keys[j] + '=' + values[j] + ','
+        # 去掉最后的逗号
+        label_selector = label_selector[:-1]
+        # 查看deployments的revision records信息
+        r = cluster_steps.step_get_deployment_revision_records(project_name, label_selector)
+        # 获取请求的资源类型
+        kind = r.json()['kind']
+        # 验证请求的资源类型为ReplicaSetList
+        assert kind == 'ReplicaSetList'
 
     @allure.story('应用负载')
-    @allure.title('查看集群所有系统项目的statefulSets，并验证其运行正常')
+    @allure.title('查看集群任一系统项目的statefulSets，并验证其运行正常')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_check_statefulsets_of_cluster(self):
         # 查询集群中所有的系统项目
         response = cluster_steps.step_get_system_of_cluster()
         system_count = response.json()['totalItems']
-        # 查询集群所有系统项目的statefulSets
-        for i in range(0, system_count):
-            system_name = response.json()['items'][i]['metadata']['name']
-            re = cluster_steps.step_get_resource_of_cluster_by_project('statefulsets', system_name)
-            # 获取集群statefulSets的数量
-            count = re.json()['totalItems']
-            # 获取集群所有的statefulSets的副本数和ready的副本数
-            for j in range(0, count):
-                replica = re.json()['items'][j]['status']['replicas']
-                readyReplicas = re.json()['items'][j]['status']['readyReplicas']
-                # 验证每个statefulSets的ready的副本数=副本数
-                assert replica == readyReplicas
+        # 查询集群任一系统项目的statefulSets
+        i = random.randint(0, system_count-1)
+        system_name = response.json()['items'][i]['metadata']['name']
+        re = cluster_steps.step_get_resource_of_cluster_by_project('statefulsets', system_name)
+        # 获取集群statefulSets的数量
+        count = re.json()['totalItems']
+        # 获取集群所有的statefulSets的副本数和ready的副本数
+        for j in range(0, count):
+            replica = re.json()['items'][j]['status']['replicas']
+            readyReplicas = re.json()['items'][j]['status']['readyReplicas']
+            # 验证每个statefulSets的ready的副本数=副本数
+            assert replica == readyReplicas
 
     @allure.story('应用负载')
-    @allure.title('查看集群所有系统项目的daemonSets，并验证其运行正常')
+    @allure.title('查看集群任一系统项目的daemonSets，并验证其运行正常')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_check_daemonsets_of_cluster(self):
         # 查询集群中所有的系统项目
         response = cluster_steps.step_get_system_of_cluster()
         system_count = response.json()['totalItems']
-        # 查询集群所有系统项目的daemonSets
-        for i in range(0, system_count):
-            system_name = response.json()['items'][i]['metadata']['name']
-            re = cluster_steps.step_get_resource_of_cluster_by_project('daemonsets', system_name)
-            # 获取集群daemonSets的数量
-            count = re.json()['totalItems']
-            # 获取集群所有的daemonSets的currentNumberScheduled和desiredNumberScheduled
-            for j in range(0, count):
-                currentNumberScheduled = re.json()['items'][j]['status']['currentNumberScheduled']
-                desiredNumberScheduled = re.json()['items'][j]['status']['desiredNumberScheduled']
-                # 验证每个daemonSets的currentNumberScheduled=desiredNumberScheduled
-                assert currentNumberScheduled == desiredNumberScheduled
+        # 查询集群任一系统项目的daemonSets
+        i = random.randint(0, system_count-1)
+        system_name = response.json()['items'][i]['metadata']['name']
+        re = cluster_steps.step_get_resource_of_cluster_by_project('daemonsets', system_name)
+        # 获取集群daemonSets的数量
+        count = re.json()['totalItems']
+        # 获取集群所有的daemonSets的currentNumberScheduled和desiredNumberScheduled
+        for j in range(0, count):
+            currentNumberScheduled = re.json()['items'][j]['status']['currentNumberScheduled']
+            desiredNumberScheduled = re.json()['items'][j]['status']['desiredNumberScheduled']
+            # 验证每个daemonSets的currentNumberScheduled=desiredNumberScheduled
+            assert currentNumberScheduled == desiredNumberScheduled
 
     @allure.story('应用负载')
-    @allure.title('查看集群所有的daemonSets的详情信息')
+    @allure.title('查看集群任一的daemonSets的详情信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_check_daemonsets_detail_of_cluster(self):
         # 查询集群所有的daemonSets
         response = cluster_steps.step_get_resource_of_cluster('daemonsets')
         # 获取集群daemonSets的数量
         count = response.json()['totalItems']
-        # 获取集群中所有的daemonSets的名称和所在的项目名称
-        for i in range(0, count):
-            resource_name = response.json()['items'][i]['metadata']['name']
-            project_name = response.json()['items'][i]['metadata']['namespace']
-            # 查询daemonSets的详细信息
-            r = cluster_steps.step_get_app_workload_detail(project_name, 'daemonsets', resource_name)
-            # 验证信息查询成功
-            assert r.json()['kind'] == 'DaemonSet'
+        # 获取集群中任一的daemonSets的名称和所在的项目名称
+        i = random.randint(0, count-1)
+        resource_name = response.json()['items'][i]['metadata']['name']
+        project_name = response.json()['items'][i]['metadata']['namespace']
+        # 查询daemonSets的详细信息
+        r = cluster_steps.step_get_app_workload_detail(project_name, 'daemonsets', resource_name)
+        # 验证信息查询成功
+        assert r.json()['kind'] == 'DaemonSet'
 
     @allure.story('应用负载')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('type, title',
-                             [('statefulsets', '查看集群所有的statefulSets的Revision Records'),
-                              ('daemonsets', '查看集群所有的daemonSets的Revision Records')])
+                             [('statefulsets', '查看集群任一的statefulSets的Revision Records'),
+                              ('daemonsets', '查看集群任一的daemonSets的Revision Records')])
     def test_check_app_workload_revision_records(self, type, title):
         # 查询集群所有的daemonSets
         response = cluster_steps.step_get_resource_of_cluster(type)
         # 获取集群daemonSets的数量
         count = response.json()['totalItems']
-        # 获取所有的daemonSets的label、project_name和daemonSets的名称
-        for i in range(0, count):
-            labels = response.json()['items'][i]['metadata']['labels']
-            # 将labels的key和value拼接为label_selector
-            keys = list(labels.keys())
-            values = list(labels.values())
-            for j in range(0, len(keys)):
-                label_selector = ''
-                label_selector += keys[j] + '=' + values[j] + ','
-            # 去掉最后的逗号
-            label_selector = label_selector[:-1]
-            # 获取daemonSets的名称和所在的项目名称
-            project_name = response.json()['items'][i]['metadata']['namespace']
-            # 查看daemonSets的revision Records 信息
-            r = cluster_steps.step_get_app_workload_revision_records(project_name, label_selector)
-            # 获取请求的资源类型
-            kind = r.json()['kind']
-            # 验证请求的资源类型为ControllerRevisionList
-            assert kind == 'ControllerRevisionList'
+        # 获取任一的daemonSets的label、project_name和daemonSets的名称
+        i = random.randint(0, count-1)
+        labels = response.json()['items'][i]['metadata']['labels']
+        # 将labels的key和value拼接为label_selector
+        keys = list(labels.keys())
+        values = list(labels.values())
+        for j in range(0, len(keys)):
+            label_selector = ''
+            label_selector += keys[j] + '=' + values[j] + ','
+        # 去掉最后的逗号
+        label_selector = label_selector[:-1]
+        # 获取daemonSets的名称和所在的项目名称
+        project_name = response.json()['items'][i]['metadata']['namespace']
+        # 查看daemonSets的revision Records 信息
+        r = cluster_steps.step_get_app_workload_revision_records(project_name, label_selector)
+        # 获取请求的资源类型
+        kind = r.json()['kind']
+        # 验证请求的资源类型为ControllerRevisionList
+        assert kind == 'ControllerRevisionList'
 
     @allure.story('应用负载')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('type, title',
-                             [('jobs', '查看集群所有的jobs,并验证运行状态正常')])
+                             [('jobs', '查看集群任一系统项目的jobs,并验证运行状态正常')])
     def test_check_jobs_of_cluster(self, type, title):
         # 查询集群中所有的系统项目
         response = cluster_steps.step_get_system_of_cluster()
         system_count = response.json()['totalItems']
-        # 查询集群所有系统项目的Jobs
-        for i in range(0, system_count):
-            system_name = response.json()['items'][i]['metadata']['name']
-            re = cluster_steps.step_get_resource_of_cluster_by_project(type, system_name)
-            # 获取集群Jobs的数量
+        # 查询集群任一系统项目的Jobs
+        i = random.randint(0, system_count-1)
+        system_name = response.json()['items'][i]['metadata']['name']
+        re = cluster_steps.step_get_resource_of_cluster_by_project(type, system_name)
+        # 获取集群Jobs的数量
+        try:
             count = re.json()['totalItems']
             # 获取集群所有的Jobs的type
             for j in range(0, count):
                 state = re.json()['items'][j]['status']['conditions'][0]['status']
                 # 验证运行状态正常
                 assert state == 'True'
+        except Exception as e:
+            print(e)
 
     @allure.story('应用负载')
     @allure.severity(allure.severity_level.CRITICAL)
     @allure.title('{title}')
     @pytest.mark.parametrize('type, title',
-                             [('deployments', '查看集群所有的deployments的Monitoring'),
-                              ('statefulsets', '查看集群所有的statefulSets的Monitoring'),
-                              ('daemonsets', '查看集群所有的daemonSets的Monitoring'),
-                              ('pods', '查看集群所有pod的Monitoring'),
-                              ('services', '查看集群所有service的Monitoring')])
+                             [('deployments', '查看集群任一的deployments的Monitoring'),
+                              ('statefulsets', '查看集群任一的statefulSets的Monitoring'),
+                              ('daemonsets', '查看集群任一的daemonSets的Monitoring'),
+                              ('pods', '查看集群任一pod的Monitoring'),
+                              ('services', '查看集群任一service的Monitoring')])
     def test_check_app_workload_monitoring(self, type, title):
         # 查询集群所有的daemonSets
         response = cluster_steps.step_get_resource_of_cluster(type)
         # 获取集群daemonSets的数量
         count = response.json()['totalItems']
-        # 获取所有的daemonSets的project_name和daemonSets的名称
-        for i in range(0, count):
-            project_name = response.json()['items'][i]['metadata']['namespace']
-            resource_name = response.json()['items'][i]['metadata']['name']
-            # 查看监控信息
-            r = cluster_steps.step_get_app_workload_monitoring(project_name, type, resource_name)
-            # 获取请求结果中监控数据的类型
-            resultType = r.json()['results'][0]['data']['resultType']
-            # 验证请求结果中监控数据的类型为vector
-            assert resultType == 'vector'
+        # 获取任一的daemonSets的project_name和daemonSets的名称
+        i = random.randint(0, count-1)
+        project_name = response.json()['items'][i]['metadata']['namespace']
+        resource_name = response.json()['items'][i]['metadata']['name']
+        # 查看监控信息
+        r = cluster_steps.step_get_app_workload_monitoring(project_name, type, resource_name)
+        # 获取请求结果中监控数据的类型
+        resultType = r.json()['results'][0]['data']['resultType']
+        # 验证请求结果中监控数据的类型为vector
+        assert resultType == 'vector'
 
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('story, type, title',
-                             [('应用负载', 'deployments', '查看集群所有的deployments的event'),
-                              ('应用负载', 'statefulsets', '查看集群所有的statefulSets的event'),
-                              ('应用负载', 'daemonsets', '查看集群所有的daemonSets的event'),
-                              ('应用负载', 'jobs', '查看集群所有jobs的event'),
-                              ('应用负载', 'cronjobs', '查看集群所有cronjobs的event'),
-                              ('应用负载', 'pods', '查看集群所有pod的event'),
-                              ('应用负载', 'services', '查看集群所有service的event'),
-                              ('存储', 'persistentvolumeclaims', '查看集群所有pvc的event')
+                             [('应用负载', 'deployments', '查看集群任一的deployments的event'),
+                              ('应用负载', 'statefulsets', '查看集群任一的statefulSets的event'),
+                              ('应用负载', 'daemonsets', '查看集群任一的daemonSets的event'),
+                              ('应用负载', 'jobs', '查看集群任一jobs的event'),
+                              ('应用负载', 'cronjobs', '查看集群任一cronjobs的event'),
+                              ('应用负载', 'pods', '查看集群任一pod的event'),
+                              ('应用负载', 'services', '查看集群任一service的event'),
+                              ('存储', 'persistentvolumeclaims', '查看集群任一pvc的event')
                               ])
     def test_check_app_workload_event(self, story, type, title):
         allure.dynamic.story(story)
@@ -706,17 +712,17 @@ class TestCluster(object):
         response = cluster_steps.step_get_resource_of_cluster(type)
         # 获取集群某一资源的数量
         count = response.json()['totalItems']
-        # 获取某一资源所有的project_name,资源的名称和uid
-        for i in range(0, count):
-            project_name = response.json()['items'][i]['metadata']['namespace']
-            resource_name = response.json()['items'][i]['metadata']['name']
-            resource_uid = response.json()['items'][i]['metadata']['uid']
-            # 查询daemonSets的event信息
-            r = cluster_steps.step_get_resource_event(project_name, type, resource_name, resource_uid)
-            # 获取请求结果的类型
-            kind = r.json()['kind']
-            # 验证请求结果的类型为EventList
-            assert kind == 'EventList'
+        # 获取任一资源的project_name,资源的名称和uid
+        i = random.randint(0, count-1)
+        project_name = response.json()['items'][i]['metadata']['namespace']
+        resource_name = response.json()['items'][i]['metadata']['name']
+        resource_uid = response.json()['items'][i]['metadata']['uid']
+        # 查询daemonSets的event信息
+        r = cluster_steps.step_get_resource_event(project_name, type, resource_name, resource_uid)
+        # 获取请求结果的类型
+        kind = r.json()['kind']
+        # 验证请求结果的类型为EventList
+        assert kind == 'EventList'
 
     @allure.story('应用负载')
     @allure.title('{title}')
@@ -839,18 +845,19 @@ class TestCluster(object):
         count = response.json()['totalItems']
         running_resource = []
         readyReplicas = 0
-        for i in range(0, count):
-            if type == 'daemonsets':
-                readyReplicas = response.json()['items'][i]['status']['numberReady']
-                replicas = response.json()['items'][i]['status']['numberAvailable']
-            else:
-                try:
-                    readyReplicas = response.json()['items'][i]['status']['readyReplicas']
-                except Exception as e:
-                    print(e)
-                replicas = response.json()['items'][i]['status']['replicas']
-            if readyReplicas == replicas:
-                running_resource.append(response.json()['items'][i]['metadata']['name'])
+        # 获取任一状态为运行中的资源名称
+        i = random.randint(0, count-1)
+        if type == 'daemonsets':
+            readyReplicas = response.json()['items'][i]['status']['numberReady']
+            replicas = response.json()['items'][i]['status']['numberAvailable']
+        else:
+            try:
+                readyReplicas = response.json()['items'][i]['status']['readyReplicas']
+            except Exception as e:
+                print(e)
+            replicas = response.json()['items'][i]['status']['replicas']
+        if readyReplicas == replicas:
+            running_resource.append(response.json()['items'][i]['metadata']['name'])
         # 使用名称和状态查询资源
         for name in running_resource:
             r = cluster_steps.step_get_resource_of_cluster(type, 'name=' + name, 'status=running')
@@ -982,44 +989,44 @@ class TestCluster(object):
             assert response.status_code == 200
 
     @allure.story('CRDs')
-    @allure.title('查询所有CRD的详情信息')
+    @allure.title('查询任一CRD的详情信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_crd_detail(self):
         # 查询集群中的crd
         response = cluster_steps.step_get_resource_of_cluster(resource_type='customresourcedefinitions')
         # 获取crd的数量
         count = response.json()['totalItems']
-        # 获取crd的名称
-        for i in range(0, count):
-            name = response.json()['items'][i]['metadata']['name']
-            # 查询CRD的详情信息
-            r = cluster_steps.step_get_crd_detail(name)
-            # 获取查询结果中的kind
-            kind = r.json()['kind']
-            # 验证查询结果正确
-            assert kind == 'CustomResourceDefinition'
+        # 获取任一crd的名称
+        i = random.randint(0, count-1)
+        name = response.json()['items'][i]['metadata']['name']
+        # 查询CRD的详情信息
+        r = cluster_steps.step_get_crd_detail(name)
+        # 获取查询结果中的kind
+        kind = r.json()['kind']
+        # 验证查询结果正确
+        assert kind == 'CustomResourceDefinition'
 
     @allure.story('CRDs')
-    @allure.title('查询所有CRD的FederatedGroupList')
+    @allure.title('查询任一CRD的FederatedGroupList')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_crd_federated_group_list(self):
         # 查询集群中的crd
         response = cluster_steps.step_get_resource_of_cluster(resource_type='customresourcedefinitions')
         # 获取crd的数量
         count = response.json()['totalItems']
-        # 获取crd的group和kind
-        for i in range(0, count):
-            # 获取crd的名称
-            name = response.json()['items'][i]['metadata']['name']
-            # 获取crd的group,version和kind
-            re = cluster_steps.step_get_crd_detail(name)
-            group = re.json()['spec']['group']
-            version = re.json()['spec']['versions'][0]['name']
-            kind = response.json()['items'][i]['spec']['names']['kind']
-            # 查询crd的FederatedGroupList信息
-            r = cluster_steps.step_get_crd_federated_group_list(group, version, kind.lower())
-            # 验证查询结果正确
-            assert r.status_code == 200
+        # 获取任一crd的group和kind
+        i = random.randint(0, count-1)
+        # 获取crd的名称
+        name = response.json()['items'][i]['metadata']['name']
+        # 获取crd的group,version和kind
+        re = cluster_steps.step_get_crd_detail(name)
+        group = re.json()['spec']['group']
+        version = re.json()['spec']['versions'][0]['name']
+        kind = response.json()['items'][i]['spec']['names']['kind']
+        # 查询crd的FederatedGroupList信息
+        r = cluster_steps.step_get_crd_federated_group_list(group, version, kind.lower())
+        # 验证查询结果正确
+        assert r.status_code == 200
 
     @allure.story('存储')
     @allure.title('按状态查询存储卷，并验证查询结果正确')
@@ -1035,91 +1042,97 @@ class TestCluster(object):
             assert status == 'Bound'
 
     @allure.story('存储')
-    @allure.title('查询每一个存储卷的详情信息')
+    @allure.title('查询任一存储卷的详情信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_pvc_detail(self):
         # 查询集群的存储卷
         response = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims')
         # 获取存储卷的数量
         count = response.json()['totalItems']
-        # 获取所有存储卷的名称和所在namespace
-        for i in range(0, count):
-            name = response.json()['items'][i]['metadata']['name']
-            namespace = response.json()['items'][i]['metadata']['namespace']
-            # 查询存储卷的详情信息
-            r = cluster_steps.step_get_pvc_detail(namespace, name)
-            # 获取查询结果的kind
-            kind = r.json()['kind']
-            # 验证查询结果正确
-            assert kind == 'PersistentVolumeClaim'
+        # 获取任一存储卷的名称和所在namespace
+        i = random.randint(0, count-1)
+        name = response.json()['items'][i]['metadata']['name']
+        namespace = response.json()['items'][i]['metadata']['namespace']
+        # 查询存储卷的详情信息
+        r = cluster_steps.step_get_pvc_detail(namespace, name)
+        # 获取查询结果的kind
+        kind = r.json()['kind']
+        # 验证查询结果正确
+        assert kind == 'PersistentVolumeClaim'
 
     @allure.story('存储')
-    @allure.title('查询每一个存储卷的监控信息')
+    @allure.title('查询任一存储卷的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_pvc_metrics(self):
         # 查询集群存在的存储卷信息
         response = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims')
         # 获取存储卷的数量
         count = response.json()['totalItems']
-        # 获取所有存储卷的名称和所在namespace
-        for i in range(0, count):
-            name = response.json()['items'][i]['metadata']['name']
-            namespace = response.json()['items'][i]['metadata']['namespace']
-            # 获取当前时间的10位时间戳
-            now_timestamp = str(time.time())[0:10]
-            # 获取60分钟之前的时间时间戳
-            before_timestamp = commonFunction.get_before_timestamp(60)
-            # 查询每个pvc最近1个小时的监控信息
-            r = cluster_steps.step_get_metrics_of_pvc(namespace, name, before_timestamp, now_timestamp, '60s', '60')
+        # 获取任一存储卷的名称和所在namespace
+        i = random.randint(0, count-1)
+        name = response.json()['items'][i]['metadata']['name']
+        namespace = response.json()['items'][i]['metadata']['namespace']
+        # 获取当前时间的10位时间戳
+        now_timestamp = str(time.time())[0:10]
+        # 获取60分钟之前的时间时间戳
+        before_timestamp = commonFunction.get_before_timestamp(60)
+        # 查询pvc最近1个小时的监控信息
+        r = cluster_steps.step_get_metrics_of_pvc(namespace, name, before_timestamp, now_timestamp, '60s', '60')
+        try:
             # 获取查询到的数据的结果类型
             resultType = r.json()['results'][0]['data']['resultType']
             # 验证查询到的数据的结果类型
             assert resultType == 'matrix'
+        except Exception as e:
+            print(e)
+        assert r.status_code == 200
 
     @allure.story('存储')
-    @allure.title('查询每一个存储卷的pod信息,并验证pod运行正常')
+    @allure.title('查询任一存储卷的pod信息,并验证pod运行正常')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_pvc_pods(self):
         # 获取集群中所有的系统项目名称
         re = cluster_steps.step_get_system_of_cluster()
         project_count = re.json()['totalItems']
-        for i in range(0, project_count):
-            project = re.json()['items'][i]['metadata']['name']
-            # 查询项目中存在的存储卷信息
-            response = cluster_steps.step_get_project_pvc(project)
-            # 获取存储卷的数量
-            count = response.json()['totalItems']
-            if count > 0:
-                # 获取所有存储卷的名称和所在namespace
-                for j in range(0, count):
-                    name = response.json()['items'][j]['metadata']['name']
-                    # 查询存储卷的pod信息
-                    r = cluster_steps.step_get_pods_of_project(project, 'pvcName=' + name)
-                    # 获取pod的数量
-                    count_pod = r.json()['totalItems']
-                    # 获取所有pod的运行状态
-                    for k in range(0, count_pod):
-                        status = r.json()['items'][k]['status']['phase']
-                        # 验证pod的状态为Running
-                        assert status == 'Running'
+        i = random.randint(0, project_count-1)
+        project = re.json()['items'][i]['metadata']['name']
+        # 查询项目中存在的存储卷信息
+        response = cluster_steps.step_get_project_pvc(project)
+        # 获取存储卷的数量
+        count = response.json()['totalItems']
+        try:
+            # 获取任一存储卷的名称和所在namespace
+            j = random.randint(0, count-1)
+            name = response.json()['items'][j]['metadata']['name']
+            # 查询存储卷的pod信息
+            r = cluster_steps.step_get_pods_of_project(project, 'pvcName=' + name)
+            # 获取pod的数量
+            count_pod = r.json()['totalItems']
+            # 获取所有pod的运行状态
+            for k in range(0, count_pod):
+                status = r.json()['items'][k]['status']['phase']
+                # 验证pod的状态为Running
+                assert status == 'Running'
+        except Exception as e:
+            print(e)
 
     @allure.story('存储')
-    @allure.title('查看所有存储卷的快照信息')
+    @allure.title('查看任一存储卷的快照信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_pvc_snapshot(self):
         # 查询集群存在的存储卷信息
         response = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims')
         # 获取存储卷的数量
         count = response.json()['totalItems']
-        # 获取所有存储卷的名称和所在namespace
-        for i in range(0, count):
-            name = response.json()['items'][i]['metadata']['name']
-            namespace = response.json()['items'][i]['metadata']['namespace']
-            # 查询每个pvc的快照信息
-            r = cluster_steps.step_get_resource_of_cluster_by_project('volumesnapshots', namespace,
-                                                                      'persistentVolumeClaimName=' + name)
-            # 验证查询成功
-            assert r.status_code == 200
+        # 获取任一存储卷的名称和所在namespace
+        i = random.randint(0, count-1)
+        name = response.json()['items'][i]['metadata']['name']
+        namespace = response.json()['items'][i]['metadata']['namespace']
+        # 查询每个pvc的快照信息
+        r = cluster_steps.step_get_resource_of_cluster_by_project('volumesnapshots', namespace,
+                                                                  'persistentVolumeClaimName=' + name)
+        # 验证查询成功
+        assert r.status_code == 200
 
     @allure.story('存储')
     @allure.title('查询存储类型的详细信息')
