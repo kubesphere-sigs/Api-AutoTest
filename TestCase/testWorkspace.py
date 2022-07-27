@@ -20,7 +20,7 @@ class TestWorkSpace(object):
     else:
         __test__ = True
 
-    user_name = 'user-for-test-ws'
+    user_name = 'user-for-test-ws' + str(commonFunction.get_random())
     user_role = 'users-manager'
     ws_name = 'ws-for-test-ws' + str(commonFunction.get_random())
     ws_name1 = 'ws1-for-test-ws'
@@ -159,21 +159,20 @@ class TestWorkSpace(object):
         ws_name = 'test-ws' + str(commonFunction.get_random())
         # 创建企业空间
         workspace_steps.step_create_workspace(ws_name)
-        # 获取概览信息
-        res = workspace_steps.step_get_ws_num_info(ws_name)
-        # 获取用户数量
-        user_num = res.json()['results'][2]['data']['result'][0]['value'][1]
-        assert user_num == '1'
+        # 查询企业空间用户信息
+        response = workspace_steps.step_get_ws_user(ws_name, '')
+        user_name = response.json()['items'][0]['metadata']['name']
+        assert user_name == 'admin'
         # 将用户邀请到企业空间
         role = ws_name + '-viewer'
         workspace_steps.step_invite_user(ws_name, self.user_name, role)
-        # 获取概览信息
-        res_new = workspace_steps.step_get_ws_num_info(ws_name)
+        # 查询企业空间用户信息
+        res = workspace_steps.step_get_ws_user(ws_name, '')
         # 获取用户数量
-        new_user_num = res_new.json()['results'][2]['data']['result'][0]['value'][1]
-        assert new_user_num == '2'
+        user_num = res.json()['totalItems']
+        assert user_num == 2
         # 删除企业空间
-        # workspace_steps.step_delete_workspace(ws_name)
+        workspace_steps.step_delete_workspace(ws_name)
 
     @allure.story('企业空间设置-企业角色')
     @allure.title('在企业空间编辑角色的权限信息')
@@ -210,7 +209,7 @@ class TestWorkSpace(object):
         role_name = 'role' + str(commonFunction.get_random())
         workspace_steps.step_create_ws_role(self.ws_name, role_name, authority_create)
         # 将用户邀请到企业空间
-        r1 = workspace_steps.step_invite_user(self.ws_name, user_name, role_name)
+        workspace_steps.step_invite_user(self.ws_name, user_name, role_name)
         # 在企业空间中查询邀请的用户
         response = workspace_steps.step_get_ws_user(self.ws_name, user_name)
         # 验证邀请后的成员名称
@@ -402,29 +401,33 @@ class TestWorkSpace(object):
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('为用户分配企业组织')
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_assign_user(self):
         # 创建用户
         user_name = 'user' + str(commonFunction.get_random())
         user_role = 'users-manager'
         platform_steps.step_create_user(user_name, user_role)
+        # 创建企业空间
+        ws_name = 'test-ws' + str(commonFunction.get_random())
+        workspace_steps.step_create_workspace(ws_name)
         # 将用户邀请到企业空间
-        workspace_steps.step_invite_user(self.ws_name, user_name, self.ws_name + '-viewer')
+        workspace_steps.step_invite_user(ws_name, user_name, ws_name + '-viewer')
         # 创建企业组织
         group_name = 'group' + str(commonFunction.get_random())
-        data = {"kubesphere.io/workspace-role": "wx-regular",
+        data = {"kubesphere.io/workspace-role": ws_name + "-regular",
                 "kubesphere.io/alias-name": "",
                 "kubesphere.io/project-roles": "[]",
                 "kubesphere.io/devops-roles": "[]",
                 "kubesphere.io/creator": "admin"
                 }
         # 创建企业组织,并获取创建的企业组织的name
-        response = workspace_steps.step_create_department(self.ws_name, group_name, data)
+        response = workspace_steps.step_create_department(ws_name, group_name, data)
         name = response.json()['metadata']['name']
         # 获取该企业组织可分配的用户数量
         res = workspace_steps.step_get_user_for_department(name)
         counts = res.json()['totalItems']
         # 将指定用户绑定到指定企业组织
-        re = workspace_steps.step_binding_user(self.ws_name, name, user_name)
+        re = workspace_steps.step_binding_user(ws_name, name, user_name)
         # 获取绑定后返回的用户名
         binding_user = re.json()[0]['users'][0]
         # 校验绑定的用户名称
@@ -434,11 +437,14 @@ class TestWorkSpace(object):
         counts_new = r.json()['totalItems']
         # 验证可绑定的用户数量
         assert counts_new == counts - 1
-        #删除创建的用户
+        # 删除创建的企业空间
+        workspace_steps.step_delete_workspace(ws_name)
+        # 删除创建的用户
         platform_steps.step_delete_user(user_name)
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('将已绑定企业组织的用户再次绑定该企业组织')
+    @allure.severity(allure.severity_level.NORMAL)
     # 接口没有限制将同一个用户重复绑定到一个企业组织
     def wx_test_reassign_user(self):
         group_name = 'test2'
@@ -466,7 +472,7 @@ class TestWorkSpace(object):
         user_role = 'users-manager'
         platform_steps.step_create_user(user_name, user_role)
         group_name = 'group' + str(commonFunction.get_random())
-        data = {"kubesphere.io/workspace-role": "wx-regular",
+        data = {"kubesphere.io/workspace-role": self.ws_name + "-regular",
                 "kubesphere.io/alias-name": "",
                 "kubesphere.io/project-roles": "[]",
                 "kubesphere.io/devops-roles": "[]",
