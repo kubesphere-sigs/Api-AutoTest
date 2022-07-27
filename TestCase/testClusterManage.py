@@ -962,9 +962,13 @@ class TestCluster(object):
         # 获取资源数量
         count = response.json()['totalItems']
         # 遍历所有资源，验证资源的项目为kubesphere-system
-        for i in range(0, count):
-            project = response.json()['items'][i]['metadata']['namespace']
-            assert project == 'kubesphere-system'
+        if count > 0:
+            for i in range(0, count):
+                project = response.json()['items'][i]['metadata']['namespace']
+                assert project == 'kubesphere-system'
+        else:
+            print('项目kubesphere-system无' + type)
+
 
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
