@@ -499,12 +499,12 @@ class TestCluster(object):
         cluster_steps.step_delete_user_system(project_name)
         # 查询被删除的项目
         i = 0
-        while i < 60:
+        while i < 120:
             r = cluster_steps.step_get_user_project(project_name)
             count_result = r.json()['totalItems']
             if count_result > 0:
-                sleep(5)
-                i += 5
+                sleep(10)
+                i += 10
             else:
                 break
         assert count_result == 0
