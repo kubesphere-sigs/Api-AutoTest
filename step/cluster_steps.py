@@ -207,9 +207,16 @@ def step_create_user_project(project_name, alias_name, description):
     return response
 
 
-@allure.step('查询指定的用户项目')
-def step_get_user_project(project_name):
+@allure.step('集群/项目,查询指定的用户项目详情')
+def step_get_user_project_detail(project_name):
     url = env_url + '/api/v1/namespaces/' + project_name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('集群/项目，用户项目列表查询指定的用户项目')
+def step_get_user_project(project_name):
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces?name=' + project_name + '&sortBy=createTime&labelSelector=kubesphere.io%2Fworkspace%21%3Dsystem-workspace%2C%21kubesphere.io%2Fdevopsproject'
     response = requests.get(url=url, headers=get_header())
     return response
 
