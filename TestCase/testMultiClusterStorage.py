@@ -89,8 +89,8 @@ class Test_Multi_Cluster_Storage:
         multi_cluster_storages_step.delete_vsc(cluster_name=self.cluster_name, vsc_name=self.sc_name1)
 
     @allure.title('{title}')
-    # @pytest.mark.parametrize('id,url, params, data, story, title, method, severity, condition, except_result',
-    #                          DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='multi-cluster-storage'))
+    @pytest.mark.parametrize('id,url, params, data, story, title, method, severity, condition, except_result',
+                             DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='multi-cluster-storage'))
     def test_storage(self, id, url, params, data, story, title, method, severity, condition, except_result):
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
