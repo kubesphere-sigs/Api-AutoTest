@@ -1,5 +1,5 @@
 import pandas as pd
-
+import yaml
 
 class DoexcleByPandas(object):
 
@@ -29,3 +29,9 @@ class DoexcleByPandas(object):
             row_data = df.loc[i, ['story']].to_dict()
             test_data.append(row_data)
         return test_data
+
+    def get_data_from_yaml(self, filename):
+        with open(filename, 'r', encoding='utf-8') as f:
+            result = yaml.load(f.read(), Loader=yaml.FullLoader)
+        return result
+
