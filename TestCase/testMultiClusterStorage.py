@@ -3,20 +3,19 @@ from time import sleep
 import allure
 import pytest
 from common import commonFunction
-from common.commonFunction import get_random, get_sc_qingcloud, request_resource
+from common.commonFunction import get_random, request_resource
 from common.getData import DoexcleByPandas
 from step import multi_cluster_storages_step, project_steps, multi_cluster_steps, multi_worksapce_steps
 
-name = multi_cluster_steps.step_get_host_cluster_name()
 
-@allure.feature('multi_cluster_storage')
+@allure.feature('多集群存储')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
-@pytest.mark.skipif(commonFunction.get_multi_cluster_sc_qingcloud(name) is False, reason='csi-qingcloud存储插件不存在')
+@pytest.mark.skipif(commonFunction.get_multi_cluster_sc_qingcloud() is False, reason='csi-qingcloud存储插件不存在')
 class Test_Multi_Cluster_Storage:
     # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
     __test__ = commonFunction.check_multi_cluster()
 
-    cluster_name = multi_cluster_steps.step_get_host_cluster_name()
+    cluster_name = ''
     sc_name = 'test-multi-cluster-sc'
     sc_name1 = 'test-multi-cluster-vsc'
     ws_name = 'multi-ws-' + str(get_random())
@@ -37,6 +36,7 @@ class Test_Multi_Cluster_Storage:
     strategy = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}
 
     def setup_class(self):
+        self.cluster_name = multi_cluster_steps.step_get_host_cluster_name()
         multi_worksapce_steps.step_create_multi_ws(ws_name=self.ws_name, alias_name='', description='',
                                                    cluster_names=self.cluster_name)
         multi_worksapce_steps.step_create_multi_ws(ws_name=self.ws1_name, alias_name='', description='',
@@ -89,8 +89,8 @@ class Test_Multi_Cluster_Storage:
         multi_cluster_storages_step.delete_vsc(cluster_name=self.cluster_name, vsc_name=self.sc_name1)
 
     @allure.title('{title}')
-    @pytest.mark.parametrize('id,url, params, data, story, title, method, severity, condition, except_result',
-                             DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='multi-cluster-storage'))
+    # @pytest.mark.parametrize('id,url, params, data, story, title, method, severity, condition, except_result',
+    #                          DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='multi-cluster-storage'))
     def test_storage(self, id, url, params, data, story, title, method, severity, condition, except_result):
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级

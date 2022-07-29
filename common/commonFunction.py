@@ -3,12 +3,13 @@ import sys
 import yaml
 import json
 import random
-from step import project_steps
+from step import project_steps, multi_cluster_steps
 import time
 import datetime
 from common.getHeader import get_header, get_header_for_patch
 import allure
 from common.getConfig import get_apiserver
+from time import sleep
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -370,9 +371,11 @@ def get_today():
     now = datetime.datetime.now()
     return str(now)[0:10]
 
+
 # 获取指定时间的时间戳
 def get_custom_timestamp(day, clock):
     return time.mktime(time.strptime(day + ' ' + clock, '%Y-%m-%d %H:%M:%S'))
+
 
 # 获取x天前日期的时间戳
 def get_before_timestamp_day(day):
@@ -557,20 +560,43 @@ def random_ip():
 
 # 查询csi-qingcloud组件
 def get_sc_qingcloud():
-    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/storageclasses?limit=10&page=1&sortBy=createTime'
-    response = requests.get(url=url, headers=get_header())
-    te = response.json()['items'][0]['provisioner']
-    if te == 'disk.csi.qingcloud.com':
-        return True
-    else:
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/deployments?name=csi-qingcloud&sortBy=updateTime&limit=10'
+    r = requests.get(url=url, headers=get_header())
+    if r.json()['totalItems'] == 0:
         return False
+    elif r.json()['totalItems'] == 1:
+        i = 0
+        while i < 120:
+            r1 = requests.get(url=url, headers=get_header())
+            if r1.json()['items'][0]['status']['readyReplicas'] == r1.json()['items'][0]['status']['replicas']:
+                break
+            sleep(3)
+            i = i + 3
+        if r1.json()['items'][0]['status']['readyReplicas'] == r1.json()['items'][0]['status']['replicas']:
+            return True
+        else:
+            return False
+
 
 # 查询多集群csi-qingcloud组件
-def get_multi_cluster_sc_qingcloud(cluster_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/storageclasses?limit=10&page=1&sortBy=createTime'
-    response = requests.get(url=url, headers=get_header())
-    te = response.json()['items'][0]['provisioner']
-    if te == 'disk.csi.qingcloud.com':
-        return True
-    else:
+def get_multi_cluster_sc_qingcloud():
+    if check_multi_cluster() is False:
         return False
+    else:
+        cluster_name = multi_cluster_steps.step_get_host_cluster_name()
+        url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/deployments?name=csi-qingcloud&sortBy=updateTime&limit=10'
+        r = requests.get(url=url, headers=get_header())
+        if r.json()['totalItems'] == 0:
+            return False
+        elif r.json()['totalItems'] == 1:
+            i = 0
+            while i < 120:
+                r1 = requests.get(url=url, headers=get_header())
+                if r1.json()['items'][0]['status']['readyReplicas'] == r1.json()['items'][0]['status']['replicas']:
+                    break
+                sleep(3)
+                i = i + 3
+            if r1.json()['items'][0]['status']['readyReplicas'] == r1.json()['items'][0]['status']['replicas']:
+                return True
+            else:
+                return False
