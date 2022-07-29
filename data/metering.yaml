@@ -1,0 +1,10 @@
+- - 1
+  - /kapis/tenant.kubesphere.io/v1alpha2/metering/price
+  - ''
+  - ''
+  - 集群资源消费情况
+  - 查看接口返回的价格信息
+  - get
+  - critical
+  - r.json()['retention_day']
+  - 7d
