@@ -1402,7 +1402,7 @@ class TestCluster(object):
         group = 'production'
         description = 'test'
         provider = 'QingCloud Kubernetes Engine'
-        multi_cluster_steps.step_edit_information(self.cluster_name, group, description, provider)
+        multi_cluster_steps.step_edit_information(self.cluster_host_name, group, description, provider)
         # 查看集群基本信息
         response = multi_cluster_steps.step_get_base_information(self.cluster_host_name)
         group_actual = response.json()['metadata']['labels']['cluster.kubesphere.io/group']
