@@ -83,41 +83,62 @@ def step_get_audits_by_time(interval, start_time, end_time, *cluster_name):
 
 
 @allure.step('查询集群的事件总量')
-def step_get_event(start_time, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/events?operation=statistics&start_time=' + start_time + \
-                       '&end_time=' + end_time
+def step_get_event(start_time, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/events'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/events'
+    url = env_url + path + '?operation=statistics&start_time=' + start_time + '&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('查询集群事件总数的变化趋势')
-def step_get_events_trend(start_time, end_time, interval):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/events?operation=histogram&interval=' + interval + \
-                       's&start_time=' + start_time + '&end_time=' + end_time
+def step_get_events_trend(start_time, end_time, interval, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/events'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/events'
+    url = env_url + path + '?operation=histogram&interval=' + interval + 's&start_time=' + start_time + '&end_time=' + end_time
+    print(url)
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('按不同条件查询集群事件总数的变化趋势')
-def step_get_events_trend_by_search(search_rule, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/events?operation=histogram' \
-                       '&start_time=0&end_time=' + end_time + '&interval=1d&' + search_rule
+def step_get_events_trend_by_search(search_rule, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/events'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/events'
+    url = env_url + path + '?operation=histogram&start_time=0&end_time=' + end_time + '&interval=1d&' + search_rule
     response = requests.get(url=url, headers=get_header())
     return response
 
 
-@allure.step('按不同条件查询事件的信息')
-def step_get_events_by_search(search_rule, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/events?operation=query&from=0&size=50&' + search_rule + \
-                       '&start_time=0&end_time=' + end_time + '&interval=1d'
+@allure.step('按不同条件查询事件的详情信息')
+def step_get_events_by_search(search_rule, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/events'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/events'
+    url = env_url + path + '?operation=query&from=0&size=50&' + search_rule + '&start_time=0&end_time=' + end_time + '&interval=1d'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
-@allure.step('按时间范围查询事件的信息')
-def step_get_events_by_time(interval, start_time, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/events?operation=query&from=0&size=50' + \
-                       '&start_time=' + start_time + '&end_time=' + end_time + '&interval=' + interval
+@allure.step('按时间范围查询事件的详情信息')
+def step_get_events_by_time(interval, start_time, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/events'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/events'
+    url = env_url + path + '?operation=query&from=0&size=50' + '&start_time=' + start_time + '&end_time=' + end_time + '&interval=' + interval
     response = requests.get(url=url, headers=get_header())
     return response
 
