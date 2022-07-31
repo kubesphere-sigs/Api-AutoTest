@@ -492,7 +492,7 @@ def step_delete_volume(project_name, volume_name):
 @allure.step('查询指定的存储卷')
 def step_get_volume(project_name, volume_name):
     url1 = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
-           '/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime&limit=10'
+           '/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime'
     response = requests.get(url=url1, headers=get_header())
     return response
 
