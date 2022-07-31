@@ -144,89 +144,127 @@ def step_get_events_by_time(interval, start_time, end_time, *cluster_name):
 
 
 @allure.step('查询集群的日志总量')
-def step_get_log(start_time, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=statistics&start_time=' + start_time + \
-                       '&end_time=' + end_time
+def step_get_log(start_time, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/logs'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/logs'
+    url = env_url + path + '?operation=statistics&start_time=' + start_time + '&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('查询集群日志总数的变化趋势')
-def step_get_logs_trend(start_time, end_time, interval):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=histogram&interval=' + interval + \
-                       's&start_time=' + start_time + '&end_time=' + end_time
+def step_get_logs_trend(start_time, end_time, interval, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/logs'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/logs'
+    url = env_url + path + '?operation=histogram&interval=' + interval + 's&start_time=' + start_time + '&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('按不同条件查询集群日志总数的变化趋势')
-def step_get_logs_trend_by_search(search_rule, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=histogram&interval=1d&' + search_rule + '&end_time=' + end_time
+def step_get_logs_trend_by_search(search_rule, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/logs'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/logs'
+    url = env_url + path + '?operation=histogram&interval=1d&' + search_rule + '&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('按关键字查询日志的详情信息')
-def step_get_logs_by_keyword(keyword, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=query&log_query=' + keyword + \
-                       '&pods=&containers=&from=0&size=50&interval=1d&end_time=' + end_time
+def step_get_logs_by_keyword(keyword, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/logs'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/logs'
+    url = env_url + path + '?operation=query&log_query=' + keyword + '&pods=&containers=&from=0&size=50&interval=1d&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('按项目查询日志的详情信息')
-def step_get_logs_by_project(query_rule, project_name, end_time):
+def step_get_logs_by_project(query_rule, project_name, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/logs'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/logs'
     if query_rule == 'Exact Query':
         condition = 'namespaces'
     elif query_rule == 'Fuzzy Query':
         condition = 'namespace_query'
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=query&log_query=&pods=&containers=' \
-                       '&from=0&size=50&' + condition + '=' + project_name + '&interval=1d&end_time=' + end_time
+    url = env_url + path + '?operation=query&log_query=&pods=&containers=&from=0&size=50&' + condition + '=' + project_name + '&interval=1d&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('按工作负载查询日志的详情信息')
-def step_get_logs_by_workload(query_rule, workload_name, end_time):
+def step_get_logs_by_workload(query_rule, workload_name, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/logs'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/logs'
     if query_rule == 'Exact Query':
         condition = 'workloads'
     elif query_rule == 'Fuzzy Query':
         condition = 'workload_query'
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=query&log_query=&pods=&containers=' \
+    url = env_url + path + '?operation=query&log_query=&pods=&containers=' \
                        '&from=0&size=50&' + condition + '=' + workload_name + '&interval=1d&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('按容器组查询日志的详情信息')
-def step_get_logs_by_pod(query_rule, pod_name, end_time):
+def step_get_logs_by_pod(query_rule, pod_name, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/logs'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/logs'
     if query_rule == 'Exact Query':
         condition = 'pods'
     elif query_rule == 'Fuzzy Query':
         condition = 'pod_query'
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=query&log_query=&' + condition + '=' + pod_name + \
+    url = env_url + path + '?operation=query&log_query=&' + condition + '=' + pod_name + \
                        '&containers=&from=0&size=50&interval=1d&end_time=' + end_time
-    print(url)
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('按时间范围查询日志的详情信息')
-def step_get_logs_by_time(interval, start_time, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=query&log_query=&pods=&' \
-                    'containers=&from=0&size=50&interval=' + interval + '&start_time=' + start_time + '&end_time=' + end_time
+def step_get_logs_by_time(interval, start_time, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/logs'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/logs'
+    url = env_url + path + '?operation=query&log_query=&pods=&containers=&from=0&size=50&interval=' + interval + '&start_time=' + start_time + '&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('按容器查询日志的详情信息')
-def step_get_logs_by_container(query_rule, container_name, end_time):
+def step_get_logs_by_container(query_rule, container_name, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/logs'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/logs'
     if query_rule == 'Exact Query':
         condition = 'containers'
     elif query_rule == 'Fuzzy Query':
         condition = 'container_query'
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=query&log_query=&pods=' \
-                       '&' + condition + '=' + container_name + '&from=0&size=50&interval=1d&end_time=' + end_time
+    url = env_url + path + '?operation=query&log_query=&pods=&' + condition + '=' + container_name + '&from=0&size=50&interval=1d&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 
