@@ -124,7 +124,10 @@ def step_delete_ws_user(ws_name, user_name):
 
 @allure.step('在企业空间中查询指定用户')
 def step_get_ws_user(ws_name, user_name):
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers?name=' + user_name
+    if len(user_name) == 0:
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers?sortBy=createTime'
+    else:
+        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers?name=' + user_name
     response = requests.get(url, headers=get_header())
     return response
 
