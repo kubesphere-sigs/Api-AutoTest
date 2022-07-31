@@ -25,7 +25,7 @@ class TestCluster(object):
         # 获取所有集群的名称
         self.cluster_names = multi_cluster_steps.step_get_cluster_name()
         # 获取host集群的名称
-        self.cluster_name = multi_cluster_steps.step_get_host_cluster_name()
+        self.cluster_host_name = multi_cluster_steps.step_get_host_cluster_name()
         # 获取多集群环境的集群名称
         response = multi_cluster_steps.step_get_cluster()
         # 获取集群的数量
