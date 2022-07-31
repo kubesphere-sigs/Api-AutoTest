@@ -22,7 +22,7 @@ class TestCluster(object):
         __test__ = True
 
     # 从文件中读取用例信息
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='cluster')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/cluster.yaml')
 
     @allure.title('{title}')  # 设置用例标题
     # 将用例信息以参数化的方式传入测试方法
@@ -778,7 +778,7 @@ class TestCluster(object):
         if count > 0:
             # 获取第一个资源的名称
             name = response.json()['items'][0]['metadata']['name']
-            r = cluster_steps.step_get_resource_of_cluster(type, 'name=' + name[2:])
+            r = cluster_steps.step_get_resource_of_cluster(type, 'name=' + name[1:])
             # 获取查询结果的名称
             name_actual = r.json()['items'][0]['metadata']['name']
             # 验证查询结果正确
