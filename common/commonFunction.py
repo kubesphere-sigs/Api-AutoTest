@@ -9,6 +9,8 @@ import datetime
 from common.getHeader import get_header, get_header_for_patch
 import allure
 from common.getConfig import get_apiserver
+from common.getData import DoexcleByPandas
+
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -479,13 +481,13 @@ def request_resource(url, params, data, story, title, method, severity, conditio
             url_new = env_url + url + '?' + params
         else:
             url_new = env_url + url
-        print(url_new)
+        # print(url_new)
     else:
         if params != '':
             url_new = url + '?' + params
         else:
             url_new = url
-        print(url_new)
+        # print(url_new)
     if method == 'get':
         # 测试get方法
         r = requests.get(url_new, headers=get_header())
@@ -498,7 +500,7 @@ def request_resource(url, params, data, story, title, method, severity, conditio
     elif method == 'patch':
         # 测试patch方法
         data = eval(data)
-        print(data)
+        # print(data)
         r = requests.patch(url_new, headers=get_header_for_patch(), data=json.dumps(data))
 
     elif method == 'delete':
@@ -510,7 +512,7 @@ def request_resource(url, params, data, story, title, method, severity, conditio
         condition_new = eval(condition)  # 将字符串转化为表达式
         if isinstance(condition_new, str):
             # 判断表达式的结果是否为字符串，如果为字符串格式，则去掉其首尾的空格
-            print(condition_new.strip())
+            # print(condition_new.strip())
             assert condition_new.strip() == except_result
         else:
             assert condition_new == except_result
@@ -574,3 +576,11 @@ def get_multi_cluster_sc_qingcloud(cluster_name):
         return True
     else:
         return False
+
+# 读取excle数据，并将其写入yaml文件
+def write_data_excle_to_yaml(filename, sheet_name):
+    # 从excle中读取数据
+    p = DoexcleByPandas().get_data_for_pytest(filename, sheet_name)
+    # 将数据写入yaml
+    with open('../data/storage.yaml', 'w', encoding='utf-8') as f:
+        yaml.dump(data=p, stream=f, allow_unicode=True)
