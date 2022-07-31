@@ -47,8 +47,18 @@ class TestProject(object):
         project_steps.step_delete_volume(self.project_name_for_exel, self.volume_name)  # 删除存储卷
         project_steps.step_delete_project(self.ws_name, self.project_name)  # 删除创建的项目
         time.sleep(5)
-        project_steps.step_delete_project(self.ws_name, self.project_name_for_exel)  # 删除创建的项目
+        # 等待pvc删除成功，再删除项目
+        i = 0
+        while i < 300:
+            r = project_steps.step_get_volume(self.project_name_for_exel, self.volume_name)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                i += 3
+        project_steps.step_delete_project(self.ws_name, self.project_name_for_exel)
         time.sleep(5)
+
         workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的企业空间
         platform_steps.step_delete_user(self.user_name)  # 删除创建的用户
 
@@ -95,9 +105,25 @@ class TestProject(object):
         assert status == 'Bound'
         # 删除工作负载
         project_steps.step_delete_deploymennt(self.project_name, work_name)
-        # 删除pvc
+        # 等待工作负载删除成功，再删除pvc
+        j = 0
+        while j < 300:
+            re = project_steps.step_get_workload(self.project_name, type='deployments', condition=condition)
+            if re.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_pvc(self.project_name, volume_name)
-        # 删除项目
+        # 等待pvc删除成功，再删除项目
+        k = 0
+        while k < 300:
+            r = project_steps.step_get_volume(project_name, volume_name)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                k += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('存储管理-存储卷')
@@ -149,9 +175,25 @@ class TestProject(object):
         assert status == 'Bound'
         # 删除工作负载
         project_steps.step_delete_workload(self.project_name, 'statefulsets', work_name)
-        # 删除pvc
+        # 等待工作负载删除成功，再删除pvc
+        j = 0
+        while j < 300:
+            re = project_steps.step_get_workload(self.project_name, type='statefulsets', condition=condition)
+            if re.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_pvc(self.project_name, volume_name)
-        # 删除项目
+        # 等待pvc删除成功，再删除项目
+        k = 0
+        while k < 300:
+            r = project_steps.step_get_volume(project_name, volume_name)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                k += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('存储管理-存储卷')
@@ -191,9 +233,25 @@ class TestProject(object):
 
         # 删除工作负载
         project_steps.step_delete_workload(self.project_name, 'daemonsets', work_name)
-        # 删除pvc
+        # 等待工作负载删除成功，再删除pvc
+        j = 0
+        while j < 300:
+            re = project_steps.step_get_workload(self.project_name, type='daemonsets', condition=condition)
+            if re.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_pvc(self.project_name, volume_name)
-        # 删除项目
+        # 等待pvc删除成功，再删除项目
+        k = 0
+        while k < 300:
+            r = project_steps.step_get_volume(project_name, volume_name)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                k += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('存储管理-存储卷')
@@ -252,9 +310,25 @@ class TestProject(object):
 
         # 删除工作负载
         project_steps.step_delete_workload(project_name, 'deployments', service_name)
-        # 删除pvc
+        # 等待工作负载删除成功，再删除pvc
+        j = 0
+        while j < 300:
+            re = project_steps.step_get_workload(self.project_name, type='deployments', condition=condition)
+            if re.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_pvc(project_name, volume_name)
-        # 删除项目
+        # 等待pvc删除成功，再删除项目
+        k = 0
+        while k < 300:
+            r = project_steps.step_get_volume(project_name, volume_name)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                k += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story("项目设置-项目角色")
@@ -833,7 +907,15 @@ class TestProject(object):
 
         # 删除工作负载
         project_steps.step_delete_workload(project_name, 'deployments', workload_name)
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='deployments', condition=condition)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -865,7 +947,15 @@ class TestProject(object):
         assert name == workload_name
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='deployments', condition=condition)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -897,7 +987,15 @@ class TestProject(object):
         assert name == workload_name
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='deployments', condition='name=' + workload_name)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -943,7 +1041,15 @@ class TestProject(object):
         assert readyReplicas == replicas
         # 删除工作负载
         project_steps.step_delete_workload(project_name=project_name, type='statefulsets', work_name=workload_name)
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='statefulsets', condition=condition)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -979,7 +1085,15 @@ class TestProject(object):
         assert name == workload_name
         # 删除创建的statefulsets
         project_steps.step_delete_workload(project_name=project_name, type=type, work_name=workload_name)
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='statefulsets', condition=condition)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -1028,7 +1142,15 @@ class TestProject(object):
         # 删除创建的statefulsets
         re = project_steps.step_delete_workload(project_name=project_name, type=type, work_name=workload_name)
         assert re.json()['status'] == 'Success'
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='statefulsets', condition=condition)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -1066,7 +1188,15 @@ class TestProject(object):
         assert numberReady == cluster_node
         # 删除创建的daemonsets
         project_steps.step_delete_workload(project_name=project_name, type='daemonsets', work_name=workload_name)
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='daemonsets', condition=condition)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -1105,7 +1235,15 @@ class TestProject(object):
         # 删除创建的daemonsets
         re = project_steps.step_delete_workload(project_name=project_name, type=type, work_name=workload_name)
         assert re.json()['status'] == 'Success'
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='daemonsets', condition=condition)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -1421,7 +1559,15 @@ class TestProject(object):
         assert status == status_test
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='deployments', condition='name=' + workload_name)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -1445,7 +1591,7 @@ class TestProject(object):
                                          image=image, replicas=replicas, volume_info=volume_info,
                                          strategy=strategy_info)
         condition = 'status=running'
-        i =0
+        i = 0
         while i < 60:
             try:
                 # 按状态查询工作负载
@@ -1460,7 +1606,15 @@ class TestProject(object):
         assert count == 1
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='deployments', condition=condition)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -1485,13 +1639,31 @@ class TestProject(object):
                                          strategy=strategy_info)
         condition = 'name=' + workload_name
         # 按名称查询工作负载
-        response = project_steps.step_get_workload(project_name, 'deployments', condition)
-        name_actual = response.json()['items'][0]['metadata']['name']
+        i = 0
+        try:
+            while i < 60:
+                response = project_steps.step_get_workload(project_name, 'deployments', condition)
+                name_actual = response.json()['items'][0]['metadata']['name']
+                if name_actual:
+                    break
+                else:
+                    time.sleep(3)
+                    i += 3
+        except Exception as e:
+            print(e)
         # 验证查询结果
         assert name_actual == workload_name
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='deployments', condition=condition)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -1522,7 +1694,15 @@ class TestProject(object):
         assert name_actual == workload_name
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='deployments', condition=condition)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -1543,6 +1723,7 @@ class TestProject(object):
         project_name = 'test-pro' + str(commonFunction.get_random())
         project_steps.step_create_project(self.ws_name, project_name)
         workload_name = 'test-workload' + str(commonFunction.get_random())  # 工作负载名称
+        condition = 'name=' + workload_name
         container_name = 'container' + str(commonFunction.get_random())  # 容器名称
         image = 'nginx'  # 镜像名称
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
@@ -1561,7 +1742,15 @@ class TestProject(object):
         assert response.json()['kind'] == 'HorizontalPodAutoscaler'
         # 删除工作负载
         project_steps.step_delete_workload(project_name, 'deployments', workload_name)
-        # 删除项目
+        # 等待工作负载删除成功，再删除项目
+        j = 0
+        while j < 300:
+            r = project_steps.step_get_workload(project_name, type='deployments', condition=condition)
+            if r.json()['totalItems'] == 0:
+                break
+            else:
+                time.sleep(3)
+                j += 3
         project_steps.step_delete_project(self.ws_name, project_name)
 
     @allure.story('应用负载-工作负载')
@@ -1647,7 +1836,7 @@ class TestProject(object):
         # 查询被删除的存储卷
         i = 0
         # 验证存储卷被删除，最长等待时间为30s
-        while i < 30:
+        while i < 60:
             response = project_steps.step_get_volume(project_name, volume_name)
             # 存储卷快照的状态为布尔值，故先将结果转换成字符类型
             if response.json()['totalItems'] == 0:
@@ -2098,8 +2287,8 @@ class TestProject(object):
             response = project_steps.step_get_project(self.ws_name, pro_name)
             if response.json()['totalItems'] == 0:
                 break
-            time.sleep(1)
-            i = i + 1
+            time.sleep(2)
+            i = i + 2
         print("删除项目耗时:" + str(i) + '秒')
         assert response.json()['totalItems'] == 0
 
