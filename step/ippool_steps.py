@@ -115,6 +115,6 @@ def step_create_deploy(ippool_name, deploy_name, container_name, pro_name):
                                   }
                      }
             }
-    res = requests.post(url=url, data=json.dumps(data), headers=get_header())
+    requests.post(url=url, data=json.dumps(data), headers=get_header())
     r_new = requests.post(url=url_new, data=json.dumps(data), headers=get_header())
     return r_new
