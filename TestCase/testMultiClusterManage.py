@@ -39,7 +39,7 @@ class TestCluster(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_version(self):
         # 查询集群的版本信息
-        r = multi_cluster_steps.step_get_cluster_version(self.cluster_name)
+        r = multi_cluster_steps.step_get_cluster_version(self.cluster_host_name)
         # 获取版本号
         cluster_version = r.json()['gitVersion']
         # 验证版本号获取成功
@@ -1421,9 +1421,9 @@ class TestCluster(object):
         ws_name = 'test-ws' + str(commonFunction.get_random())
         alias_name = ''
         description = ''
-        multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, self.cluster_name)
+        multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, self.cluster_host_name)
         # 查看集群可见性
-        response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_name)
+        response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_host_name)
         # 获取所有已授权的企业空间名称
         ws_names = []
         count = response.json()['totalItems']
@@ -1443,13 +1443,13 @@ class TestCluster(object):
         ws_name = 'test-ws' + str(commonFunction.get_random())
         alias_name = ''
         description = ''
-        cluster_name = self.cluster_name
+        cluster_name = self.cluster_host_name
         multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
         # 取消企业空间在host集群的授权
-        multi_cluster_steps.step_unauthorized_cluster_visibility(self.cluster_name, ws_name)
+        multi_cluster_steps.step_unauthorized_cluster_visibility(self.cluster_host_name, ws_name)
         time.sleep(3)
         # 查看集群可见性
-        response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_name)
+        response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_host_name)
         # 获取所有的企业空间名称
         ws_names = []
         count = response.json()['totalItems']
@@ -1472,10 +1472,10 @@ class TestCluster(object):
         cluster_name = ''
         multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
         # 添加企业空间在host集群的授权
-        multi_cluster_steps.step_authorized_cluster_visibility(self.cluster_name, ws_name)
+        multi_cluster_steps.step_authorized_cluster_visibility(self.cluster_host_name, ws_name)
         # 查看集群可见性
         time.sleep(1)
-        response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_name)
+        response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_host_name)
         # 获取所有授权的企业空间名称
         ws_names = []
         count = response.json()['totalItems']
