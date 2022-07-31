@@ -734,3 +734,105 @@ def step_get_project_gateway(cluster_name, name):
     url = env_url + '/kapis/clusters/' + cluster_name + '/gateway.kubesphere.io/v1alpha1/gateways?name=' + name + '&sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
     return response
+
+
+@allure.step('查看日志接收器')
+def step_get_log_receiver(cluster_name, type):
+    """
+    :param cluster_name:
+    :param type: logging、events、auditing
+    :return:
+    """
+    url = env_url + '/apis/clusters/' + cluster_name + '/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging' \
+                                                       '-system/outputs?labelSelector=logging.kubesphere.io' \
+                                                       '%2Fcomponent%3D' + type
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('添加日志收集器')
+def step_add_log_receiver(cluster_name, type, log_type):
+    """
+    :param type: fluentd、kafka
+    :param log_type: logging、events、auditing
+    :return:
+    """
+    if type == 'fluentd':
+        spec = {"match": "kube.*", "forward": {"port": 24224, "host": "192.168.0.10"}}
+    elif type == 'kafka':
+        spec = {"match": "kube.*", "kafka": {"topics": "test-kafka", "brokers": "192.168.0.10:9092"}}
+
+    url = env_url + '/apis/clusters/' + cluster_name + '/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs'
+    data = {"apiVersion": "logging.kubesphere.io/v1alpha2", "kind": "Output",
+            "metadata": {"name": "forward-" + log_type, "namespace": "kubesphere-logging-system",
+                         "labels": {"logging.kubesphere.io/enabled": "true",
+                                    "logging.kubesphere.io/component": log_type},
+                         "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": spec}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('查看日志接收器')
+def step_get_log_receiver(cluster_name, type):
+    """
+    :param cluster_name:
+    :param type: logging、events、auditing
+    :return:
+    """
+
+    url = env_url + '/apis/clusters/' + cluster_name + '/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs?labelSelector=logging.kubesphere.io%2Fcomponent%3D' + type
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('删除日志接收器')
+def step_delete_log_receiver(cluster_name, name):
+    """
+    :param cluster_name:
+    :param name: 日志接收器名称
+    :return:
+    """
+    url = env_url + '/apis/clusters/' + cluster_name + '/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs/' + name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查看日志接收器详情')
+def step_get_log_receiver_detail(cluster_name, name):
+    """
+    :param cluster_name:
+    :param name: 日志接收器的名称
+    :return:
+    """
+    url = env_url + '/apis/clusters/' + cluster_name + '/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs/' + name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('更改日志接收器的状态')
+def step_modify_log_receiver_status(cluster_name, name, status):
+    """
+    :param name: 日志接收器名称
+    :param status: 日志接收器状态
+    :return:
+    """
+    url = env_url + '/apis/clusters/' + cluster_name + '/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs/' + name
+    data = {"metadata": {"labels": {"logging.kubesphere.io/enabled": status}}}
+    response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    return response
+
+
+@allure.step('编辑日志接收器的地址')
+def step_modify_log_receiver_address(cluster_name, name, host, port):
+    """
+    :param cluster_name:
+    :param host:
+    :param port:
+    :param name: 日志接收器名称
+    :return:
+    """
+    url = env_url + '/apis/clusters/' + cluster_name + '/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs/' + name
+    data = {"spec": {"forward": {"host": host, "port": port}}}
+    response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    return response
