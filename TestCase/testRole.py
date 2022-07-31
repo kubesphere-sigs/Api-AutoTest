@@ -14,7 +14,7 @@ from step import platform_steps
 @allure.feature('系统角色管理')
 class TestRole(object):
     # 从文件中读取用例信息
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='system_role')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/system_role.yaml')
 
     @allure.title('{title}')  # 设置用例标题
     # 将用例信息以参数化的方式传入测试方法

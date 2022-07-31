@@ -11,7 +11,7 @@ from common.getData import DoexcleByPandas
 @allure.feature('Help')
 class TestHelp(object):
     # 从文件中读取用例信息
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='help')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/help.yaml')
 
     @allure.title('{title}')  # 设置用例标题
     # 将用例信息以参数化的方式传入测试方法

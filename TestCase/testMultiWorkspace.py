@@ -25,8 +25,7 @@ class TestWorkSpace(object):
     ws_name = 'ws-for-test-multi-ws' + str(commonFunction.get_random())
     ws_role_name = ws_name + '-viewer-test'
     # 从文件中读取用例信息
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx',
-                                                        sheet_name='multi-cluster workspace')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/multi_cluster_workspace.yaml')
 
     # 所有用例执行之前执行该方法
     def setup_class(self):

@@ -27,6 +27,7 @@ class TestIpPool(object):
     cidr = random_ip() + '/24'
     ws_name = 'test-ippool-ws'
     pro_name = 'test-ippool-pro'
+    parametrize =DoexcleByPandas().get_data_from_yaml(filename='../data/ippool.yaml')
 
     def setup_class(self):
         des = ''
@@ -40,8 +41,7 @@ class TestIpPool(object):
         ippool_steps.step_delete_ippool(ippool_name=self.ippool_name)
 
     @allure.title('{title}')
-    @pytest.mark.parametrize('id,url, params, data, story, title, method, severity, condition, except_result',
-                             DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='ippool'))
+    @pytest.mark.parametrize('id,url, params, data, story, title, method, severity, condition, except_result', parametrize)
     def test_ippool(self, id, url, params, data, story, title, method, severity, condition, except_result):
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级

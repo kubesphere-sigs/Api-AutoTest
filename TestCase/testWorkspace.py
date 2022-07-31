@@ -27,7 +27,7 @@ class TestWorkSpace(object):
     ws_role_name = ws_name + '-viewer'
     log_format()  # 配置日志格式
     # 从文件中读取用例信息
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='workspace')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/workspace.yaml')
 
     # 所有用例执行之前执行该方法
     def setup_class(self):

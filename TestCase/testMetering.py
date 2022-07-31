@@ -20,7 +20,7 @@ class TestMetering(object):
         __test__ = True
 
     # 从文件中读取用例信息
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='metering')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/metering.yaml')
 
     # 设置用例标题
     @allure.title('{title}')
@@ -395,32 +395,33 @@ class TestMetering(object):
             re = workspace_steps.step_get_project_info(ws_name)
             # 获取项目的数量
             project_count = re.json()['totalItems']
+            if project_count > 0:
             # 获取企业空间中项目的名称
-            for j in range(0, project_count):
-                project_name = re.json()['items'][j]['metadata']['name']
-                # 查询最近1h消费的资源信息
-                r = toolbox_steps.step_get_hierarchy_consumption(ws_name, project_name)
-                hierarchy_list = ['apps', 'daemonsets', 'deployments', 'openpitrixs', 'statefulsets']
-                for k in hierarchy_list:
-                    if r.json()[k] is not None:
-                        hierarchy = r.json()[k]
-                        for key in hierarchy.keys():
-                            # 查询资源截止到昨天的最近7天消费历史
-                            rep = toolbox_steps.step_get_hierarchy_consumption_history(project_name,
-                                                                                       before_timestamp, now_timestamp,
-                                                                                       step, key, k)
-                            # 获取查询结果中所有指标的数据类型
-                            for m in range(0, 4):
-                                try:
-                                    result_type = rep.json()['results'][m]['data']['resultType']
-                                    # 验证数据类型正确
-                                    assert result_type == 'matrix'
-                                    # 获取并验证查询结果中每个指标的时间间隔
-                                    time_1 = rep.json()['results'][m]['data']['result'][0]['values'][0][0]
-                                    time_2 = rep.json()['results'][m]['data']['result'][0]['values'][1][0]
-                                    time_interval = time_2 - time_1
-                                    assert time_interval == int(step)
-                                except Exception as e:
-                                    print(e)
-                                    print('项目：' + project_name + ' 资源类型：' + k + ' 资源名称：' + key + ' 无历史消费信息')
-                                    break
+                for j in range(0, project_count):
+                    project_name = re.json()['items'][j]['metadata']['name']
+                    # 查询最近1h消费的资源信息
+                    r = toolbox_steps.step_get_hierarchy_consumption(ws_name, project_name)
+                    hierarchy_list = ['apps', 'daemonsets', 'deployments', 'openpitrixs', 'statefulsets']
+                    for k in hierarchy_list:
+                        if r.json()[k] is not None:
+                            hierarchy = r.json()[k]
+                            for key in hierarchy.keys():
+                                # 查询资源截止到昨天的最近7天消费历史
+                                rep = toolbox_steps.step_get_hierarchy_consumption_history(project_name,
+                                                                                           before_timestamp, now_timestamp,
+                                                                                           step, key, k)
+                                # 获取查询结果中所有指标的数据类型
+                                for m in range(0, 4):
+                                    try:
+                                        result_type = rep.json()['results'][m]['data']['resultType']
+                                        # 验证数据类型正确
+                                        assert result_type == 'matrix'
+                                        # 获取并验证查询结果中每个指标的时间间隔
+                                        time_1 = rep.json()['results'][m]['data']['result'][0]['values'][0][0]
+                                        time_2 = rep.json()['results'][m]['data']['result'][0]['values'][1][0]
+                                        time_interval = time_2 - time_1
+                                        assert time_interval == int(step)
+                                    except Exception as e:
+                                        print(e)
+                                        print('项目：' + project_name + ' 资源类型：' + k + ' 资源名称：' + key + ' 无历史消费信息')
+                                        break

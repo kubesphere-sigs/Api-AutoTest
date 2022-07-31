@@ -15,7 +15,7 @@ from common.getHeader import get_header
 @allure.feature('系统账户管理')
 class TestUser(object):
     # 从文件中读取用例信息
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='system_user')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/system_user.yaml')
 
     @allure.title('{title}')  # 设置用例标题
     # 将用例信息以参数化的方式传入测试方法
