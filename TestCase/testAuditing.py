@@ -16,7 +16,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('auditing') is False, reason='集群未开启auditing功能')
 class TestAuditingOperatingSearch(object):
     if commonFunction.check_multi_cluster() is True:
-        # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+        # 如果为多集群环境，则不会collect该class的所有用例。 __test__ = False
         __test__ = False
     else:
         __test__ = True
@@ -132,8 +132,8 @@ class TestAuditingOperatingSearch(object):
     @allure.title('{title}')
     @pytest.mark.parametrize(('limit', 'interval', 'title'),
                              [(10, '1m', '按时间范围查询最近10分钟审计趋势'),
-                              (180, '6m', '按容器模糊查询最近3小时审计趋势'),
-                              (1440, '48m', '按容器模糊查询最近一天审计趋势')
+                              (180, '6m', '按时间查询最近3小时审计趋势'),
+                              (1440, '48m', '按时间查询最近一天审计趋势')
                               ])
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_audits_trend_by_time_limit(self, limit, interval, title):
@@ -180,11 +180,11 @@ class TestAuditingOperatingSearch(object):
     @allure.title('{title}')
     @pytest.mark.parametrize(('limit', 'interval', 'title'),
                              [(10, '1m', '按时间范围查询最近10分钟审计详情'),
-                              (180, '6m', '按容器模糊查询最近3小时审计详情'),
-                              (1440, '48m', '按容器模糊查询最近一天审计详情')
+                              (180, '6m', '按时间查询最近3小时审计详情'),
+                              (1440, '48m', '按时间查询最近一天审计详情')
                               ])
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_audits_trend_by_time_limit(self, limit, interval, title):
+    def test_get_audits_detail_by_time_limit(self, limit, interval, title):
         # 获取当前时间的10位时间戳（结束时间）
         now_timestamp = str(time.time())[0:10]
         # 获取开始时间
@@ -192,7 +192,6 @@ class TestAuditingOperatingSearch(object):
         # 按时间范围查询容器日志
         res = toolbox_steps.step_get_audits_by_time(interval, start_time, now_timestamp)
         audits_num = res.json()['query']['total']
-        print(audits_num)
         # 验证查询成功
         assert audits_num >= 0
 
@@ -280,30 +279,3 @@ class TestAuditingOperatingSearch(object):
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
 
-    @allure.story('集群设置/日志接收器')
-    @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.parametrize('log_type, title',
-                             [
-                                 ('auditing', '修改资源事件的日志接受器的服务地址')
-                             ])
-    def test_modify_log_receiver_auditing_address(self, log_type, title):
-        # 添加日志收集器
-        cluster_steps.step_add_log_receiver('fluentd', log_type)
-        # 查看日志收集器，并获取新增日志接收器名称
-        response = cluster_steps.step_get_log_receiver(log_type)
-        log_receiver_name = response.json()['items'][1]['metadata']['name']
-        # 查看日志接收器详情
-        cluster_steps.step_get_log_receiver_detail(log_receiver_name)
-        # 修改日志接收器的服务地址
-        host = commonFunction.random_ip()
-        port = random.randint(1, 65535)
-        cluster_steps.step_modify_log_receiver_address(log_receiver_name, host, port)
-        # 查看日志接受器详情并验证修改成功
-        re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
-        host_actual = re.json()['spec']['forward']['host']
-        port_actual = re.json()['spec']['forward']['port']
-        assert host_actual == host
-        assert port_actual == port
-        # 删除创建的日志接收器
-        cluster_steps.step_delete_log_receiver(log_receiver_name)
