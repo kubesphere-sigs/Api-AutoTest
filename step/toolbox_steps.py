@@ -1,8 +1,6 @@
 import requests
-import json
 import allure
 import sys
-import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -13,49 +11,73 @@ env_url = get_apiserver()
 
 
 @allure.step('查询集群的操作审计总量')
-def step_get_audits(start_time, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=statistics' \
-                       '&start_time=' + start_time + '&end_time=' + end_time + '&interval=30m'
+def step_get_audits(start_time, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/auditing/events'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events'
+    url = env_url +  path + '?operation=statistics&start_time=' + start_time + '&end_time=' + end_time + '&interval=30m'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('查询集群操作审计总数的变化趋势')
-def step_get_audits_trend(start_time, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=histogram&' \
-                       'start_time=' + start_time + '&end_time=' + end_time + '&interval=30m'
+def step_get_audits_trend(start_time, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/auditing/events'
+    else:
+        path = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events'
+    url = env_url + path + '?operation=histogram&start_time=' + start_time + '&end_time=' + end_time + '&interval=30m'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('按不同条件查询集群审计总数的变化趋势')
-def step_get_audits_trend_by_search(search_rule, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=histogram&' \
-                       'start_time=0&end_time=' + end_time + '&interval=1d&' + search_rule
+def step_get_audits_trend_by_search(search_rule, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/auditing/events'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events'
+    url = env_url + path + '?operation=histogram&start_time=0&end_time=' + end_time + '&interval=1d&' + search_rule
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('按时间范围查询集群审计总数的变化趋势')
-def step_get_audits_trend_by_time(interval, start_time, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=histogram&' \
-                       'start_time=' + start_time + '&end_time=' + end_time + '&interval=' + interval
+def step_get_audits_trend_by_time(interval, start_time, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/auditing/events'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events'
+    url = env_url + path + '?operation=histogram&start_time=' + start_time + '&end_time=' + end_time + '&interval=' + interval
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('按不同条件查询审计的信息')
-def step_get_audits_by_search(search_rule, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=query&from=0&size=50&' \
-                       '' + search_rule + '&start_time=0&end_time=' + end_time + '&interval=1d'
+def step_get_audits_by_search(search_rule, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/auditing/events'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events'
+    url = env_url + path + '?operation=query&from=0&size=50&' + search_rule + '&start_time=0&end_time=' + end_time + '&interval=1d'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
-@allure.step('按时间范围查询审计的信息')
-def step_get_audits_by_time(interval, start_time, end_time):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events?operation=query&from=0&size=50&' \
-                       + '&start_time=' + start_time + '&end_time=' + end_time + '&interval=' + interval
+@allure.step('按时间范围查询审计的详细信息')
+def step_get_audits_by_time(interval, start_time, end_time, *cluster_name):
+    if cluster_name:
+        for i in cluster_name:
+            path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/auditing/events'
+    else:
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events'
+    url = env_url + path + '?operation=query&from=0&size=50&' + '&start_time=' + start_time + '&end_time=' + end_time + '&interval=' + interval
     response = requests.get(url=url, headers=get_header())
     return response
 
