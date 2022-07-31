@@ -445,9 +445,13 @@ def step_get_cluster_version(cluster_name):
 
 
 @allure.step('查询集群的clusterroles')
-def step_get_cluster_roles(cluster_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + \
-          '/iam.kubesphere.io/v1alpha2/clustermembers/admin/clusterroles'
+def step_get_cluster_roles(cluster_name, *condition):
+    condition_actual = ''
+    for i in condition:
+        condition_actual += str(i) + '&'
+    url = env_url + '/kapis/clusters/' + cluster_name + '/iam.kubesphere.io/v1alpha2/clusterroles?' + condition_actual + 'sortBy=createTime&annotation=kubesphere.io%2Fcreator'
+    print(url)
+
     response = requests.get(url=url, headers=get_header())
     return response
 
