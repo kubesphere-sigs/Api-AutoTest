@@ -1475,7 +1475,7 @@ class TestCluster(object):
         # 添加企业空间在host集群的授权
         multi_cluster_steps.step_authorized_cluster_visibility(self.cluster_host_name, ws_name)
         # 查看集群可见性
-        time.sleep(1)
+        time.sleep(5)
         response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_host_name)
         # 获取所有授权的企业空间名称
         ws_names = []
