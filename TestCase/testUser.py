@@ -46,9 +46,9 @@ class TestUser(object):
     @allure.severity('critical')
     @allure.title('测试修改用户信息')
     def test_edit_user(self):
-        user_name = 'wx123'
+        user_name = 'test-user' + str(commonFunction.get_random())
         role = 'workspaces-manager'
-        email_new = 'stevewen12345@yunify.com'
+        email_new = 'test' + str(commonFunction.get_random()) + '@yunify.com'
         role_new = 'users-manager'
         description = 'test'
         platform_steps.step_create_user(user_name, role)  # 创建用户
