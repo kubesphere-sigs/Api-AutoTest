@@ -35,7 +35,7 @@ class TestUser(object):
 
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
-        # 执行excel中的用例
+        # 执行yaml中的用例
         commonFunction.request_resource(url, params, data, story, title, method, severity, condition, except_result)
 
     '''
@@ -43,7 +43,7 @@ class TestUser(object):
     '''
 
     @allure.story('编辑用户')
-    @allure.severity('critical')
+    @allure.severity(allure.severity_level.CRITICAL)
     @allure.title('测试修改用户信息')
     def test_edit_user(self):
         user_name = 'test-user' + str(commonFunction.get_random())
@@ -66,7 +66,7 @@ class TestUser(object):
         platform_steps.step_delete_user(user_name)  # 删除新建的用户
 
     @allure.story('用户')
-    @allure.severity('critical')
+    @allure.severity(allure.severity_level.CRITICAL)
     @allure.title('遍历使用系统所有的内置角色创建用户，查看用户详情，然后使用新用户登陆ks,最后删除用户')
     def test_login_with_new_user(self):
         roles = ['workspaces-manager', 'users-manager', 'platform-regular', 'platform-admin']
@@ -126,7 +126,7 @@ class TestUser(object):
         platform_steps.step_delete_user(user_name)
 
     @allure.story('用户')
-    @allure.severity('critical')
+    @allure.severity(allure.severity_level.CRITICAL)
     @allure.title('用户历史登陆时间')
     def test_user_login_history(self):
         user_name = 'modify' + str(commonFunction.get_random())
