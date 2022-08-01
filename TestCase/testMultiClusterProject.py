@@ -16,19 +16,12 @@ class TestProject(object):
     # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
     __test__ = commonFunction.check_multi_cluster()
 
-    volume_name = 'testvolume'  # 存储卷名称，在创建、删除存储卷和创建存储卷快照时使用,excle中的用例也用到了这个存储卷
-    snapshot_name = 'testshot'  # 存储卷快照的名称,在创建和删除存储卷快照时使用，在excle中的用例也用到了这个快照
     user_name = 'user-for-test-project' + str(commonFunction.get_random())  # 系统用户名称
     user_role = 'workspaces-manager'
     ws_name = 'ws-for-test-project'
-    ws_name_actual = ws_name + str(commonFunction.get_random())
     alias_name = '多集群'
     description = '用于测试多集群项目管理'
     project_name = 'test-project' + str(commonFunction.get_random())
-    ws_role_name = ws_name + '-viewer'  # 企业空间角色名称
-    project_role_name = 'test-project-role'  # 项目角色名称
-    job_name = 'demo-job'  # 任务名称,在创建和删除任务时使用
-    work_name = 'workload-demo'  # 工作负载名称，在创建、编辑、删除工作负载时使用
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
@@ -36,12 +29,13 @@ class TestProject(object):
         # 获取集群名称
         clusters = cluster_steps.step_get_cluster_name()
         # 创建一个多集群企业空间（包含所有的集群）
-        workspace_steps.step_create_multi_ws(self.ws_name_actual,
+        workspace_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()),
                                              self.alias_name, self.description, clusters)
+
         # 创建若干个多集群企业空间（只部署在单个集群）
         if len(clusters) > 1:
             for i in range(0, len(clusters)):
-                workspace_steps.step_create_multi_ws(self.ws_name_actual, self.alias_name,
+                workspace_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name,
                                                      self.description, clusters[i])
         # 在每个企业空间创建多集群项目,且将其部署在所有和单个集群上
         response = workspace_steps.step_get_ws_info(self.ws_name)
@@ -806,7 +800,7 @@ class TestProject(object):
             i = 0
             # 验证存储卷被删除，最长等待时间为30s
             while i < 30:
-                response = project_steps.step_get_volume(self.project_name, self.volume_name)
+                response = project_steps.step_get_volume(project_info[0], volume_name)
                 # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
                 if response.json()['totalItems'] == 0:
                     print("删除存储卷耗时:" + str(i) + '秒')
