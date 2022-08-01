@@ -1489,9 +1489,14 @@ def step_create_multi_project(ws_name, project_name, clusters):
 
 
 @allure.step('获取环境中所有的多集群项目的名称和部署集群')
-def step_get_multi_project_all():
+def step_get_multi_project_all(ws):
+    """
+
+    :param ws: 查询的企业空间名称
+    :return:
+    """
     multi_projects = []
-    response = workspace_steps.step_get_ws_info('')
+    response = workspace_steps.step_get_ws_info(ws)
     ws_count = response.json()['totalItems']
     for k in range(0, ws_count):
         # 获取每个企业空间的名称
