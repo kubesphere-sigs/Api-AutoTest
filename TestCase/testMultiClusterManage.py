@@ -1422,6 +1422,7 @@ class TestCluster(object):
         alias_name = ''
         description = ''
         multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, self.cluster_host_name)
+        time.sleep(5)
         # 查看集群可见性
         response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_host_name)
         # 获取所有已授权的企业空间名称
