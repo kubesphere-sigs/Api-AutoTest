@@ -14,7 +14,6 @@ from step import multi_worksapce_steps
 
 @allure.feature('多集群环境企业空间')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='未开启多集群功能')
-@pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 class TestWorkSpace(object):
     # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
     __test__ = commonFunction.check_multi_cluster()
@@ -195,73 +194,59 @@ class TestWorkSpace(object):
     @allure.title('创建、编辑、删除企业组织')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_department(self):
-        data = {"kubesphere.io/workspace-role": "wx-regular",
+        data = {"kubesphere.io/workspace-role": self.ws_name + "-regular",
                 "kubesphere.io/alias-name": "",
                 "kubesphere.io/project-roles": "[]",
                 "kubesphere.io/devops-roles": "[]",
                 "kubesphere.io/creator": "admin"
                 }
-        # 查询企业空间
-        response = multi_worksapce_steps.step_get_ws_info('')
-        ws_count = response.json()['totalItems']
-        for k in range(0, ws_count):
-            # 获取每个企业空间的名称
-            ws_name = response.json()['items'][k]['metadata']['name']
-            if ws_name != 'system-workspace':
-                # 创建企业组织,并获取创建的企业组织的name
-                group_name = 'group' + str(commonFunction.get_random())
-                res = multi_worksapce_steps.step_create_department(ws_name, group_name, data)
-                name = res.json()['metadata']['name']
-                # 获取所有的企业组织名称
-                group_name_actual = multi_worksapce_steps.step_get_department(ws_name)
-                # 校验企业组织名称，已验证企业组织创建成功
-                assert group_name in group_name_actual
-                # 编辑企业组织
-                edit_data = {"metadata": {"annotations": {"kubesphere.io/workspace-role": "wx-regular",
-                                                          "kubesphere.io/alias-name": "我是别名",
-                                                          "kubesphere.io/project-roles": "[]",
-                                                          "kubesphere.io/devops-roles": "[]",
-                                                          "kubesphere.io/creator": "admin"}}}
-                annotations = multi_worksapce_steps.step_edit_department(ws_name, name, edit_data)
-                # 验证编辑后的内容
-                assert "我是别名" == annotations['kubesphere.io/alias-name']
-                # 删除企业组织,并获取返回信息
-                re = multi_worksapce_steps.step_delete_department(ws_name, name)
-                # 验证删除成功
-                assert re.json()['message'] == 'success'
+        # 创建企业组织,并获取创建的企业组织的name
+        group_name = 'group' + str(commonFunction.get_random())
+        res = multi_worksapce_steps.step_create_department(self.ws_name, group_name, data)
+        name = res.json()['metadata']['name']
+        # 获取所有的企业组织名称
+        group_name_actual = multi_worksapce_steps.step_get_department(self.ws_name)
+        # 校验企业组织名称，已验证企业组织创建成功
+        assert group_name in group_name_actual
+        # 编辑企业组织
+        edit_data = {"metadata": {"annotations": {"kubesphere.io/workspace-role": self.ws_name + "-regular",
+                                                  "kubesphere.io/alias-name": "我是别名",
+                                                  "kubesphere.io/project-roles": "[]",
+                                                  "kubesphere.io/devops-roles": "[]",
+                                                  "kubesphere.io/creator": "admin"}}}
+        annotations = multi_worksapce_steps.step_edit_department(self.ws_name, name, edit_data)
+        # 验证编辑后的内容
+        assert "我是别名" == annotations['kubesphere.io/alias-name']
+        # 删除企业组织,并获取返回信息
+        re = multi_worksapce_steps.step_delete_department(self.ws_name, name)
+        # 验证删除成功
+        assert re.json()['message'] == 'success'
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('创建重名的企业组织')
     @allure.severity(allure.severity_level.NORMAL)
     def test_create_rename_department(self):
         # 创建企业组织
-        data = {"kubesphere.io/workspace-role": "wx-regular",
+        data = {"kubesphere.io/workspace-role": self.ws_name + "-regular",
                 "kubesphere.io/alias-name": "",
                 "kubesphere.io/project-roles": "[]",
                 "kubesphere.io/devops-roles": "[]",
                 "kubesphere.io/creator": "admin"
                 }
-        # 查询企业空间
-        response = multi_worksapce_steps.step_get_ws_info('')
-        ws_count = response.json()['totalItems']
-        for k in range(0, ws_count):
-            # 获取每个企业空间的名称
-            ws_name = response.json()['items'][k]['metadata']['name']
-            if ws_name != 'system-workspace':
-                # 创建企业组织,并获取创建的企业组织的name
-                group_name = 'group' + str(commonFunction.get_random())
-                re = multi_worksapce_steps.step_create_department(ws_name, group_name, data)
-                name = re.json()['metadata']['name']
-                # 创建一个同名的企业组织
-                re = multi_worksapce_steps.step_create_department(ws_name, group_name, data)
-                # 校验接口返回信息
-                assert_message = 'Operation cannot be fulfilled on groups.iam.kubesphere.io "' + group_name + \
-                                 '": a group named ' + group_name + ' already exists in the workspace\n'
-                assert re.text == assert_message
-                # 删除创建的企业空间
-                res = multi_worksapce_steps.step_delete_department(ws_name, name)
-                # 验证删除成功
-                res.json()['message'] == 'success'
+        # 创建企业组织,并获取创建的企业组织的name
+        group_name = 'group' + str(commonFunction.get_random())
+        re = multi_worksapce_steps.step_create_department(self.ws_name, group_name, data)
+        name = re.json()['metadata']['name']
+        # 创建一个同名的企业组织
+        re = multi_worksapce_steps.step_create_department(self.ws_name, group_name, data)
+        # 校验接口返回信息
+        assert_message = 'Operation cannot be fulfilled on groups.iam.kubesphere.io "' + group_name + \
+                         '": a group named ' + group_name + ' already exists in the workspace\n'
+        assert re.text == assert_message
+        # 删除创建的企业空间
+        res = multi_worksapce_steps.step_delete_department(self.ws_name, name)
+        # 验证删除成功
+        res.json()['message'] == 'success'
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('创建的企业组织名称中包含大写字母')
@@ -269,32 +254,25 @@ class TestWorkSpace(object):
     def test_create_wrong_name_department(self):
         # 创建组织
         group_names = ['Test-group', 'test-Group', 'test-grouP']
-        data = {"kubesphere.io/workspace-role": "wx-regular",
+        data = {"kubesphere.io/workspace-role": self.ws_name + "-regular",
                 "kubesphere.io/alias-name": "",
                 "kubesphere.io/project-roles": "[]",
                 "kubesphere.io/devops-roles": "[]",
                 "kubesphere.io/creator": "admin"
                 }
-        # 查询企业空间
-        response = multi_worksapce_steps.step_get_ws_info('')
-        ws_count = response.json()['totalItems']
-        for k in range(0, ws_count):
-            # 获取每个企业空间的名称
-            ws_name = response.json()['items'][k]['metadata']['name']
-            if ws_name != 'system-workspace':
-                for group_name in group_names:
-                    # 获取返回信息
-                    re = multi_worksapce_steps.step_create_department(self.ws_name, group_name, data)
-                    assert_message = 'is invalid: [metadata.generateName: Invalid value: "' + group_name + '"'
-                    # 校验接口返回信息
-                    assert assert_message in re.text
+        for group_name in group_names:
+            # 获取返回信息
+            re = multi_worksapce_steps.step_create_department(self.ws_name, group_name, data)
+            assert_message = 'is invalid: [metadata.generateName: Invalid value: "' + group_name + '"'
+            # 校验接口返回信息
+            assert assert_message in re.text
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('创建的企业组织名称中包含特殊字符')
     @allure.severity(allure.severity_level.NORMAL)
     def test_create_wrong_name_1_department(self):
         # 创建组织
-        data = {"kubesphere.io/workspace-role": "wx-regular",
+        data = {"kubesphere.io/workspace-role": self.ws_name + "-regular",
                 "kubesphere.io/alias-name": "",
                 "kubesphere.io/project-roles": "[]",
                 "kubesphere.io/devops-roles": "[]",
@@ -339,41 +317,32 @@ class TestWorkSpace(object):
     @allure.title('为用户分配企业组织')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_assign_user(self):
-        data = {"kubesphere.io/workspace-role": "wx-regular",
+        data = {"kubesphere.io/workspace-role": self.ws_name + "-regular",
                 "kubesphere.io/alias-name": "",
                 "kubesphere.io/project-roles": "[]",
                 "kubesphere.io/devops-roles": "[]",
                 "kubesphere.io/creator": "admin"
                 }
-        # 查询企业空间
-        response = multi_worksapce_steps.step_get_ws_info('')
-        ws_count = response.json()['totalItems']
-        # 获取任一企业空间
-        k = random.randint(0, ws_count - 1)
-        # 获取企业空间的名称
-        ws_name = response.json()['items'][k]['metadata']['name']
-        if ws_name != 'system-workspace':
-            group_name = 'group' + str(commonFunction.get_random())
-            # 创建企业组织,并获取创建的企业组织的name
-            resp = multi_worksapce_steps.step_create_department(ws_name, group_name, data)
-            name = resp.json()['metadata']['name']
-            # 获取该企业组织可分配的用户数量
-            res = multi_worksapce_steps.step_get_user_for_department(name)
-            counts = res.json()['totalItems']
-            # 将指定用户绑定到指定企业组织
-            re = multi_worksapce_steps.step_binding_user(self.ws_name, name, self.user_name)
-            # 获取绑定后返回的用户名
-            binding_user = re.json()[0]['users'][0]
-            # 校验绑定的用户名称
-            assert binding_user == self.user_name
-            # 重新获取企业组织可分配的用户名称
-            r = multi_worksapce_steps.step_get_user_for_department(name)
-            counts_new = r.json()['totalItems']
-            user_name = []
-            for i in range(0, counts_new):
-                user_name.append(r.json()['items'][i]['metadata']['name'])
-            # 验证已分配的用户不在可分配的用户列表中
-            assert binding_user not in user_name
+        group_name = 'group' + str(commonFunction.get_random())
+        # 创建企业组织,并获取创建的企业组织的name
+        resp = multi_worksapce_steps.step_create_department(self.ws_name, group_name, data)
+        name = resp.json()['metadata']['name']
+        # 获取该企业组织可分配的用户数量
+        res = multi_worksapce_steps.step_get_user_for_department(name)
+        # 将指定用户绑定到指定企业组织
+        re = multi_worksapce_steps.step_binding_user(self.ws_name, name, self.user_name)
+        # 获取绑定后返回的用户名
+        binding_user = re.json()[0]['users'][0]
+        # 校验绑定的用户名称
+        assert binding_user == self.user_name
+        # 重新获取企业组织可分配的用户名称
+        r = multi_worksapce_steps.step_get_user_for_department(name)
+        counts_new = r.json()['totalItems']
+        user_name = []
+        for i in range(0, counts_new):
+            user_name.append(r.json()['items'][i]['metadata']['name'])
+        # 验证已分配的用户不在可分配的用户列表中
+        assert binding_user not in user_name
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('将已绑定企业组织的用户再次绑定该企业组织')
@@ -400,33 +369,26 @@ class TestWorkSpace(object):
     @allure.title('将用户从企业组织解绑')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_unbind_user(self):
-        data = {"kubesphere.io/workspace-role": "wx-regular",
+        data = {"kubesphere.io/workspace-role": self.ws_name + "-regular",
                 "kubesphere.io/alias-name": "",
                 "kubesphere.io/project-roles": "[]",
                 "kubesphere.io/devops-roles": "[]",
                 "kubesphere.io/creator": "admin"
                 }
-        # 查询企业空间
-        response = multi_worksapce_steps.step_get_ws_info('')
-        ws_count = response.json()['totalItems']
-        for k in range(0, ws_count):
-            # 获取每个企业空间的名称
-            ws_name = response.json()['items'][k]['metadata']['name']
-            if ws_name != 'system-workspace':
-                group_name = 'group' + str(commonFunction.get_random())
-                # 创建企业组织,并获取创建的企业组织的name
-                res = multi_worksapce_steps.step_create_department(ws_name, group_name, data)
-                name = res.json()['metadata']['name']
-                # 将指定用户绑定到指定企业组织
-                re = multi_worksapce_steps.step_binding_user(ws_name, name, self.user_name)
-                # 获取绑定后返回的用户名
-                binding_user = re.json()[0]['metadata']['name']
-                # 将用户从企业组织解绑
-                r = multi_worksapce_steps.step_unbind_user(ws_name=ws_name, user_name=binding_user)
-                # 校验解绑结果
-                assert r.json()['message'] == 'success'
-                # 删除企业组织
-                multi_worksapce_steps.step_delete_department(ws_name, name)
+        group_name = 'group' + str(commonFunction.get_random())
+        # 创建企业组织,并获取创建的企业组织的name
+        res = multi_worksapce_steps.step_create_department(self.ws_name, group_name, data)
+        name = res.json()['metadata']['name']
+        # 将指定用户绑定到指定企业组织
+        re = multi_worksapce_steps.step_binding_user(self.ws_name, name, self.user_name)
+        # 获取绑定后返回的用户名
+        binding_user = re.json()[0]['metadata']['name']
+        # 将用户从企业组织解绑
+        r = multi_worksapce_steps.step_unbind_user(ws_name=self.ws_name, user_name=binding_user)
+        # 校验解绑结果
+        assert r.json()['message'] == 'success'
+        # 删除企业组织
+        multi_worksapce_steps.step_delete_department(self.ws_name, name)
 
     @allure.story('企业空间设置-配额管理')
     @allure.title('编辑企业空间配额')
