@@ -20,7 +20,8 @@ class TestProject(object):
     snapshot_name = 'testshot'  # 存储卷快照的名称,在创建和删除存储卷快照时使用，在excle中的用例也用到了这个快照
     user_name = 'user-for-test-project' + str(commonFunction.get_random())  # 系统用户名称
     user_role = 'workspaces-manager'
-    ws_name = 'ws-for-test-project' + str(commonFunction.get_random())
+    ws_name = 'ws-for-test-project'
+    ws_name_actual = ws_name + str(commonFunction.get_random())
     alias_name = '多集群'
     description = '用于测试多集群项目管理'
     project_name = 'test-project' + str(commonFunction.get_random())
@@ -35,34 +36,33 @@ class TestProject(object):
         # 获取集群名称
         clusters = cluster_steps.step_get_cluster_name()
         # 创建一个多集群企业空间（包含所有的集群）
-        workspace_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()),
+        workspace_steps.step_create_multi_ws(self.ws_name_actual,
                                              self.alias_name, self.description, clusters)
         # 创建若干个多集群企业空间（只部署在单个集群）
         if len(clusters) > 1:
-            for i in range(len(clusters)):
-                workspace_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name,
+            for i in range(0, len(clusters)):
+                workspace_steps.step_create_multi_ws(self.ws_name_actual, self.alias_name,
                                                      self.description, clusters[i])
         # 在每个企业空间创建多集群项目,且将其部署在所有和单个集群上
-        response = workspace_steps.step_get_ws_info('')
+        response = workspace_steps.step_get_ws_info(self.ws_name)
         ws_count = response.json()['totalItems']
         for k in range(0, ws_count):
             # 获取每个企业空间的名称
             ws_name = response.json()['items'][k]['metadata']['name']
             # 获取企业空间的集群信息
-            if ws_name != 'system-workspace':
-                clusters_name = []
-                re = workspace_steps.step_get_ws_info(ws_name)
-                clusters = re.json()['items'][0]['spec']['placement']['clusters']
-                for i in range(0, len(clusters)):
-                    clusters_name.append(clusters[i]['name'])
-                if len(clusters_name) > 1:
-                    # 创建多集群项目,但是项目部署在单个集群上
-                    for j in range(0, len(clusters_name)):
-                        multi_project_name = 'multi-pro' + str(commonFunction.get_random())
-                        project_steps.step_create_multi_project(ws_name, multi_project_name, clusters_name[j])
-                else:
+            clusters_name = []
+            re = workspace_steps.step_get_ws_info(ws_name)
+            clusters = re.json()['items'][0]['spec']['placement']['clusters']
+            for i in range(0, len(clusters)):
+                clusters_name.append(clusters[i]['name'])
+            if len(clusters_name) > 1:
+                # 创建多集群项目,但是项目部署在单个集群上
+                for j in range(0, len(clusters_name)):
                     multi_project_name = 'multi-pro' + str(commonFunction.get_random())
-                    project_steps.step_create_multi_project(ws_name, multi_project_name, clusters_name)
+                    project_steps.step_create_multi_project(ws_name, multi_project_name, clusters_name[j])
+            else:
+                multi_project_name = 'multi-pro' + str(commonFunction.get_random())
+                project_steps.step_create_multi_project(ws_name, multi_project_name, clusters_name)
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
@@ -74,7 +74,7 @@ class TestProject(object):
                 project_steps.step_delete_project_by_name(multi_project)
         time.sleep(5)
         # 获取环境中所有的企业空间
-        response = workspace_steps.step_get_ws_info('')
+        response = workspace_steps.step_get_ws_info(self.ws_name)
         ws_count = response.json()['totalItems']
         for k in range(0, ws_count):
             # 获取每个企业空间的名称
@@ -87,10 +87,10 @@ class TestProject(object):
 
     @allure.story('存储管理-存储卷')
     @allure.title('在多集群项目创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常')
-    @allure.severity(allure.severity_level.BLOCKER)
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_create_volume_for_deployment(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             type_name = 'volume-type'  # 存储卷的类型
             work_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
@@ -114,22 +114,22 @@ class TestProject(object):
                                                               container_name=container_name,
                                                               volume_info=volume_info, ports=port,
                                                               volumemount=volumeMounts, strategy=strategy_info)
-            time.sleep(10)  # 等待资源创建成功
-            # 获取工作负载的状态
-            response = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
-                                                                        project_name=project_info[0],
-                                                                        type='deployments', condition=condition)
-            try:
-                readyReplicas = response.json()['items'][0]['status']['readyReplicas']
-            except Exception as e:
-                print(e)
-                # 删除工作负载
-                project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type='deployments',
-                                                                    work_name=work_name)
-                # 删除存储卷
-                project_steps.step_delete_volume_in_multi_project(project_info[0], volume_name)
-                pytest.xfail('工作负载创建失败，标记为xfail')
-                break
+
+            i = 0
+            while i < 100:
+                # 获取工作负载的状态
+                response = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
+                                                                            project_name=project_info[0],
+                                                                            type='deployments', condition=condition)
+                try:
+                    readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                    if readyReplicas:
+                        break
+                    else:
+                        time.sleep(5)
+                        i += 5
+                except Exception as e:
+                    print(e)
             # 验证资源的所有副本已就绪
             assert readyReplicas == replicas
             # 获取存储卷状态
@@ -150,7 +150,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_volume_for_statefulsets(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             volume_name = 'volume-stateful' + str(commonFunction.get_random())  # 存储卷的名称
             type_name = 'volume-type'  # 存储卷的类型
@@ -176,24 +176,21 @@ class TestProject(object):
                                                                 volumemount=volumemounts, volume_info=volume_info,
                                                                 service_name=service_name)
             # 验证资源创建成功
-            time.sleep(30)  # 等待资源创建成功
-            # 获取工作负载的状态
-            response = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
-                                                                        project_name=project_info[0],
-                                                                        type='statefulsets', condition=condition)
-            try:
-                readyReplicas = response.json()['items'][0]['status']['readyReplicas']
-            except Exception as e:
-                print(e)
-                # 删除工作负载
-                project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type='deployments',
-                                                                    work_name=work_name)
-                # 删除存储卷
-                project_steps.step_delete_volume_in_multi_project(project_info[0], volume_name)
-                pytest.xfail('工作负载创建失败，标记为xfail')
-                break
-            # 验证资源的所有副本已就绪
-            assert readyReplicas == replicas
+            i = 0
+            while i < 100:
+                # 获取工作负载的状态
+                try:
+                    response = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
+                                                                                project_name=project_info[0],
+                                                                                type='statefulsets', condition=condition)
+                    readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                    if readyReplicas == replicas:
+                        break
+                    else:
+                        i += 5
+                        time.sleep(5)
+                except Exception as e:
+                    print(e)
             # 获取存储卷状态
             response = project_steps.step_get_volume_status_in_multi_project(cluster_name=project_info[1],
                                                                              project_name=project_info[0],
@@ -212,7 +209,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_volume_for_service(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             volume_name = 'volume-service' + str(commonFunction.get_random())  # 存储卷的名称
             type_name = 'volume-type'  # 存储卷的类型
@@ -241,46 +238,22 @@ class TestProject(object):
                                                               ports=port_deploy, volumemount=volumeMounts, image=image,
                                                               replicas=replicas,
                                                               volume_info=volume_info, strategy=strategy_info)
-            # 验证service创建成功
-            response = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
-                                                                        project_name=project_info[0],
-                                                                        type='services', condition=condition)
-            try:
-                name = response.json()['items'][0]['metadata']['name']
-            except Exception as e:
-                print(e)
-                # 删除service
-                project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type='services',
-                                                                    work_name=service_name)
-                # 删除deployment
-                project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type='deployments',
-                                                                    work_name=service_name)
-                # 删除存储卷
-                project_steps.step_delete_volume_in_multi_project(project_info[0], volume_name)
-                pytest.xfail('服务创建失败，标记为xfail')
-                break
-            assert name == service_name
-            # 验证deploy创建成功
-            time.sleep(30)
-            re = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
-                                                                  project_name=project_info[0],
-                                                                  type='deployments', condition=condition)
-            # 获取并验证deployment的名称正确
-            try:
-                name = re.json()['items'][0]['metadata']['name']
-            except Exception as e:
-                print(e)
-                # 删除service
-                project_steps.step_delete_workload_in_multi_project(project_name=project_info[0],
-                                                                    type='services', work_name=service_name)
-                # 删除deployment
-                project_steps.step_delete_workload_in_multi_project(project_name=project_info[0],
-                                                                    type='deployments', work_name=service_name)
-                # 删除存储卷
-                project_steps.step_delete_volume_in_multi_project(project_info[0], volume_name)
-                pytest.xfail('deploymenet创建失败，标记为xfail')
-                break
-            assert name == service_name
+            i = 0
+            while i < 100:
+                # 获取工作负载的状态
+                try:
+                    response = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
+                                                                                project_name=project_info[0],
+                                                                                type='deployments',
+                                                                                condition=condition)
+                    readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                    if readyReplicas == replicas:
+                        break
+                    else:
+                        i += 5
+                        time.sleep(5)
+                except Exception as e:
+                    print(e)
             # 获取存储卷状态
             response = project_steps.step_get_volume_status_in_multi_project(cluster_name=project_info[1],
                                                                              project_name=project_info[0],
@@ -299,10 +272,10 @@ class TestProject(object):
 
     @allure.story('应用负载-工作负载')
     @allure.title('在多集群项目创建未绑定存储卷的deployment，并验证运行成功')
-    @allure.severity(allure.severity_level.BLOCKER)
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_create_deployment(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
@@ -312,7 +285,7 @@ class TestProject(object):
             volumeMounts = []  # 设置挂载的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
-            replicas = 2  # 副本数
+            replicas = 1  # 副本数
             volume_info = []
             # 创建工作负载
             project_steps.step_create_deploy_in_multi_project(cluster_name=project_info[1],
@@ -332,11 +305,6 @@ class TestProject(object):
                     status = response.json()['items'][0]['status']
                 except Exception as e:
                     print(e)
-                    # 删除deployment
-                    project_steps.step_delete_workload_in_multi_project(project_name=project_info[0],
-                                                                        type='deployments', work_name=workload_name)
-                    pytest.xfail('deploymenet创建失败，标记为xfail')
-                    break
                 # 验证资源的所有副本已就绪
                 if 'unavailableReplicas' not in status:
                     print('创建工作负载耗时:' + str(i) + 's')
@@ -351,10 +319,10 @@ class TestProject(object):
 
     @allure.story('应用负载-工作负载')
     @allure.title('在多集群项目按名称查询存在的deployment')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_deployment_by_name(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
             conndition = 'name=' + workload_name  # 查询条件
@@ -383,11 +351,6 @@ class TestProject(object):
                 name = response.json()['items'][0]['metadata']['name']
             except Exception as e:
                 print(e)
-                # 删除deployment
-                project_steps.step_delete_workload_in_multi_project(project_name=project_info[0],
-                                                                    type='deployments', work_name=workload_name)
-                pytest.xfail('deploymenet创建失败，标记为xfail')
-                break
             assert name == workload_name
             # 删除deployment
             re = project_steps.step_delete_workload_in_multi_project(project_name=project_info[0],
@@ -399,7 +362,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_statefulsets(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
@@ -420,30 +383,22 @@ class TestProject(object):
                                                                 service_ports=service_port, volumemount=volumemounts,
                                                                 service_name=service_name)
             # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
-            time.sleep(5)
-            i = 3
+            i = 0
             while i < 60:
-                response = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
-                                                                            project_name=project_info[0],
-                                                                            type='statefulsets', condition=condition)
                 try:
+                    response = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
+                                                                                project_name=project_info[0],
+                                                                                type='statefulsets', condition=condition)
                     readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                    # 验证资源的所有副本已就绪
+                    if readyReplicas == replicas:
+                        print('创建工作负载耗时:' + str(i) + 's')
+                        break
+                    time.sleep(3)
+                    i = i + 3
                 except Exception as e:
                     print(e)
-                    # 删除创建的工作负载
-                    project_steps.step_delete_workload_in_multi_project(project_name=project_info[0],
-                                                                        type='statefulsets',
-                                                                        work_name=workload_name)
-                    pytest.xfail('工作负载创建失败，标记为xfail')
-                    break
-                # 验证资源的所有副本已就绪
-                if readyReplicas == replicas:
-                    print('创建工作负载耗时:' + str(i) + 's')
-                    break
-                time.sleep(1)
-                i = i + 1
             assert readyReplicas == replicas
-
             # 删除创建的工作负载
             project_steps.step_delete_workload_in_multi_project(project_name=project_info[0],
                                                                 type='services', work_name=workload_name)
@@ -453,10 +408,10 @@ class TestProject(object):
 
     @allure.story('应用负载-工作负载')
     @allure.title('在多集群项目按名称查询存在的StatefulSets')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_statefulstes_by_name(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
             condition = 'name=' + workload_name
@@ -504,7 +459,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_service(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             service_name = 'service' + str(commonFunction.get_random())  # 服务名称
             port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
@@ -562,7 +517,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_service(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             service_name = 'service' + str(commonFunction.get_random())
             port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
@@ -571,19 +526,21 @@ class TestProject(object):
             project_steps.step_create_service_in_multi_project(cluster_name=project_info[1],
                                                                project_name=project_info[0],
                                                                service_name=service_name, port=port_service)
-            # 验证service创建成功
-            response = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
-                                                                        project_name=project_info[0],
-                                                                        type='services', condition=condition)
-            try:
-                name = response.json()['items'][0]['metadata']['name']
-            except Exception as e:
-                print(e)
-                # 删除创建的工作负载
-                project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type='services',
-                                                                    work_name=service_name)
-                pytest.xfail('服务创建失败，标记为xfail')
-                break
+            i = 0
+            while i < 100:
+                try:
+                    # 验证service创建成功
+                    response = project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
+                                                                                project_name=project_info[0],
+                                                                                type='services', condition=condition)
+                    name = response.json()['items'][0]['metadata']['name']
+                    if name:
+                        break
+                    else:
+                        time.sleep(3)
+                        i += 3
+                except Exception as e:
+                    print(e)
             assert name == service_name
             # 删除service
             project_steps.step_delete_workload_in_multi_project(project_info[0], 'services', service_name)
@@ -599,7 +556,7 @@ class TestProject(object):
     @allure.title('在多集群项目为服务创建应用路由')
     def test_create_route(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 创建服务
             service_name = 'service' + str(commonFunction.get_random())  # 服务名称
@@ -670,7 +627,7 @@ class TestProject(object):
         annotations = {"servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
         # 创建网关
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             project_steps.step_create_gateway_in_multi_project(cluster_name=project_info[1],
                                                                project_name=project_info[0],
@@ -702,7 +659,7 @@ class TestProject(object):
                        "servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
         # 创建网关
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             project_steps.step_create_gateway_in_multi_project(cluster_name=project_info[1],
                                                                project_name=project_info[0],
@@ -735,7 +692,7 @@ class TestProject(object):
                        "servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
         annotations_new = {"servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 创建网关
             project_steps.step_create_gateway_in_multi_project(cluster_name=project_info[1],
@@ -760,7 +717,7 @@ class TestProject(object):
     @allure.title('在多集群项目修改工作负载副本并验证运行正常')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_add_work_replica(self):
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
@@ -837,7 +794,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_volume(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             volume_name = 'volume-stateful' + str(commonFunction.get_random())  # 存储卷的名称
             # 创建存储卷
@@ -868,7 +825,7 @@ class TestProject(object):
         alias_name = 'test-231313!#!G@#K!G#G!PG#'  # 别名信息
         description = '测试test123！@#'  # 描述信息
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 编辑项目信息
             response = project_steps.step_edit_project_in_multi_project(cluster_name=project_info[1],
@@ -880,13 +837,14 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('在多集群项目只设置项目配额-CPU')
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_edit_project_quota_cpu(self):
         # 配额信息
         hard = {"limits.cpu": "40",
                 "requests.cpu": "40"
                 }
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取项目配额的resource_version
             resource_version = project_steps.step_get_project_quota_version_in_multi_project(project_info[1],
@@ -902,13 +860,14 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('在多集群项目设置项目配额-输入错误的cpu信息(包含字母)')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_project_quota_wrong_cpu(self):
         # 配额信息,错误的cpu信息
         hard = {"limits.cpu": "11www",
                 "requests.cpu": "1www"
                 }
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取项目配额的resource_version
             resource_version = project_steps.step_get_project_quota_version_in_multi_project(project_info[1],
@@ -923,13 +882,14 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('在多集群项目设置项目配额-输入错误的cpu信息(包含负数)')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_project_quota_wrong_cpu_1(self):
         # 配额信息,错误的cpu信息
         hard = {"limits.cpu": "-11",
                 "requests.cpu": "1"
                 }
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取项目配额的resource_version
             resource_version = project_steps.step_get_project_quota_version_in_multi_project(project_info[1],
@@ -944,11 +904,12 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('在多集群项目只设置项目配额-内存')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_project_quota_memory(self):
         # 配额信息
         hard = {"limits.memory": "1000Gi", "requests.memory": "1Gi"}
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取项目配额的resource_version
             resource_version = project_steps.step_get_project_quota_version_in_multi_project(project_info[1],
@@ -964,11 +925,12 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('在多集群项目设置项目配额-输入错误的内存(包含非单位字母)')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_project_quota_wrong_memory_1(self):
         # 配额信息
         hard = {"limits.memory": "10Gi", "requests.memory": "1Giw"}
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取项目配额的resource_version
             resource_version = project_steps.step_get_project_quota_version_in_multi_project(project_info[1],
@@ -983,11 +945,12 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('在多集群项目设置项目配额-输入错误的内存(包含负数)')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_project_quota_wrong_memory_2(self):
         # 配额信息
         hard = {"limits.memory": "-10Gi", "requests.memory": "1Gi"}
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取项目配额的resource_version
             resource_version = project_steps.step_get_project_quota_version_in_multi_project(project_info[1],
@@ -1002,12 +965,13 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('在多集群项目设置项目配额-CPU、内存')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_project_quota_cpu_memory(self):
         # 配额信息
         hard = {"limits.memory": "1000Gi", "requests.memory": "1Gi",
                 "limits.cpu": "100", "requests.cpu": "100"}
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取项目配额的resource_version
             resource_version = project_steps.step_get_project_quota_version_in_multi_project(project_info[1],
@@ -1023,6 +987,7 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('在多集群项目只设置项目配额-资源配额')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_project_quota_resource(self):
         # 配额信息
         hard = {"count/pods": "100",
@@ -1037,7 +1002,7 @@ class TestProject(object):
                 "count/secrets": "8",
                 "count/configmaps": "7"}
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取项目配额的resource_version
             resource_version = project_steps.step_get_project_quota_version_in_multi_project(project_info[1],
@@ -1053,6 +1018,7 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('在多集群项目只设置项目配额-输入错误的资源配额信息(包含字母)')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_project_quota_wrong_resource(self):
         # 配额信息
         hard = {"count/pods": "100q",
@@ -1067,7 +1033,7 @@ class TestProject(object):
                 "count/secrets": "8",
                 "count/configmaps": "7"}
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取项目配额的resource_version
             resource_version = project_steps.step_get_project_quota_version_in_multi_project(project_info[1],
@@ -1082,6 +1048,7 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('在多集群项目只设置项目配额-输入错误的资源配额信息(包含负数)')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_project_quota_wrong_resource_1(self):
         # 配额信息
         hard = {"count/pods": "-100",
@@ -1096,7 +1063,7 @@ class TestProject(object):
                 "count/secrets": "8",
                 "count/configmaps": "7"}
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取项目配额的resource_version
             resource_version = project_steps.step_get_project_quota_version_in_multi_project(project_info[1],
@@ -1111,6 +1078,7 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('在多集群下项目设置项目配额-cpu、memory、资源配额')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_project_quota(self):
         # 配额信息
         hard = {"count/configmaps": "7",
@@ -1127,7 +1095,7 @@ class TestProject(object):
                 "limits.cpu": "200", "limits.memory": "1000Gi",
                 "requests.cpu": "200", "requests.memory": "3Gi"}
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取项目配额的resource_version
             resource_version = project_steps.step_get_project_quota_version_in_multi_project(project_info[1],
@@ -1143,9 +1111,10 @@ class TestProject(object):
 
     @allure.story('项目设置-资源默认请求')
     @allure.title('在多集群项目只设置资源默认请求-cpu')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_container_quota_cpu(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取资源默认请求
             response = project_steps.step_get_container_quota_in_multi_project(project_info[0], project_info[2])
@@ -1175,7 +1144,7 @@ class TestProject(object):
     # 接口未做限制
     def wx_test_edit_container_quota_wrong_cpu(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取资源默认请求
             response = project_steps.step_get_container_quota_in_multi_project(project_info[0], project_info[2])
@@ -1226,9 +1195,10 @@ class TestProject(object):
 
     @allure.story('项目设置-资源默认请求')
     @allure.title('只设置资源默认请求-内存')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_container_quota_memory(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取资源默认请求
             response = project_steps.step_get_container_quota_in_multi_project(project_info[0], project_info[2])
@@ -1309,9 +1279,10 @@ class TestProject(object):
 
     @allure.story('项目设置-资源默认请求')
     @allure.title('在多集群项目只设置资源默认请求-内存、cpu')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_container_quota_memory_1(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取资源默认请求
             response = project_steps.step_get_container_quota_in_multi_project(project_info[0], project_info[2])
@@ -1338,9 +1309,10 @@ class TestProject(object):
 
     @allure.story('配置中心-密钥')
     @allure.title('在多集群项目创建默认类型的密钥')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_create_secret_default(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 在多集群项目创建默认类型的密钥
             secret_name = 'secret' + str(commonFunction.get_random())
@@ -1348,16 +1320,21 @@ class TestProject(object):
                                                                       project_name=project_info[0],
                                                                       secret_name=secret_name, key='wx',
                                                                       value='dGVzdA==')
-            # 查询创建的密钥
-            response = project_steps.step_get_federatedsecret(project_name=project_info[0], secret_name=secret_name)
-            try:
-                # 获取密钥的数量和状态
-                secret_count = response.json()['totalItems']
-                secret_status = response.json()['items'][0]['status']['conditions'][0]['status']
-            except Exception as e:
-                pytest.xfail('密钥创建失败，标记为xfail')
-                print(e)
-                break
+            i = 0
+            while i < 100:
+                try:
+                    # 查询创建的密钥
+                    response = project_steps.step_get_federatedsecret(project_name=project_info[0], secret_name=secret_name)
+                    # 获取密钥的数量和状态
+                    secret_count = response.json()['totalItems']
+                    secret_status = response.json()['items'][0]['status']['conditions'][0]['status']
+                    if secret_status:
+                        break
+                    else:
+                        time.sleep(3)
+                        i += 3
+                except Exception as e:
+                    print(e)
             # 验证查询到的密钥数量和密钥的状态正确
             assert secret_count == 1
             assert secret_status == 'True'
@@ -1366,9 +1343,10 @@ class TestProject(object):
 
     @allure.story('配置中心-密钥')
     @allure.title('在多集群项目创建TLS类型的密钥')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_create_secret_tls(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 在多集群项目创建默认类型的密钥
             secret_name = 'secret' + str(commonFunction.get_random())
@@ -1376,16 +1354,21 @@ class TestProject(object):
                                                                   project_name=project_info[0],
                                                                   secret_name=secret_name, credential='d3g=',
                                                                   key='dGVzdA==')
-            # 查询创建的密钥
-            response = project_steps.step_get_federatedsecret(project_name=project_info[0], secret_name=secret_name)
-            # 获取密钥的数量和状态
-            try:
-                secret_count = response.json()['totalItems']
-                secret_status = response.json()['items'][0]['status']['conditions'][0]['status']
-            except Exception as e:
-                pytest.xfail('密钥创建失败，标记为xfail')
-                print(e)
-                break
+            i = 0
+            while i < 100:
+                try:
+                    # 查询创建的密钥
+                    response = project_steps.step_get_federatedsecret(project_name=project_info[0], secret_name=secret_name)
+                    # 获取密钥的数量和状态
+                    secret_count = response.json()['totalItems']
+                    secret_status = response.json()['items'][0]['status']['conditions'][0]['status']
+                    if secret_status:
+                        break
+                    else:
+                        time.sleep(3)
+                        i += 3
+                except Exception as e:
+                    print(e)
             # 验证查询到的密钥数量和密钥的状态正确
             assert secret_count == 1
             assert secret_status == 'True'
@@ -1394,25 +1377,31 @@ class TestProject(object):
 
     @allure.story('配置中心-密钥')
     @allure.title('在多集群项目创建image类型的密钥')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_create_secret_image(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 在多集群项目创建默认类型的密钥
             secret_name = 'secret' + str(commonFunction.get_random())
             project_steps.step_create_secret_image_in_multi_project(cluster_name=project_info[1],
                                                                     project_name=project_info[0],
                                                                     secret_name=secret_name)
-            # 查询创建的密钥
-            response = project_steps.step_get_federatedsecret(project_name=project_info[0], secret_name=secret_name)
-            # 获取密钥的数量和状态
-            try:
-                secret_count = response.json()['totalItems']
-                secret_status = response.json()['items'][0]['status']['conditions'][0]['status']
-            except Exception as e:
-                pytest.xfail('密钥创建失败，标记为xfail')
-                print(e)
-                break
+            i = 0
+            while i < 100:
+                # 查询创建的密钥
+                try:
+                    response = project_steps.step_get_federatedsecret(project_name=project_info[0], secret_name=secret_name)
+                    # 获取密钥的数量和状态
+                    secret_count = response.json()['totalItems']
+                    secret_status = response.json()['items'][0]['status']['conditions'][0]['status']
+                    if secret_status:
+                        break
+                    else:
+                        time.sleep(3)
+                        i += 3
+                except Exception as e:
+                    print(e)
             # 验证查询到的密钥数量和密钥的状态正确
             assert secret_count == 1
             assert secret_status == 'True'
@@ -1421,9 +1410,10 @@ class TestProject(object):
 
     @allure.story('配置中心-密钥')
     @allure.title('在多集群项目创建账号密码类型的密钥')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_create_secret_account(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 在多集群项目创建默认类型的密钥
             secret_name = 'secret' + str(commonFunction.get_random())
@@ -1431,16 +1421,21 @@ class TestProject(object):
                                                                       project_name=project_info[0],
                                                                       secret_name=secret_name, username='d3g=',
                                                                       password='dGVzdA==')
-            # 查询创建的密钥
-            response = project_steps.step_get_federatedsecret(project_name=project_info[0], secret_name=secret_name)
-            # 获取密钥的数量和状态
-            try:
-                secret_count = response.json()['totalItems']
-                secret_status = response.json()['items'][0]['status']['conditions'][0]['status']
-            except Exception as e:
-                pytest.xfail('密钥创建失败，标记为xfail')
-                print(e)
-                break
+            i = 0
+            while i < 100:
+                try:
+                    # 查询创建的密钥
+                    response = project_steps.step_get_federatedsecret(project_name=project_info[0], secret_name=secret_name)
+                    # 获取密钥的数量和状态
+                    secret_count = response.json()['totalItems']
+                    secret_status = response.json()['items'][0]['status']['conditions'][0]['status']
+                    if secret_status:
+                        break
+                    else:
+                        time.sleep(3)
+                        i += 3
+                except Exception as e:
+                    print(e)
             # 验证查询到的密钥数量和密钥的状态正确
             assert secret_count == 1
             assert secret_status == 'True'
@@ -1449,25 +1444,31 @@ class TestProject(object):
 
     @allure.story('配置中心-密钥')
     @allure.title('在多集群项目创建配置')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_create_config_map(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             config_name = 'config-map' + str(commonFunction.get_random())
             # 在每个多集群项目创建配置
             project_steps.step_create_config_map_in_multi_project(cluster_name=project_info[1],
                                                                   project_name=project_info[0],
                                                                   config_name=config_name, key='wx', value='test')
-            # 查询创建的配置
-            response = project_steps.step_get_federatedconfigmap(project_name=project_info[0], config_name=config_name)
-            # 获取配置的数量和状态
-            try:
-                secret_count = response.json()['totalItems']
-                secret_status = response.json()['items'][0]['status']['conditions'][0]['status']
-            except Exception as e:
-                pytest.xfail('密钥创建失败，标记为xfail')
-                print(e)
-                break
+            i = 0
+            while i < 100:
+                try:
+                    # 查询创建的配置
+                    response = project_steps.step_get_federatedconfigmap(project_name=project_info[0], config_name=config_name)
+                    # 获取配置的数量和状态
+                    secret_count = response.json()['totalItems']
+                    secret_status = response.json()['items'][0]['status']['conditions'][0]['status']
+                    if secret_status:
+                        break
+                    else:
+                        time.sleep(3)
+                        i += 3
+                except Exception as e:
+                    print(e)
             # 验证查询到的配置数量和密钥的状态正确
             assert secret_count == 1
             assert secret_status == 'True'
@@ -1476,10 +1477,11 @@ class TestProject(object):
 
     @allure.story('项目设置-高级设置')
     @allure.title('落盘日志收集-开启')
+    @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('logging') is False, reason='集群未开启logging功能')
     def test_disk_log_collection_open(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 开启落盘日志收集功能
             project_steps.step_set_disk_log_collection(project_name=project_info[0], set='enabled')
@@ -1492,10 +1494,11 @@ class TestProject(object):
 
     @allure.story('项目设置-高级设置')
     @allure.title('落盘日志收集-关闭')
+    @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('logging') is False, reason='集群未开启logging功能')
     def test_disk_log_collection_close(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 关闭落盘日志收集功能
             project_steps.step_set_disk_log_collection(project_name=project_info[0], set='disabled')
@@ -1508,9 +1511,10 @@ class TestProject(object):
 
     @allure.story('概览')
     @allure.title('查询多集群项目的监控信息')
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_get_project_metrics(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 获取当前时间的10位时间戳
             now_timestamp = str(time.time())[0:10]
@@ -1529,9 +1533,10 @@ class TestProject(object):
 
     @allure.story('概览')
     @allure.title('查询多集群项目的abnormalworkloads')
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_get_project_abnormalworkloads(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 查询多集群项目的abnormalworkloads
             response = project_steps.step_get_project_abnormalworkloads_in_multi_project(cluster_name=project_info[1],
@@ -1541,9 +1546,10 @@ class TestProject(object):
 
     @allure.story('概览')
     @allure.title('查询多集群项目的federatedlimitranges')
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_get_project_federatedlimitranges(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             # 查询多集群项目的federatedlimitranges
             response = project_steps.step_get_project_federatedlimitranges(project_name=project_info[0])
@@ -1554,9 +1560,10 @@ class TestProject(object):
 
     @allure.story('概览')
     @allure.title('查询多集群项目的workloads')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_project_workloads(self):
         # 获取环境中所有的多集群项目
-        multi_projects = project_steps.step_get_multi_project_all()
+        multi_projects = project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
             response = project_steps.step_get_project_workloads_in_multi_project(cluster_name=project_info[1],
                                                                                  project_name=project_info[0])
