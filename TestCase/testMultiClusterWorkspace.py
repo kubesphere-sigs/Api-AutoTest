@@ -349,7 +349,7 @@ class TestWorkSpace(object):
         response = multi_worksapce_steps.step_get_ws_info('')
         ws_count = response.json()['totalItems']
         # 获取任一企业空间
-        k = random.randint(0, ws_count)
+        k = random.randint(0, ws_count - 1)
         # 获取企业空间的名称
         ws_name = response.json()['items'][k]['metadata']['name']
         if ws_name != 'system-workspace':
