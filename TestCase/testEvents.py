@@ -13,10 +13,9 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 @allure.feature('事件查询')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('events') is False, reason='集群未开启events功能')
-@pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 class TestEventSearch(object):
     if commonFunction.check_multi_cluster() is True:
-        # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
+        # 如果为多集群环境，则不会collect该class的所有用例。 __test__ = False
         __test__ = False
     else:
         __test__ = True
@@ -175,8 +174,8 @@ class TestEventSearch(object):
     @allure.title('{title}')
     @pytest.mark.parametrize(('limit', 'interval', 'title'),
                              [(10, '1m', '按时间范围查询最近10分钟事件趋势'),
-                              (180, '6m', '按容器模糊查询最近3小时事件趋势'),
-                              (1440, '48m', '按容器模糊查询最近一天事件趋势')
+                              (180, '6m', '按时间范围查询最近3小时事件趋势'),
+                              (1440, '48m', '按时间范围查询最近一天事件趋势')
                               ])
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_events_by_time_limit(self, limit, interval, title):
@@ -187,7 +186,6 @@ class TestEventSearch(object):
         # 按时间范围查询事件
         res = toolbox_steps.step_get_events_by_time(interval, start_time, now_timestamp)
         event_num = res.json()['query']['total']
-        print(event_num)
         # 验证查询成功
         assert event_num >= 0
 
