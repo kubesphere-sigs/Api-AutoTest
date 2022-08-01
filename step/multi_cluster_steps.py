@@ -566,6 +566,20 @@ def step_get_alert_custom_policy_detail(cluster_name, alert_name):
     return response
 
 
+@allure.step('查看告警策略')
+def step_get_alert_policies(cluster_name, type, condition):
+    """
+    :type cluster_name:
+    :param type: 'builtin/' 表示内置策略，传入''表示用户自定义策略。
+    :param condition: 查询条件
+    :return:
+    """
+
+    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/' + type + 'rules?' + condition + '&sortBy=createTime'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
 @allure.step('集群设置/基本信息，查看基本信息')
 def step_get_information(cluster_name):
     url = env_url + '/kapis/clusters/host/monitoring.kubesphere.io/v1alpha3/cluster?' \
