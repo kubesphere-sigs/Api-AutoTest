@@ -32,12 +32,11 @@ class TestWorkSpace(object):
         # 获取集群名称
         clusters = multi_worksapce_steps.step_get_cluster_name()
         # 创建一个多集群企业空间（包含所有的集群）
-        multi_worksapce_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()),
-                             self.alias_name, self.description, clusters)
+        multi_worksapce_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, clusters)
         # 创建若干个多集群企业空间（只部署在单个集群）
         if len(clusters) > 1:
             for i in range(len(clusters)):
-                multi_worksapce_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()),
+                multi_worksapce_steps.step_create_multi_ws(self.ws_name,
                                                            self.alias_name, self.description, clusters[i])
         # 创建一个多集群企业空间,供excle文件中的用例使用
         multi_worksapce_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, clusters)
@@ -327,8 +326,6 @@ class TestWorkSpace(object):
         # 创建企业组织,并获取创建的企业组织的name
         resp = multi_worksapce_steps.step_create_department(self.ws_name, group_name, data)
         name = resp.json()['metadata']['name']
-        # 获取该企业组织可分配的用户数量
-        res = multi_worksapce_steps.step_get_user_for_department(name)
         # 将指定用户绑定到指定企业组织
         re = multi_worksapce_steps.step_binding_user(self.ws_name, name, self.user_name)
         # 获取绑定后返回的用户名
