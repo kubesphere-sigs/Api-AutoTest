@@ -1489,19 +1489,15 @@ class TestCluster(object):
         multi_worksapce_steps.step_delete_workspace(ws_name)
 
     @allure.story('集群设置/集群成员')
-    @allure.title('查看所有集群默认成员')
+    @allure.title('查询集群默认成员')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_member_by_name(self):
-        # 遍历所有集群
-        for cluster_name in self.cluster_names:
-            # 查询集群所有成员
-            response = multi_cluster_steps.step_get_cluster_member(cluster_name, '')
-            # 获取集群成员的数量和名称
-            count = response.json()['totalItems']
-            name = response.json()['items'][0]['metadata']['name']
-            # 集群默认的成员仅有admin
-            assert count == 1
-            assert name == 'admin'
+        # 查询集群所有成员
+        response = multi_cluster_steps.step_get_cluster_member(self.cluster_host_name, 'name=admin')
+        # 获取集群成员的数量和名称
+        count = response.json()['totalItems']
+        # 验证查询成功
+        assert count == 1
 
     @allure.story('集群设置/集群成员')
     @allure.title('邀请集群成员/移出集群成员')
