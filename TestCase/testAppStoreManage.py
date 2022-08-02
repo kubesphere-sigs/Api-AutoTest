@@ -20,7 +20,7 @@ class TestManageAppStore(object):
         __test__ = True
 
     # 从文件中读取用例信息
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='manageapps')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/manageapps.yaml')
 
     @allure.story('应用分类')
     @allure.title('删除不包含应用的分类')
