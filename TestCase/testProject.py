@@ -104,7 +104,7 @@ class TestProject(object):
         # 验证存储卷状态正常
         assert status == 'Bound'
         # 删除工作负载
-        project_steps.step_delete_deploymennt(self.project_name, work_name)
+        project_steps.step_delete_deployment(self.project_name, work_name)
         # 等待工作负载删除成功，再删除pvc
         j = 0
         while j < 300:
@@ -1370,7 +1370,7 @@ class TestProject(object):
         # 删除服务
         project_steps.step_delete_service(self.project_name, service_name)
         # 删除deployment
-        project_steps.step_delete_deploymennt(self.project_name, service_name)
+        project_steps.step_delete_deployment(self.project_name, service_name)
 
     @allure.story('项目设置-网关设置')
     @allure.title('{title}')
