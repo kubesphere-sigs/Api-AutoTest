@@ -9,7 +9,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 from common.getData import DoexcleByPandas
 from common.logFormat import log_format
 from common import commonFunction
-from step import app_steps, cluster_steps, workspace_steps, project_steps
+from step import app_steps, cluster_steps, workspace_steps, multi_project_steps, multi_workspace_steps
 
 
 @allure.feature('遍历部署AppStore的所有应用')
@@ -25,23 +25,25 @@ class TestAppStore(object):
     project_name = 'project-for-test-deploy-app-from-appstore' + str(commonFunction.get_random())  # 在excle中读取的用例此名称，不能修改。
     log_format()  # 配置日志格式
     # 从文件中读取用例信息
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='appstore')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/appstore.yaml')
     # 获取host集群的名称
-    host_name = project_steps.step_get_host_name()
+    host_name = multi_project_steps.step_get_host_name()
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
         # 获取集群名称
         clusters = cluster_steps.step_get_cluster_name()
         # 创建一个多集群企业空间（包含所有的集群）
-        workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, clusters)
+        multi_workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, clusters)
         # 在企业空间的host集群上创建一个项目
-        project_steps.step_create_project_for_cluster(cluster_name=self.host_name, ws_name=self.ws_name, project_name=self.project_name)
+        multi_project_steps.step_create_project_for_cluster(cluster_name=self.host_name, ws_name=self.ws_name,
+                                                            project_name=self.project_name)
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
         # 删除创建的项目
-        project_steps.step_delete_project_from_cluster(cluster_name='host', ws_name=self.ws_name, project_name=self.project_name)
+        multi_project_steps.step_delete_project_from_cluster(cluster_name='host', ws_name=self.ws_name,
+                                                             project_name=self.project_name)
         # 删除创建的企业空间
         workspace_steps.step_delete_workspace(self.ws_name)
 
