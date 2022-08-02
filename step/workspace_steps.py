@@ -326,30 +326,6 @@ def step_get_project_info(ws_name):
     return response
 
 
-@allure.step('创建多集群企业空间')
-def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
-    clusters = []
-    if isinstance(cluster_names, str):
-        clusters.append({'name': cluster_names})
-    else:
-        for cluster_name in cluster_names:
-            clusters.append({'name': cluster_name})
-    data = {"apiVersion": "tenant.kubesphere.io/v1alpha2",
-            "kind": "WorkspaceTemplate",
-            "metadata":
-                {"name": ws_name,
-                 "annotations": {
-                     "kubesphere.io/alias-name": alias_name,
-                     "kubesphere.io/description": description,
-                     "kubesphere.io/creator": "admin"}
-                 },
-            "spec": {"template": {"spec": {"manager": "admin"}},
-                     "placement": {"clusters": clusters}}}
-    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
-    return response
-
-
 @allure.step('查询集群的 namespace usage ranking信息')
 def step_get_namespace_usage_rank(ws_name, sort):
     url = env_url + '/kapis/monitoring.kubesphere.io/v1alpha3/workspaces/' + ws_name + '/namespaces?type=rank&metrics_filter=namespace_memory_usage_wo_cache%7Cnamespace_memory_limit_hard%7Cnamespace_cpu_usage%7Cnamespace_cpu_limit_hard%7Cnamespace_pod_count%7Cnamespace_pod_count_hard%7Cnamespace_net_bytes_received%7Cnamespace_net_bytes_transmitted&page=1&limit=10&sort_type=desc&sort_metric=' + sort
