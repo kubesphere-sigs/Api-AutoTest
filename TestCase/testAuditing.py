@@ -143,8 +143,7 @@ class TestAuditingOperatingSearch(object):
         start_time = commonFunction.get_before_timestamp(limit)
         # 按时间范围查询容器日志
         res = toolbox_steps.step_get_audits_trend_by_time(interval, start_time, now_timestamp)
-        audits_num = res.json()['query']['total']
-        print(audits_num)
+        audits_num = res.json()['histogram']['total']
         # 验证查询成功
         assert audits_num >= 0
 
