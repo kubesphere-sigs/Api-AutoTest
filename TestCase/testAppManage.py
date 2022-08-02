@@ -8,7 +8,7 @@ from common.getData import DoexcleByPandas
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from common import commonFunction
-from step import app_steps, cluster_steps, workspace_steps, project_steps
+from step import app_steps, cluster_steps, workspace_steps, project_steps, multi_project_steps
 
 
 @allure.feature('应用管理')
@@ -36,10 +36,10 @@ class TestAppTemplate(object):
             # 创建一个多集群企业空间（包含所有的集群）
             workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, clusters)
             # 获取host集群的名称
-            host_name = project_steps.step_get_host_name()
+            host_name = multi_project_steps.step_get_host_name()
             # 在企业空间的host集群上创建一个项目
-            project_steps.step_create_project_for_cluster(cluster_name=host_name, ws_name=self.ws_name,
-                                                          project_name=self.project_name)
+            multi_project_steps.step_create_project_for_cluster(cluster_name=host_name, ws_name=self.ws_name,
+                                                                project_name=self.project_name)
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
@@ -48,12 +48,12 @@ class TestAppTemplate(object):
             workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的企业空间
         else:
             # 删除创建的项目
-            project_steps.step_delete_project_from_cluster(cluster_name='host', ws_name=self.ws_name,
-                                                           project_name=self.project_name)
+            multi_project_steps.step_delete_project_from_cluster(cluster_name='host', ws_name=self.ws_name,
+                                                                project_name=self.project_name)
             # 删除创建的企业空间
             workspace_steps.step_delete_workspace(self.ws_name)
 
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='appmanage')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/appmanage.yaml')
 
     @allure.title('{title}')  # 设置用例标题
     # 将用例信息以参数化的方式传入测试方法
