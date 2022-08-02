@@ -5,7 +5,7 @@ import sys
 import time
 import random
 from common import commonFunction
-from step import multi_cluster_steps, project_steps, multi_worksapce_steps, platform_steps
+from step import multi_cluster_steps, project_steps, multi_workspace_steps, platform_steps
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -1421,7 +1421,7 @@ class TestCluster(object):
         ws_name = 'test-ws' + str(commonFunction.get_random())
         alias_name = ''
         description = ''
-        multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, self.cluster_host_name)
+        multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, self.cluster_host_name)
         time.sleep(5)
         # 查看集群可见性
         response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_host_name)
@@ -1434,7 +1434,7 @@ class TestCluster(object):
         # 验证集群可见性
         assert ws_name in ws_names
         # 删除创建的企业空间
-        multi_worksapce_steps.step_delete_workspace(ws_name)
+        multi_workspace_steps.step_delete_workspace(ws_name)
 
     @allure.story('集群设置/集群可见性')
     @allure.title('编辑集群可见性/取消企业空间授权')
@@ -1445,7 +1445,7 @@ class TestCluster(object):
         alias_name = ''
         description = ''
         cluster_name = self.cluster_host_name
-        multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
+        multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
         # 取消企业空间在host集群的授权
         multi_cluster_steps.step_unauthorized_cluster_visibility(self.cluster_host_name, ws_name)
         time.sleep(3)
@@ -1460,7 +1460,7 @@ class TestCluster(object):
         # 验证授权取消成功
         assert ws_name not in ws_names
         # 删除创建的企业空间
-        multi_worksapce_steps.step_delete_workspace(ws_name)
+        multi_workspace_steps.step_delete_workspace(ws_name)
 
     @allure.story('集群设置/集群可见性')
     @allure.title('编辑集群可见性/添加企业空间在集群的授权')
@@ -1471,7 +1471,7 @@ class TestCluster(object):
         alias_name = ''
         description = ''
         cluster_name = ''
-        multi_worksapce_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
+        multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
         # 添加企业空间在host集群的授权
         multi_cluster_steps.step_authorized_cluster_visibility(self.cluster_host_name, ws_name)
         # 查看集群可见性
@@ -1486,7 +1486,7 @@ class TestCluster(object):
         # 验证授权取消成功
         assert ws_name in ws_names
         # 删除创建的企业空间
-        multi_worksapce_steps.step_delete_workspace(ws_name)
+        multi_workspace_steps.step_delete_workspace(ws_name)
 
     @allure.story('集群设置/集群成员')
     @allure.title('查询集群默认成员')
