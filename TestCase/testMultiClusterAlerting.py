@@ -5,7 +5,7 @@ import sys
 import time
 import random
 from common import commonFunction
-from step import multi_cluster_steps, project_steps, multi_worksapce_steps, platform_steps
+from step import multi_cluster_steps
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
