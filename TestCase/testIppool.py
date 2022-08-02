@@ -25,9 +25,9 @@ class TestIpPool(object):
 
     ippool_name = 'ippool-' + str(get_random())
     cidr = random_ip() + '/24'
-    ws_name = 'test-ippool-ws'
-    pro_name = 'test-ippool-pro'
-    parametrize =DoexcleByPandas().get_data_from_yaml(filename='../data/ippool.yaml')
+    ws_name = 'test-ippool-ws' + str(get_random())
+    pro_name = 'test-ippool-pro' + str(get_random())
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/ippool.yaml')
 
     def setup_class(self):
         des = ''
@@ -60,6 +60,7 @@ class TestIpPool(object):
         cidr = random_ip() + '/24'
         description = ' '
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
+        time.sleep(5)
         res = ippool_steps.step_search_by_name(ippool_name)
         synced = res.json()['items'][0]['status']['synced']
         assert synced is True
@@ -139,8 +140,9 @@ class TestIpPool(object):
         # 创建ippool
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
         # 删除ippool
-        r = ippool_steps.step_delete_ippool(ippool_name)
+        ippool_steps.step_delete_ippool(ippool_name)
         # 查询已删除的ippool
+        time.sleep(5)
         res = ippool_steps.step_search_by_name(ippool_name)
         assert res.json()['totalItems'] == 0
 
@@ -170,6 +172,7 @@ class TestIpPool(object):
         # 创建ippool
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
         # 验证创建成功
+        time.sleep(5)
         res = ippool_steps.step_search_by_name(ippool_name)
         assert res.json()['items'][0]['status']['synced'] is True
         # 删除ippool
@@ -180,6 +183,7 @@ class TestIpPool(object):
         # 再次创建相同的ippool
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
         # 验证创建成功
+        time.sleep(5)
         res = ippool_steps.step_search_by_name(ippool_name)
         assert res.json()['items'][0]['status']['synced'] is True
         # 删除创建的ippool
