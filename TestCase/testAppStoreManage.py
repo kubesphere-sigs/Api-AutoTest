@@ -106,6 +106,8 @@ class TestManageAppStore(object):
         app_steps.step_suspend_app(app_id)
         # 删除新建的分类
         app_steps.step_delete_category(category_id)
+        # 删除创建的企业空间
+        workspace_steps.step_delete_workspace(ws_name)
 
     @allure.title('{title}')  # 设置用例标题
     # 将用例信息以参数化的方式传入测试方法
