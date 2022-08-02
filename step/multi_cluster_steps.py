@@ -850,3 +850,22 @@ def step_modify_log_receiver_address(cluster_name, name, host, port):
     data = {"spec": {"forward": {"host": host, "port": port}}}
     response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
     return response
+
+
+@allure.step('在指定集群创建项目')
+def step_create_project_for_cluster(cluster_name, ws_name, project_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+          ws_name + '/namespaces'
+    data = {"apiVersion": "v1", "kind": "Namespace",
+            "metadata": {"name": project_name, "labels": {"kubesphere.io/workspace": ws_name},
+                         "annotations": {"kubesphere.io/creator": "admin"}}, "cluster": cluster_name}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('从指定集群删除项目')
+def step_delete_project_from_cluster(cluster_name, ws_name, project_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
+          ws_name + '/namespaces/' + project_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
