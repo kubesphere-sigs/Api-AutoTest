@@ -119,14 +119,17 @@ class TestWorkSpace(object):
         pytest.assume(devops_num == '0')
         # 在企业空间创建devops工程
         devops_name = 'devops-' + str(commonFunction.get_random())
-        devops_steps.step_create_devops(ws_name, devops_name)
+        r = devops_steps.step_create_devops(ws_name, devops_name)
+        # 获取devops项目的名称
+        devops_name_new = r.json()['metadata']['name']
         time.sleep(3)
         # 获取概览信息
-        res_new = workspace_steps.step_get_ws_num_info(ws_name)
-        new_devops_num = res_new.json()['results'][1]['data']['result'][0]['value'][1]
+        response = workspace_steps.step_get_ws_num_info(ws_name)
+        # 获取devops项目
+        new_devops_num = response.json()['results'][1]['data']['result'][0]['value'][1]
         pytest.assume(new_devops_num == '1')
         # 删除devops工程
-        devops_steps.step_delete_devops(ws_name, devops_name)
+        devops_steps.step_delete_devops(ws_name, devops_name_new)
         # 删除企业空间
         workspace_steps.step_delete_workspace(ws_name)
 
@@ -421,20 +424,27 @@ class TestWorkSpace(object):
         # 创建企业组织,并获取创建的企业组织的name
         response = workspace_steps.step_create_department(ws_name, group_name, data)
         name = response.json()['metadata']['name']
-        # 获取该企业组织可分配的用户数量
-        res = workspace_steps.step_get_user_for_department(name)
-        counts = res.json()['totalItems']
         # 将指定用户绑定到指定企业组织
-        re = workspace_steps.step_binding_user(ws_name, name, user_name)
-        # 获取绑定后返回的用户名
-        binding_user = re.json()[0]['users'][0]
-        # 校验绑定的用户名称
-        pytest.assume(binding_user == user_name)
-        # 重新获取企业组织可分配的用户数量
-        r = workspace_steps.step_get_user_for_department(name)
-        counts_new = r.json()['totalItems']
-        # 验证可绑定的用户数量
-        pytest.assume(counts_new == counts - 1)
+        workspace_steps.step_binding_user(ws_name, name, user_name)
+        # 获取企业组织可分配的用户数量
+        res = workspace_steps.step_get_user_for_department(name)
+        count_not_in = res.json()['totalItems']
+        # 获取所有的可分配用户名称
+        user_not_in_group = []
+        for i in range(0, count_not_in):
+            user = res.json()['items'][i]['metadata']['name']
+            user_not_in_group.append(user)
+        # 获取企业组织已分配的用户数量
+        re = workspace_steps.step_get_user_assigned_department(name)
+        count_in = re.json()['totalItems']
+        # 获取所有的已分配用户名称
+        user_in_group = []
+        for j in range(0, count_in):
+            user = re.json()['items'][j]['metadata']['name']
+            user_in_group.append(user)
+        # 验证用户在已分配的列表中
+        pytest.assume(user_name in user_in_group)
+        pytest.assume(user_name not in user_not_in_group)
         # 删除创建的企业空间
         workspace_steps.step_delete_workspace(ws_name)
         # 删除创建的用户

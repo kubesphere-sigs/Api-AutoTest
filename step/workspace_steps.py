@@ -157,7 +157,7 @@ def step_get_user_for_department(name):
 @allure.step('查看企业组织已分配的用户信息')
 def step_get_user_assigned_department(name):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users?ingroup=' + name
-    response = requests.get(url)
+    response = requests.get(url=url, headers=get_header())
     return response
 
 
