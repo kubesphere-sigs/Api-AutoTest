@@ -2,13 +2,11 @@ import requests
 import json
 import allure
 import sys
-
-sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
-
 from common.getHeader import get_header, get_header_for_patch
 from common import commonFunction
-from step import workspace_steps
 from common.getConfig import get_apiserver
+
+sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 env_url = get_apiserver()
 
@@ -157,7 +155,6 @@ def step_create_deploy(project_name, work_name, container_name, image, replicas,
         path_2 = '/apis'
     url1 = env_url + path_1 + '/apps/v1/namespaces/' + project_name + '/' + 'deployments?dryRun=All'
     url2 = env_url + path_2 + '/apps/v1/namespaces/' + project_name + '/deployments'
-    print(url1)
     data = {"apiVersion": "apps/v1", "kind": "Deployment",
             "metadata": {"namespace": project_name,
                          "labels": {"app": work_name},
