@@ -5,6 +5,7 @@ import sys
 import time
 import random
 from common import commonFunction
+from datetime import datetime
 from step import toolbox_steps, multi_cluster_steps
 
 
@@ -26,7 +27,8 @@ class TestLogSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_total_logs(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取当前日期的时间戳
         day_timestamp = commonFunction.get_timestamp()
         # 查询当天的日志总量信息
@@ -40,7 +42,7 @@ class TestLogSearch(object):
         # 查询最近12小时的日志变化趋势
         interval = '30m'   # 时间间隔 30分钟
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         re = toolbox_steps.step_get_logs_trend(before_timestamp, now_timestamp, interval, self.cluster_host_name)
         # 获取最近12小时的日志总量
         logs_count = re.json()['histogram']['total']

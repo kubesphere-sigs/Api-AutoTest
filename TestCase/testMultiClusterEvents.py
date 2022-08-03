@@ -4,6 +4,7 @@ import pytest
 import allure
 import sys
 import time
+from datetime import datetime
 from common import commonFunction
 from step import toolbox_steps, multi_cluster_steps
 
@@ -26,8 +27,8 @@ class TestEventSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_total_events(self):
         # 获取当前时间的10位时间戳
-        now = int(time.time())
-        now_timestamp = str(now)[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取当前日期的时间戳
         day_timestamp = commonFunction.get_timestamp()
         # 查询当天的事件总量信息
@@ -41,7 +42,7 @@ class TestEventSearch(object):
         # 获取最近12小时的事件趋势图
         interval = '30m'  # 时间间隔 30分钟
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         re = toolbox_steps.step_get_events_trend(before_timestamp, now_timestamp, interval, self.cluster_host_name)
         # 获取最近12小时的事件总量
         event_count = re.json()['histogram']['total']

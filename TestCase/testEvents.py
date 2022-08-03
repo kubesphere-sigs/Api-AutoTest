@@ -4,6 +4,7 @@ import allure
 import sys
 import time
 import random
+from datetime import datetime
 from common import commonFunction
 from step import toolbox_steps, cluster_steps
 
@@ -25,7 +26,8 @@ class TestEventSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_total_events(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取当前日期的时间戳
         day_timestamp = commonFunction.get_timestamp()
         # 查询当天的事件总量信息
@@ -39,7 +41,7 @@ class TestEventSearch(object):
         # 获取最近12小时的事件趋势图
         interval = '30m'  # 时间间隔 30分钟
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         re = toolbox_steps.step_get_events_trend(before_timestamp, now_timestamp, interval)
         # 获取最近12小时的事件总量
         event_count = re.json()['histogram']['total']
@@ -55,16 +57,19 @@ class TestEventSearch(object):
         else:  # 如果当前时间等于12点，则当天的事件总数等于最近12小时的事件总数
             assert event_count == event_counts
         # 获取当天的事件趋势图
-        interval = '1800'  # 时间间隔,单位是秒
+        interval = '1h'  # 时间间隔
         re = toolbox_steps.step_get_events_trend(day_timestamp, now_timestamp, interval)
-        # 获取趋势图的横坐标数量
+        # # 获取趋势图的横坐标数量
         count = len(re.json()['histogram']['buckets'])
         # 获取每个时间段的事件数量之和
         events_count_actual = 0
         for i in range(0, count):
             number = re.json()['histogram']['buckets'][i]['count']
             events_count_actual += number
+        # 获取事件总量
+        # events_count_actual = re.json()['histogram']['total']
         # 验证接口返回的事件数量和趋势图中的事件之和一致
+        print(events_count_actual)
         assert events_count_actual == event_counts
 
     @allure.story('事件总量')

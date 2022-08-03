@@ -2,10 +2,9 @@
 import random
 import sys
 import time
-
 import allure
 import pytest
-
+from datetime import datetime
 from common import commonFunction
 from step import toolbox_steps, cluster_steps
 
@@ -26,7 +25,8 @@ class TestAuditingOperatingSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_total_audits(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取当前日期的时间戳
         day_timestamp = commonFunction.get_timestamp()
         # 查询当天的操作审计总量信息
@@ -38,7 +38,7 @@ class TestAuditingOperatingSearch(object):
         # 验证资源数量数量大于0
         assert resources_count > 0
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         # 查询最近12小时审计总数变化趋势
         re = toolbox_steps.step_get_audits_trend(before_timestamp, now_timestamp)
         # 获取最近12小时的审计总量

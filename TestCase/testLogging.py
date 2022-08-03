@@ -5,6 +5,7 @@ import sys
 import time
 import random
 import numpy
+from datetime import datetime
 from common import commonFunction
 from step import toolbox_steps, workspace_steps, project_steps, cluster_steps
 
@@ -27,7 +28,8 @@ class TestLogSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_total_logs(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取当前日期的时间戳
         day_timestamp = commonFunction.get_timestamp()
         # 查询当天的日志总量信息
@@ -41,7 +43,7 @@ class TestLogSearch(object):
         # 查询最近12小时的日志变化趋势
         interval = '30m'   # 时间间隔 30分钟
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         re = toolbox_steps.step_get_logs_trend(before_timestamp, now_timestamp, interval)
         # 获取最近12小时的日志总量
         logs_count = re.json()['histogram']['total']
@@ -52,7 +54,7 @@ class TestLogSearch(object):
         tamp = commonFunction.get_custom_timestamp(today, '12:00:00')
         if int(now_timestamp) > int(tamp):   # 如果当前时间大于12点，则当天的日志总数大于等于最近12小时的日志总数
             assert log_counts >= logs_count
-        elif int(now_timestamp) < int(tamp): # 如果当前时间小于12点，则当天的日志总数小于等于最近12小时的日志总数
+        elif int(now_timestamp) < int(tamp):  # 如果当前时间小于12点，则当天的日志总数小于等于最近12小时的日志总数
             assert logs_count >= log_counts
         else:                                # 如果当前时间等于12点，则当天的日志总数等于最近12小时的日志总数
             assert logs_count == log_counts
