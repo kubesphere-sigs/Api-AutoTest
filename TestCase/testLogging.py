@@ -4,6 +4,7 @@ import allure
 import sys
 import time
 import random
+import numpy
 from common import commonFunction
 from step import toolbox_steps, workspace_steps, project_steps, cluster_steps
 
@@ -225,7 +226,7 @@ class TestLogSearch(object):
         assert log_num >= 0
 
     @allure.story('日志查询规则')
-    @allure.title('查询所有KS自带容器的日志详情')
+    @allure.title('查询任一KS自带容器的日志详情')
     def test_get_all_containers_log(self):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
@@ -235,28 +236,34 @@ class TestLogSearch(object):
         re = workspace_steps.step_get_project_info('system-workspace')
         # 获取项目的数量
         project_count = re.json()['totalItems']
-        # 获取企业空间中项目的名称
-        for j in range(0, project_count):
-            project_name = re.json()['items'][j]['metadata']['name']
-            # 获取项目的pod信息
-            r = project_steps.step_get_pod_info_of_project(project_name)
-            # 获取项目的pod的数量
-            pod_count = r.json()['totalItems']
-            # 获取项目pod的名称
-            for k in range(0, pod_count):
-                pod_name = r.json()['items'][k]['metadata']['name']
-                # 获取pod的容器名称
-                container = r.json()['items'][k]['spec']['containers']
-                for m in range(0, len(container)):
-                    container_name = r.json()['items'][k]['spec']['containers'][m]['name']
-                    # 查询容器的日志
-                    r1 = cluster_steps.step_get_container_log(pod_name, container_name, before_timestamp, now_timestamp)
-                    # 获取容器的日志数量
-                    logs_count = r1.json()['query']['total']
-                    if logs_count == 0:
-                        print('企业空间：' + 'system-workspace' + ' 项目：' + project_name + ' pod：' + pod_name + ' 容器：' + container_name + ' 最近7天没有日志')
-                    # 验证日志查询成功
-                    assert logs_count >= 0
+        # 获取企业空间中任一项目的名称
+        j = numpy.random.randint(0, project_count)
+        project_name = re.json()['items'][j]['metadata']['name']
+        # 获取项目的pod信息
+        r = project_steps.step_get_pod_info_of_project(project_name)
+        # 获取项目的pod的数量
+        pod_count = r.json()['totalItems']
+        # 获取项目任一pod的名称
+        if pod_count > 0:
+            k = numpy.random.randint(0, pod_count)
+            pod_name = r.json()['items'][k]['metadata']['name']
+            # 获取pod的容器名称
+            container = r.json()['items'][k]['spec']['containers']
+            if len(container) > 0:
+                m = numpy.random.randint(0, len(container))
+                container_name = r.json()['items'][k]['spec']['containers'][m]['name']
+                # 查询容器的日志
+                r1 = cluster_steps.step_get_container_log(pod_name, container_name, before_timestamp, now_timestamp)
+                # 获取容器的日志数量
+                logs_count = r1.json()['query']['total']
+                if logs_count == 0:
+                    print('企业空间：' + 'system-workspace' + ' 项目：' + project_name + ' pod：' + pod_name + ' 容器：' + container_name + ' 最近7天没有日志')
+                # 验证日志查询成功
+                assert logs_count >= 0
+            else:
+                print(project_name + '的pod' + pod_name +'无container')
+        else:
+            print(project_name + '无pod')
 
     @allure.story("集群设置")
     @allure.title('查看日志接收器中的容器日志')
