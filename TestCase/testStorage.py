@@ -82,7 +82,7 @@ class Test_Storage:
 
     @allure.title('{title}')
     @pytest.mark.parametrize('id,url, params, data, story, title, method, severity, condition, except_result',
-                             DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='storage'))
+                             DoexcleByPandas().get_data_from_yaml('../data/storage.yaml'))
     def test_storage(self, id, url, params, data, story, title, method, severity, condition, except_result):
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
@@ -116,12 +116,14 @@ class Test_Storage:
     @allure.severity('normal')
     def test_set_default_sc(self):
         ex1 = 'true'
+        storage_steps.set_default_sc('local', 'false')
         storage_steps.set_default_sc(self.sc_name, ex1)
         # 查询存储类
         re = storage_steps.search_sc_by_name(self.sc_name)
         # 验证设置成功
         assert re.json()['items'][0]['metadata']['annotations'][
                    'storageclass.beta.kubernetes.io/is-default-class'] == 'true'
+        storage_steps.set_default_sc(self.sc_name, 'false')
         storage_steps.set_default_sc('local', 'true')
 
     @allure.story("存储-存储类")
@@ -229,8 +231,11 @@ class Test_Storage:
         while i < 150:
             r1 = storage_steps.search_vs_by_name(vs_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         assert str(r1.json()['items'][0]['status']['readyToUse']) == 'True'
@@ -267,8 +272,11 @@ class Test_Storage:
         while i < 150:
             r1 = storage_steps.search_vs_by_name(vs_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         assert str(r1.json()['items'][0]['status']['readyToUse']) == 'True'
@@ -310,8 +318,11 @@ class Test_Storage:
         while i < 150:
             r1 = storage_steps.search_vs_by_name(vs_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         print("创建存储卷快照耗时:" + str(i) + '秒')
@@ -342,8 +353,11 @@ class Test_Storage:
         while i < 150:
             r1 = storage_steps.search_vs_by_name(vs_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         print("创建存储卷快照耗时:" + str(i) + '秒')
@@ -375,8 +389,11 @@ class Test_Storage:
         while i < 150:
             r1 = storage_steps.search_vs_by_name(vs_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         print("创建存储卷快照耗时:" + str(i) + '秒')
@@ -417,8 +434,11 @@ class Test_Storage:
         while i < 150:
             r1 = storage_steps.search_vs_by_name(vs_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         print("创建存储卷快照耗时:" + str(i) + '秒')
@@ -456,8 +476,11 @@ class Test_Storage:
         while i < 150:
             r1 = storage_steps.search_vs_by_name(vs_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         print("创建存储卷快照耗时:" + str(i) + '秒')
