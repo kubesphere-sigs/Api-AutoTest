@@ -44,9 +44,16 @@ def step_get_pod_info(node_name):
     return response
 
 
-@allure.step('获取集群的节点列表信息')
+@allure.step('获取集群的普通节点列表信息')
 def step_get_nodes():
-    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/nodes'
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/nodes?sortBy=createTime&labelSelector=%21node-role.kubernetes.io%2Fedge'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('获取集群的边缘节点列表信息')
+def step_get_nodes():
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/nodes?sortBy=createTime&labelSelector=node-role.kubernetes.io%2Fedge%3D'
     response = requests.get(url=url, headers=get_header())
     return response
 
