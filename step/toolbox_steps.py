@@ -101,8 +101,7 @@ def step_get_events_trend(start_time, end_time, interval, *cluster_name):
             path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/events'
     else:
         path = '/kapis/tenant.kubesphere.io/v1alpha2/events'
-    url = env_url + path + '?operation=histogram&interval=' + interval + 's&start_time=' + start_time + '&end_time=' + end_time
-    print(url)
+    url = env_url + path + '?operation=histogram&interval=' + interval + '&start_time=' + start_time + '&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 
