@@ -7,6 +7,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 from common.getHeader import get_header, get_header_for_patch, get_header_for_urlencoded
 from common.getConfig import get_apiserver
+from common.getCookie import get_token
 
 env_url = get_apiserver()
 
@@ -24,7 +25,8 @@ def step_create_devops(ws_name, devops_name):
                          "annotations": {"kubesphere.io/creator": "admin"}},
             "kind": "DevOpsProject",
             "apiVersion": "devops.kubesphere.io/v1alpha3"}
-    requests.post(url, headers=get_header(), data=json.dumps(data))
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
 
 
 @allure.story('查询devops工程')
