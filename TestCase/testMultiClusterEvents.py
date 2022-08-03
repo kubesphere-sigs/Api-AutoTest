@@ -58,7 +58,7 @@ class TestEventSearch(object):
         else:  # 如果当前时间等于12点，则当天的事件总数等于最近12小时的事件总数
             assert event_count == event_counts
         # 获取当天的事件趋势图
-        interval = '1800'  # 时间间隔,单位是秒
+        interval = '30m'  # 时间间隔
         re = toolbox_steps.step_get_events_trend(day_timestamp, now_timestamp, interval, self.cluster_host_name)
         # 获取趋势图的横坐标数量
         count = len(re.json()['histogram']['buckets'])
@@ -75,11 +75,12 @@ class TestEventSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_events_12h(self):
         # 时间间隔,单位是秒
-        interval = '1800'
+        interval = '30m'
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         # 查询最近 12 小时事件总数变化趋势
         response = toolbox_steps.step_get_events_trend(before_timestamp, now_timestamp, interval, self.cluster_host_name)
         # 获取事件总量
@@ -98,12 +99,13 @@ class TestEventSearch(object):
     @allure.title('查询最近 12 小时事件总数变化趋势')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_events_trend(self):
-        # 时间间隔,单位是秒
-        interval = '1800'
+        # 时间间隔
+        interval = '30m'
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         # 查询最近 12 小时事件总数变化趋势
         response = toolbox_steps.step_get_events_trend(before_timestamp, now_timestamp, interval, self.cluster_host_name)
         # 获取查询结果数据中的时间间隔
@@ -183,9 +185,10 @@ class TestEventSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_events_by_time_limit(self, limit, interval, title):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取开始时间
-        start_time = commonFunction.get_before_timestamp(limit)
+        start_time = commonFunction.get_before_timestamp(now_time, limit)
         # 按时间范围查询事件
         res = toolbox_steps.step_get_events_by_time(interval, start_time, now_timestamp, self.cluster_host_name)
         event_num = res.json()['query']['total']

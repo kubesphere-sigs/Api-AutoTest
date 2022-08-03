@@ -2,6 +2,7 @@
 import pytest
 import allure
 import sys
+from datetime import datetime
 from common import commonFunction
 from step import platform_steps
 import time
@@ -23,9 +24,10 @@ class TestWorkbench(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_count(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取180分钟戳
-        before_timestamp = commonFunction.get_before_timestamp(180)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 180)
         # 查询工作台的基本信息
         response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
         # 获取平台的集群数量
@@ -38,9 +40,10 @@ class TestWorkbench(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_ws_count(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取180分钟戳
-        before_timestamp = commonFunction.get_before_timestamp(180)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 180)
         # 查询工作台的基本信息
         response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
         # 获取平台的workspace数量
@@ -56,9 +59,10 @@ class TestWorkbench(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_user_count(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取180分钟戳
-        before_timestamp = commonFunction.get_before_timestamp(180)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 180)
         # 查询工作台的基本信息
         response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
         # 获取平台的用户数量
@@ -74,9 +78,10 @@ class TestWorkbench(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_template_count(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取180分钟戳
-        before_timestamp = commonFunction.get_before_timestamp(180)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 180)
         # 查询工作台的基本信息
         response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
         # 获取平台的应用模版数量

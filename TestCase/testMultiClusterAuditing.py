@@ -64,9 +64,10 @@ class TestAuditingOperatingSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_audits_12h(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         # 查询最近 12 小时审计总数变化趋势
         response = toolbox_steps.step_get_audits_trend(before_timestamp, now_timestamp, self.cluster_host_name)
         # 获取操作审计总量
@@ -85,12 +86,13 @@ class TestAuditingOperatingSearch(object):
     @allure.title('查询最近 12 小时操作审计总数变化趋势')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_audits_trend(self):
-        # 时间间隔,单位是秒
-        interval = '1800'
+        # 时间间隔
+        interval = '30m'
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         # 查询最近 12 小时审计总数变化趋势
         response = toolbox_steps.step_get_audits_trend(before_timestamp, now_timestamp, self.cluster_host_name)
         # 获取查询结果数据中的时间间隔
@@ -142,9 +144,10 @@ class TestAuditingOperatingSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_audits_trend_by_time_limit(self, limit, interval, title):
         # 获取当前时间的10位时间戳（结束时间）
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取开始时间
-        start_time = commonFunction.get_before_timestamp(limit)
+        start_time = commonFunction.get_before_timestamp(now_time, limit)
         # 按时间范围查询容器日志
         res = toolbox_steps.step_get_audits_trend_by_time(interval, start_time, now_timestamp, self.cluster_host_name)
         audits_num = res.json()['histogram']['total']
@@ -189,9 +192,10 @@ class TestAuditingOperatingSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_audits_detail_by_time_limit(self, limit, interval, title):
         # 获取当前时间的10位时间戳（结束时间）
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取开始时间
-        start_time = commonFunction.get_before_timestamp(limit)
+        start_time = commonFunction.get_before_timestamp(now_time, limit)
         # 按时间范围查询容器日志
         res = toolbox_steps.step_get_audits_by_time(interval, start_time, now_timestamp, self.cluster_host_name)
         audits_num = res.json()['query']['total']

@@ -4,6 +4,7 @@ import allure
 import sys
 import time
 import random
+from datetime import datetime
 from common import commonFunction
 from step import multi_cluster_steps, project_steps, multi_workspace_steps, platform_steps
 
@@ -234,9 +235,10 @@ class TestCluster(object):
             re = multi_cluster_steps.step_get_nodes(cluster_name)
             node_name = re.json()['items'][0]['metadata']['name']
             # 获取当前时间的10位时间戳
-            now_timestamp = str(time.time())[0:10]
+            now_time = datetime.now()
+            now_timestamp = str(datetime.timestamp(now_time))[0:10]
             # 获取10分钟之前的戳
-            before_timestamp = commonFunction.get_before_timestamp(10)
+            before_timestamp = commonFunction.get_before_timestamp(now_time, 10)
             # 查看最近十分钟的监控信息
             r = multi_cluster_steps.step_get_metrics_of_node(cluster_name=cluster_name, node_name=node_name,
                                                              start_time=before_timestamp,
@@ -255,9 +257,10 @@ class TestCluster(object):
             re = multi_cluster_steps.step_get_nodes(self.cluster_any_name)
             node_name = re.json()['items'][0]['metadata']['name']
             # 获取当前时间的10位时间戳
-            now_timestamp = str(time.time())[0:10]
+            now_time = datetime.now()
+            now_timestamp = str(datetime.timestamp(now_time))[0:10]
             # 获取20分钟之前的时间戳
-            before_timestamp = commonFunction.get_before_timestamp(20)
+            before_timestamp = commonFunction.get_before_timestamp(now_time, 20)
             # 查看节点的状态信息
             r = multi_cluster_steps.step_get_status_of_node(cluster_name=self.cluster_any_name, node_name=node_name,
                                                             start_time=before_timestamp,
@@ -1106,9 +1109,10 @@ class TestCluster(object):
                 name = re.json()['items'][j]['metadata']['name']
                 namespace = re.json()['items'][j]['metadata']['namespace']
                 # 获取当前时间的10位时间戳
-                now_timestamp = str(time.time())[0:10]
+                now_time = datetime.now()
+                now_timestamp = str(datetime.timestamp(now_time))[0:10]
                 # 获取60分钟之前的时间时间戳
-                before_timestamp = commonFunction.get_before_timestamp(60)
+                before_timestamp = commonFunction.get_before_timestamp(now_time, 60)
                 # 查询每个pvc最近1个小时的监控信息
                 r = multi_cluster_steps.step_get_metrics_of_pvc(self.cluster_any_name, namespace, name, before_timestamp,
                                                                 now_timestamp, '60s', '60')
@@ -1242,9 +1246,10 @@ class TestCluster(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_metrics(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取210分钟之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(210)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 210)
         # 查询集群的最近210分钟的监控信息
         re = multi_cluster_steps.step_get_metrics_of_cluster(self.cluster_any_name, before_timestamp, now_timestamp, '300s',
                                                              '100')
@@ -1262,9 +1267,10 @@ class TestCluster(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_apiserver_metrics(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取240分钟之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(240)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 240)
         # 查询集群的最近240分钟的监控信息
         r = multi_cluster_steps.step_get_metrics_of_apiserver(self.cluster_any_name, before_timestamp, now_timestamp, '300s',
                                                               '100')
@@ -1282,9 +1288,10 @@ class TestCluster(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_schedule_metrics(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取240分钟之前的时间
-        before_timestamp = commonFunction.get_before_timestamp(240)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 240)
         # 查询集群的最近240分钟的监控信息
         r = multi_cluster_steps.step_get_metrics_of_scheduler(self.cluster_any_name, before_timestamp, now_timestamp, '300s',
                                                               '100')
@@ -1325,9 +1332,10 @@ class TestCluster(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_resource_usage(self):
             # 获取当前时间的10位时间戳
-            now_timestamp = str(time.time())[0:10]
+            now_time = datetime.now()
+            now_timestamp = str(datetime.timestamp(now_time))[0:10]
             # 获取1440分钟之前的时间
-            before_timestamp = commonFunction.get_before_timestamp(1440)
+            before_timestamp = commonFunction.get_before_timestamp(now_time, 1440)
             # 查询最近一天的集群应用资源使用情况
             r = multi_cluster_steps.step_get_resource_usage_of_cluster(self.cluster_any_name, before_timestamp, now_timestamp,
                                                                        '3600s', '24')
@@ -1345,9 +1353,10 @@ class TestCluster(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_app_usage(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取1440分钟之前的时间
-        before_timestamp = commonFunction.get_before_timestamp(1440)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 1440)
         # 查询最近一天的集群应用资源使用情况
         r = multi_cluster_steps.step_get_app_usage_of_cluster(self.cluster_any_name, before_timestamp, now_timestamp,
                                                               '3600s', '24')
@@ -1365,9 +1374,10 @@ class TestCluster(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_app_usage(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取1440分钟之前的时间
-        before_timestamp = commonFunction.get_before_timestamp(1440)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 1440)
         # 查询最近一天的集群项目变化趋势
         r = multi_cluster_steps.step_get_project_trend_of_cluster(self.cluster_any_name, before_timestamp, now_timestamp,
                                                                   '3600s', '24')

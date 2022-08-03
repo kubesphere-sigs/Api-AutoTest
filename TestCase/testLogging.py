@@ -66,9 +66,10 @@ class TestLogSearch(object):
         # 时间间隔,单位是秒
         interval = '1800'
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         # 查询最近 12 小时日志总数变化趋势
         response = toolbox_steps.step_get_logs_trend(before_timestamp, now_timestamp, interval)
         # 获取日志总量
@@ -90,9 +91,10 @@ class TestLogSearch(object):
         # 时间间隔,单位是秒
         interval = '1800'
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         # 查询最近 12 小时日志总数变化趋势
         response = toolbox_steps.step_get_logs_trend(before_timestamp, now_timestamp, interval)
         # 获取查询结果数据中的时间间隔
@@ -217,9 +219,10 @@ class TestLogSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_logs_by_time_limit(self, limit, interval, title):
         # 获取当前时间的10位时间戳（结束时间）
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取开始时间
-        start_time = commonFunction.get_before_timestamp(limit)
+        start_time = commonFunction.get_before_timestamp(now_time, limit)
         # 按时间范围查询容器日志
         res = toolbox_steps.step_get_logs_by_time(interval, start_time, now_timestamp)
         log_num = res.json()['query']['total']
@@ -231,9 +234,10 @@ class TestLogSearch(object):
     @allure.title('查询任一KS自带容器的日志详情')
     def test_get_all_containers_log(self):
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取7天前的时间的10位时间戳
-        before_timestamp = commonFunction.get_before_timestamp(10080)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 10080)
         # 查询企业空间 system-workspace 的项目信息
         re = workspace_steps.step_get_project_info('system-workspace')
         # 获取项目的数量

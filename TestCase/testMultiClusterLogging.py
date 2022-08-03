@@ -53,7 +53,7 @@ class TestLogSearch(object):
         tamp = commonFunction.get_custom_timestamp(today, '12:00:00')
         if int(now_timestamp) > int(tamp):   # 如果当前时间大于12点，则当天的日志总数大于等于最近12小时的日志总数
             assert log_counts >= logs_count
-        elif int(now_timestamp) < int(tamp): # 如果当前时间小于12点，则当天的日志总数小于等于最近12小时的日志总数
+        elif int(now_timestamp) < int(tamp):  # 如果当前时间小于12点，则当天的日志总数小于等于最近12小时的日志总数
             assert logs_count >= log_counts
         else:                                # 如果当前时间等于12点，则当天的日志总数等于最近12小时的日志总数
             assert logs_count == log_counts
@@ -63,11 +63,12 @@ class TestLogSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_logs_12h(self):
         # 时间间隔,单位是秒
-        interval = '1800'
+        interval = '30m'
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         # 查询最近 12 小时日志总数变化趋势
         response = toolbox_steps.step_get_logs_trend(before_timestamp, now_timestamp, interval, self.cluster_host_name)
         # 获取日志总量
@@ -86,12 +87,13 @@ class TestLogSearch(object):
     @allure.title('查询最近 12 小时日志总数变化趋势,验证时间间隔正确')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_logs_trend(self):
-        # 时间间隔,单位是秒
-        interval = '1800'
+        # 时间间隔
+        interval = '30m'
         # 获取当前时间的10位时间戳
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取12小时之前的时间戳
-        before_timestamp = commonFunction.get_before_timestamp(720)
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         # 查询最近 12 小时日志总数变化趋势
         response = toolbox_steps.step_get_logs_trend(before_timestamp, now_timestamp, interval, self.cluster_host_name)
         # 获取查询结果数据中的时间间隔
@@ -216,9 +218,10 @@ class TestLogSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_logs_by_time_limit(self, limit, interval, title):
         # 获取当前时间的10位时间戳（结束时间）
-        now_timestamp = str(time.time())[0:10]
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
         # 获取开始时间
-        start_time = commonFunction.get_before_timestamp(limit)
+        start_time = commonFunction.get_before_timestamp(now_time, limit)
         # 按时间范围查询容器日志
         res = toolbox_steps.step_get_logs_by_time(interval, start_time, now_timestamp, self.cluster_host_name)
         log_num = res.json()['query']['total']
