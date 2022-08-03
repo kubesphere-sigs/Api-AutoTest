@@ -52,7 +52,7 @@ class TestManageAppStore(object):
         app_steps.step_change_category(category_id, new_name)
         # 验证修改成功，使用修改后的名称查询category_id
         category_id_new = app_steps.step_get_category_id_by_name(new_name)
-        assert category_id == category_id_new
+        pytest.assume(category_id == category_id_new)
         # 删除分类
         app_steps.step_delete_category(category_id)
 
@@ -101,7 +101,7 @@ class TestManageAppStore(object):
         # 删除分类
         result = app_steps.step_delete_app_category(category_id)
         # 验证删除结果
-        assert result == 'category ' + category_name + ' owns application'
+        pytest.assume(result == 'category ' + category_name + ' owns application')
         # 下架新上架的应用
         app_steps.step_suspend_app(app_id)
         # 删除新建的分类

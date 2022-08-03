@@ -274,7 +274,7 @@ class TestAppTemplate(object):
             time.sleep(10)
             i = i + 10
         print('应用部署耗时:' + str(i) + '秒')
-        assert status == 'active'
+        pytest.assume(status == 'active')
         # 获取部署的应用的cluster_id
         r = app_steps.step_get_app(self.ws_name, self.project_name, app_name)
         cluster_id = r.json()['items'][0]['cluster']['cluster_id']
@@ -315,7 +315,7 @@ class TestAppTemplate(object):
         res = app_steps.step_deploy_template(self.ws_name, self.project_name, app_id, name, version_id)
         # 验证部署结果
         message = res.json()['message']
-        assert message == 'success'
+        pytest.assume(message == 'success')
         # 在项目的应用列表中验证部署的应用运行正常,最长等待时间300s
         i = 0
         while i < 300:
@@ -335,7 +335,7 @@ class TestAppTemplate(object):
         time.sleep(5)  # 等待删除时间
         r = app_steps.step_get_app(self.ws_name, self.project_name, app_name)
         count = r.json()['total_count']
-        assert count == 0
+        pytest.assume(count == 0)
         # 下架应用
         app_steps.step_suspend_app(app_id)
 
@@ -355,12 +355,12 @@ class TestAppTemplate(object):
         res = app_steps.step_deploy_template(self.ws_name, self.project_name, app_id, name, version_id)
         # 验证部署结果
         message = res.json()['message']
-        assert message == 'success'
+        pytest.assume(message == 'success')
         # 获取部署的应用的name和cluster_id
         r = app_steps.step_get_app(self.ws_name, self.project_name, name)
         name_actual = r.json()['items'][0]['cluster']['name']
         # 验证应用的名称正确
-        assert name_actual == name
+        pytest.assume(name_actual == name)
         cluster_id = r.json()['items'][0]['cluster']['cluster_id']
         # 删除创建的应用
         app_steps.step_delete_app(self.ws_name, self.project_name, cluster_id)

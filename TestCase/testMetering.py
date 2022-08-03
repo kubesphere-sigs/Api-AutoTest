@@ -67,7 +67,7 @@ class TestMetering(object):
             try:
                 result_type = response.json()['results'][i]['data']['resultType']
                 # 验证数据类型为matrix
-                assert result_type == 'matrix'
+                pytest.assume(result_type == 'matrix')
                 # 获取趋势图数据的时间间隔
                 time_1 = response.json()['results'][i]['data']['result'][0]['values'][0][0]
                 time_2 = response.json()['results'][i]['data']['result'][0]['values'][1][0]
@@ -140,7 +140,7 @@ class TestMetering(object):
                 try:
                     result_type = re.json()['results'][j]['data']['resultType']
                     # 验证数据类型为matrix
-                    assert result_type == 'matrix'
+                    pytest.assume(result_type == 'matrix')
                     # 获取趋势图数据的时间间隔
                     time_1 = re.json()['results'][j]['data']['result'][0]['values'][0][0]
                     time_2 = re.json()['results'][j]['data']['result'][0]['values'][1][0]
@@ -252,7 +252,7 @@ class TestMetering(object):
                     # 获取数据类型
                     result_type = r.json()['results'][j]['data']['resultType']
                     # 验证数据类型为matrix
-                    assert result_type == 'matrix'
+                    pytest.assume(result_type == 'matrix')
                     # 获取并验证数据的时间间隔
                     time_1 = r.json()['results'][j]['data']['result'][0]['values'][0][0]
                     time_2 = r.json()['results'][j]['data']['result'][0]['values'][1][0]
@@ -336,7 +336,7 @@ class TestMetering(object):
                     try:
                         # 获取并验证查询结果中每个指标的数据类型
                         result_type = r.json()['results'][k]['data']['resultType']
-                        assert result_type == 'matrix'
+                        pytest.assume(result_type == 'matrix')
                         # 获取并验证查询结果中每个指标的时间间隔
                         time_1 = r.json()['results'][k]['data']['result'][0]['values'][0][0]
                         time_2 = r.json()['results'][k]['data']['result'][0]['values'][1][0]
@@ -415,7 +415,7 @@ class TestMetering(object):
                                     try:
                                         result_type = rep.json()['results'][m]['data']['resultType']
                                         # 验证数据类型正确
-                                        assert result_type == 'matrix'
+                                        pytest.assume(result_type == 'matrix')
                                         # 获取并验证查询结果中每个指标的时间间隔
                                         time_1 = rep.json()['results'][m]['data']['result'][0]['values'][0][0]
                                         time_2 = rep.json()['results'][m]['data']['result'][0]['values'][1][0]

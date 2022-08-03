@@ -37,7 +37,7 @@ class TestEventSearch(object):
         # 获取收集到的事件数量
         event_counts = response.json()['statistics']['events']
         # 验证事件数量大于0
-        assert resources_count > 0
+        pytest.assume(resources_count > 0)
         # 获取最近12小时的事件趋势图
         interval = '30m'  # 时间间隔 30分钟
         # 获取12小时之前的时间戳
@@ -69,7 +69,6 @@ class TestEventSearch(object):
         # 获取事件总量
         # events_count_actual = re.json()['histogram']['total']
         # 验证接口返回的事件数量和趋势图中的事件之和一致
-        print(events_count_actual)
         assert events_count_actual == event_counts
 
     @allure.story('事件总量')
@@ -206,7 +205,7 @@ class TestEventSearch(object):
         component = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/component']
         enabled = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/enabled']
         # 校验接收器类型和启用状态，启用状态默认为开启
-        assert component == 'events'
+        pytest.assume(component == 'events')
         assert enabled == 'true'
 
     @allure.story('集群设置/日志接收器')
@@ -224,7 +223,7 @@ class TestEventSearch(object):
         response = cluster_steps.step_get_log_receiver(log_type)
         log_receiver_name = response.json()['items'][1]['metadata']['name']
         # 验证日志接收器添加成功
-        assert log_receiver_name == 'forward-' + log_type
+        pytest.assume(log_receiver_name == 'forward-' + log_type)
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
 
@@ -248,7 +247,7 @@ class TestEventSearch(object):
         # 查看日志接受器详情并验证更改成功
         re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
         status = re.json()['metadata']['labels']['logging.kubesphere.io/enabled']
-        assert status == 'false'
+        pytest.assume(status == 'false')
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
 
@@ -275,7 +274,7 @@ class TestEventSearch(object):
         re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
         host_actual = re.json()['spec']['forward']['host']
         port_actual = re.json()['spec']['forward']['port']
-        assert host_actual == host
-        assert port_actual == port
+        pytest.assume(host_actual == host)
+        pytest.assume(port_actual == port)
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)

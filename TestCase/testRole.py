@@ -80,7 +80,7 @@ class TestRole(object):
         # 查询权限列表
         authority_list = platform_steps.step_get_role_authority(role_name)
         # 验证权限正确
-        assert authority == authority_list
+        pytest.assume(authority == authority_list)
         # 删除角色
         platform_steps.step_delete_role(role_name)
 
@@ -98,9 +98,9 @@ class TestRole(object):
         # 查询角色授权用户
         res = platform_steps.step_get_role_user(role_name)
         # 验证用户数量
-        assert res.json()['totalItems'] == 1
+        pytest.assume(res.json()['totalItems'] == 1)
         # 验证用户名称
-        assert res.json()['items'][0]['metadata']['name'] == user_name
+        pytest.assume(res.json()['items'][0]['metadata']['name'] == user_name)
         # 删除用户
         platform_steps.step_delete_user(user_name)
         # 删除角色

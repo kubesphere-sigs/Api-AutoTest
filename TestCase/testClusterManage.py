@@ -513,9 +513,6 @@ class TestCluster(object):
                 break
         assert count_result == 0
 
-
-
-
     @allure.story('应用负载')
     @allure.title('查看集群任一系统项目的deployments，并验证其运行正常')
     @allure.severity(allure.severity_level.CRITICAL)

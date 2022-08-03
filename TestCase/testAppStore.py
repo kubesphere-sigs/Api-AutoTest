@@ -99,8 +99,7 @@ class TestAppStore(object):
         response = project_steps.step_get_app_status(self.ws_name, self.project_name, name)
         # 获取应用状态
         status = response.json()['items'][0]['cluster']['status']
-        assert status == 'failed'
-
+        pytest.assume(status == 'failed')
         # 在应用列表查询部署的应用
         response = project_steps.step_get_deployed_app(self.ws_name, self.project_name, name)
         # 获取应用的cluster_id
@@ -139,7 +138,7 @@ class TestAppStore(object):
                 time.sleep(1)
                 i = i + 1
         # 验证应用运行成功
-        assert status == 'active'
+        pytest.assume(status == 'active')
         # 在应用列表查询部署的应用
         response = project_steps.step_get_deployed_app(self.ws_name, self.project_name, name)
         # 获取应用的cluster_id

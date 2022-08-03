@@ -102,7 +102,7 @@ class TestProject(object):
         response = project_steps.step_get_volume_status(self.project_name, volume_name)
         status = response.json()['items'][0]['status']['phase']
         # 验证存储卷状态正常
-        assert status == 'Bound'
+        pytest.assume(status == 'Bound')
         # 删除工作负载
         project_steps.step_delete_deployment(self.project_name, work_name)
         # 等待工作负载删除成功，再删除pvc
@@ -172,7 +172,7 @@ class TestProject(object):
         response = project_steps.step_get_volume_status(self.project_name, volume_name)
         status = response.json()['items'][0]['status']['phase']
         # 验证存储卷状态正常
-        assert status == 'Bound'
+        pytest.assume(status == 'Bound')
         # 删除工作负载
         project_steps.step_delete_workload(self.project_name, 'statefulsets', work_name)
         # 等待工作负载删除成功，再删除pvc
@@ -212,8 +212,17 @@ class TestProject(object):
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
         volumeMounts = [{"name": volume_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
         volume_info = [{"hostPath": {"path": "/data"}, "name": volume_name}]  # 存储卷的信息
-        # 获取集群节点数
-        cluster_node = cluster_steps.step_get_nodes().json()['totalItems']
+        # 获取集群中所有的节点数
+        res = cluster_steps.step_get_node_all()
+        cluster_node_all = res.json()['totalItems']
+        # 获取所有没有污点的节点数量
+        cluster_node_no_taint = 0
+        for i in range(0, cluster_node_all):
+            try:
+                if res.json()['items'][i]['spec']['taints']:
+                    cluster_node_no_taint += 1
+            except Exception as e:
+                print(e)
         # 创建资源并将存储卷绑定到资源
         project_steps.step_create_daemonset(self.project_name, work_name=work_name, image=image,
                                             container_name=container_name, volume_info=volume_info, ports=port,
@@ -224,12 +233,12 @@ class TestProject(object):
             # 获取工作负载的状态
             response = project_steps.step_get_workload(self.project_name, type='daemonsets', condition=condition)
             numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
-            if numberReady == cluster_node:
+            if numberReady == cluster_node_no_taint:
                 break
             else:
                 time.sleep(30)
                 i += 30
-        assert numberReady == cluster_node
+        pytest.assume(numberReady == cluster_node_no_taint)
 
         # 删除工作负载
         project_steps.step_delete_workload(self.project_name, 'daemonsets', work_name)
@@ -286,11 +295,11 @@ class TestProject(object):
         # 验证service创建成功
         response = project_steps.step_get_workload(project_name, type='services', condition=condition)
         name = response.json()['items'][0]['metadata']['name']
-        assert name == service_name
+        pytest.assume(name == service_name)
         # 验证deploy创建成功
         readyReplicas = 0
         i = 0
-        while i < 120:
+        while i < 180:
             re = project_steps.step_get_workload(project_name, type='deployments', condition=condition)
             # 获取并验证deployment创建成功
             try:
@@ -300,13 +309,13 @@ class TestProject(object):
             if readyReplicas == replicas:
                 break
             else:
-                time.sleep(3)
-                i += 3
+                time.sleep(10)
+                i += 10
         # 获取存储卷状态
         response = project_steps.step_get_volume_status(project_name, volume_name)
         status = response.json()['items'][0]['status']['phase']
         # 验证存储卷状态正常
-        assert status == 'Bound'
+        pytest.assume(status == 'Bound')
 
         # 删除工作负载
         project_steps.step_delete_workload(project_name, 'deployments', service_name)
@@ -418,7 +427,7 @@ class TestProject(object):
                        "kubesphere.io/alias-name": "",
                        "kubesphere.io/creator": "admin", "kubesphere.io/description": ""}
         r = project_steps.step_edit_project_role(self.project_name, role_name, resourceVersion, annotations)
-        assert r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority  # 验证修改后的权限信息
+        pytest.assume(r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority)  # 验证修改后的权限信息
         # 删除项目角色
         project_steps.step_project_delete_role(self.project_name, role_name)
 
@@ -432,7 +441,7 @@ class TestProject(object):
         # 验证角色创建成功
         response = project_steps.step_get_project_role(self.project_name, role_name)
         count = response.json()['totalItems']
-        assert count == 1
+        pytest.assume(count == 1)
         # 删除角色
         project_steps.step_project_delete_role(self.project_name, role_name)
         # 验证角色删除成功
@@ -451,7 +460,7 @@ class TestProject(object):
         time.sleep(2)
         response = project_steps.step_get_project_member(project_name, '')
         name = response.json()['items'][0]['metadata']['name']
-        assert name == 'admin'  # 验证默认的用户仅有admin
+        pytest.assume(name == 'admin')  # 验证默认的用户仅有admin
         # 删除项目
         project_steps.step_delete_project(self.ws_name, project_name)
 
@@ -500,7 +509,7 @@ class TestProject(object):
                     break
             except Exception as e:
                 print(e)
-        assert role_actual == role
+        pytest.assume(role_actual == role)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, pro_name)
 
@@ -544,14 +553,14 @@ class TestProject(object):
                     break
             except Exception as e:
                 print(e)
-        assert name == self.user_name
+        pytest.assume(name == self.user_name)
         # 移出项目成员
         project_steps.step_remove_project_member(project_name, self.user_name)
         # 查询被移出的成员
         response = project_steps.step_get_project_member(project_name, self.user_name)
         count = response.json()['totalItems']
         # 验证查询结果为空
-        assert count == 0
+        pytest.assume(count == 0)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, project_name)
 
@@ -608,13 +617,13 @@ class TestProject(object):
         # 获取任务的成功的容器数量
         succeeded = res.json()['items'][0]['status']['succeeded']
         # 验证指定容器组完成数量==实际成功的容器数量
-        assert completions == succeeded
+        pytest.assume(completions == succeeded)
         # 查看任务的资源状态，并获取第一个容器组的名称
         re = project_steps.step_get_job_pods(self.project_name, uid)
         pod_name = re.json()['items'][0]['metadata']['name']
         # 查看任务的第一个容器的运行日志，并验证任务的运行结果
         logs = project_steps.step_get_pods_log(self.project_name, pod_name, job_name)
-        assert '3.1415926' in logs
+        pytest.assume('3.1415926' in logs)
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
 
@@ -627,7 +636,7 @@ class TestProject(object):
         project_steps.step_create_job(self.project_name, job_name)
         # 模糊查询存在的任务
         response = project_steps.step_get_assign_job(self.project_name, 'name', job_name[1:])
-        assert response.json()['totalItems'] == 1
+        pytest.assume(response.json()['totalItems'] == 1)
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
 
@@ -653,7 +662,7 @@ class TestProject(object):
         # 获取查询结果中job的名称
         job_name_actual = response.json()['items'][0]['metadata']['name']
         # 验证查询结果正确
-        assert job_name == job_name_actual
+        pytest.assume(job_name == job_name_actual)
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
 
@@ -669,7 +678,7 @@ class TestProject(object):
         # 按状态为运行中查询任务
         response = project_steps.step_get_assign_job(self.project_name, 'status', 'running')
         # 验证查询结果
-        assert response.json()['totalItems'] >= 1
+        pytest.assume(response.json()['totalItems'] >= 1)
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
 
@@ -697,7 +706,7 @@ class TestProject(object):
         # 在项目中查询pod信息
         r = project_steps.step_get_pod_info(self.project_name, pod_name)
         # 验证查询到的容器名称
-        assert r.json()['items'][0]['metadata']['name'] == pod_name
+        pytest.assume(r.json()['items'][0]['metadata']['name'] == pod_name)
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
 
@@ -722,7 +731,7 @@ class TestProject(object):
         # 在项目中查询pod信息
         r = project_steps.step_get_pod_info(self.project_name, pod_name)
         # 验证查询到的容器数量
-        assert r.json()['totalItems'] == 2
+        pytest.assume(r.json()['totalItems'] == 2)
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
 
@@ -745,14 +754,14 @@ class TestProject(object):
         project_steps.step_create_job(self.project_name, job_name)
         # 捕获异常，不对异常作处理,每隔5秒查询一次任务状态
         i = 0
-        while i < 60:
+        while i < 180:
             try:
                 res = project_steps.step_get_job_detail(self.project_name, job_name)
                 if res.json()['items'][0]['status']['succeeded'] == 2:
                     break
             except KeyError:
-                time.sleep(3)
-                i = i + 3
+                time.sleep(5)
+                i = i + 5
         # 并获取uid
         uid = res.json()['items'][0]['metadata']['uid']
         # 查看任务的资源状态，并获取容器组名称
@@ -761,7 +770,7 @@ class TestProject(object):
 
         r = project_steps.step_get_pod_detail(self.project_name, pod_name)
         # 验证查询结果
-        assert r.json()['status']['phase'] == 'Succeeded'
+        pytest.assume(r.json()['status']['phase'] == 'Succeeded')
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
 
@@ -788,7 +797,7 @@ class TestProject(object):
         pod_name = re.json()['items'][0]['metadata']['name']
         response = project_steps.step_delete_pod(self.project_name, pod_name)
         # 验证删除操作成功
-        assert response.json()['status']['phase'] == 'Succeeded'
+        pytest.assume(response.json()['status']['phase'] == 'Succeeded')
         # 删除创建的任务
         project_steps.step_delete_job(self.project_name, job_name)
 
@@ -824,12 +833,12 @@ class TestProject(object):
             i += 1
             time.sleep(1)
         # 运行中的pod数为2
-        assert count == 2
+        pytest.assume(count == 2)
         # 删除任务
         project_steps.step_delete_job(pro_name, job_name)
         # 在列表中查询任务，验证查询结果为空
         re = project_steps.step_get_assign_job(pro_name, 'name', job_name)
-        assert re.json()['totalItems'] == 0
+        pytest.assume(re.json()['totalItems'] == 0)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, pro_name)
 
@@ -854,7 +863,7 @@ class TestProject(object):
         project_steps.step_delete_job(pro_name, job_name)
         # 在列表中查询任务，验证查询结果为空
         response = project_steps.step_get_assign_job(pro_name, 'name', job_name)
-        assert response.json()['totalItems'] == 0
+        pytest.assume(response.json()['totalItems'] == 0)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, pro_name)
 
@@ -903,7 +912,7 @@ class TestProject(object):
             time.sleep(1)
             i = i + 1
         print('创建工作负载耗时:' + str(i) + 's')
-        assert 'unavailableReplicas' not in status
+        pytest.assume('unavailableReplicas' not in status)
 
         # 删除工作负载
         project_steps.step_delete_workload(project_name, 'deployments', workload_name)
@@ -944,7 +953,7 @@ class TestProject(object):
         response = project_steps.step_get_workload(project_name, type='deployments', condition=condition)
         # 获取并验证deployment的名称正确
         name = response.json()['items'][0]['metadata']['name']
-        assert name == workload_name
+        pytest.assume(name == workload_name)
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -984,7 +993,7 @@ class TestProject(object):
         response = project_steps.step_get_workload(project_name, type='deployments', condition=conndition)
         # 获取并验证deployment的名称正确
         name = response.json()['items'][0]['metadata']['name']
-        assert name == workload_name
+        pytest.assume(name == workload_name)
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1038,7 +1047,7 @@ class TestProject(object):
             time.sleep(1)
             i = i + 1
         print('创建工作负载耗时:' + str(i) + 's')
-        assert readyReplicas == replicas
+        pytest.assume(readyReplicas == replicas)
         # 删除工作负载
         project_steps.step_delete_workload(project_name=project_name, type='statefulsets', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1082,7 +1091,7 @@ class TestProject(object):
         response = project_steps.step_get_workload(project_name, type=type, condition=condition)
         # 获取并验证deployment的名称正确
         name = response.json()['items'][0]['metadata']['name']
-        assert name == workload_name
+        pytest.assume(name == workload_name)
         # 删除创建的statefulsets
         project_steps.step_delete_workload(project_name=project_name, type=type, work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1138,10 +1147,10 @@ class TestProject(object):
         # 获取工作负载的名称
         name = response.json()['items'][0]['metadata']['name']
         # 验证deployment的名称正确
-        assert workload_name == name
+        pytest.assume(workload_name == name)
         # 删除创建的statefulsets
         re = project_steps.step_delete_workload(project_name=project_name, type=type, work_name=workload_name)
-        assert re.json()['status'] == 'Success'
+        pytest.assume(re.json()['status'] == 'Success')
         # 等待工作负载删除成功，再删除项目
         j = 0
         while j < 300:
@@ -1167,8 +1176,17 @@ class TestProject(object):
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
         volume_info = []
         volumemount = []
-        # 获取集群的节点数
-        cluster_node = cluster_steps.step_get_nodes().json()['totalItems']
+        # 获取集群中所有的节点数
+        res = cluster_steps.step_get_node_all()
+        cluster_node_all = res.json()['totalItems']
+        # 获取所有没有污点的节点数量
+        cluster_node_no_taint = 0
+        for i in range(0, cluster_node_all):
+            try:
+                if res.json()['items'][i]['spec']['taints']:
+                    cluster_node_no_taint += 1
+            except Exception as e:
+                print(e)
         # 创建工作负载
         project_steps.step_create_daemonset(project_name=project_name, work_name=workload_name,
                                             container_name=container_name, image=image, ports=port,
@@ -1180,12 +1198,12 @@ class TestProject(object):
                                                        condition=condition)
             numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
             # 验证资源的所有副本已就绪
-            if numberReady == cluster_node:
+            if numberReady == cluster_node_no_taint:
                 break
             time.sleep(30)
             i = i + 30
         print('创建工作负载耗时:' + str(i) + 's')
-        assert numberReady == cluster_node
+        pytest.assume(numberReady == cluster_node_no_taint)
         # 删除创建的daemonsets
         project_steps.step_delete_workload(project_name=project_name, type='daemonsets', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1231,10 +1249,10 @@ class TestProject(object):
                 time.sleep(3)
             except Exception as e:
                 print(e)
-        assert name == workload_name
+        pytest.assume(name == workload_name)
         # 删除创建的daemonsets
         re = project_steps.step_delete_workload(project_name=project_name, type=type, work_name=workload_name)
-        assert re.json()['status'] == 'Success'
+        pytest.assume(re.json()['status'] == 'Success')
         # 等待工作负载删除成功，再删除项目
         j = 0
         while j < 300:
@@ -1295,7 +1313,7 @@ class TestProject(object):
         # 验证service创建成功
         response = project_steps.step_get_workload(self.project_name, type='services', condition=condition)
         name = response.json()['items'][0]['metadata']['name']
-        assert name == service_name
+        pytest.assume(name == service_name)
         # 验证deploy创建成功
         time.sleep(3)
         re = project_steps.step_get_workload(self.project_name, type='deployments', condition=condition)
@@ -1315,7 +1333,7 @@ class TestProject(object):
         # 验证service创建成功
         response = project_steps.step_get_workload(self.project_name, type='services', condition=condition)
         name = response.json()['items'][0]['metadata']['name']
-        assert name == service_name
+        pytest.assume(name == service_name)
         # 删除service
         project_steps.step_delete_service(self.project_name, service_name)
         # 验证service删除成功
@@ -1347,13 +1365,13 @@ class TestProject(object):
         # 验证service创建成功
         response = project_steps.step_get_workload(self.project_name, type='services', condition=condition)
         name = response.json()['items'][0]['metadata']['name']
-        assert name == service_name
+        pytest.assume(name == service_name)
         # 验证deploy创建成功
         time.sleep(3)
         re = project_steps.step_get_workload(self.project_name, type='deployments', condition=condition)
         # 获取并验证deployment的名称正确
         name = re.json()['items'][0]['metadata']['name']
-        assert name == service_name
+        pytest.assume(name == service_name)
         # 为服务创建路由
         ingress_name = 'ingress' + str(commonFunction.get_random())
         host = 'www.test.com'
@@ -1364,7 +1382,7 @@ class TestProject(object):
         res = project_steps.step_get_route(self.project_name, 'name=' + ingress_name)
         na = res.json()['items'][0]['metadata']['name']
         # 验证路由创建成功
-        assert na == ingress_name
+        pytest.assume(na == ingress_name)
         # 删除路由
         project_steps.step_delete_route(self.project_name, ingress_name)
         # 删除服务
@@ -1390,7 +1408,7 @@ class TestProject(object):
         # 查看项目网关，并验证网关类型
         response = project_steps.step_get_gateway(pro_name)
         type_actual = response.json()[0]['spec']['service']['type']
-        assert type_actual == type
+        pytest.assume(type_actual == type)
         # 关闭网关
         project_steps.step_delete_gateway(pro_name)
         time.sleep(10)
@@ -1418,7 +1436,7 @@ class TestProject(object):
         response = project_steps.step_create_gateway(pro_name, project_type, status)
         result = response.text
         # 验证创建结果
-        assert result == "can't create project gateway if global gateway enabled\n"
+        pytest.assume(result == "can't create project gateway if global gateway enabled\n")
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
         # 删除项目
@@ -1447,8 +1465,8 @@ class TestProject(object):
         cluster_gateway_name = response.json()[0]['metadata']['name']
         project_gateway_name = response.json()[1]['metadata']['name']
         # 验证网关名称
-        assert cluster_gateway_name == 'kubesphere-router-kubesphere-system'
-        assert project_gateway_name == 'kubesphere-router-' + pro_name
+        pytest.assume(cluster_gateway_name == 'kubesphere-router-kubesphere-system')
+        pytest.assume(project_gateway_name == 'kubesphere-router-' + pro_name)
         # 关闭项目网关
         project_steps.step_delete_gateway(pro_name)
         # 关闭集群网关
@@ -1484,7 +1502,7 @@ class TestProject(object):
         # 验证网关编辑成功
         response = project_steps.step_get_gateway(pro_name)
         type_actual = response.json()[0]['spec']['service']['type']
-        assert type_actual == 'LoadBalancer'
+        pytest.assume(type_actual == 'LoadBalancer')
         # 删除网关
         project_steps.step_delete_gateway(pro_name)
         # 删除项目
@@ -1513,7 +1531,7 @@ class TestProject(object):
         # 验证网关编辑成功
         re = project_steps.step_get_gateway(pro_name)
         type_actual = re.json()[0]['spec']['service']['type']
-        assert type_actual == 'NodePort'
+        pytest.assume(type_actual == 'NodePort')
         # 删除网关
         project_steps.step_delete_gateway(pro_name)
         # 删除项目
@@ -1556,7 +1574,7 @@ class TestProject(object):
             else:
                 time.sleep(3)
                 i = i + 3
-        assert status == status_test
+        pytest.assume(status == status_test)
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1603,7 +1621,7 @@ class TestProject(object):
                 time.sleep(3)
             except Exception as e:
                 print(e)
-        assert count == 1
+        pytest.assume(count == 1)
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1652,7 +1670,7 @@ class TestProject(object):
         except Exception as e:
             print(e)
         # 验证查询结果
-        assert name_actual == workload_name
+        pytest.assume(name_actual == workload_name)
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1691,7 +1709,7 @@ class TestProject(object):
         response = project_steps.step_get_workload(project_name, 'deployments', condition)
         name_actual = response.json()['items'][0]['metadata']['name']
         # 验证查询结果
-        assert name_actual == workload_name
+        pytest.assume(name_actual == workload_name)
         # 删除deployment
         project_steps.step_delete_workload(project_name=project_name, type='deployments', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1739,7 +1757,7 @@ class TestProject(object):
         # 设置弹性伸缩
         response = project_steps.step_set_auto_scale(project_name, workload_name)
         # 验证设置成功
-        assert response.json()['kind'] == 'HorizontalPodAutoscaler'
+        pytest.assume(response.json()['kind'] == 'HorizontalPodAutoscaler')
         # 删除工作负载
         project_steps.step_delete_workload(project_name, 'deployments', workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1776,13 +1794,13 @@ class TestProject(object):
         # 按名称查询工作负载
         condition = 'name=' + workload_name
         response = project_steps.step_get_workload(project_name, 'deployments', condition)
-        assert response.json()['totalItems'] == 1
+        pytest.assume(response.json()['totalItems'] == 1)
         # 删除工作负载
         project_steps.step_delete_workload(project_name, 'deployments', workload_name)
         # 验证删除成功
         # 按名称查询工作负载
         re = project_steps.step_get_workload(project_name, 'deployments', condition)
-        assert re.json()['totalItems'] == 0
+        pytest.assume(re.json()['totalItems'] == 0)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, project_name)
 
@@ -1812,12 +1830,12 @@ class TestProject(object):
         project_steps.step_get_sa_detail(project_name=project_name, sa_name=sa_name)
         # 步骤4：查询sa的密钥信息并返回密钥类型
         secret_type = project_steps.step_get_secret(project_name=project_name, secret_name=sa_secret).json()['items'][0]['type']
-        assert secret_type == 'kubernetes.io/service-account-token'
+        pytest.assume(secret_type == 'kubernetes.io/service-account-token')
         # 步骤5：删除sa
         project_steps.step_delete_sa(project_name=project_name, sa_name=sa_name)
         # 步骤6：验证删除成功
         num = project_steps.step_get_sa(project_name=project_name, sa_name=sa_name).json()['totalItems']
-        assert num == 0
+        pytest.assume(num == 0)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, project_name)
 
@@ -1845,7 +1863,7 @@ class TestProject(object):
             i = i + 1
         print("删除存储卷耗时:" + str(i) + '秒')
         # 验证存储卷删除成功
-        assert response.json()['totalItems'] == 0
+        pytest.assume(response.json()['totalItems'] == 0)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, project_name)
 
@@ -1925,7 +1943,7 @@ class TestProject(object):
         response = project_steps.step_get_project_quota(project_name)
         hard_actual = response.json()['data']['hard']
         # 验证配额修改成功
-        assert hard_actual == hard
+        pytest.assume(hard_actual == hard)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, project_name)
 
@@ -2008,7 +2026,7 @@ class TestProject(object):
             except Exception as e:
                 print(e)
         # 验证配额修改成功
-        assert hard_actual == hard
+        pytest.assume(hard_actual == hard)
         # 删除项目
         project_steps.step_delete_project(self.ws_name, project_name)
 
@@ -2301,7 +2319,7 @@ class TestProject(object):
         # 查看并验证日志收集状态
         response = project_steps.step_get_status_logsidecar(self.project_name)
         status_actual = response.json()['metadata']['labels']['logging.kubesphere.io/logsidecar-injection']
-        assert status_actual == 'enabled'
+        pytest.assume(status_actual == 'enabled')
         # 关闭日志收集
         project_steps.step_set_logsidecar(self.ws_name, self.project_name, status='disabled')
         # 查看并验证日志收集状态

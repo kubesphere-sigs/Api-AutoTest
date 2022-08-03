@@ -73,7 +73,7 @@ class TestDevOps(object):
         # 获取devops的数量
         count = response.json()['totalItems']
         # 验证数量正确
-        assert count == 1
+        pytest.assume(count == 1)
         # 删除创建的devops工程
         devops_steps.step_delete_devops(self.ws_name, devops_name_new)
         time.sleep(5)
@@ -141,7 +141,7 @@ class TestDevOps(object):
         # 创建凭证
         response = devops_steps.step_create_credential(self.dev_name_new, name, description, type, data)
         # 验证新建的凭证的type
-        assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
+        pytest.assume(response.json()['type'] == 'credential.devops.kubesphere.io/' + type)
         # 删除凭证
         devops_steps.step_delete_credential(self.dev_name_new, name)
 
@@ -158,7 +158,7 @@ class TestDevOps(object):
         # 创建凭证
         response = devops_steps.step_create_credential(self.dev_name_new, name, description, type, data)
         # 验证新建的凭证的type
-        assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
+        pytest.assume(response.json()['type'] == 'credential.devops.kubesphere.io/' + type)
         # 删除凭证
         devops_steps.step_delete_credential(self.dev_name_new, name)
 
@@ -174,7 +174,7 @@ class TestDevOps(object):
         # 创建凭证
         response = devops_steps.step_create_credential(self.dev_name_new, name, description, type, data)
         # 验证新建的凭证的type
-        assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
+        pytest.assume(response.json()['type'] == 'credential.devops.kubesphere.io/' + type)
         # 删除凭证
         devops_steps.step_delete_credential(self.dev_name_new, name)
 
@@ -190,7 +190,7 @@ class TestDevOps(object):
         # 创建凭证
         response = devops_steps.step_create_credential(self.dev_name_new, name, description, type, data)
         # 验证新建的凭证的type
-        assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
+        pytest.assume(response.json()['type'] == 'credential.devops.kubesphere.io/' + type)
         # 删除凭证
         devops_steps.step_delete_credential(self.dev_name_new, name)
 
@@ -205,7 +205,7 @@ class TestDevOps(object):
         condition = credential_name
         result = devops_steps.step_search_credential(devops_name=self.dev_name_new, condition=condition)
         # 校验查询结果
-        assert result == condition
+        pytest.assume(result == condition)
         # 删除凭证
         devops_steps.step_delete_credential(self.dev_name_new, credential_name)
 
@@ -220,7 +220,7 @@ class TestDevOps(object):
         condition = credential_name
         result = devops_steps.step_search_credential(devops_name=self.dev_name_new, condition=condition)
         # 校验查询结果
-        assert condition in result
+        pytest.assume(condition in result)
         # 删除凭证
         devops_steps.step_delete_credential(self.dev_name_new, credential_name)
 
@@ -250,7 +250,7 @@ class TestDevOps(object):
         # 获取凭证的数量
         count = response.json()['totalItems']
         # 验证凭证的数量正确
-        assert count == 1
+        pytest.assume(count == 1)
         # 删除凭证
         devops_steps.step_delete_credential(dev_name_new, credential_name)
         # 查询创建的凭证
@@ -288,7 +288,7 @@ class TestDevOps(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_role_fuzzy(self):
         response = devops_steps.step_get_role(self.dev_name_new, 'adm')
-        assert response.json()['totalItems'] == 1  # 验证查询到的结果数量为2
+        pytest.assume(response.json()['totalItems'] == 1)  # 验证查询到的结果数量为2
         # 验证查找到的角色
         assert response.json()['items'][0]['metadata']['name'] == 'admin'
 
@@ -299,7 +299,7 @@ class TestDevOps(object):
         # 创建角色
         role_name = 'test-role' + str(commonFunction.get_random())
         response = devops_steps.step_create_role(self.dev_name_new, role_name)
-        assert response.json()['metadata']['name'] == role_name  # 验证新建的角色名称
+        pytest.assume(response.json()['metadata']['name'] == role_name)  # 验证新建的角色名称
         # 删除角色
         devops_steps.step_delete_role(self.dev_name, role_name)
 
@@ -420,8 +420,8 @@ class TestDevOps(object):
         alias = '测试别名test'
         description = '测试描述test'
         r = devops_steps.step_edit_role_info(self.dev_name_new, role_name, alias, description)
-        assert r.json()['metadata']['annotations']['kubesphere.io/alias-name'] == alias  # 验证修改后的别名
-        assert r.json()['metadata']['annotations']['kubesphere.io/description'] == description  # 验证修改后的描述信息
+        pytest.assume(r.json()['metadata']['annotations']['kubesphere.io/alias-name'] == alias)  # 验证修改后的别名
+        pytest.assume(r.json()['metadata']['annotations']['kubesphere.io/description'] == description)  # 验证修改后的描述信息
         # 删除创建的角色
         devops_steps.step_delete_role(self.dev_name_new, role_name)
 
@@ -442,8 +442,8 @@ class TestDevOps(object):
                        "kubesphere.io/description": "我是描述信息"}
 
         response = devops_steps.step_edit_role_authority(self.dev_name_new, role_name, annotations, resourceVersion)
-        assert response.json()['metadata']['annotations'][
-                   'iam.kubesphere.io/aggregation-roles'] == authority  # 验证修改后的权限信息
+        pytest.assume(response.json()['metadata']['annotations'][
+                   'iam.kubesphere.io/aggregation-roles'] == authority)  # 验证修改后的权限信息
         # 删除创建的devops角色
         devops_steps.step_delete_role(self.dev_name_new, role_name)
 
@@ -457,7 +457,7 @@ class TestDevOps(object):
         # 精确查询创建的角色
         count = devops_steps.step_get_role(self.dev_name_new, role_name).json()['totalItems']
         # 验证角色创建成功
-        assert count == 1
+        pytest.assume(count == 1)
         # 删除角色
         devops_steps.step_delete_role(self.dev_name_new, role_name)
         time.sleep(10)
@@ -622,8 +622,8 @@ class TestDevOps(object):
         # 获取流水线的分支数量
         branch_count = eval(jenkins_metadata)['totalNumberOfBranches']  # jenkins_metadata是str类型，使用eval将其转化为dict
         # 验证流水线的状态和分支数量正确
-        assert weatherScore == 100
-        assert branch_count == 1
+        pytest.assume(weatherScore == 100)
+        pytest.assume(branch_count == 1)
         # 删除创建的流水线
         devops_steps.step_delete_pipeline(dev_name_new, pipeline_name)
 
@@ -685,7 +685,7 @@ class TestDevOps(object):
         # 获取仓库地址
         url_actual = response.json()['items'][0]['spec']['url']
         # 验证查询结果
-        assert url == url_actual
+        pytest.assume(url == url_actual)
         # 删除代码仓库
         devops_steps.step_delete_code_repository(self.dev_name_new, name)
 
@@ -708,7 +708,7 @@ class TestDevOps(object):
         # 获取仓库地址
         url_actual = response.json()['items'][0]['spec']['url']
         # 验证查询结果
-        assert url_new == url_actual
+        pytest.assume(url_new == url_actual)
         # 删除代码仓库
         devops_steps.step_delete_code_repository(self.dev_name_new, name)
 
@@ -726,7 +726,7 @@ class TestDevOps(object):
         # 获取仓库地址
         url_actual = response.json()['items'][0]['spec']['url']
         # 验证查询结果
-        assert url == url_actual
+        pytest.assume(url == url_actual)
         # 删除代码仓库
         devops_steps.step_delete_code_repository(self.dev_name_new, name)
         time.sleep(2)
@@ -762,7 +762,7 @@ class TestDevOps(object):
                 break
             time.sleep(1)
             i += 1
-        assert count == 1
+        pytest.assume(count == 1)
         # 删除cd任务并删除创建的资源
         devops_steps.step_delete_cd(self.dev_name_new, cd_name, 'true')
 
@@ -841,7 +841,7 @@ class TestDevOps(object):
         # 查看创建的资源
         re = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
         count_deploy = re.json()['totalItems']
-        assert count_deploy == 1
+        pytest.assume(count_deploy == 1)
         # 删除项目
         project_steps.step_delete_project_by_name(ns)
 

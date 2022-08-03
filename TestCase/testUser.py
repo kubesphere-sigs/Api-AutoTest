@@ -62,7 +62,7 @@ class TestUser(object):
         except Exception as e:
             print(e)
         # 验证修改用户后的邮箱信息
-        assert email_actual == email_new
+        pytest.assume(email_actual == email_new)
         platform_steps.step_delete_user(user_name)  # 删除新建的用户
 
     @allure.story('用户')
@@ -80,14 +80,14 @@ class TestUser(object):
             re = platform_steps.step_get_user_info(user_name)
             # 验证用户的状态为active
             status = re.json()['items'][0]['status']['state']
-            assert status == 'Active'
+            pytest.assume(status == 'Active')
             # 获取并校验用户的角色
             user_role = re.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/globalrole']
-            assert user_role == role
+            pytest.assume(user_role == role)
             # 登陆ks
             headers = platform_steps.step_get_headers(user_name, 'P@88w0rd')
             # 验证headers获取成功
-            assert headers
+            pytest.assume(headers)
             # 删除用户
             platform_steps.step_delete_user(user_name)
 
@@ -117,11 +117,11 @@ class TestUser(object):
         elif type == 'user':
             response = platform_steps.step_modify_user_pwd(user_name=user_name, headers=headers, new_pwd=new_pwd)
         # 验证密码修改成功
-        assert response.json()['message'] == 'success'
+        pytest.assume(response.json()['message'] == 'success')
         time.sleep(3)
         # 使用新创建的用户登陆，并获取headers
         headers_new = platform_steps.step_get_headers(user_name=user_name, pwd=new_pwd)
-        assert headers_new
+        pytest.assume(headers_new)
         # 删除创建的用户
         platform_steps.step_delete_user(user_name)
 
@@ -136,7 +136,7 @@ class TestUser(object):
         time.sleep(3)
         # 验证用户还未登陆
         res = platform_steps.step_get_user_info(user_name)
-        assert 'lastLoginTime' not in res.json()['items'][0]['status']
+        pytest.assume('lastLoginTime' not in res.json()['items'][0]['status'])
         # 使用新创建的用户登陆，并获取headers
         try:
             headers = platform_steps.step_get_headers(user_name, pwd='P@88w0rd')
@@ -144,11 +144,11 @@ class TestUser(object):
             print(e)
             print("新创建的用户登陆失败")
         # 验证登陆成功
-        assert headers
+        pytest.assume(headers)
         # 查询新用户信息
         res = platform_steps.step_get_user_info(user_name)
         # 验证已有登陆时间信息
-        assert 'lastLoginTime' in res.json()['items'][0]['status']
+        pytest.assume('lastLoginTime' in res.json()['items'][0]['status'])
         # 删除用户
         platform_steps.step_delete_user(user_name)
 

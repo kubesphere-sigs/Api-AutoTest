@@ -90,14 +90,14 @@ class TestWorkSpace(object):
         res = workspace_steps.step_get_ws_num_info(ws_name)
         pro_num = res.json()['results'][0]['data']['result'][0]['value'][1]
         # 验证项目数量正确
-        assert pro_num == '0'
+        pytest.assume(pro_num == '0')
         # 在企业空间中创建项目
         pro_name = 'pro-' + str(commonFunction.get_random())
         project_steps.step_create_project(ws_name, pro_name)
         # 获取项目数量
         res_new = workspace_steps.step_get_ws_num_info(ws_name)
         new_pro_num = res_new.json()['results'][0]['data']['result'][0]['value'][1]
-        assert new_pro_num == '1'
+        pytest.assume(new_pro_num == '1')
         #删除项目
         project_steps.step_delete_project(ws_name,pro_name)
         # 删除企业空间
@@ -116,7 +116,7 @@ class TestWorkSpace(object):
         # 获取概览信息
         res = workspace_steps.step_get_ws_num_info(ws_name)
         devops_num = res.json()['results'][1]['data']['result'][0]['value'][1]
-        assert devops_num == '0'
+        pytest.assume(devops_num == '0')
         # 在企业空间创建devops工程
         devops_name = 'devops-' + str(commonFunction.get_random())
         devops_steps.step_create_devops(ws_name, devops_name)
@@ -124,7 +124,7 @@ class TestWorkSpace(object):
         # 获取概览信息
         res_new = workspace_steps.step_get_ws_num_info(ws_name)
         new_devops_num = res_new.json()['results'][1]['data']['result'][0]['value'][1]
-        assert new_devops_num == '1'
+        pytest.assume(new_devops_num == '1')
         # 删除devops工程
         devops_steps.step_delete_devops(ws_name, devops_name)
         # 删除企业空间
@@ -140,7 +140,7 @@ class TestWorkSpace(object):
         # 获取概览信息
         res = workspace_steps.step_get_ws_num_info(ws_name)
         role_num = res.json()['results'][2]['data']['result'][0]['value'][1]
-        assert role_num == '1'
+        pytest.assume(role_num == '1')
         # 在企业空间创建角色
         authory = '[\"role-template-create-projects\",\"role-template-view-basic\"]'
         role_name = 'role-' + str(commonFunction.get_random())
@@ -148,7 +148,7 @@ class TestWorkSpace(object):
         # 获取概览信息
         res_new = workspace_steps.step_get_ws_num_info(ws_name)
         new_role_num = res_new.json()['results'][2]['data']['result'][0]['value'][1]
-        assert new_role_num == '2'
+        pytest.assume(new_role_num == '2')
         # 删除企业空间
         workspace_steps.step_delete_workspace(ws_name)
 
@@ -162,7 +162,7 @@ class TestWorkSpace(object):
         # 查询企业空间用户信息
         response = workspace_steps.step_get_ws_user(ws_name, '')
         user_name = response.json()['items'][0]['metadata']['name']
-        assert user_name == 'admin'
+        pytest.assume(user_name == 'admin')
         # 将用户邀请到企业空间
         role = ws_name + '-viewer'
         workspace_steps.step_invite_user(ws_name, self.user_name, role)
@@ -170,7 +170,7 @@ class TestWorkSpace(object):
         res = workspace_steps.step_get_ws_user(ws_name, '')
         # 获取用户数量
         user_num = res.json()['totalItems']
-        assert user_num == 2
+        pytest.assume(user_num == 2)
         # 删除企业空间
         workspace_steps.step_delete_workspace(ws_name)
 
@@ -192,7 +192,7 @@ class TestWorkSpace(object):
         re = workspace_steps.step_get_ws_role(self.ws_name, self.ws_role_name)
         authority_actual = re.json()['items'][0]['metadata']['annotations']["iam.kubesphere.io/aggregation-roles"]
         # 验证修改角色权限后的权限信息
-        assert authority_actual == authority_edit
+        pytest.assume(authority_actual == authority_edit)
         # 删除创建的角色
         workspace_steps.step_delete_role(self.ws_name, self.ws_role_name)
 
@@ -213,7 +213,7 @@ class TestWorkSpace(object):
         # 在企业空间中查询邀请的用户
         response = workspace_steps.step_get_ws_user(self.ws_name, user_name)
         # 验证邀请后的成员名称
-        assert response.json()['items'][0]['metadata']['name'] == user_name
+        pytest.assume(response.json()['items'][0]['metadata']['name'] == user_name)
         # 将邀请的用户移除企业空间
         workspace_steps.step_delete_ws_user(self.ws_name, user_name)
         # 删除创建的用户
@@ -238,8 +238,8 @@ class TestWorkSpace(object):
         user = res.json()['items'][0]['metadata']['name']
         user_num = res.json()['totalItems']
         # 验证授权用户正确
-        assert user == user_name
-        assert user_num == 1
+        pytest.assume(user == user_name)
+        pytest.assume(user_num == 1)
         # 删除用户
         platform_steps.step_delete_user(user_name)
         # 删除角色
@@ -264,7 +264,7 @@ class TestWorkSpace(object):
         # 获取该成员的角色信息
         user_role = r.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/workspacerole']
         # 验证修改后的角色名称
-        assert user_role == ws_role_new
+        pytest.assume(user_role == ws_role_new)
         # 将邀请的用户移除企业空间
         workspace_steps.step_delete_ws_user(self.ws_name, user_name)
         # 删除创建的用户
@@ -286,7 +286,7 @@ class TestWorkSpace(object):
         # 查询该企业空间成员的信息
         response = workspace_steps.step_get_ws_user(self.ws_name, user_name)
         # 验证移除用户成功
-        assert response.json()['totalItems'] == 0
+        pytest.assume(response.json()['totalItems'] == 0)
         # 删除创建的用户
         platform_steps.step_delete_user(user_name)
 
@@ -307,7 +307,7 @@ class TestWorkSpace(object):
         # 获取所有的企业组织名称
         group_name_actual = workspace_steps.step_get_department(self.ws_name)
         # 校验企业组织名称，已验证企业组织创建成功
-        assert group_name in group_name_actual
+        pytest.assume(group_name in group_name_actual)
         # 编辑企业组织
         edit_data = {"metadata": {"annotations": {"kubesphere.io/workspace-role": "wx-regular",
                                                   "kubesphere.io/alias-name": "我是别名",
@@ -342,11 +342,9 @@ class TestWorkSpace(object):
         # 校验接口返回信息
         assert_message = 'Operation cannot be fulfilled on groups.iam.kubesphere.io "' + \
                          group_name + '": a group named ' + group_name + ' already exists in the workspace\n'
-        assert respon.text == assert_message
+        pytest.assume(respon.text == assert_message)
         # 删除创建的企业空间
-        res = workspace_steps.step_delete_department(self.ws_name, name)
-        # 验证删除成功
-        res.json()['message'] == 'success'
+        workspace_steps.step_delete_department(self.ws_name, name)
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('创建的企业组织名称中包含大写字母')
@@ -431,12 +429,12 @@ class TestWorkSpace(object):
         # 获取绑定后返回的用户名
         binding_user = re.json()[0]['users'][0]
         # 校验绑定的用户名称
-        assert binding_user == user_name
+        pytest.assume(binding_user == user_name)
         # 重新获取企业组织可分配的用户数量
         r = workspace_steps.step_get_user_for_department(name)
         counts_new = r.json()['totalItems']
         # 验证可绑定的用户数量
-        assert counts_new == counts - 1
+        pytest.assume(counts_new == counts - 1)
         # 删除创建的企业空间
         workspace_steps.step_delete_workspace(ws_name)
         # 删除创建的用户
@@ -488,7 +486,7 @@ class TestWorkSpace(object):
         # 将用户从企业组织解绑
         response = workspace_steps.step_unbind_user(ws_name=self.ws_name, user_name=binding_user)
         # 校验解绑结果
-        assert response.json()['message'] == 'success'
+        pytest.assume(response.json()['message'] == 'success')
         # 删除创建的用户
         platform_steps.step_delete_user(user_name)
         # 删除创建的企业组织
