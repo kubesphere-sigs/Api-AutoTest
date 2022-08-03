@@ -255,8 +255,11 @@ class Test_Multi_Cluster_Storage:
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         assert str(r1.json()['items'][0]['status']['readyToUse']) == 'True'
@@ -294,8 +297,11 @@ class Test_Multi_Cluster_Storage:
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         assert str(r1.json()['items'][0]['status']['readyToUse']) == 'True'
@@ -339,8 +345,11 @@ class Test_Multi_Cluster_Storage:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
             print(r1.json())
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         print("创建存储卷快照耗时:" + str(i) + '秒')
@@ -371,8 +380,11 @@ class Test_Multi_Cluster_Storage:
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         print("创建存储卷快照耗时:" + str(i) + '秒')
@@ -406,8 +418,11 @@ class Test_Multi_Cluster_Storage:
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         print("创建存储卷快照耗时:" + str(i) + '秒')
@@ -451,8 +466,11 @@ class Test_Multi_Cluster_Storage:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
             print(r1.json())
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         print("创建存储卷快照耗时:" + str(i) + '秒')
@@ -494,8 +512,11 @@ class Test_Multi_Cluster_Storage:
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
             # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
-            if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
-                break
+            try:
+                if str(r1.json()['items'][0]['status']['readyToUse']) == 'True':
+                    break
+            except Exception as e:
+                print(e)
             sleep(1)
             i = i + 1
         print("创建存储卷快照耗时:" + str(i) + '秒')
