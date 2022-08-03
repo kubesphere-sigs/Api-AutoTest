@@ -28,7 +28,7 @@ def step_get_audits_trend(start_time, end_time, *cluster_name):
         for i in cluster_name:
             path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/auditing/events'
     else:
-        path = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events'
+        path = '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events'
     url = env_url + path + '?operation=histogram&start_time=' + start_time + '&end_time=' + end_time + '&interval=30m'
     response = requests.get(url=url, headers=get_header())
     return response
