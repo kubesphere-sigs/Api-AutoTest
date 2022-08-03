@@ -52,8 +52,15 @@ def step_get_nodes():
 
 
 @allure.step('获取集群的边缘节点列表信息')
-def step_get_nodes():
+def step_get_edge_nodes():
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/nodes?sortBy=createTime&labelSelector=node-role.kubernetes.io%2Fedge%3D'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('获取集群所有的节点信息')
+def step_get_node_all():
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/nodes'
     response = requests.get(url=url, headers=get_header())
     return response
 
