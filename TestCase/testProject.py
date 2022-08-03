@@ -220,15 +220,15 @@ class TestProject(object):
                                             volumemount=volumeMounts)
         # 验证资源创建成功
         i = 0
-        while i < 120:
+        while i < 180:
             # 获取工作负载的状态
             response = project_steps.step_get_workload(self.project_name, type='daemonsets', condition=condition)
             numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
             if numberReady == cluster_node:
                 break
             else:
-                time.sleep(1)
-                i += 1
+                time.sleep(30)
+                i += 30
         assert numberReady == cluster_node
 
         # 删除工作负载
@@ -1173,17 +1173,17 @@ class TestProject(object):
         project_steps.step_create_daemonset(project_name=project_name, work_name=workload_name,
                                             container_name=container_name, image=image, ports=port,
                                             volume_info=volume_info, volumemount=volumemount)
-        # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
+        # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间180s
         i = 0
-        while i < 60:
+        while i < 180:
             response = project_steps.step_get_workload(project_name=project_name, type='daemonsets',
                                                        condition=condition)
             numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
             # 验证资源的所有副本已就绪
             if numberReady == cluster_node:
                 break
-            time.sleep(1)
-            i = i + 1
+            time.sleep(30)
+            i = i + 30
         print('创建工作负载耗时:' + str(i) + 's')
         assert numberReady == cluster_node
         # 删除创建的daemonsets
