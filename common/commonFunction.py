@@ -343,16 +343,16 @@ def get_random():
 
 
 # 获取x分钟之前的10位时间戳
-def get_before_timestamp(minutes):
+def get_before_timestamp(now_time, minutes):
     """
     :return: 多少分钟之前的10位时间戳
     :param minutes: 需要计算多少分钟之前的时间戳
     """
     # 获取当前时间
-    now = datetime.datetime.now()
-    now_reduce = now - datetime.timedelta(minutes=minutes)
+    now_reduce = now_time - datetime.timedelta(minutes=minutes)
     # 转换成时间数组
     timeArray = time.strptime(str(now_reduce)[0:19], "%Y-%m-%d %H:%M:%S")
+    # print(timeArray)
     # 转换成时间戳
     before_timestamp = str(time.mktime(timeArray))[0:10]
     return before_timestamp
