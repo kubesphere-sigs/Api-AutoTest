@@ -82,7 +82,7 @@ class Test_Storage:
 
     @allure.title('{title}')
     @pytest.mark.parametrize('id,url, params, data, story, title, method, severity, condition, except_result',
-                             DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='storage'))
+                             DoexcleByPandas().get_data_from_yaml('../data/storage.yaml'))
     def test_storage(self, id, url, params, data, story, title, method, severity, condition, except_result):
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
@@ -116,12 +116,14 @@ class Test_Storage:
     @allure.severity('normal')
     def test_set_default_sc(self):
         ex1 = 'true'
+        storage_steps.set_default_sc('local', 'false')
         storage_steps.set_default_sc(self.sc_name, ex1)
         # 查询存储类
         re = storage_steps.search_sc_by_name(self.sc_name)
         # 验证设置成功
         assert re.json()['items'][0]['metadata']['annotations'][
                    'storageclass.beta.kubernetes.io/is-default-class'] == 'true'
+        storage_steps.set_default_sc(self.sc_name, 'false')
         storage_steps.set_default_sc('local', 'true')
 
     @allure.story("存储-存储类")

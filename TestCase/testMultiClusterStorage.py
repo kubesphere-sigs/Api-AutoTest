@@ -3,20 +3,19 @@ from time import sleep
 import allure
 import pytest
 from common import commonFunction
-from common.commonFunction import get_random, get_sc_qingcloud, request_resource
+from common.commonFunction import get_random, request_resource
 from common.getData import DoexcleByPandas
-from step import multi_cluster_storages_step, project_steps, multi_cluster_steps, multi_worksapce_steps
+from step import multi_cluster_storages_step, multi_cluster_steps, multi_workspace_steps, multi_project_steps
 
-name = multi_cluster_steps.step_get_host_cluster_name()
 
 @allure.feature('multi_cluster_storage')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
-@pytest.mark.skipif(commonFunction.get_multi_cluster_sc_qingcloud(name) is False, reason='csi-qingcloud存储插件不存在')
+@pytest.mark.skipif(commonFunction.get_multi_cluster_sc_qingcloud() is False, reason='csi-qingcloud存储插件不存在')
 class Test_Multi_Cluster_Storage:
     # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
     __test__ = commonFunction.check_multi_cluster()
 
-    cluster_name = multi_cluster_steps.step_get_host_cluster_name()
+    cluster_name = ''
     sc_name = 'test-multi-cluster-sc'
     sc_name1 = 'test-multi-cluster-vsc'
     ws_name = 'multi-ws-' + str(get_random())
@@ -37,31 +36,42 @@ class Test_Multi_Cluster_Storage:
     strategy = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}
 
     def setup_class(self):
-        multi_worksapce_steps.step_create_multi_ws(ws_name=self.ws_name, alias_name='', description='',
+        self.cluster_name = multi_cluster_steps.step_get_host_cluster_name()
+        multi_workspace_steps.step_create_multi_ws(ws_name=self.ws_name, alias_name='', description='',
                                                    cluster_names=self.cluster_name)
-        multi_worksapce_steps.step_create_multi_ws(ws_name=self.ws1_name, alias_name='', description='',
+        multi_workspace_steps.step_create_multi_ws(ws_name=self.ws1_name, alias_name='', description='',
                                                    cluster_names=self.cluster_name)
-        project_steps.step_create_multi_project(ws_name=self.ws_name, project_name=self.pro_ws_name,
-                                                clusters=self.cluster_name)
-        project_steps.step_create_multi_project(ws_name=self.ws_name, project_name=self.pro_ws_name1,
-                                                clusters=self.cluster_name)
-        project_steps.step_create_multi_project(ws_name=self.ws1_name, project_name=self.pro_ws1_name, clusters=self.cluster_name)
-        project_steps.step_create_multi_project(ws_name=self.ws1_name, project_name=self.pro_ws1_name1, clusters=self.cluster_name)
-        multi_cluster_storages_step.step_create_sc(cluster_name=self.cluster_name, sc_name=self.sc_name, expansion=self.allowVolumeExpansion)
-        multi_cluster_storages_step.create_vsc(cluster_name=self.cluster_name, vsc_name=self.sc_name, driver="disk.csi.qingcloud.com", policy='Delete')
-        multi_cluster_storages_step.step_create_sc(cluster_name=self.cluster_name, sc_name=self.sc_name1, expansion=self.allowVolumeExpansion)
-        multi_cluster_storages_step.create_vsc(cluster_name=self.cluster_name, vsc_name=self.sc_name1, driver="disk.csi.qingcloud.com", policy='Delete')
+        multi_project_steps.step_create_multi_project(ws_name=self.ws_name, project_name=self.pro_ws_name,
+                                                      clusters=self.cluster_name)
+        multi_project_steps.step_create_multi_project(ws_name=self.ws_name, project_name=self.pro_ws_name1,
+                                                      clusters=self.cluster_name)
+        multi_project_steps.step_create_multi_project(ws_name=self.ws1_name, project_name=self.pro_ws1_name,
+                                                      clusters=self.cluster_name)
+        multi_project_steps.step_create_multi_project(ws_name=self.ws1_name, project_name=self.pro_ws1_name1,
+                                                      clusters=self.cluster_name)
+        multi_cluster_storages_step.step_create_sc(cluster_name=self.cluster_name, sc_name=self.sc_name,
+                                                   expansion=self.allowVolumeExpansion)
+        multi_cluster_storages_step.create_vsc(cluster_name=self.cluster_name, vsc_name=self.sc_name,
+                                               driver="disk.csi.qingcloud.com", policy='Delete')
+        multi_cluster_storages_step.step_create_sc(cluster_name=self.cluster_name, sc_name=self.sc_name1,
+                                                   expansion=self.allowVolumeExpansion)
+        multi_cluster_storages_step.create_vsc(cluster_name=self.cluster_name, vsc_name=self.sc_name1,
+                                               driver="disk.csi.qingcloud.com", policy='Delete')
         multi_cluster_storages_step.step_create_volume(cluster_name=self.cluster_name, project_name=self.pro_ws_name,
                                                        volume_name=self.volume_name, sc_name=self.sc_name1)
-        project_steps.step_create_deploy_in_multi_project(cluster_name=self.cluster_name, project_name=self.pro_ws_name,
-                                                          work_name=self.work_name, container_name=self.container_name,
-                                                          image=self.image, replicas=self.replicas, ports=self.ports,
-                                                          volumemount=self.volumemount, volume_info=self.volume_info, strategy=self.strategy)
+        multi_project_steps.step_create_deploy_in_multi_project(cluster_name=self.cluster_name,
+                                                                project_name=self.pro_ws_name,
+                                                                work_name=self.work_name,
+                                                                container_name=self.container_name,
+                                                                image=self.image, replicas=self.replicas,
+                                                                ports=self.ports,
+                                                                volumemount=self.volumemount,
+                                                                volume_info=self.volume_info, strategy=self.strategy)
         i = 0
         while i < 150:
-            r = project_steps.step_get_volume_status_in_multi_project(cluster_name=self.cluster_name,
-                                                                      project_name=self.pro_ws_name,
-                                                                      volume_name=self.volume_name)
+            r = multi_project_steps.step_get_volume_status_in_multi_project(cluster_name=self.cluster_name,
+                                                                            project_name=self.pro_ws_name,
+                                                                            volume_name=self.volume_name)
             if str(r.json()['items'][0]['status']['phase']) == 'Bound':
                 break
             sleep(1)
@@ -69,18 +79,18 @@ class Test_Multi_Cluster_Storage:
         assert str(r.json()['items'][0]['status']['phase']) == 'Bound'
 
     def teardown_class(self):
-        project_steps.step_delete_project_from_cluster(cluster_name=self.cluster_name, ws_name=self.ws_name,
-                                                       project_name=self.pro_ws_name)
-        project_steps.step_delete_project_from_cluster(cluster_name=self.cluster_name, ws_name=self.ws_name,
-                                                       project_name=self.pro_ws_name1)
-        project_steps.step_delete_project_from_cluster(cluster_name=self.cluster_name, ws_name=self.ws1_name,
-                                                       project_name=self.pro_ws1_name)
-        project_steps.step_delete_project_from_cluster(cluster_name=self.cluster_name, ws_name=self.ws1_name,
-                                                       project_name=self.pro_ws1_name1)
-        multi_worksapce_steps.step_delete_workspace(ws_name=self.ws_name)
-        multi_worksapce_steps.step_delete_workspace(ws_name=self.ws1_name)
-        project_steps.step_delete_workload_in_multi_project(project_name=self.pro_ws_name, type='deployments',
-                                                            work_name=self.work_name)
+        multi_project_steps.step_delete_project_from_cluster(cluster_name=self.cluster_name, ws_name=self.ws_name,
+                                                             project_name=self.pro_ws_name)
+        multi_project_steps.step_delete_project_from_cluster(cluster_name=self.cluster_name, ws_name=self.ws_name,
+                                                             project_name=self.pro_ws_name1)
+        multi_project_steps.step_delete_project_from_cluster(cluster_name=self.cluster_name, ws_name=self.ws1_name,
+                                                             project_name=self.pro_ws1_name)
+        multi_project_steps.step_delete_project_from_cluster(cluster_name=self.cluster_name, ws_name=self.ws1_name,
+                                                             project_name=self.pro_ws1_name1)
+        multi_workspace_steps.step_delete_workspace(ws_name=self.ws_name)
+        multi_workspace_steps.step_delete_workspace(ws_name=self.ws1_name)
+        multi_project_steps.step_delete_workload_in_multi_project(project_name=self.pro_ws_name, type='deployments',
+                                                                  work_name=self.work_name)
         multi_cluster_storages_step.delete_volume(cluster_name=self.cluster_name, project_name=self.pro_ws_name,
                                                   volume_name=self.volume_name)
         multi_cluster_storages_step.delete_sc(cluster_name=self.cluster_name, sc_name=self.sc_name)
@@ -90,14 +100,15 @@ class Test_Multi_Cluster_Storage:
 
     @allure.title('{title}')
     @pytest.mark.parametrize('id,url, params, data, story, title, method, severity, condition, except_result',
-                             DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='multi-cluster-storage'))
+                             DoexcleByPandas().get_data_from_yaml(filename='../data/multi_cluster_storage.yaml'))
     def test_storage(self, id, url, params, data, story, title, method, severity, condition, except_result):
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
         targets = commonFunction.replace_str(url, params, data, title, condition, except_result,
                                              actual_value='${sc_name}', expect_value=self.sc_name)
         targets_new = commonFunction.replace_str(targets[0], targets[1], targets[2], targets[3],
-                                                 targets[4], targets[5], actual_value='${cluster_name}', expect_value=self.cluster_name)
+                                                 targets[4], targets[5], actual_value='${cluster_name}',
+                                                 expect_value=self.cluster_name)
 
         request_resource(targets_new[0], targets_new[1], targets_new[2], story, targets_new[3], method, severity,
                          targets_new[4], targets_new[5])
@@ -127,12 +138,14 @@ class Test_Multi_Cluster_Storage:
     @allure.severity('normal')
     def test_set_default_sc(self):
         ex1 = 'true'
+        multi_cluster_storages_step.set_default_sc(self.cluster_name, 'local', 'false')
         multi_cluster_storages_step.set_default_sc(self.cluster_name, self.sc_name, ex1)
         # 查询存储类
         re = multi_cluster_storages_step.search_sc_by_name(self.cluster_name, self.sc_name)
         # 验证设置成功
         assert re.json()['items'][0]['metadata']['annotations'][
                    'storageclass.beta.kubernetes.io/is-default-class'] == 'true'
+        multi_cluster_storages_step.set_default_sc(self.cluster_name, self.sc_name, 'false')
         multi_cluster_storages_step.set_default_sc(self.cluster_name, 'local', 'true')
 
     @allure.story("存储-存储类")
@@ -149,7 +162,8 @@ class Test_Multi_Cluster_Storage:
         # 查询存储类已有存储卷信息
         re = multi_cluster_storages_step.search_volume_by_sc(self.cluster_name, sc_name)
         # 查询存储卷数量
-        num = multi_cluster_storages_step.search_sc_by_name(self.cluster_name, sc_name).json()['items'][0]['metadata']['annotations'][
+        num = multi_cluster_storages_step.search_sc_by_name(self.cluster_name, sc_name).json()['items'][0]['metadata'][
+            'annotations'][
             'kubesphere.io/pvc-count']
         # 验证存储卷存在以及数量正确
         assert re.json()['items'][0]['metadata']['name'] == volume_name
@@ -157,7 +171,8 @@ class Test_Multi_Cluster_Storage:
         # 删除存储卷
         multi_cluster_storages_step.delete_volume(self.cluster_name, self.pro_ws_name, volume_name)
         # 查询存储卷数量
-        num1 = multi_cluster_storages_step.search_sc_by_name(self.cluster_name, sc_name).json()['items'][0]['metadata']['annotations'][
+        num1 = multi_cluster_storages_step.search_sc_by_name(self.cluster_name, sc_name).json()['items'][0]['metadata'][
+            'annotations'][
             'kubesphere.io/pvc-count']
         # 查询存储类已有存储卷信息
         re = multi_cluster_storages_step.search_volume_by_sc(self.cluster_name, sc_name)
@@ -218,7 +233,7 @@ class Test_Multi_Cluster_Storage:
         des = 'test-describe'
         # 设置别名和描述信息
         multi_cluster_storages_step.set_vsc(self.cluster_name, vsc_name, driver, policy, creationtime, time,
-                              generation, version, uid, alias_name, des)
+                                            generation, version, uid, alias_name, des)
         # 验证别名设置成功
         res = multi_cluster_storages_step.search_vsc_by_name(self.cluster_name, vsc_name)
         assert res.json()['items'][0]['metadata']['annotations']['kubesphere.io/alias-name'] == alias_name
@@ -234,7 +249,8 @@ class Test_Multi_Cluster_Storage:
         volume_name = self.volume_name
         i = 0
         # 创建卷快照
-        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name, volume_name)
+        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name,
+                                                            volume_name)
         # 验证存储卷快照状态为准备就绪，最长等待时间为150s
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
@@ -272,7 +288,8 @@ class Test_Multi_Cluster_Storage:
         volume_name = self.volume_name
         i = 0
         # 创建卷快照
-        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name, volume_name)
+        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name,
+                                                            volume_name)
         # 验证存储卷快照状态为准备就绪，最长等待时间为150s
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
@@ -315,7 +332,8 @@ class Test_Multi_Cluster_Storage:
         volume_name = self.volume_name
         i = 0
         # 创建卷快照
-        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name, volume_name)
+        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name,
+                                                            volume_name)
         # 验证存储卷快照状态为准备就绪，最长等待时间为150s
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
@@ -347,7 +365,8 @@ class Test_Multi_Cluster_Storage:
         volume_name = self.volume_name
         i = 0
         # 创建卷快照
-        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name, volume_name)
+        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name,
+                                                            volume_name)
         # 验证存储卷快照状态为准备就绪，最长等待时间为150s
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
@@ -358,7 +377,8 @@ class Test_Multi_Cluster_Storage:
             i = i + 1
         print("创建存储卷快照耗时:" + str(i) + '秒')
         # 再次创建同名的快照
-        res = multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name, volume_name)
+        res = multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name,
+                                                                  vsc_name, volume_name)
         assert res.json()['message'] == 'volumesnapshots.snapshot.storage.k8s.io "' + vs_name + '" already exists'
         # 删除卷快照
         multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, vs_name)
@@ -380,7 +400,8 @@ class Test_Multi_Cluster_Storage:
         volume_name = self.volume_name
         i = 0
         # 创建卷快照
-        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name, volume_name)
+        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name,
+                                                            volume_name)
         # 验证存储卷快照状态为准备就绪，最长等待时间为150s
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
@@ -423,7 +444,8 @@ class Test_Multi_Cluster_Storage:
         sc_name = rr.json()['items'][0]['spec']['storageClassName']
         i = 0
         # 创建卷快照
-        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name, volume_name)
+        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name,
+                                                            volume_name)
         # 验证存储卷快照状态为准备就绪，最长等待时间为150s
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
@@ -460,10 +482,14 @@ class Test_Multi_Cluster_Storage:
         vsc_name = self.sc_name1
         volume_name = self.volume_name
         # 获取存储类
-        sc_name = multi_cluster_storages_step.search_volume_by_name(self.cluster_name, volume_name).json()['items'][0]['spec']['storageClassName']
+        sc_name = \
+            multi_cluster_storages_step.search_volume_by_name(self.cluster_name, volume_name).json()['items'][0][
+                'spec'][
+                'storageClassName']
         i = 0
         # 创建卷快照
-        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name, volume_name)
+        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, vs_name, vsc_name,
+                                                            volume_name)
         # 验证存储卷快照状态为准备就绪，最长等待时间为150s
         while i < 150:
             r1 = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, vs_name)
@@ -474,7 +500,8 @@ class Test_Multi_Cluster_Storage:
             i = i + 1
         print("创建存储卷快照耗时:" + str(i) + '秒')
         # 创建存储卷
-        res = multi_cluster_storages_step.create_volumne_by_vs(self.cluster_name, self.pro_ws_name, volume_name, sc_name)
+        res = multi_cluster_storages_step.create_volumne_by_vs(self.cluster_name, self.pro_ws_name, volume_name,
+                                                               sc_name)
         # 验证报错信息正确
         assert res.json()['message'] == 'persistentvolumeclaims "' + volume_name + '" already exists'
         # 删除卷快照
