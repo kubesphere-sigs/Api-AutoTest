@@ -63,9 +63,9 @@ class TestIpPool(object):
         time.sleep(5)
         res = ippool_steps.step_search_by_name(ippool_name)
         synced = res.json()['items'][0]['status']['synced']
-        assert synced is True
+        pytest.assume(synced is True)
         response = ippool_steps.step_delete_ippool(ippool_name)
-        assert response.status_code == 200
+        pytest.assume(response.status_code == 200)
         ippool_steps.step_delete_ippool(ippool_name)
 
     @allure.title('给ippool分配企业空间')
@@ -79,7 +79,7 @@ class TestIpPool(object):
         # 给ippool分配企业空间
         r = ippool_steps.step_assign_ws(ippool_name, self.ws_name)
         r_new = ippool_steps.step_search_by_name(ippool_name)
-        assert r_new.json()['items'][0]['metadata']['labels']['kubesphere.io/workspace'] == self.ws_name
+        pytest.assume(r_new.json()['items'][0]['metadata']['labels']['kubesphere.io/workspace'] == self.ws_name)
         # 删除ippool
         ippool_steps.step_delete_ippool(ippool_name)
 
@@ -97,8 +97,8 @@ class TestIpPool(object):
         # 再次给ippool分配企业空间
         ippool_steps.step_assign_ws(ippool, ws_name_new)
         r_new = ippool_steps.step_search_by_name(ippool)
-        assert r_new.json()['items'][0]['metadata']['labels']['kubesphere.io/workspace'] == ws_name_new
-        # 删除ippo
+        pytest.assume(r_new.json()['items'][0]['metadata']['labels']['kubesphere.io/workspace'] == ws_name_new)
+        # 删除ippool
         ippool_steps.step_delete_ippool(ippool)
         # 删除企业空间
         workspace_steps.step_delete_workspace(ws_name_new)
@@ -158,7 +158,7 @@ class TestIpPool(object):
         ippool_steps.step_assign_ws(ippool_name, self.ws_name)
         # 删除企业空间
         r = ippool_steps.step_delete_ippool(ippool_name)
-        assert r.status_code == 200
+        pytest.assume(r.status_code == 200)
         # 查询已删除的ippool
         res = ippool_steps.step_search_by_name(ippool_name)
         assert res.json()['totalItems'] == 0
@@ -204,7 +204,20 @@ class TestIpPool(object):
         ippool_steps.step_assign_ws(ippool_name, self.ws_name)
         # 创建部署
         ippool_steps.step_create_deploy(ippool, deploy_name, container_name, self.pro_name)
-        sleep(15)
+        # 等待部署创建成功
+        i = 0
+        while i < 180:
+            try:
+                response = project_steps.step_get_workload(self.pro_name, 'deployments', 'name=' + deploy_name)
+                readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                replicas = response.json()['items'][0]['status']['replicas']
+                if readyReplicas == replicas:
+                    break
+            except Exception as e:
+                print(e)
+                i += 3
+                time.sleep(3)
+
         # 删除ippool
         r = ippool_steps.step_delete_ippool(ippool_name)
         pytest.assume(r.json()['reason'] == 'ippool is in use, please remove the workload before deleting')
@@ -249,7 +262,19 @@ class TestIpPool(object):
         container_name = 'container-' + str(get_random())
         # 创建工作负载
         ippool_steps.step_create_deploy(ippool, deploy_name, container_name, self.pro_name)
-        sleep(15)
+        # 等待工作负载创建成功
+        i = 0
+        while i < 180:
+            try:
+                response = project_steps.step_get_workload(self.pro_name, 'deployments', 'name=' + deploy_name)
+                readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                replicas = response.json()['items'][0]['status']['replicas']
+                if readyReplicas == replicas:
+                    break
+            except Exception as e:
+                print(e)
+                i += 3
+                time.sleep(3)
         r = ippool_steps.step_search_by_name(ippool_name)
         num = r.json()['items'][0]['status']['allocations']
         num_new = ippool_steps.step_get_ws_ippool_number(ippool_name, self.ws_name)
@@ -268,7 +293,7 @@ class TestIpPool(object):
         pytest.assume(num == num_new)
         ws_num_new = ippool_steps.step_get_used_ws_number(ippool_name)
         # 验证使用ippool的企业空间数量
-        assert ws_num_new == 0
+        pytest.assume(ws_num_new == 0)
         # 删除ippool
         ippool_steps.step_delete_ippool(ippool_name)
 
