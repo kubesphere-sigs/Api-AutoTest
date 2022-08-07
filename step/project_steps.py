@@ -418,6 +418,17 @@ def step_get_gateway(project_name):
     return response
 
 
+@allure.step('查询service')
+def step_get_service(project_name, *service_name):
+    if service_name:
+        for i in service_name:
+            url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/services?name=' + str(i) + '&sortBy=createTime'
+    else:
+        url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/services?sortBy=createTime'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
 @allure.step('删除service')
 def step_delete_service(project_name, service_name):
     url = env_url + '/api/v1/namespaces/' + project_name + '/services/' + service_name
@@ -465,6 +476,7 @@ def step_get_workload(project_name, type, condition, *cluster_name):
     else:
         path = '/kapis'
     url = env_url + path + '/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/' + type + '?' + condition
+    print(url)
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -802,7 +814,8 @@ def step_create_project(ws_name, project_name):
                          "annotations": {"kubesphere.io/creator": "admin"}
                          }
             }
-    requests.post(url, headers=get_header(), data=json.dumps(data))
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
 
 
 @allure.step('在项目应用列表查看指定应用信息')
@@ -937,8 +950,14 @@ def step_remove_project_member(project_name, user_name):
 
 
 @allure.step('项目/应用负载/容器组，查询容器组')
-def step_get_pod(project_name, pod_name):
-    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods?name=' + pod_name + '&sortBy=startTime'
+def step_get_pod(project_name, *condition):
+    condition_new = ''
+    if condition:
+        for i in condition:
+            condition_new += str(i) + '&'
+        url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods?' + condition_new + 'sortBy=startTime'
+    else:
+        url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods?&sortBy=startTime'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -978,6 +997,13 @@ def step_set_auto_scale(project_name, work_name):
                                      {"type": "Utilization", "averageUtilization": 50}}}]},
             "apiVersion": "autoscaling/v2beta2", "kind": "HorizontalPodAutoscaler"}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('项目/存储/持久卷声明，查看持久卷声明')
+def step_get_pvc(project_name, pvc_name, *cluster_name):
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/persistentvolumeclaims?name=' + pvc_name + '&sortBy=createTime'
+    response = requests.get(url=url, headers=get_header())
     return response
 
 
