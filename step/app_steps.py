@@ -361,8 +361,10 @@ def step_deployment_app(project_name, app_id, app_version_id, name, conf):
 def step_get_app_id():
     url = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D2&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
     url2 = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+    url3 = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D3&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
     r = requests.get(url, headers=get_header())  # 获取app的id和name，将其组合成一个字典
     r2 = requests.get(url2, headers=get_header())  # 获取app的id和name，将其组合成一个字典
+    r3 = requests.get(url3, headers=get_header())  # 获取app的id和name，将其组合成一个字典
     item_name = []
     item_app_id = []
     items = r.json()['items']
@@ -373,16 +375,22 @@ def step_get_app_id():
     for item in items2:
         item_name.append(item['name'])
         item_app_id.append(item['app_id'])
+    items3 = r3.json()['items']
+    for item in items3:
+        item_name.append(item['name'])
+        item_app_id.append(item['app_id'])
     dic = dict(zip(item_name, item_app_id))
     return dic
 
 
-@allure.step('获取appstore中所有应用的name, app_id, version_id')
+@allure.step('获取appstore中所有应用的name, version_id')
 def step_get_app_version():
     url = env_url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D2&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
     url2 = env_url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+    url3 = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D3&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
     r = requests.get(url, headers=get_header())  # 获取app的id和name，将其组合成一个字典
     r2 = requests.get(url2, headers=get_header())  # 获取app的id和name，将其组合成一个字典
+    r3 = requests.get(url3, headers=get_header())  # 获取app的id和name，将其组合成一个字典
     item_name = []
     item_version_id = []
     items = r.json()['items']
@@ -391,6 +399,11 @@ def step_get_app_version():
         item_version_id.append(item['latest_app_version']['version_id'])
     items2 = r2.json()['items']
     for item in items2:
+        item_name.append(item['name'])
+        item_version_id.append(item['latest_app_version']['version_id'])
+
+    items3 = r3.json()['items']
+    for item in items3:
         item_name.append(item['name'])
         item_version_id.append(item['latest_app_version']['version_id'])
     dic = dict(zip(item_name, item_version_id))
