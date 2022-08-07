@@ -7,7 +7,6 @@ import time
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from common.getData import DoexcleByPandas
-from common.logFormat import log_format
 from common import commonFunction
 from step import app_steps, project_steps, workspace_steps
 
@@ -23,10 +22,10 @@ class TestAppStore(object):
         __test__ = True
 
     ws_name = 'test-deploy-from-appstore' + str(commonFunction.get_random())  # 在excle中读取的用例此名称，不能修改。
-    project_name = 'project-for-test-deploy-app-from-appstore' + str(commonFunction.get_random())  # 在excle中读取的用例此名称，不能修改。
-    log_format()  # 配置日志格式
+    # 在excle中读取的用例此名称，不能修改。
+    project_name = 'project-for-test-deploy-app-from-appstore' + str(commonFunction.get_random())
     # 从文件中读取用例信息
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='appstore')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/appstore.yaml')
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
@@ -35,6 +34,7 @@ class TestAppStore(object):
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
+        time.sleep(60)
         project_steps.step_delete_project(self.ws_name, self.ws_name)  # 删除创建的项目
         workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的企业空间
 
@@ -53,7 +53,7 @@ class TestAppStore(object):
         app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id,
                                                  name=name, version_id=version_id, conf=conf)
         i = 0
-        while i < 600:
+        while i < 60:
             # 查看应用部署情况
             response = app_steps.step_get_app_status(self.ws_name, self.project_name, name)
             # 获取应用状态
@@ -83,7 +83,7 @@ class TestAppStore(object):
 
     @allure.title('从应用商店部署应用时使用不符合规则的名称')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_deployment_mongdb_wrong_nmae(self):
+    def test_deployment_mongdb_wrong_name(self):
         app_id = app_steps.step_get_app_id()['MongoDB']
         version_id = app_steps.step_get_app_version()['MongoDB']
         name = 'MONGO' + str(commonFunction.get_random())
@@ -115,48 +115,87 @@ class TestAppStore(object):
 
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
-
         app_id = app_steps.step_get_app_id()[app_name]
         version_id = app_steps.step_get_app_version()[app_name]
-        name = app_name.lower().replace(' ', '') + str(commonFunction.get_random())
+        name = app_name.lower().replace(' ', '-') + '-' + str(commonFunction.get_random())
+        # 创建项目
+        project_name = 'test-deploy-app-' + app_name.lower().replace(' ', '-') + '-' + str(commonFunction.get_random())
+        project_steps.step_create_project(self.ws_name, project_name)
         # 部署示例应用
-        app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name,
+        app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=project_name,
                                                  app_id=app_id, name=name, version_id=version_id, conf=conf)
         i = 0
-        while i < 300:
-            # 查看应用部署情况
-            response = project_steps.step_get_app_status(self.ws_name, self.project_name, name)
-            # 获取应用状态
-            status = response.json()['items'][0]['cluster']['status']
-            if status == 'active':
-                print('应用部署耗时:' + str(i) + '秒')
-                break
-            elif status == 'failed':
-                print('应用部署失败')
-                break
-            else:
-                time.sleep(1)
-                i = i + 1
+        while i < 180:
+            try:
+                # 查看应用部署情况
+                response = project_steps.step_get_app_status(self.ws_name, project_name, name)
+                # 获取应用状态
+                status = response.json()['items'][0]['cluster']['status']
+                if status == 'active':
+                    print('应用部署耗时:' + str(i) + '秒')
+                    break
+                elif status == 'failed':
+                    print('应用部署失败')
+                    break
+                elif status == 'created':
+                    print('应用创建中')
+            except Exception as e:
+                print(e)
+            time.sleep(20)
+            i = i + 20
         # 验证应用运行成功
         pytest.assume(status == 'active')
         # 在应用列表查询部署的应用
-        response = project_steps.step_get_deployed_app(self.ws_name, self.project_name, name)
+        response = project_steps.step_get_deployed_app(self.ws_name, project_name, name)
         # 获取应用的cluster_id
         cluster_id = response.json()['items'][0]['cluster']['cluster_id']
         # 删除应用
-        project_steps.step_delete_app(self.ws_name, self.project_name, cluster_id)
+        project_steps.step_delete_app(self.ws_name, project_name, cluster_id)
         # 验证应用删除成功
         j = 0
         while j < 60:
-            r = project_steps.step_get_deployed_app(self.ws_name, self.project_name, name)
+            r = project_steps.step_get_deployed_app(self.ws_name, project_name, name)
             count = r.json()['total_count']
             if count == 0:
                 print('删除应用耗时:' + str(j) + '秒')
                 break
             else:
-                time.sleep(1)
-                j += 1
-        assert count == 0
+                time.sleep(10)
+                j += 10
+        # 获取项目所有的服务
+        re = project_steps.step_get_service(project_name)
+        count_service = re.json()['totalItems']
+        if count_service > 0:
+            for i in range(0, count_service):
+                service_name = re.json()['items'][i]['metadata']['name']
+                # 删除所有服务
+                project_steps.step_delete_service(project_name, service_name)
+        # 获取项目所有的 statefulsets
+        re = project_steps.step_get_workload(project_name, 'statefulsets', 'name=' + app_name.lower().replace(' ', ''))
+        st_count = re.json()['totalItems']
+        if st_count > 0:
+            for i in range(0, st_count):
+                st_name = re.json()['items'][i]['metadata']['name']
+                project_steps.step_delete_workload(project_name, 'statefulsets', st_name)
+        # 获取项目所有的持久卷声明
+        res = project_steps.step_get_pvc(project_name, '')
+        pvc_count = res.json()['totalItems']
+        if pvc_count > 0:
+            for i in range(0, pvc_count):
+                pvc_name = res.json()['items'][i]['metadata']['name']
+                # 删除pvc
+                project_steps.step_delete_pvc(project_name, pvc_name)
+        # 等待pvc删除成功
+        k = 0
+        while k < 60:
+            pvc_count = project_steps.step_get_pvc(project_name, '').json()['totalItems']
+            if pvc_count == 0:
+                break
+            else:
+                time.sleep(5)
+                i += 5
+        # 删除创建的项目
+        project_steps.step_delete_project(self.ws_name, project_name)
 
 
 if __name__ == "__main__":
