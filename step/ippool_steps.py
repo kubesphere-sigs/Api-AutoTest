@@ -89,6 +89,7 @@ def step_search_pod(pod_name, ippool_name):
 
 @allure.step('创建工作负载')
 def step_create_deploy(ippool_name, deploy_name, container_name, pro_name):
+    ippool_name = '[\"' + ippool_name + '\"]'
     url = env_url + '/apis/apps/v1/namespaces/' + pro_name + '/deployments?dryRun=All'
     url_new = env_url + '/apis/apps/v1/namespaces/' + pro_name + '/deployments'
     data = {"apiVersion": "apps/v1",
