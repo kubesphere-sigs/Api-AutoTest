@@ -484,13 +484,11 @@ def request_resource(url, params, data, story, title, method, severity, conditio
             url_new = env_url + url + '?' + params
         else:
             url_new = env_url + url
-        # print(url_new)
     else:
         if params != '':
             url_new = url + '?' + params
         else:
             url_new = url
-        # print(url_new)
     if method == 'get':
         # 测试get方法
         r = requests.get(url_new, headers=get_header())
@@ -503,7 +501,6 @@ def request_resource(url, params, data, story, title, method, severity, conditio
     elif method == 'patch':
         # 测试patch方法
         data = eval(data)
-        # print(data)
         r = requests.patch(url_new, headers=get_header_for_patch(), data=json.dumps(data))
 
     elif method == 'delete':
@@ -511,6 +508,7 @@ def request_resource(url, params, data, story, title, method, severity, conditio
         r = requests.delete(url_new, headers=get_header())
 
     # 将校验条件和预期结果参数化
+    time.sleep(1)
     if condition != '':
         condition_new = eval(condition)  # 将字符串转化为表达式
         if isinstance(condition_new, str):
@@ -602,6 +600,7 @@ def get_multi_cluster_sc_qingcloud():
                 return True
             else:
                 return False
+
 
 # 读取excle数据，并将其写入yaml文件
 def write_data_excle_to_yaml(filename, sheet_name):
