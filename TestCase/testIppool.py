@@ -152,7 +152,7 @@ class TestIpPool(object):
     @allure.title('删除已分配企业空间的ippool')
     @allure.severity('critical')
     def test_delete_ippool_assign_ws(self):
-        ippool_name = 'ippool-' + str(get_random())
+        ippool_name = 'test-ippool-' + str(get_random())
         cidr = random_ip() + '/24'
         description = ' '
         # 创建ippool
@@ -161,6 +161,7 @@ class TestIpPool(object):
         ippool_steps.step_assign_ws(ippool_name, self.ws_name)
         # 删除ippool
         ippool_steps.step_delete_ippool(ippool_name)
+        time.sleep(3)
         # 查询已删除的ippool
         res = ippool_steps.step_search_by_name(ippool_name)
         assert res.json()['totalItems'] == 0
