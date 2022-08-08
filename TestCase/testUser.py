@@ -145,7 +145,7 @@ class TestUser(object):
             print(e)
             print("新创建的用户登陆失败")
         # 验证登陆成功
-        pytest.assume(headers)
+        time.sleep(3)
         i = 0
         while i < 60:
             try:
