@@ -3,6 +3,7 @@ import pytest
 import allure
 import sys
 import time
+from pytest import assume
 from common.getData import DoexcleByPandas
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
@@ -216,15 +217,17 @@ class TestAppTemplate(object):
         # 应用审核通过
         app_steps.step_app_pass(app_id, version_id)
         # 查看应用审核记录
-        app_steps.step_audit_records(app_id, version_id)
+        response = app_steps.step_audit_records(app_id, version_id)
+        # 验证应用审核通过
+        status = response.json()['items'][0]['status']
+        with assume:
+            assert status == 'passed'
         # 获取应用模版中所有的版本version
         versions = app_steps.step_get_app_versions(self.ws_name, app_id)
         # 删除应用版本
         app_steps.step_delete_version(app_id, versions)
         # 删除应用模板
-        re = app_steps.step_delete_app_template(self.ws_name, app_id)
-        # 验证应用模版删除成功
-        assert re.json()['message'] == 'success'
+        app_steps.step_delete_app_template(self.ws_name, app_id)
 
     @allure.story('应用管理-应用模板')
     @allure.title('创建应用模板后添加版本')
