@@ -34,6 +34,7 @@ class TestAppStoreManage(object):
         category_id = response.json()['category_id']
         # 删除分类
         app_steps.step_delete_category(category_id)
+        time.sleep(3)
         # 查询所有分类的category_id
         categories_id = app_steps.step_get_categories_id()
         # 验证被删除分类的category_id不存在
@@ -65,6 +66,7 @@ class TestAppStoreManage(object):
         apps_id = app_steps.step_get_apps_id()
         # 查看所有应用的详情信息，并验证查询成功
         for app_id in apps_id:
+            time.sleep(1)
             response = app_steps.step_get_app_detail(app_id)
             assert response.json()['app_id'] == app_id
 
@@ -106,6 +108,7 @@ class TestAppStoreManage(object):
         category_id = response.json()['category_id']
         # 向分类中添加新上架的应用
         app_steps.step_app_to_category(app_id + '-store', category_id)
+        time.sleep(3)
         # 删除分类
         result = app_steps.step_delete_app_category(category_id)
         # 验证删除结果
