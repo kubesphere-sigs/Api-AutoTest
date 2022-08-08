@@ -6,6 +6,7 @@ import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
+from pytest import assume
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import app_steps, project_steps, workspace_steps
@@ -53,33 +54,54 @@ class TestAppStore(object):
         app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name, app_id=app_id,
                                                  name=name, version_id=version_id, conf=conf)
         i = 0
-        while i < 60:
-            # 查看应用部署情况
-            response = app_steps.step_get_app_status(self.ws_name, self.project_name, name)
-            # 获取应用状态
-            status = response.json()['items'][0]['cluster']['status']
-            if status == 'active':
-                print('应用部署耗时:' + str(i) + '秒')
-                break
-            elif status == 'failed':
-                print('应用部署失败')
-                break
-            else:
-                time.sleep(1)
-                i = i + 1
+        while i < 180:
+            try:
+                # 查看应用部署情况
+                response = app_steps.step_get_app_status(self.ws_name, self.project_name, name)
+                # 获取应用状态
+                status = response.json()['items'][0]['cluster']['status']
+                if status == 'active':
+                    print('应用部署耗时:' + str(i) + '秒')
+                    break
+                elif status == 'failed':
+                    print('应用部署失败')
+                    break
+            except Exception as e:
+                print(e)
+            finally:
+                time.sleep(10)
+                i = i + 10
         # 使用已经存在的应用名称部署应用
         response = app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name,
                                                             app_id=app_id, name=name, version_id=version_id, conf=conf)
         # 获取部署结果
         result = response.text
+        # 验证部署结果
+        with assume:
+            assert result == 'release ' + name + ' exists\n'
         # 在应用列表查询部署的应用
-        response = project_steps.step_get_deployed_app(self.ws_name, self.project_name, name)
+        re = project_steps.step_get_app(self.ws_name, self.project_name, name)
         # 获取应用的cluster_id
-        cluster_id = response.json()['items'][0]['cluster']['cluster_id']
+        cluster_id = re.json()['items'][0]['cluster']['cluster_id']
         # 删除应用
         project_steps.step_delete_app(self.ws_name, self.project_name, cluster_id)
-        # 验证部署结果
-        assert result == 'release ' + name + ' exists\n'
+        # 获取项目所有的持久卷声明
+        res = project_steps.step_get_pvc(self.project_name, '')
+        pvc_count = res.json()['totalItems']
+        if pvc_count > 0:
+            for i in range(0, pvc_count):
+                pvc_name = res.json()['items'][i]['metadata']['name']
+                # 删除pvc
+                project_steps.step_delete_pvc(self.project_name, pvc_name)
+        # 等待pvc删除成功
+        k = 0
+        while k < 60:
+            pvc_count = project_steps.step_get_pvc(self.project_name, '').json()['totalItems']
+            if pvc_count == 0:
+                break
+            else:
+                time.sleep(5)
+                i += 5
 
     @allure.title('从应用商店部署应用时使用不符合规则的名称')
     @allure.severity(allure.severity_level.NORMAL)
@@ -96,12 +118,13 @@ class TestAppStore(object):
         app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=self.project_name,
                                                  app_id=app_id, name=name, version_id=version_id, conf=conf)
         # 查看应用部署情况
-        response = project_steps.step_get_app_status(self.ws_name, self.project_name, name)
+        response = project_steps.step_get_app(self.ws_name, self.project_name, name)
         # 获取应用状态
         status = response.json()['items'][0]['cluster']['status']
-        pytest.assume(status == 'failed')
+        with assume:
+            assert status == 'failed'
         # 在应用列表查询部署的应用
-        response = project_steps.step_get_deployed_app(self.ws_name, self.project_name, name)
+        response = project_steps.step_get_app(self.ws_name, self.project_name, name)
         # 获取应用的cluster_id
         cluster_id = response.json()['items'][0]['cluster']['cluster_id']
         # 删除应用
@@ -128,7 +151,7 @@ class TestAppStore(object):
         while i < 180:
             try:
                 # 查看应用部署情况
-                response = project_steps.step_get_app_status(self.ws_name, project_name, name)
+                response = project_steps.step_get_app(self.ws_name, project_name, name)
                 # 获取应用状态
                 status = response.json()['items'][0]['cluster']['status']
                 if status == 'active':
@@ -137,16 +160,19 @@ class TestAppStore(object):
                 elif status == 'failed':
                     print('应用部署失败')
                     break
-                elif status == 'created':
-                    print('应用创建中')
+                # elif status == 'created':
+                    # print('应用创建中')
             except Exception as e:
                 print(e)
-            time.sleep(20)
-            i = i + 20
+            finally:
+                time.sleep(20)
+                i = i + 20
         # 验证应用运行成功
-        pytest.assume(status == 'active')
+        with assume:
+            assert status == 'active'
+        # pytest.assume(status == 'active')
         # 在应用列表查询部署的应用
-        response = project_steps.step_get_deployed_app(self.ws_name, project_name, name)
+        response = project_steps.step_get_app(self.ws_name, project_name, name)
         # 获取应用的cluster_id
         cluster_id = response.json()['items'][0]['cluster']['cluster_id']
         # 删除应用
@@ -154,7 +180,7 @@ class TestAppStore(object):
         # 验证应用删除成功
         j = 0
         while j < 60:
-            r = project_steps.step_get_deployed_app(self.ws_name, project_name, name)
+            r = project_steps.step_get_app(self.ws_name, project_name, name)
             count = r.json()['total_count']
             if count == 0:
                 print('删除应用耗时:' + str(j) + '秒')
@@ -162,40 +188,44 @@ class TestAppStore(object):
             else:
                 time.sleep(10)
                 j += 10
-        # 获取项目所有的服务
-        re = project_steps.step_get_service(project_name)
-        count_service = re.json()['totalItems']
-        if count_service > 0:
-            for i in range(0, count_service):
-                service_name = re.json()['items'][i]['metadata']['name']
-                # 删除所有服务
-                project_steps.step_delete_service(project_name, service_name)
-        # 获取项目所有的 statefulsets
-        re = project_steps.step_get_workload(project_name, 'statefulsets', 'name=' + app_name.lower().replace(' ', ''))
-        st_count = re.json()['totalItems']
-        if st_count > 0:
-            for i in range(0, st_count):
-                st_name = re.json()['items'][i]['metadata']['name']
-                project_steps.step_delete_workload(project_name, 'statefulsets', st_name)
-        # 获取项目所有的持久卷声明
-        res = project_steps.step_get_pvc(project_name, '')
-        pvc_count = res.json()['totalItems']
-        if pvc_count > 0:
-            for i in range(0, pvc_count):
-                pvc_name = res.json()['items'][i]['metadata']['name']
-                # 删除pvc
-                project_steps.step_delete_pvc(project_name, pvc_name)
-        # 等待pvc删除成功
-        k = 0
-        while k < 60:
-            pvc_count = project_steps.step_get_pvc(project_name, '').json()['totalItems']
-            if pvc_count == 0:
-                break
-            else:
-                time.sleep(5)
-                i += 5
-        # 删除创建的项目
-        project_steps.step_delete_project(self.ws_name, project_name)
+        try:
+            # 获取项目所有的服务
+            re = project_steps.step_get_service(project_name)
+            count_service = re.json()['totalItems']
+            if count_service > 0:
+                for i in range(0, count_service):
+                    service_name = re.json()['items'][i]['metadata']['name']
+                    # 删除所有服务
+                    project_steps.step_delete_service(project_name, service_name)
+            # 获取项目所有的 statefulsets
+            re = project_steps.step_get_workload(project_name, 'statefulsets', 'name=' + app_name.lower().replace(' ', '-'))
+            st_count = re.json()['totalItems']
+            if st_count > 0:
+                for i in range(0, st_count):
+                    st_name = re.json()['items'][i]['metadata']['name']
+                    project_steps.step_delete_workload(project_name, 'statefulsets', st_name)
+            # 获取项目所有的持久卷声明
+            res = project_steps.step_get_pvc(project_name, '')
+            pvc_count = res.json()['totalItems']
+            if pvc_count > 0:
+                for i in range(0, pvc_count):
+                    pvc_name = res.json()['items'][i]['metadata']['name']
+                    # 删除pvc
+                    project_steps.step_delete_pvc(project_name, pvc_name)
+            # 等待pvc删除成功
+            k = 0
+            while k < 60:
+                pvc_count = project_steps.step_get_pvc(project_name, '').json()['totalItems']
+                if pvc_count == 0:
+                    break
+                else:
+                    time.sleep(5)
+                    i += 5
+        except Exception as e:
+            print(e)
+        finally:
+            # 删除创建的项目
+            project_steps.step_delete_project(self.ws_name, project_name)
 
 
 if __name__ == "__main__":
