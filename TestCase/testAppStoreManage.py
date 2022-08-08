@@ -2,6 +2,7 @@
 import pytest
 import allure
 import sys
+import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -12,7 +13,7 @@ from step import app_steps, workspace_steps
 
 @allure.feature('应用商店管理')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('openpitrix') is False, reason='集群未开启openpitrix功能')
-class TestManageAppStore(object):
+class TestAppStoreManage(object):
     if commonFunction.check_multi_cluster() is True:
         # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
         __test__ = False
@@ -80,9 +81,18 @@ class TestManageAppStore(object):
         # 创建应用模板
         app_steps.step_create_app_template(ws_name, app_name)
         # 获取应用的app_id和version_id
-        response = app_steps.step_get_app_template(ws_name, app_name)
-        app_id = response.json()['items'][0]['app_id']
-        version_id = response.json()['items'][0]['latest_app_version']['version_id']
+        i = 0
+        while i < 60:
+            try:
+                response = app_steps.step_get_app_template(ws_name, app_name)
+                app_id = response.json()['items'][0]['app_id']
+                version_id = response.json()['items'][0]['latest_app_version']['version_id']
+                if version_id:
+                    break
+            except Exception as e:
+                print(e)
+                i += 5
+                time.sleep(5)
         # 应用模版提交审核
         app_steps.step_app_template_submit(app_id, version_id, version, update_log)
         # 应用审核通过
@@ -94,8 +104,6 @@ class TestManageAppStore(object):
         response = app_steps.step_create_category(category_name)
         # 获取新建分类的category_id
         category_id = response.json()['category_id']
-        # 获取应用商店页面所有应用的app_id
-        # apps_id = app_steps.step_get_apps_id()
         # 向分类中添加新上架的应用
         app_steps.step_app_to_category(app_id + '-store', category_id)
         # 删除分类
