@@ -460,7 +460,7 @@ class TestCluster(object):
         response = cluster_steps.step_query_system_project('')
         project_name = response.json()['items'][0]['metadata']['name']
         # 使用pod的名称，模糊查询存在的pod
-        pod_name = 'test' + str(commonFunction.get_random())
+        pod_name = str(commonFunction.get_random()) + 'test' + str(commonFunction.get_random())
         r = cluster_steps.step_get_pods_of_project(project_name, 'name=' + pod_name)
         # 获取查询结果中的pod数量
         pod_count = r.json()['totalItems']
@@ -1497,9 +1497,18 @@ class TestCluster(object):
     def test_get_project_gateway(self):
         # 开启集群网关
         cluster_steps.step_open_cluster_gateway(type='LoadBalancer')
-        # 查询项目网关
-        response = cluster_steps.step_get_project_gateway('kubesphere-router-kubesphere-system')
-        gateway_name = response.json()['items'][0]['metadata']['name']
+        i = 0
+        while i < 60:
+            try:
+                # 查询项目网关
+                response = cluster_steps.step_get_project_gateway('kubesphere-router-kubesphere-system')
+                gateway_name = response.json()['items'][0]['metadata']['name']
+                if gateway_name:
+                    break
+            except Exception as e:
+                print(e)
+                i += 2
+                time.sleep(2)
         # 验证查询结果
         pytest.assume(gateway_name == 'kubesphere-router-kubesphere-system')
         # 关闭集群网关
