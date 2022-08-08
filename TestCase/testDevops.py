@@ -4,6 +4,7 @@ import pytest
 import json
 import allure
 import sys
+from pytest import assume
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -611,19 +612,28 @@ class TestDevOps(object):
         # 基于gitlab创建流水线
         devops_steps.step_create_pipeline_base_gitlab(self.dev_name, dev_name_new, pipeline_name, False)
         # 等待流水线分支拉取成功
-        time.sleep(60)
-        # 查看流水线详情
-        r = devops_steps.step_get_pipeline(dev_name_new, pipeline_name)
-        # 获取流水线的 jenkins-metadata
-        jenkins_metadata = r.json()['items'][0]['metadata']['annotations'][
-            'pipeline.devops.kubesphere.io/jenkins-metadata']
-        # 获取流水线的健康状态
-        weatherScore = eval(jenkins_metadata)['weatherScore']  # jenkins_metadata是str类型，使用eval将其转化为dict
-        # 获取流水线的分支数量
-        branch_count = eval(jenkins_metadata)['totalNumberOfBranches']  # jenkins_metadata是str类型，使用eval将其转化为dict
+        i = 0
+        while i < 180:
+            try:
+                # 查看流水线详情
+                r = devops_steps.step_get_pipeline(dev_name_new, pipeline_name)
+                # 获取流水线的 jenkins-metadata
+                jenkins_metadata = r.json()['items'][0]['metadata']['annotations']['pipeline.devops.kubesphere.io/jenkins-metadata']
+                # 获取流水线的健康状态
+                weatherScore = eval(jenkins_metadata)['weatherScore']  # jenkins_metadata是str类型，使用eval将其转化为dict
+                # 获取流水线的分支数量
+                branch_count = eval(jenkins_metadata)['totalNumberOfBranches']  # jenkins_metadata是str类型，使用eval将其转化为dict
+                if jenkins_metadata:
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(5)
+                i += 5
         # 验证流水线的状态和分支数量正确
-        pytest.assume(weatherScore == 100)
-        pytest.assume(branch_count == 1)
+        with assume:
+            assert weatherScore == 100
+        with assume:
+            assert branch_count == 1
         # 删除创建的流水线
         devops_steps.step_delete_pipeline(dev_name_new, pipeline_name)
 
