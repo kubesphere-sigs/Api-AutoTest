@@ -446,6 +446,7 @@ class TestWorkSpace(object):
         # 将指定用户绑定到指定企业组织
         workspace_steps.step_binding_user(ws_name, name, user_name)
         # 获取企业组织可分配的用户数量
+        time.sleep(5)
         res = workspace_steps.step_get_user_for_department(name)
         count_not_in = res.json()['totalItems']
         # 获取所有的可分配用户名称
