@@ -6,6 +6,7 @@ import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
+from pytest import assume
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import platform_steps
@@ -145,10 +146,20 @@ class TestUser(object):
             print("新创建的用户登陆失败")
         # 验证登陆成功
         pytest.assume(headers)
-        # 查询新用户信息
-        res = platform_steps.step_get_user_info(user_name)
+        i = 0
+        while i < 60:
+            try:
+                # 查询新用户信息
+                res = platform_steps.step_get_user_info(user_name)
+                if res.json()['items'][0]['status']:
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                i += 1
         # 验证已有登陆时间信息
-        pytest.assume('lastLoginTime' in res.json()['items'][0]['status'])
+        with assume:
+            assert 'lastLoginTime' in res.json()['items'][0]['status']
         # 删除用户
         platform_steps.step_delete_user(user_name)
 

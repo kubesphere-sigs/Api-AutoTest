@@ -1,11 +1,8 @@
 # -- coding: utf-8 --
-from time import sleep
-
 import pytest
-
+from pytest import assume
 from common import commonFunction
 from common.commonFunction import *
-
 from common.commonFunction import get_ippool_status
 from common.getData import *
 from step import ippool_steps, workspace_steps, project_steps
@@ -38,7 +35,7 @@ class TestIpPool(object):
     def teardown_class(self):
         project_steps.step_delete_project(self.ws_name, self.pro_name)
         workspace_steps.step_delete_workspace(self.ws_name)
-        ippool_steps.step_delete_ippool(ippool_name=self.ippool_name)
+        ippool_steps.step_delete_ippool(self.ippool_name)
 
     @allure.title('{title}')
     @pytest.mark.parametrize('id,url, params, data, story, title, method, severity, condition, except_result', parametrize)
@@ -60,12 +57,19 @@ class TestIpPool(object):
         cidr = random_ip() + '/24'
         description = ' '
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
-        time.sleep(5)
-        res = ippool_steps.step_search_by_name(ippool_name)
-        synced = res.json()['items'][0]['status']['synced']
-        pytest.assume(synced is True)
-        response = ippool_steps.step_delete_ippool(ippool_name)
-        pytest.assume(response.status_code == 200)
+        i = 0
+        while i < 60:
+            try:
+                res = ippool_steps.step_search_by_name(ippool_name)
+                synced = res.json()['items'][0]['status']['synced']
+                if synced:
+                    break
+            except Exception as e:
+                print(e)
+                i += 1
+                time.sleep(1)
+        with assume:
+            assert synced is True
         ippool_steps.step_delete_ippool(ippool_name)
 
     @allure.title('给ippool分配企业空间')
@@ -107,7 +111,6 @@ class TestIpPool(object):
     @allure.severity('normal')
     def test_assign_ws_ippool_again(self):
         ippool_name = 'ippool-' + str(get_random())
-        ippool = '[\"' + ippool_name + '\"]'
         deploy_name = 'deploy-' + str(get_random())
         container_name = 'test-ippool-' + str(get_random())
         cidr = random_ip() + '/24'
@@ -117,7 +120,7 @@ class TestIpPool(object):
         # 分配企业空间
         ippool_steps.step_assign_ws(ippool_name, self.ws_name)
         # 创建部署
-        ippool_steps.step_create_deploy(ippool, deploy_name, container_name, self.pro_name)
+        ippool_steps.step_create_deploy(ippool_name, deploy_name, container_name, self.pro_name)
         sleep(15)
         # 创建新的企业空间
         ws_name_new = 'test-ws-' + str(get_random())
@@ -156,9 +159,8 @@ class TestIpPool(object):
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
         # 分配企业空间
         ippool_steps.step_assign_ws(ippool_name, self.ws_name)
-        # 删除企业空间
-        r = ippool_steps.step_delete_ippool(ippool_name)
-        pytest.assume(r.status_code == 200)
+        # 删除ippool
+        ippool_steps.step_delete_ippool(ippool_name)
         # 查询已删除的ippool
         res = ippool_steps.step_search_by_name(ippool_name)
         assert res.json()['totalItems'] == 0
@@ -177,14 +179,30 @@ class TestIpPool(object):
         pytest.assume(res.json()['items'][0]['status']['synced'] is True)
         # 删除ippool
         ippool_steps.step_delete_ippool(ippool_name)
-        # 验证删除成功
-        re = ippool_steps.step_search_by_name(ippool_name)
-        pytest.assume(re.json()['totalItems'] == 0)
+        # 查询被删除的ippool，验证删除成功
+        i = 0
+        while i < 60:
+            try:
+                re = ippool_steps.step_search_by_name(ippool_name)
+                if re.json()['totalItems'] == 0:
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                i += 1
         # 再次创建相同的ippool
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
         # 验证创建成功
-        time.sleep(5)
-        res = ippool_steps.step_search_by_name(ippool_name)
+        k = 0
+        while k < 60:
+            try:
+                res = ippool_steps.step_search_by_name(ippool_name)
+                if res.json()[0]:
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                k += 1
         pytest.assume(res.json()['items'][0]['status']['synced'] is True)
         # 删除创建的ippool
         ippool_steps.step_delete_ippool(ippool_name)
@@ -193,7 +211,6 @@ class TestIpPool(object):
     @allure.severity('critical')
     def test_delete_ippool_used(self):
         ippool_name = 'ippool-' + str(get_random())
-        ippool = '[\"' + ippool_name + '\"]'
         deploy_name = 'deploy-' + str(get_random())
         container_name = 'test-ippool-' + str(get_random())
         cidr = random_ip() + '/24'
@@ -203,7 +220,7 @@ class TestIpPool(object):
         # 分配企业空间
         ippool_steps.step_assign_ws(ippool_name, self.ws_name)
         # 创建部署
-        ippool_steps.step_create_deploy(ippool, deploy_name, container_name, self.pro_name)
+        ippool_steps.step_create_deploy(ippool_name, deploy_name, container_name, self.pro_name)
         # 等待部署创建成功
         i = 0
         while i < 180:
@@ -228,24 +245,42 @@ class TestIpPool(object):
         res = ippool_steps.step_delete_ippool(ippool_name)
         assert res.status_code == 200
 
-    @allure.title('创建部署分配ippool')
+    @allure.title('创建部署并分配ippool')
     @allure.severity('critical')
     def test_assign_deploy_ippool(self):
-        ippool_name = '[\"' + self.ippool_name + '\"]'
+        cidr = random_ip() + '/24'
+        description = ''
+        ippool_name = 'test-ippool' + str(get_random())
         deploy_name = 'deploy-' + str(get_random())
         container_name = 'test-ippool-' + str(get_random())
+        # 创建企业空间
+        ws_name = 'test-ws' + str(get_random())
+        workspace_steps.step_create_workspace(ws_name)
+        # 创建项目
+        pro_name = 'test-pro' + str(get_random())
+        project_steps.step_create_project(ws_name, pro_name)
+        # 创建ippool
+        ippool_steps.step_create_ippool(ippool_name, cidr, description)
+        # 将ippool分配到企业空间
+        ippool_steps.step_assign_ws(ippool_name, ws_name)
         # 创建部署
-        ippool_steps.step_create_deploy(ippool_name, deploy_name, container_name, self.pro_name)
+        ippool_steps.step_create_deploy(ippool_name, deploy_name, container_name, pro_name)
         sleep(15)
-        res = project_steps.step_get_deployment(self.pro_name, 'deployments')
+        res = project_steps.step_get_deployment(pro_name, 'deployments')
         # 验证部署创建成功
         pytest.assume('unavailableReplicas' not in res.json()['items'][0]['status'])
         # 查询ippool部署
-        rr = ippool_steps.step_get_job(self.ippool_name)
+        rr = ippool_steps.step_get_job(ippool_name)
         # 验证部署名称正确
         pytest.assume(rr.json()['items'][0]['metadata']['labels']['app'] == deploy_name)
         # 删除部署
-        project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
+        project_steps.step_delete_workload(pro_name, 'deployments', deploy_name)
+        # 删除项目
+        project_steps.step_delete_project(ws_name, pro_name)
+        # 删除企业空间
+        workspace_steps.step_delete_workspace(ws_name)
+        # 删除ippool
+        ippool_steps.step_delete_ippool(ippool_name)
 
     @allure.title('测试ippool数量')
     @allure.severity('critical')
@@ -257,11 +292,10 @@ class TestIpPool(object):
         ippool_steps.step_create_ippool(ippool_name, cider, describe)
         # 分配企业空间
         ippool_steps.step_assign_ws(ippool_name, self.ws_name)
-        ippool = '[\"' + ippool_name + '\"]'
         deploy_name = 'deploy-' + str(get_random())
         container_name = 'container-' + str(get_random())
         # 创建工作负载
-        ippool_steps.step_create_deploy(ippool, deploy_name, container_name, self.pro_name)
+        ippool_steps.step_create_deploy(ippool_name, deploy_name, container_name, self.pro_name)
         # 等待工作负载创建成功
         i = 0
         while i < 180:
@@ -300,11 +334,10 @@ class TestIpPool(object):
     @allure.title('查询ippool的容器组')
     @allure.severity('critical')
     def test_search_ippool_pod(self):
-        ippool = '[\"' + self.ippool_name + '\"]'
         deploy_name = 'deploy-' + str(get_random())
         container_name = 'test-ippool-' + str(get_random())
         # 创建ippool
-        ippool_steps.step_create_deploy(ippool, deploy_name, container_name, self.pro_name)
+        ippool_steps.step_create_deploy(self.ippool_name, deploy_name, container_name, self.pro_name)
         sleep(15)
         res = project_steps.step_get_deployment(self.pro_name, 'deployments')
         # 验证部署创建成功

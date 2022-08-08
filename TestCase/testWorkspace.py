@@ -3,6 +3,7 @@ import pytest
 import allure
 import sys
 import time
+from pytest import assume
 from common.getData import DoexcleByPandas
 from common.logFormat import log_format
 from common import commonFunction
@@ -162,9 +163,18 @@ class TestWorkSpace(object):
         ws_name = 'test-ws' + str(commonFunction.get_random())
         # 创建企业空间
         workspace_steps.step_create_workspace(ws_name)
-        # 查询企业空间用户信息
-        response = workspace_steps.step_get_ws_user(ws_name, '')
-        user_name = response.json()['items'][0]['metadata']['name']
+        i = 0
+        while i < 60:
+            try:
+                # 查询企业空间用户信息
+                response = workspace_steps.step_get_ws_user(ws_name, '')
+                user_name = response.json()['items'][0]['metadata']['name']
+                if user_name:
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                i += 1
         pytest.assume(user_name == 'admin')
         # 将用户邀请到企业空间
         role = ws_name + '-viewer'
@@ -338,8 +348,17 @@ class TestWorkSpace(object):
                 "kubesphere.io/creator": "admin"
                 }
         # 创建企业组织,并获取创建的企业组织的name
-        response = workspace_steps.step_create_department(self.ws_name, group_name, data)
-        name = response.json()['metadata']['name']
+        i = 0
+        while i < 60:
+            try:
+                response = workspace_steps.step_create_department(self.ws_name, group_name, data)
+                name = response.json()['metadata']['name']
+                if name:
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                i += 1
         # 创建一个同名的企业组织
         respon = workspace_steps.step_create_department(self.ws_name, group_name, data)
         # 校验接口返回信息
@@ -443,8 +462,10 @@ class TestWorkSpace(object):
             user = re.json()['items'][j]['metadata']['name']
             user_in_group.append(user)
         # 验证用户在已分配的列表中
-        pytest.assume(user_name in user_in_group)
-        pytest.assume(user_name not in user_not_in_group)
+        with assume:
+            assert user_name in user_in_group
+        with assume:
+            assert user_name not in user_not_in_group
         # 删除创建的企业空间
         workspace_steps.step_delete_workspace(ws_name)
         # 删除创建的用户
