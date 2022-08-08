@@ -422,7 +422,8 @@ def step_get_gateway(project_name):
 def step_get_service(project_name, *service_name):
     if service_name:
         for i in service_name:
-            url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/services?name=' + str(i) + '&sortBy=createTime'
+            url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/services?name=' \
+                          + str(i) + '&sortBy=createTime'
     else:
         url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/services?sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
@@ -476,7 +477,6 @@ def step_get_workload(project_name, type, condition, *cluster_name):
     else:
         path = '/kapis'
     url = env_url + path + '/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/' + type + '?' + condition
-    print(url)
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -510,7 +510,7 @@ def step_get_volume(project_name, volume_name, *cluster_name):
     else:
         path = '/kapis'
     url1 = env_url + path + '/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
-                            '/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime'
+           '/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime'
     response = requests.get(url=url1, headers=get_header())
     return response
 
@@ -819,14 +819,14 @@ def step_create_project(ws_name, project_name):
 
 
 @allure.step('在项目应用列表查看指定应用信息')
-def step_get_app_status(ws_name, project_name, app_name):
+def step_get_app(ws_name, project_name, app_name):
     """
     :param ws_name: 企业空间
     :param project_name: 项目名称
     :param app_name: 应用名称
     :return: 应用状态
     """
-    url = env_url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/namespaces/' + project_name + '/applications?conditions=keyword%3D' + app_name
+    url = env_url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/namespaces/' + project_name + '/applications?conditions=status%3Dcreating%7Cactive%7Cfailed%7Cdeleting%7Cupgrading%7Ccreated%7Cupgraded%2Ckeyword%3D' + app_name + '&paging=limit%3D10%2Cpage%3D1&orderBy=status_time'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -844,20 +844,6 @@ def step_get_app_count(ws_name, project_name, app_name):
           app_name + '&paging=limit%3D10%2Cpage%3D1&orderBy=status_time&reverse=true'
     r = requests.get(url=url, headers=get_header())
     return r.json()['total_count']
-
-
-@allure.step('在项目应用列表获取指定应用的cluster_id')
-def step_get_deployed_app(ws_name, project_name, app_name):
-    """
-    :param ws_name: 企业空间
-    :param project_name: 项目名称
-    :param app_name: 应用名称
-    :return: 应用的cluster_id
-    """
-    url = env_url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/namespaces/' + project_name + \
-          '/applications?conditions=keyword%3D' + app_name
-    response = requests.get(url=url, headers=get_header())
-    return response
 
 
 @allure.step('删除项目应用列表指定的应用')
