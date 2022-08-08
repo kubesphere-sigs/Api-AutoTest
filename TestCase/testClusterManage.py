@@ -1025,7 +1025,7 @@ class TestCluster(object):
         # 获取crd的数量
         count = response.json()['totalItems']
         # 获取任一crd的group和kind
-        i = random.randint(0, count-1)
+        i = numpy.random.randint(0, count)
         # 获取crd的名称
         name = response.json()['items'][i]['metadata']['name']
         # 获取crd的group,version和kind
@@ -1089,7 +1089,6 @@ class TestCluster(object):
         before_timestamp = commonFunction.get_before_timestamp(now_time, 60)
         # 查询pvc最近1个小时的监控信息
         r = cluster_steps.step_get_metrics_of_pvc(namespace, name, before_timestamp, now_timestamp, '60s', '60')
-        print(r.text)
         try:
             # 获取查询到的数据的结果类型
             resultType = r.json()['results'][0]['data']['resultType']
