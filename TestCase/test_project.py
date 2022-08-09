@@ -32,7 +32,7 @@ class TestProject(object):
     job_name = 'demo-job'  # 任务名称,在创建和删除任务时使用
     work_name = 'workload-demo'  # 工作负载名称，在创建、编辑、删除工作负载时使用
     # 从文件中读取用例信息
-    parametrize = DoexcleByPandas().get_data_for_pytest(filename='../data/data.xlsx', sheet_name='project')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/project.yaml')
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
@@ -2429,4 +2429,4 @@ class TestProject(object):
 
 
 if __name__ == "__main__":
-    pytest.main(['-s', 'testProject.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
+    pytest.main(['-s', 'test_project.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程

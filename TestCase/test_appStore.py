@@ -230,4 +230,4 @@ class TestAppStore(object):
 
 
 if __name__ == "__main__":
-    pytest.main(['-vs', 'testAppStore.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
+    pytest.main(['-vs', 'test_appStore.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
