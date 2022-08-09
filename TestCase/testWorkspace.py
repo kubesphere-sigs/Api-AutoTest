@@ -163,6 +163,7 @@ class TestWorkSpace(object):
         ws_name = 'test-ws' + str(commonFunction.get_random())
         # 创建企业空间
         workspace_steps.step_create_workspace(ws_name)
+        user_name = ''
         i = 0
         while i < 60:
             try:
@@ -348,6 +349,7 @@ class TestWorkSpace(object):
                 "kubesphere.io/creator": "admin"
                 }
         # 创建企业组织,并获取创建的企业组织的name
+        name = ''
         i = 0
         while i < 60:
             try:

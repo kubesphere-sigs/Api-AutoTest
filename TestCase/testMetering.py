@@ -168,6 +168,7 @@ class TestMetering(object):
         # 获取集群节点的数量
         count = response.json()['totalItems']
         # 获取节点的名称
+        name = ''
         for i in range(0, count):
             try:
                 name = response.json()['items'][0]['metadata']['name']
@@ -397,7 +398,7 @@ class TestMetering(object):
             project_count = re.json()['totalItems']
             if project_count > 0:
             # 获取企业空间中项目的名称
-                for j in range(0, project_count):
+                for j in range(project_count):
                     project_name = re.json()['items'][j]['metadata']['name']
                     # 查询最近1h消费的资源信息
                     r = toolbox_steps.step_get_hierarchy_consumption(ws_name, project_name)
@@ -408,10 +409,11 @@ class TestMetering(object):
                             for key in hierarchy.keys():
                                 # 查询资源截止到昨天的最近7天消费历史
                                 rep = toolbox_steps.step_get_hierarchy_consumption_history(project_name,
-                                                                                           before_timestamp, now_timestamp,
+                                                                                           before_timestamp,
+                                                                                           now_timestamp,
                                                                                            step, key, k)
                                 # 获取查询结果中所有指标的数据类型
-                                for m in range(0, 4):
+                                for m in range(4):
                                     try:
                                         result_type = rep.json()['results'][m]['data']['resultType']
                                         # 验证数据类型正确

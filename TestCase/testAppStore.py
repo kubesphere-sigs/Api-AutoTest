@@ -147,6 +147,7 @@ class TestAppStore(object):
         # 部署示例应用
         app_steps.step_deploy_app_from_app_store(ws_name=self.ws_name, project_name=project_name,
                                                  app_id=app_id, name=name, version_id=version_id, conf=conf)
+        status = ''
         i = 0
         while i < 180:
             try:
@@ -170,7 +171,6 @@ class TestAppStore(object):
         # 验证应用运行成功
         with assume:
             assert status == 'active'
-        # pytest.assume(status == 'active')
         # 在应用列表查询部署的应用
         response = project_steps.step_get_app(self.ws_name, project_name, name)
         # 获取应用的cluster_id
@@ -198,7 +198,8 @@ class TestAppStore(object):
                     # 删除所有服务
                     project_steps.step_delete_service(project_name, service_name)
             # 获取项目所有的 statefulsets
-            re = project_steps.step_get_workload(project_name, 'statefulsets', 'name=' + app_name.lower().replace(' ', '-'))
+            re = project_steps.step_get_workload(project_name, 'statefulsets', 'name='
+                                                 + app_name.lower().replace(' ', '-'))
             st_count = re.json()['totalItems']
             if st_count > 0:
                 for i in range(0, st_count):

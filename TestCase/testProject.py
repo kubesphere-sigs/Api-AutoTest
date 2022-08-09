@@ -233,6 +233,7 @@ class TestProject(object):
                                             container_name=container_name, volume_info=volume_info, ports=port,
                                             volumemount=volumeMounts)
         # 验证资源创建成功
+        numberReady = ''
         i = 0
         while i < 180:
             # 获取工作负载的状态
@@ -505,6 +506,7 @@ class TestProject(object):
         # 将用户邀请到项目
         role = 'viewer'
         project_steps.step_invite_member(pro_name, self.user_name, role)
+        role_actual = ''
         i = 0
         while i < 60:
             try:
@@ -550,6 +552,7 @@ class TestProject(object):
         role = 'admin'
         project_steps.step_invite_member(project_name, self.user_name, role)
         # 查看项目成员，并验证添加成功
+        name = ''
         i = 0
         while i < 60:
             try:
@@ -610,6 +613,7 @@ class TestProject(object):
         # 获取任务中指定的容器组完成数量
         completions = response.json()['items'][0]['spec']['completions']
         # 捕获异常，不对异常作处理,每隔5秒查询一次任务状态
+        res = ''
         i = 0
         while i < 60:
             try:
@@ -696,6 +700,7 @@ class TestProject(object):
         job_name = 'job' + str(commonFunction.get_random())
         project_steps.step_create_job(self.project_name, job_name)
         # 捕获异常，不对异常作处理,每隔5秒查询一次任务状态
+        res = ''
         i = 0
         while i < 60:
             try:
@@ -759,6 +764,7 @@ class TestProject(object):
         job_name = 'job' + str(commonFunction.get_random())
         project_steps.step_create_job(self.project_name, job_name)
         # 捕获异常，不对异常作处理,每隔5秒查询一次任务状态
+        res = ''
         i = 0
         while i < 180:
             try:
@@ -788,15 +794,18 @@ class TestProject(object):
         job_name = 'job' + str(commonFunction.get_random())
         project_steps.step_create_job(self.project_name, job_name)
         # 捕获异常，不对异常作处理,每隔5秒查询一次任务状态
+        res = ''
         i = 0
         while i < 60:
             try:
                 res = project_steps.step_get_job_detail(self.project_name, job_name)
                 if res.json()['items'][0]['status']['succeeded'] == 2:
                     break
-            except KeyError:
-                time.sleep(3)
-                i = i + 3
+            except Exception as e:
+                print(e)
+            finally:
+                time.sleep(5)
+                i = i + 5
         # 并获取uid
         uid = res.json()['items'][0]['metadata']['uid']
         re = project_steps.step_get_job_pods(self.project_name, uid)  # 查看任务的资源状态，并获取容器组名称
@@ -827,6 +836,7 @@ class TestProject(object):
         job_name = 'job' + str(commonFunction.get_random())
         project_steps.step_create_job(pro_name, job_name)
         # 查看任务并验证其状态
+        count = 0
         i = 0
         while i < 60:
             try:
@@ -907,6 +917,7 @@ class TestProject(object):
                                          strategy=strategy_info)
 
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
+        status = ''
         i = 0
         while i < 60:
             response = project_steps.step_get_workload(project_name=project_name, type='deployments',
@@ -1052,6 +1063,7 @@ class TestProject(object):
 
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
         time.sleep(3)
+        readyReplicas = 0
         i = 3
         while i < 60:
             response = project_steps.step_get_workload(project_name=project_name, type='statefulsets',
@@ -1607,6 +1619,7 @@ class TestProject(object):
         status_test = []  # 创建一个对比数组
         for j in range(replicas):
             status_test.append('Running')
+        status = ''
         i = 0
         while i < 60:
             status = project_steps.step_get_work_pod_status(project_name=project_name, work_name=workload_name)
@@ -1650,6 +1663,7 @@ class TestProject(object):
                                          image=image, replicas=replicas, volume_info=volume_info,
                                          strategy=strategy_info)
         condition = 'status=running'
+        count = 0
         i = 0
         while i < 60:
             try:
@@ -1698,6 +1712,7 @@ class TestProject(object):
                                          strategy=strategy_info)
         condition = 'name=' + workload_name
         # 按名称查询工作负载
+        name_actual = ''
         i = 0
         try:
             while i < 60:
@@ -1899,6 +1914,7 @@ class TestProject(object):
         # 查询被删除的存储卷
         i = 0
         # 验证存储卷被删除，最长等待时间为30s
+        response = ''
         while i < 60:
             response = project_steps.step_get_volume(project_name, volume_name)
             # 存储卷快照的状态为布尔值，故先将结果转换成字符类型
@@ -2071,6 +2087,7 @@ class TestProject(object):
         # 修改资源配额
         project_steps.step_edit_project_quota(project_name, hard, resource_version)
         # 获取修改后的配额信息
+        hard_actual = ''
         i = 0
         while i < 60:
             try:
@@ -2359,6 +2376,7 @@ class TestProject(object):
         i = 0
         # 查询项目
         # 验证项目删除结果，最长等待时间为60s
+        response = ''
         while i < 60:
             response = project_steps.step_get_project(self.ws_name, pro_name)
             if response.json()['totalItems'] == 0:

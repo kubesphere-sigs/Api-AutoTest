@@ -56,10 +56,6 @@ class TestDevOps(object):
         workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的工作空间
         platform_steps.step_delete_user(self.user_name)  # 删除创建的用户
 
-    '''
-    以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
-    '''
-
     @allure.story('devops项目')
     @allure.title('创建devops工程,然后将其删除')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -612,6 +608,8 @@ class TestDevOps(object):
         # 基于gitlab创建流水线
         devops_steps.step_create_pipeline_base_gitlab(self.dev_name, dev_name_new, pipeline_name, False)
         # 等待流水线分支拉取成功
+        weatherScore = 0
+        branch_count = 0
         i = 0
         while i < 180:
             try:
@@ -695,7 +693,8 @@ class TestDevOps(object):
         # 获取仓库地址
         url_actual = response.json()['items'][0]['spec']['url']
         # 验证查询结果
-        pytest.assume(url == url_actual)
+        with assume:
+            assert url == url_actual
         # 删除代码仓库
         devops_steps.step_delete_code_repository(self.dev_name_new, name)
 
@@ -718,7 +717,8 @@ class TestDevOps(object):
         # 获取仓库地址
         url_actual = response.json()['items'][0]['spec']['url']
         # 验证查询结果
-        pytest.assume(url_new == url_actual)
+        with assume:
+            assert url_new == url_actual
         # 删除代码仓库
         devops_steps.step_delete_code_repository(self.dev_name_new, name)
 
@@ -736,7 +736,8 @@ class TestDevOps(object):
         # 获取仓库地址
         url_actual = response.json()['items'][0]['spec']['url']
         # 验证查询结果
-        pytest.assume(url == url_actual)
+        with assume:
+            assert url == url_actual
         # 删除代码仓库
         devops_steps.step_delete_code_repository(self.dev_name_new, name)
         time.sleep(2)
@@ -754,7 +755,7 @@ class TestDevOps(object):
         provider = 'git'
         url = 'https://gitee.com/linuxsuren/demo-go-http'
         devops_steps.step_import_code_repository(self.dev_name_new, name, provider, url)
-
+        time.sleep(2)
         # 创建cd任务
         cd_name = 'test-cd' + str(commonFunction.get_random())
         annotations = {"kubesphere.io/alias-name": "bieming", "kubesphere.io/description": "miaoshu",
@@ -764,17 +765,22 @@ class TestDevOps(object):
         devops_steps.step_create_cd(self.dev_name_new, cd_name, annotations, ns, url, path)
         # 查看cd任务创建的资源
         i = 0
+        count = 0
         while i < 60:
             response = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
             count = response.json()['totalItems']
             # 验证数量为1
             if count == 1:
                 break
-            time.sleep(1)
-            i += 1
-        pytest.assume(count == 1)
+            time.sleep(10)
+            i += 10
+        with assume:
+            assert count == 1
         # 删除cd任务并删除创建的资源
         devops_steps.step_delete_cd(self.dev_name_new, cd_name, 'true')
+        time.sleep(5)
+        # 删除创建的项目
+        project_steps.step_delete_project_by_name(ns)
 
     @allure.story('持续部署')
     @allure.title('删除持续部署任务,并删除创建的资源')
@@ -806,6 +812,7 @@ class TestDevOps(object):
         # 删除cd任务并删除创建的资源
         devops_steps.step_delete_cd(self.dev_name_new, cd_name, 'true')
         # 等待资源删除成功
+        count_deploy = 0
         i = 0
         while i < 60:
             # 查询被删除的资源并获取查询结果
@@ -817,7 +824,10 @@ class TestDevOps(object):
             else:
                 break
         # 验证资源删除成功
-        assert count_deploy == 0
+        with assume:
+            assert count_deploy == 0
+        # 删除项目
+        project_steps.step_delete_project_by_name(ns)
 
     @allure.story('持续部署')
     @allure.title('删除持续部署任务,但不删除创建的资源')

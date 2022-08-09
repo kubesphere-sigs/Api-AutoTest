@@ -3,6 +3,7 @@ import pytest
 import allure
 import sys
 import time
+from pytest import assume
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -54,7 +55,8 @@ class TestAppStoreManage(object):
         app_steps.step_change_category(category_id, new_name)
         # 验证修改成功，使用修改后的名称查询category_id
         category_id_new = app_steps.step_get_category_id_by_name(new_name)
-        pytest.assume(category_id == category_id_new)
+        with assume:
+            assert category_id == category_id_new
         # 删除分类
         app_steps.step_delete_category(category_id)
 
@@ -83,6 +85,8 @@ class TestAppStoreManage(object):
         # 创建应用模板
         app_steps.step_create_app_template(ws_name, app_name)
         # 获取应用的app_id和version_id
+        app_id = ''
+        version_id = ''
         i = 0
         while i < 60:
             try:
@@ -112,7 +116,8 @@ class TestAppStoreManage(object):
         # 删除分类
         result = app_steps.step_delete_app_category(category_id)
         # 验证删除结果
-        pytest.assume(result == 'category ' + category_name + ' owns application')
+        with assume:
+            assert result == 'category ' + category_name + ' owns application'
         # 下架新上架的应用
         app_steps.step_suspend_app(app_id)
         # 删除新建的分类

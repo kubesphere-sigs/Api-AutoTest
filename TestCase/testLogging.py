@@ -249,6 +249,7 @@ class TestLogSearch(object):
         # 获取项目的pod的数量
         pod_count = r.json()['totalItems']
         # 获取项目任一pod的名称
+        container_name = ''
         if pod_count > 0:
             k = numpy.random.randint(0, pod_count)
             pod_name = r.json()['items'][k]['metadata']['name']
@@ -262,7 +263,8 @@ class TestLogSearch(object):
                 # 获取容器的日志数量
                 logs_count = r1.json()['query']['total']
                 if logs_count == 0:
-                    print('企业空间：' + 'system-workspace' + ' 项目：' + project_name + ' pod：' + pod_name + ' 容器：' + container_name + ' 最近7天没有日志')
+                    print('企业空间：' + 'system-workspace' + ' 项目：' + project_name + ' pod：' + pod_name
+                          + ' 容器：' + container_name + ' 最近7天没有日志')
                 # 验证日志查询成功
                 assert logs_count >= 0
             else:

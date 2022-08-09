@@ -173,6 +173,8 @@ class TestAppTemplate(object):
         app_name = 'test-app' + str(commonFunction.get_random())  # 应用模版名称
         # 创建应用模板
         app_steps.step_create_app_template(self.ws_name, app_name)
+        app_id = ''
+        version_id = ''
         i = 0
         while i < 60:
             try:
@@ -218,6 +220,8 @@ class TestAppTemplate(object):
         # 创建应用模板
         app_steps.step_create_app_template(self.ws_name, app_name)
         i = 0
+        app_id = ''
+        version_id = ''
         while i < 60:
             try:
                 # 获取应用的app_id和version_id
@@ -279,6 +283,8 @@ class TestAppTemplate(object):
         app_name = 'test-app' + str(commonFunction.get_random())
         # 创建应用模板
         app_steps.step_create_app_template(self.ws_name, app_name)
+        app_id = ''
+        version_id = ''
         k = 0
         while k < 60:
             try:
@@ -299,6 +305,7 @@ class TestAppTemplate(object):
         message = re.json()['message']
         assert message == 'success'
         # 在项目的应用列表中验证部署的应用运行正常,最长等待时间300s
+        status = ''
         i = 0
         while i < 300:
             r = app_steps.step_get_app_status(self.ws_name, self.project_name, app_name)
@@ -308,7 +315,8 @@ class TestAppTemplate(object):
             time.sleep(10)
             i = i + 10
         print('应用部署耗时:' + str(i) + '秒')
-        pytest.assume(status == 'active')
+        with assume:
+            assert status == 'active'
         # 获取部署的应用的cluster_id
         r = app_steps.step_get_app(self.ws_name, self.project_name, app_name)
         cluster_id = r.json()['items'][0]['cluster']['cluster_id']
@@ -334,6 +342,8 @@ class TestAppTemplate(object):
         app_name = 'test-app' + str(commonFunction.get_random())  # 应用模版名称
         # 创建应用模板
         app_steps.step_create_app_template(self.ws_name, app_name)
+        app_id = ''
+        version_id = ''
         k = 0
         while k < 60:
             try:
@@ -358,7 +368,8 @@ class TestAppTemplate(object):
         res = app_steps.step_deploy_template(self.ws_name, self.project_name, app_id, name, version_id)
         # 验证部署结果
         message = res.json()['message']
-        pytest.assume(message == 'success')
+        with assume:
+            assert message == 'success'
         # 在项目的应用列表中验证部署的应用运行正常,最长等待时间300s
         i = 0
         while i < 300:
@@ -378,7 +389,8 @@ class TestAppTemplate(object):
         time.sleep(5)  # 等待删除时间
         r = app_steps.step_get_app(self.ws_name, self.project_name, app_name)
         count = r.json()['total_count']
-        pytest.assume(count == 0)
+        with assume:
+            assert count == 0
         # 下架应用
         app_steps.step_suspend_app(app_id)
 
@@ -407,6 +419,8 @@ class TestAppTemplate(object):
         # 部署应用模版
         name = app_name + 'test-app'  # 应用名称
         app_steps.step_deploy_template(self.ws_name, self.project_name, app_id, name, version_id)
+        name_actual = ''
+        r = ''
         k = 0
         while k < 60:
             try:

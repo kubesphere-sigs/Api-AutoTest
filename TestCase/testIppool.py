@@ -57,6 +57,7 @@ class TestIpPool(object):
         cidr = random_ip() + '/24'
         description = ' '
         ippool_steps.step_create_ippool(ippool_name, cidr, description)
+        synced = ''
         i = 0
         while i < 60:
             try:

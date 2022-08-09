@@ -5,7 +5,6 @@ import sys
 from datetime import datetime
 from common import commonFunction
 from step import platform_steps
-import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
