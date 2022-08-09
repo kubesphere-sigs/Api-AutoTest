@@ -155,6 +155,13 @@ def step_get_project_of_cluster():
     return response
 
 
+@allure.step('删除项目')
+def step_delete_project(project_name):
+    url = env_url + '/api/v1/namespaces/' + project_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
 @allure.step('查看项目的pod信息')
 def step_get_pods_of_project(project_name, *condition):
     condition_actual = ''
