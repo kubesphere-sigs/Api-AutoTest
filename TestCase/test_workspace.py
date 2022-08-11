@@ -26,7 +26,10 @@ class TestWorkSpace(object):
     ws_name = 'ws-for-test-ws' + str(commonFunction.get_random())
     ws_name1 = 'ws1-for-test-ws'
     ws_role_name = ws_name + '-viewer'
-    log_format()  # 配置日志格式
+    authority_viewer = '["role-template-view-projects","role-template-view-devops","role-template-view-app-templates","role-template-view-app-repos","role-template-view-members","role-template-view-roles","role-template-view-groups","role-template-view-workspace-settings"]'
+    authority_admin = '["role-template-manage-workspace-settings","role-template-view-workspace-settings","role-template-manage-projects","role-template-view-projects","role-template-create-projects","role-template-create-devops","role-template-view-devops","role-template-manage-devops","role-template-manage-app-templates","role-template-view-app-templates","role-template-manage-app-repos","role-template-view-app-repos","role-template-view-members","role-template-manage-members","role-template-manage-roles","role-template-view-roles","role-template-manage-groups","role-template-view-groups"]'
+    authority_self_provisioner = '["role-template-create-projects","role-template-create-devops","role-template-view-app-templates","role-template-manage-app-templates","role-template-view-workspace-settings"]'
+    authority_regular = '["role-template-view-workspace-settings"]'
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/workspace.yaml')
 
@@ -42,6 +45,16 @@ class TestWorkSpace(object):
         workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的企业空间
         workspace_steps.step_delete_workspace(self.ws_name1)  # 删除供excle中用例使用的企业空间
         platform_steps.step_delete_user(self.user_name)  # 删除创建的用户
+
+    @pytest.fixture
+    def create_ws(self):
+        ws_name = 'test-ws' + str(commonFunction.get_random())
+        # 创建企业空间
+        workspace_steps.step_create_workspace(ws_name)
+        time.sleep(1)
+        yield ws_name
+        # 删除企业空间
+        workspace_steps.step_delete_workspace(ws_name)
 
     @allure.title('{title}')  # 设置用例标题
     # 将用例信息以参数化的方式传入测试方法
@@ -70,12 +83,9 @@ class TestWorkSpace(object):
     @allure.story('企业空间列表')
     @allure.title('删除企业空间')
     @allure.severity('critical')
-    def test_delete_ws(self):
-        ws_name = 'test-ws' + str(commonFunction.get_random())
-        # 创建企业空间
-        workspace_steps.step_create_workspace(ws_name)
+    def test_delete_ws(self, create_ws):
         # 删除创建的企业空间
-        res = workspace_steps.step_delete_workspace(ws_name)
+        res = workspace_steps.step_delete_workspace(create_ws)
         mes = res.json()['message']
         # 判断删除成功
         assert mes == 'success'
@@ -83,26 +93,21 @@ class TestWorkSpace(object):
     @allure.story('企业空间概览')
     @allure.title('资源用量-项目数量验证')
     @allure.severity('critical')
-    def test_get_project_num(self):
-        ws_name = 'test-ws' + str(commonFunction.get_random())
-        # 创建企业空间
-        workspace_steps.step_create_workspace(ws_name)
+    def test_get_project_num(self, create_ws):
         # 获取概览信息
-        res = workspace_steps.step_get_ws_num_info(ws_name)
+        res = workspace_steps.step_get_ws_num_info(create_ws)
         pro_num = res.json()['results'][0]['data']['result'][0]['value'][1]
         # 验证项目数量正确
         pytest.assume(pro_num == '0')
         # 在企业空间中创建项目
         pro_name = 'pro-' + str(commonFunction.get_random())
-        project_steps.step_create_project(ws_name, pro_name)
+        project_steps.step_create_project(create_ws, pro_name)
         # 获取项目数量
-        res_new = workspace_steps.step_get_ws_num_info(ws_name)
+        res_new = workspace_steps.step_get_ws_num_info(create_ws)
         new_pro_num = res_new.json()['results'][0]['data']['result'][0]['value'][1]
         pytest.assume(new_pro_num == '1')
-        #删除项目
-        project_steps.step_delete_project(ws_name,pro_name)
-        # 删除企业空间
-        workspace_steps.step_delete_workspace(ws_name)
+        # 删除项目
+        project_steps.step_delete_project(create_ws, pro_name)
 
     @allure.story('企业空间概览')
     @allure.title('资源用量-devops工程数量验证')
@@ -110,65 +115,52 @@ class TestWorkSpace(object):
     @pytest.mark.skipif(commonFunction.get_component_health_of_cluster('kubesphere-devops-system') is False,
                         reason='集群devops功能未准备好')
     @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('devops') is False, reason='集群未开启devops功能')
-    def test_get_devops_project_num(self):
-        ws_name = 'test-ws' + str(commonFunction.get_random())
-        # 创建企业空间
-        workspace_steps.step_create_workspace(ws_name)
+    def test_get_devops_project_num(self, create_ws):
         # 获取概览信息
-        res = workspace_steps.step_get_ws_num_info(ws_name)
+        res = workspace_steps.step_get_ws_num_info(create_ws)
         devops_num = res.json()['results'][1]['data']['result'][0]['value'][1]
         pytest.assume(devops_num == '0')
         # 在企业空间创建devops工程
         devops_name = 'devops-' + str(commonFunction.get_random())
-        r = devops_steps.step_create_devops(ws_name, devops_name)
+        r = devops_steps.step_create_devops(create_ws, devops_name)
         # 获取devops项目的名称
         devops_name_new = r.json()['metadata']['name']
         time.sleep(3)
         # 获取概览信息
-        response = workspace_steps.step_get_ws_num_info(ws_name)
+        response = workspace_steps.step_get_ws_num_info(create_ws)
         # 获取devops项目
         new_devops_num = response.json()['results'][1]['data']['result'][0]['value'][1]
         pytest.assume(new_devops_num == '1')
         # 删除devops工程
-        devops_steps.step_delete_devops(ws_name, devops_name_new)
-        # 删除企业空间
-        workspace_steps.step_delete_workspace(ws_name)
+        devops_steps.step_delete_devops(create_ws, devops_name_new)
 
     @allure.story('企业空间概览')
     @allure.title('资源用量-角色数量验证')
     @allure.severity('critical')
-    def test_get_ws_role_num(self):
-        ws_name = 'test-ws' + str(commonFunction.get_random())
-        # 创建企业空间
-        workspace_steps.step_create_workspace(ws_name)
+    def test_get_ws_role_num(self, create_ws):
         # 获取概览信息
-        res = workspace_steps.step_get_ws_num_info(ws_name)
+        res = workspace_steps.step_get_ws_num_info(create_ws)
         role_num = res.json()['results'][2]['data']['result'][0]['value'][1]
         pytest.assume(role_num == '1')
         # 在企业空间创建角色
         authory = '[\"role-template-create-projects\",\"role-template-view-basic\"]'
         role_name = 'role-' + str(commonFunction.get_random())
-        workspace_steps.step_create_ws_role(ws_name, role_name, authory)
+        workspace_steps.step_create_ws_role(create_ws, role_name, authory)
         # 获取概览信息
-        res_new = workspace_steps.step_get_ws_num_info(ws_name)
+        res_new = workspace_steps.step_get_ws_num_info(create_ws)
         new_role_num = res_new.json()['results'][2]['data']['result'][0]['value'][1]
         pytest.assume(new_role_num == '2')
-        # 删除企业空间
-        workspace_steps.step_delete_workspace(ws_name)
 
     @allure.story('企业空间概览')
     @allure.title('资源用量-用户数量验证')
     @allure.severity('critical')
-    def test_get_ws_role_num(self):
-        ws_name = 'test-ws' + str(commonFunction.get_random())
-        # 创建企业空间
-        workspace_steps.step_create_workspace(ws_name)
+    def test_get_ws_role_num(self, create_ws):
         user_name = ''
         i = 0
         while i < 60:
             try:
                 # 查询企业空间用户信息
-                response = workspace_steps.step_get_ws_user(ws_name, '')
+                response = workspace_steps.step_get_ws_user(create_ws, '')
                 user_name = response.json()['items'][0]['metadata']['name']
                 if user_name:
                     break
@@ -178,15 +170,13 @@ class TestWorkSpace(object):
                 i += 1
         pytest.assume(user_name == 'admin')
         # 将用户邀请到企业空间
-        role = ws_name + '-viewer'
-        workspace_steps.step_invite_user(ws_name, self.user_name, role)
+        role = create_ws + '-viewer'
+        workspace_steps.step_invite_user(create_ws, self.user_name, role)
         # 查询企业空间用户信息
-        res = workspace_steps.step_get_ws_user(ws_name, '')
+        res = workspace_steps.step_get_ws_user(create_ws, '')
         # 获取用户数量
         user_num = res.json()['totalItems']
         pytest.assume(user_num == 2)
-        # 删除企业空间
-        workspace_steps.step_delete_workspace(ws_name)
 
     @allure.story('企业空间设置-企业角色')
     @allure.title('在企业空间编辑角色的权限信息')
@@ -283,6 +273,23 @@ class TestWorkSpace(object):
         workspace_steps.step_delete_ws_user(self.ws_name, user_name)
         # 删除创建的用户
         platform_steps.step_delete_user(user_name)
+
+    @allure.story('企业空间设置-企业角色')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('role_name, title, authority',
+                             [('viewer', '查看默认角色viewer的权限信息', authority_viewer),
+                              ('admin', '查看默认角色viewer的权限信息', authority_admin),
+                              ('self-provisioner', '查看默认角色viewer的权限信息', authority_self_provisioner),
+                              ('regular', '查看默认角色viewer的权限信息', authority_regular)
+                              ])
+    def test_check_ws_role(self, role_name, title, authority, create_ws):
+        # 查看企业空间的指定角色
+        response = workspace_steps.step_get_ws_role(create_ws, role_name)
+        # 获取角色的权限信息
+        authority_actual = response.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']
+        # 验证权限信息
+        assert authority_actual == authority
 
     @allure.story('企业空间设置-企业成员')
     @allure.title('在企业空间删除邀请的成员并验证删除成功')
@@ -424,29 +431,26 @@ class TestWorkSpace(object):
     @allure.story('企业空间设置-企业组织')
     @allure.title('为用户分配企业组织')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_assign_user(self):
+    def test_assign_user(self, create_ws):
         # 创建用户
         user_name = 'user' + str(commonFunction.get_random())
         user_role = 'users-manager'
         platform_steps.step_create_user(user_name, user_role)
-        # 创建企业空间
-        ws_name = 'test-ws' + str(commonFunction.get_random())
-        workspace_steps.step_create_workspace(ws_name)
         # 将用户邀请到企业空间
-        workspace_steps.step_invite_user(ws_name, user_name, ws_name + '-viewer')
+        workspace_steps.step_invite_user(create_ws, user_name, create_ws + '-viewer')
         # 创建企业组织
         group_name = 'group' + str(commonFunction.get_random())
-        data = {"kubesphere.io/workspace-role": ws_name + "-regular",
+        data = {"kubesphere.io/workspace-role": create_ws + "-regular",
                 "kubesphere.io/alias-name": "",
                 "kubesphere.io/project-roles": "[]",
                 "kubesphere.io/devops-roles": "[]",
                 "kubesphere.io/creator": "admin"
                 }
         # 创建企业组织,并获取创建的企业组织的name
-        response = workspace_steps.step_create_department(ws_name, group_name, data)
+        response = workspace_steps.step_create_department(create_ws, group_name, data)
         name = response.json()['metadata']['name']
         # 将指定用户绑定到指定企业组织
-        workspace_steps.step_binding_user(ws_name, name, user_name)
+        workspace_steps.step_binding_user(create_ws, name, user_name)
         # 获取企业组织可分配的用户数量
         time.sleep(5)
         res = workspace_steps.step_get_user_for_department(name)
@@ -470,7 +474,7 @@ class TestWorkSpace(object):
         with assume:
             assert user_name not in user_not_in_group
         # 删除创建的企业空间
-        workspace_steps.step_delete_workspace(ws_name)
+        workspace_steps.step_delete_workspace(create_ws)
         # 删除创建的用户
         platform_steps.step_delete_user(user_name)
 
@@ -539,7 +543,7 @@ class TestWorkSpace(object):
         hard_data = {"limits.cpu": "100", "limits.memory": "100Gi",
                      "requests.cpu": "1", "requests.memory": "1Gi"}
         response = workspace_steps.step_edit_quota(ws_name=self.ws_name, hard_data=hard_data, cluster='default',
-                                   resource_version=resource_version)
+                                                   resource_version=resource_version)
         # 获取返回的配额信息
         hard_info = response.json()['spec']['quota']['hard']
         # 校验修改后的配额信息
@@ -558,7 +562,7 @@ class TestWorkSpace(object):
         hard_data = {"limits.cpu": "1", "limits.memory": "100Gi",
                      "requests.cpu": "2", "requests.memory": "1Gi"}
         response = workspace_steps.step_edit_quota(ws_name=self.ws_name, hard_data=hard_data, cluster='default',
-                                   resource_version=resource_version)
+                                                   resource_version=resource_version)
         print(response.text)
 
     @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('network') is False,

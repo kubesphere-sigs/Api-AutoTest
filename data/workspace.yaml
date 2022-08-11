@@ -8,6 +8,7 @@
   - critical
   - r.json()['metadata']['annotations']['kubesphere.io/alias-name']
   - 我是别名
+
 - - 2
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces
   - name=ws1-for-test-ws&sortBy=createTime&limit=10
@@ -18,16 +19,18 @@
   - normal
   - r.json()['items'][0]['metadata']['name']
   - ws1-for-test-ws
+
 - - 3
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces
-  - name=test-ws
+  - name=system-work
   - ''
   - 企业空间列表
   - 模糊查询存在的企业空间
   - get
   - normal
   - r.json()['items'][0]['metadata']['name']
-  - ws1-for-test-ws
+  - system-workspace
+
 - - 4
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces
   - name=wx-wx
@@ -38,16 +41,18 @@
   - normal
   - r.json()['totalItems']
   - 0
+
 - - 5
-  - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
+  - /kapis/iam.kubesphere.io/v1alpha2/workspaces/system-workspace/workspaceroles
   - ''
   - ''
   - 企业空间设置-企业角色
-  - 查询企业空间ws1-for-test-ws的所有角色
+  - 查询企业空间system-workspace的所有角色
   - get
   - normal
   - r.json()['totalItems']
   - 4
+
 - - 6
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - name=ws1-for-test-ws-admin
@@ -58,6 +63,7 @@
   - normal
   - r.json()['items'][0]['metadata']['name']
   - ws1-for-test-ws-admin
+
 - - 7
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - name=admin
@@ -68,6 +74,7 @@
   - normal
   - r.json()['items'][0]['metadata']['name']
   - ws1-for-test-ws-admin
+
 - - 8
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - name=admin123
@@ -78,6 +85,7 @@
   - normal
   - r.json()['totalItems']
   - 0
+
 - - 9
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
@@ -88,6 +96,7 @@
   - critical
   - r.json()['metadata']['name']
   - wx-role
+
 - - 10
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
@@ -98,6 +107,7 @@
   - critical
   - r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']
   - '["role-template-create-projects","role-template-view-basic"]'
+
 - - 11
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
@@ -109,6 +119,7 @@
   - r.text
   - 'WorkspaceRole.iam.kubesphere.io "" is invalid: metadata.name: Required value:
     name or generateName is required'
+
 - - 12
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
@@ -119,58 +130,63 @@
   - critical
   - r.text
   - workspaceroles.iam.kubesphere.io "wx-role1" already exists
+
 - - 13
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"WX","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
   - 企业空间设置-企业角色
-  - 在企业空间auoto-wx-ws创建角色( 角色名包含大写字母）
+  - 在企业空间ws1-for-test-ws创建角色( 角色名包含大写字母）
   - post
-  - critical
+  - normal
   - r.text
   - 'WorkspaceRole.iam.kubesphere.io "WX" is invalid: metadata.name: Invalid value:
     "WX": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters,
     ''-'' or ''.'', and must start and end with an alphanumeric character (e.g. ''example.com'',
     regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
+
 - - 14
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"wx@wx","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
   - 企业空间设置-企业角色
-  - 在企业空间auoto-wx-ws创建角色( 角色名包含符号，非分隔符）
+  - 在企业空间ws1-for-test-ws创建角色( 角色名包含符号，非分隔符）
   - post
-  - critical
+  - normal
   - r.text
   - 'WorkspaceRole.iam.kubesphere.io "wx@wx" is invalid: metadata.name: Invalid value:
     "wx@wx": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
+
 - - 15
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"-wx","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
   - 企业空间设置-企业角色
-  - 在企业空间auoto-wx-ws创建角色( 角色名以分隔符开头）
+  - 在企业空间ws1-for-test-ws创建角色( 角色名以分隔符开头）
   - post
-  - critical
+  - normal
   - r.text
   - 'WorkspaceRole.iam.kubesphere.io "-wx" is invalid: metadata.name: Invalid value:
     "-wx": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
+
 - - 16
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"wx-","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
   - 企业空间设置-企业角色
-  - 在企业空间auoto-wx-ws创建角色( 角色名以分隔符结尾）
+  - 在企业空间ws1-for-test-ws创建角色( 角色名以分隔符结尾）
   - post
-  - critical
+  - normal
   - r.text
   - 'WorkspaceRole.iam.kubesphere.io "wx-" is invalid: metadata.name: Invalid value:
     "wx-": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
+
 - - 17
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role
   - ''
@@ -185,9 +201,10 @@
   - 企业空间设置-企业角色
   - 在企业空间ws1-for-test-ws修改角色wx-role的基本信息
   - patch
-  - critical
+  - normal
   - r.json()['metadata']['annotations']['kubesphere.io/description']
   - 我是描述
+
 - - 18
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role
   - ''
@@ -198,6 +215,7 @@
   - critical
   - r.json()['message']
   - success
+
 - - 18
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role1
   - ''
@@ -208,6 +226,7 @@
   - critical
   - r.json()['message']
   - success
+
 - - 19
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?sortBy=createTime&limit=10
   - ''
@@ -218,6 +237,7 @@
   - normal
   - r.status_code
   - 200
+
 - - 20
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=admin&sortBy=createTime&limit=10
   - ''
@@ -228,6 +248,7 @@
   - normal
   - r.json()['items'][0]['metadata']['name']
   - admin
+
 - - 21
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=qweasd&sortBy=createTime&limit=10
   - ''
@@ -238,6 +259,7 @@
   - normal
   - r.json()['totalItems']
   - 0
+
 - - 22
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=ad&sortBy=createTime&limit=10
   - ''
@@ -248,6 +270,7 @@
   - normal
   - r.json()['items'][0]['metadata']['name']
   - admin
+
 - - 23
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws
   - ''
@@ -258,6 +281,7 @@
   - critical
   - r.json()['spec']['template']['spec']['networkIsolation']
   - 0
+
 - - 24
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws
   - ''
@@ -268,6 +292,7 @@
   - critical
   - r.json()['spec']['template']['spec']['networkIsolation']
   - true
+
 - - 25
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces
   - ''
@@ -278,6 +303,7 @@
   - critical
   - r.json()['metadata']['name']
   - wx-project
+
 - - 26
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces
   - ''
@@ -288,6 +314,7 @@
   - critical
   - r.text
   - namespaces "wx-project" already exists
+
 - - 27
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx-project
   - ''
@@ -298,6 +325,7 @@
   - normal
   - r.json()['items'][0]['metadata']['name']
   - wx-project
+
 - - 28
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=w
   - ''
@@ -308,6 +336,7 @@
   - normal
   - r.json()['items'][0]['metadata']['name']
   - wx-project
+
 - - 29
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx1
   - ''
@@ -318,6 +347,7 @@
   - normal
   - r.json()['totalItems']
   - 0
+
 - - 30
   - /api/v1/namespaces/wx-project/resourcequotas
   - ''
@@ -328,6 +358,7 @@
   - critical
   - r.json()['spec']['hard']['requests.memory']
   - 2Gi
+
 - - 31
   - /api/v1/namespaces/wx-project/limitranges
   - ''
@@ -338,6 +369,7 @@
   - critical
   - r.json()['spec']['limits'][0]['default']['memory']
   - 4000Mi
+
 - - 32
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces/wx-project
   - ''
