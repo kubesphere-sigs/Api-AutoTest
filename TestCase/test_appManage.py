@@ -50,11 +50,45 @@ class TestAppTemplate(object):
         else:
             # 删除创建的项目
             multi_project_steps.step_delete_project_from_cluster(cluster_name='host', ws_name=self.ws_name,
-                                                                project_name=self.project_name)
+                                                                 project_name=self.project_name)
             # 删除创建的企业空间
             workspace_steps.step_delete_workspace(self.ws_name)
 
     parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/appmanage.yaml')
+
+    @pytest.fixture
+    def create_app_template(self):
+        app_name = 'test-app' + str(commonFunction.get_random())  # 应用模版名称
+        # 创建应用模板
+        app_steps.step_create_app_template(self.ws_name, app_name)
+        return app_name
+
+    @pytest.fixture
+    def release_app(self, create_app_template):
+        version = 'v0.1 [v1.0]'  # 部署的应用的版本名称
+        update_log = 'test'  # 部署应用的更新日志
+        app_id = ''
+        version_id = ''
+        i = 0
+        while i < 60:
+            try:
+                # 获取应用的app_id和version_id
+                response = app_steps.step_get_app_template(self.ws_name, create_app_template)
+                app_id = response.json()['items'][0]['app_id']
+                version_id = response.json()['items'][0]['latest_app_version']['version_id']
+                if version_id:
+                    break
+            except Exception as e:
+                print(e)
+                i += 3
+                time.sleep(3)
+        # 应用模版提交审核
+        app_steps.step_app_template_submit(app_id, version_id, version, update_log)
+        # 应用审核通过
+        app_steps.step_app_pass(app_id, version_id)
+        # 发布模板到应用商店
+        app_steps.step_release(app_id, version_id)
+        return [create_app_template, app_id, version_id]
 
     @allure.title('{title}')  # 设置用例标题
     # 将用例信息以参数化的方式传入测试方法
@@ -167,65 +201,36 @@ class TestAppTemplate(object):
     @allure.story('应用管理-应用模板')
     @allure.title('发布应用模板到商店，然后将应用下架，再重新上架，最后下架应用')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_suspend_app_template(self):
-        version = 'v0.1 [v1.0]'  # 部署的应用的版本名称
-        update_log = 'test'  # 部署应用的更新日志
-        app_name = 'test-app' + str(commonFunction.get_random())  # 应用模版名称
-        # 创建应用模板
-        app_steps.step_create_app_template(self.ws_name, app_name)
-        app_id = ''
-        version_id = ''
-        i = 0
-        while i < 60:
-            try:
-                # 获取应用的app_id和version_id
-                response = app_steps.step_get_app_template(self.ws_name, app_name)
-                app_id = response.json()['items'][0]['app_id']
-                version_id = response.json()['items'][0]['latest_app_version']['version_id']
-                if version_id:
-                    break
-            except Exception as e:
-                print(e)
-                i += 3
-                time.sleep(3)
-        # 应用模版提交审核
-        app_steps.step_app_template_submit(app_id, version_id, version, update_log)
-        # 应用审核通过
-        app_steps.step_app_pass(app_id, version_id)
-        # 发布模板到应用商店
-        app_steps.step_release(app_id, version_id)
+    def test_suspend_app_template(self, release_app):
         # 下架应用
-        app_steps.step_suspend_app(app_id)
+        app_steps.step_suspend_app(release_app[1])
         # 重新上架应用
-        app_steps.step_app_recover(app_id, version_id)
+        app_steps.step_app_recover(release_app[1], release_app[2])
         # 下架应用
-        app_steps.step_suspend_app(app_id)
+        app_steps.step_suspend_app(release_app[1])
         # 获取应用模版中所有的版本version
-        versions = app_steps.step_get_app_versions(self.ws_name, app_id)
+        versions = app_steps.step_get_app_versions(self.ws_name, release_app[1])
         # 删除应用版本
-        app_steps.step_delete_version(app_name, versions)
+        app_steps.step_delete_version(release_app[0], versions)
         time.sleep(5)  # 等待版本删除完成后，再删除模版
         # 删除应用模板
-        re = app_steps.step_delete_app_template(self.ws_name, app_id)
+        re = app_steps.step_delete_app_template(self.ws_name, release_app[1])
         # 验证删除成功
         assert re.json()['message'] == 'success'
 
     @allure.story('应用管理-应用模板')
     @allure.title('应用审核不通过,然后重新提交审核，最后审核通过')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_app_check_reject(self):
+    def test_app_check_reject(self, create_app_template):
         version = 'v0.1 [v1.0]'  # 部署的应用的版本名称
         update_log = 'test'  # 部署应用的更新日志
-        app_name = 'test-app' + str(commonFunction.get_random())  # 应用模版名称
-        # 创建应用模板
-        app_steps.step_create_app_template(self.ws_name, app_name)
         i = 0
         app_id = ''
         version_id = ''
         while i < 60:
             try:
                 # 获取应用的app_id和version_id
-                response = app_steps.step_get_app_template(self.ws_name, app_name)
+                response = app_steps.step_get_app_template(self.ws_name, create_app_template)
                 app_id = response.json()['items'][0]['app_id']
                 version_id = response.json()['items'][0]['latest_app_version']['version_id']
                 if version_id:
@@ -258,12 +263,9 @@ class TestAppTemplate(object):
     @allure.story('应用管理-应用模板')
     @allure.title('创建应用模板后添加版本')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_add_version(self):
-        app_name = 'test-app' + str(commonFunction.get_random())  # 应用模版名称
-        # 创建应用模板
-        app_steps.step_create_app_template(self.ws_name, app_name)
+    def test_add_version(self, create_app_template):
         # 获取应用的app_id和version_id
-        response = app_steps.step_get_app_template(self.ws_name, app_name)
+        response = app_steps.step_get_app_template(self.ws_name, create_app_template)
         app_id = response.json()['items'][0]['app_id']
         # 添加应用版本
         app_steps.step_add_version(self.ws_name, app_id)
@@ -279,17 +281,14 @@ class TestAppTemplate(object):
     @allure.story('应用-应用模板')
     @allure.title('从应用模版部署新应用')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_deployment_app_form_template(self):
-        app_name = 'test-app' + str(commonFunction.get_random())
-        # 创建应用模板
-        app_steps.step_create_app_template(self.ws_name, app_name)
+    def test_deployment_app_form_template(self, create_app_template):
         app_id = ''
         version_id = ''
         k = 0
         while k < 60:
             try:
                 # 获取应用模版的app_id和version_id
-                response = app_steps.step_get_app_template(self.ws_name, app_name)
+                response = app_steps.step_get_app_template(self.ws_name, create_app_template)
                 app_id = response.json()['items'][0]['app_id']
                 version_id = response.json()['items'][0]['latest_app_version']['version_id']
                 if version_id:
@@ -299,7 +298,7 @@ class TestAppTemplate(object):
                 k += 3
                 time.sleep(3)
         # 部署应用模版
-        name = app_name + 'test-app'  # 应用名称
+        name = create_app_template + 'test-app'  # 应用名称
         re = app_steps.step_deploy_template(self.ws_name, self.project_name, app_id, name, version_id)
         # 验证部署结果
         message = re.json()['message']
@@ -308,7 +307,7 @@ class TestAppTemplate(object):
         status = ''
         i = 0
         while i < 300:
-            r = app_steps.step_get_app_status(self.ws_name, self.project_name, app_name)
+            r = app_steps.step_get_app_status(self.ws_name, self.project_name, create_app_template)
             status = r.json()['items'][0]['cluster']['status']
             if status == 'active':
                 break
@@ -318,96 +317,67 @@ class TestAppTemplate(object):
         with assume:
             assert status == 'active'
         # 获取部署的应用的cluster_id
-        r = app_steps.step_get_app(self.ws_name, self.project_name, app_name)
+        r = app_steps.step_get_app(self.ws_name, self.project_name, create_app_template)
         cluster_id = r.json()['items'][0]['cluster']['cluster_id']
         # 删除创建的应用
         app_steps.step_delete_app(self.ws_name, self.project_name, cluster_id)
         # 在应用列表中查询创建的应用，验证删除成功
         time.sleep(5)  # 等待删除时间
-        re = app_steps.step_get_app(self.ws_name, self.project_name, app_name)
+        re = app_steps.step_get_app(self.ws_name, self.project_name, create_app_template)
         # 获取查询的结果
         count = re.json()['total_count']
         # 获取应用模版中所有的版本version
         versions = app_steps.step_get_app_versions(self.ws_name, app_id)
         app_steps.step_delete_version(app_id, versions)  # 删除应用版本
-        app_steps.step_delete_app_template(self.ws_name, app_name)  # 删除应用模板
+        app_steps.step_delete_app_template(self.ws_name, create_app_template)  # 删除应用模板
         assert count == 0
 
     @allure.story('应用-应用模板')
     @allure.title('从应用商店部署新应用')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_deployment_app_form_appstore(self):
-        version = 'v0.1 [v1.0]'  # 部署的应用的版本名称
-        update_log = 'test'  # 部署应用的更新日志
-        app_name = 'test-app' + str(commonFunction.get_random())  # 应用模版名称
-        # 创建应用模板
-        app_steps.step_create_app_template(self.ws_name, app_name)
-        app_id = ''
-        version_id = ''
-        k = 0
-        while k < 60:
-            try:
-                # 获取应用的app_id和version_id
-                response = app_steps.step_get_app_template(self.ws_name, app_name)
-                app_id = response.json()['items'][0]['app_id']
-                version_id = response.json()['items'][0]['latest_app_version']['version_id']
-                if version_id:
-                    break
-            except Exception as e:
-                print(e)
-                k += 3
-                time.sleep(3)
-        # 应用模版提交审核
-        app_steps.step_app_template_submit(app_id, version_id, version, update_log)
-        # 应用审核通过
-        app_steps.step_app_pass(app_id, version_id)
-        # 发布模板到应用商店
-        app_steps.step_release(app_id, version_id)
+    def test_deployment_app_form_appstore(self, release_app):
         # 部署应用
-        name = app_name + 'test-app'  # 应用名称
-        res = app_steps.step_deploy_template(self.ws_name, self.project_name, app_id, name, version_id)
+        name = release_app[0] + 'test-app'  # 应用名称
+        res = app_steps.step_deploy_template(self.ws_name, self.project_name, release_app[1], name, release_app[2])
         # 验证部署结果
         message = res.json()['message']
         with assume:
             assert message == 'success'
         # 在项目的应用列表中验证部署的应用运行正常,最长等待时间300s
-        i = 0
-        while i < 300:
-            r = app_steps.step_get_app_status(self.ws_name, self.project_name, app_name)
+        k = 0
+        while k < 300:
+            r = app_steps.step_get_app_status(self.ws_name, self.project_name, release_app[0])
             status = r.json()['items'][0]['cluster']['status']
             if status == 'active':
                 break
             time.sleep(10)
-            i = i + 10
-        print('应用部署耗时:' + str(i) + '秒')
+            k += 10
+        print('应用部署耗时:' + str(k) + '秒')
         # 获取部署的应用的cluster_id
-        re = app_steps.step_get_app(self.ws_name, self.project_name, app_name)
+        re = app_steps.step_get_app(self.ws_name, self.project_name, release_app[0])
         cluster_id = re.json()['items'][0]['cluster']['cluster_id']
         # 删除创建的应用
         app_steps.step_delete_app(self.ws_name, self.project_name, cluster_id)
         # 在应用列表中查询创建的应用，验证删除成功
         time.sleep(5)  # 等待删除时间
-        r = app_steps.step_get_app(self.ws_name, self.project_name, app_name)
+        r = app_steps.step_get_app(self.ws_name, self.project_name, release_app[0])
         count = r.json()['total_count']
         with assume:
             assert count == 0
         # 下架应用
-        app_steps.step_suspend_app(app_id)
+        app_steps.step_suspend_app(release_app[1])
 
     @allure.story('应用-应用模板')
     @allure.title('按名称精确查询部署的应用')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_get_app(self):
-        app_name = 'test-app' + str(commonFunction.get_random())
-        # 创建应用模板
-        app_steps.step_create_app_template(self.ws_name, app_name)
+    def test_get_app(self, create_app_template):
         app_id = ''
         version_id = ''
         i = 0
         while i < 60:
             try:
                 # 获取应用模版的app_id和version_id
-                response = app_steps.step_get_app_template(self.ws_name, app_name)
+                response = app_steps.step_get_app_template(self.ws_name, create_app_template)
                 app_id = response.json()['items'][0]['app_id']
                 version_id = response.json()['items'][0]['latest_app_version']['version_id']
                 if version_id:
@@ -417,7 +387,7 @@ class TestAppTemplate(object):
                 i += 3
                 time.sleep(3)
         # 部署应用模版
-        name = app_name + 'test-app'  # 应用名称
+        name = create_app_template + 'test-app'  # 应用名称
         app_steps.step_deploy_template(self.ws_name, self.project_name, app_id, name, version_id)
         name_actual = ''
         r = ''
@@ -440,11 +410,11 @@ class TestAppTemplate(object):
         # 删除创建的应用
         app_steps.step_delete_app(self.ws_name, self.project_name, cluster_id)
         # 在应用列表中查询创建的应用
-        app_steps.step_get_app(self.ws_name, self.project_name, app_name)
+        app_steps.step_get_app(self.ws_name, self.project_name, create_app_template)
         # 获取应用模版中所有的版本version
         versions = app_steps.step_get_app_versions(self.ws_name, app_id)
         app_steps.step_delete_version(app_id, versions)  # 删除应用版本
-        app_steps.step_delete_app_template(self.ws_name, app_name)  # 删除应用模板
+        app_steps.step_delete_app_template(self.ws_name, create_app_template)  # 删除应用模板
 
     @allure.story('应用管理-应用模版')
     @allure.title('在应用模版中精确查询存在的模版')

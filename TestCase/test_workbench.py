@@ -18,10 +18,8 @@ class TestWorkbench(object):
     else:
         __test__ = True
 
-    @allure.story('平台信息')
-    @allure.title('查询平台的集群数量')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_cluster_count(self):
+    @pytest.fixture
+    def workbench_info(self):
         # 获取当前时间的10位时间戳
         now_time = datetime.now()
         now_timestamp = str(datetime.timestamp(now_time))[0:10]
@@ -29,24 +27,23 @@ class TestWorkbench(object):
         before_timestamp = commonFunction.get_before_timestamp(now_time, 180)
         # 查询工作台的基本信息
         response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
+        return response
+
+    @allure.story('平台信息')
+    @allure.title('查询平台的集群数量')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_get_cluster_count(self, workbench_info):
         # 获取平台的集群数量
-        cluster_count = response.json()['results'][0]['data']['result'][0]['value'][1]
+        cluster_count = workbench_info.json()['results'][0]['data']['result'][0]['value'][1]
         # 验证集群数量正确
         assert cluster_count == str(1)
 
     @allure.story('平台信息')
     @allure.title('查询平台的企业空间数量')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_ws_count(self):
-        # 获取当前时间的10位时间戳
-        now_time = datetime.now()
-        now_timestamp = str(datetime.timestamp(now_time))[0:10]
-        # 获取180分钟戳
-        before_timestamp = commonFunction.get_before_timestamp(now_time, 180)
-        # 查询工作台的基本信息
-        response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
+    def test_get_ws_count(self, workbench_info):
         # 获取平台的workspace数量
-        ws_count = response.json()['results'][1]['data']['result'][0]['value'][1]
+        ws_count = workbench_info.json()['results'][1]['data']['result'][0]['value'][1]
         # 查询集群的企业空间信息，并获取企业空间数量
         r = platform_steps.step_get_ws_info()
         ws_count_actual = r.json()['totalItems']
@@ -56,16 +53,9 @@ class TestWorkbench(object):
     @allure.story('平台信息')
     @allure.title('查询平台的用户数量')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_user_count(self):
-        # 获取当前时间的10位时间戳
-        now_time = datetime.now()
-        now_timestamp = str(datetime.timestamp(now_time))[0:10]
-        # 获取180分钟戳
-        before_timestamp = commonFunction.get_before_timestamp(now_time, 180)
-        # 查询工作台的基本信息
-        response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
+    def test_get_user_count(self, workbench_info):
         # 获取平台的用户数量
-        user_count = response.json()['results'][2]['data']['result'][0]['value'][1]
+        user_count = workbench_info.json()['results'][2]['data']['result'][0]['value'][1]
         # 查询集群的用户信息，并获取用户数量
         r = platform_steps.step_get_user_info('')
         user_count_actual = r.json()['totalItems']
@@ -75,17 +65,10 @@ class TestWorkbench(object):
     @allure.story('平台信息')
     @allure.title('查询平台的应用模版数量')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_template_count(self):
-        # 获取当前时间的10位时间戳
-        now_time = datetime.now()
-        now_timestamp = str(datetime.timestamp(now_time))[0:10]
-        # 获取180分钟戳
-        before_timestamp = commonFunction.get_before_timestamp(now_time, 180)
-        # 查询工作台的基本信息
-        response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
+    def test_get_template_count(self, workbench_info):
         # 获取平台的应用模版数量
         try:
-            template_count = response.json()['results'][3]['data']['result'][0]['value'][1]
+            template_count = workbench_info.json()['results'][3]['data']['result'][0]['value'][1]
             # 查询集群的应用模版信息，并获取用户数量
             r = platform_steps.step_get_app_info()
             template_count_actual = r.json()['total_count']
