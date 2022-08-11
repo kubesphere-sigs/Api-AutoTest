@@ -13,7 +13,7 @@ env_url = get_apiserver()
 
 
 @allure.step('新建角色')
-def step_create_role(role_name):
+def step_create_role(role_name, authority):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/globalroles'
     data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
             "kind": "GlobalRole",
@@ -22,9 +22,7 @@ def step_create_role(role_name):
                 {
                     "name": role_name,
                     "annotations": {
-                        "iam.kubesphere.io/aggregation-roles":
-                            "[\"role-template-manage-clusters\",\"role-template-view-clusters\","
-                            "\"role-template-view-basic\"]",
+                        "iam.kubesphere.io/aggregation-roles": authority,
                         "kubesphere.io/creator": "admin"
                     }
                 }
