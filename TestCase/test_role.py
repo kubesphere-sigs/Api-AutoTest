@@ -3,7 +3,7 @@ import time
 import pytest
 import allure
 import sys
-
+from pytest import assume
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from common.getData import DoexcleByPandas
@@ -13,6 +13,36 @@ from step import platform_steps
 
 @allure.feature('系统角色管理')
 class TestRole(object):
+    authority_workspaces_manager = '["role-template-view-workspaces","role-template-manage-workspaces",' \
+                                   '"role-template-view-users"]'
+    authority_users_manager = '["role-template-view-users","role-template-manage-users","role-template-view-roles",' \
+                              '"role-template-manage-roles"]'
+    authority_platform_regular = '["role-template-view-app-templates"]'
+    authority_admin = '["role-template-manage-clusters","role-template-view-clusters","role-template-view-roles",' \
+                      '"role-template-manage-roles","role-template-view-roles","role-template-view-workspaces",' \
+                      '"role-template-manage-workspaces","role-template-manage-users","role-template-view-roles",' \
+                      '"role-template-view-users","role-template-manage-app-templates",' \
+                      '"role-template-view-app-templates","role-template-manage-platform-settings"]'
+
+    @pytest.fixture()
+    def create_role(self):
+        authority = '["role-template-view-basic"]'
+        role_name = 'role' + str(commonFunction.get_random())
+        # 创建角色
+        platform_steps.step_create_role(role_name, authority)
+        yield role_name
+        # 删除角色
+        platform_steps.step_delete_role(role_name)
+
+    @pytest.fixture()
+    def create_user(self, create_role):
+        user_name = 'user' + str(commonFunction.get_random())
+        # 使用新创建的角色创建用户
+        platform_steps.step_create_user(user_name, create_role)
+        yield user_name
+        # 删除用户
+        platform_steps.step_delete_user(user_name)
+
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/system_role.yaml')
 
@@ -42,21 +72,16 @@ class TestRole(object):
     '''
 
     @allure.story('编辑角色')
-    @allure.severity('critical')
-    @allure.title('测试编辑角色权限')
-    def test_edit_role(self):
-        role_name = 'role' + str(commonFunction.get_random())
+    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.title('编辑角色权限')
+    def test_edit_role(self, create_role):
         authority = '["role-template-view-clusters","role-template-view-basic"]'
-        platform_steps.step_create_role(role_name)  # 创建角色
         # 查询角色并获取version
-        response = platform_steps.step_get_role_info(role_name)
+        response = platform_steps.step_get_role_info(create_role)
         version = response.json()['items'][0]['metadata']['resourceVersion']
-        r = platform_steps.step_edit_role_authority(role_name, version, authority)
-        try:
-            # 验证编辑后的角色权限
-            assert r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority
-        finally:
-            platform_steps.step_delete_role(role_name)  # 删除新建的角色
+        r = platform_steps.step_edit_role_authority(create_role, version, authority)
+        # 验证编辑后的角色权限
+        assert r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority
 
     @allure.story('编辑角色')
     @allure.severity(allure.severity_level.NORMAL)
@@ -70,57 +95,67 @@ class TestRole(object):
         assert response.json()['totalItems'] == 0
 
     @allure.story('角色详情')
-    @allure.severity(allure.severity_level.NORMAL)
-    @allure.title('查询角色权限列表')
-    def test_query_role_permission_list(self):
-        role_name = 'role' + str(commonFunction.get_random())
-        authority = '["role-template-manage-clusters","role-template-view-clusters","role-template-view-basic"]'
-        # 创建角色
-        platform_steps.step_create_role(role_name)
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('role_name, title, authority',
+                             [
+                                 ('workspaces-manager', '查询角色workspaces-manager的权限列表', authority_workspaces_manager),
+                                 ('users-manager', '查询角色users-manager的权限列表', authority_users_manager),
+                                 ('platform-regular', '查询角色platform_regular的权限列表', authority_platform_regular),
+                                 ('platform-admin', '查询角色platform-admin的权限列表', authority_admin)
+                             ])
+    def test_query_role_permission_list(self, role_name, title, authority):
         # 查询权限列表
         authority_list = platform_steps.step_get_role_authority(role_name)
         # 验证权限正确
-        pytest.assume(authority == authority_list)
-        # 删除角色
-        platform_steps.step_delete_role(role_name)
+        assert authority == authority_list
 
     @allure.story('角色详情')
     @allure.severity(allure.severity_level.NORMAL)
     @allure.title('查询角色授权用户')
-    def test_query_role_Authorized_user(self):
-        role_name = 'role' + str(commonFunction.get_random())
-        user_name = 'user' + str(commonFunction.get_random())
-        # 创建角色
-        platform_steps.step_create_role(role_name)
-        # 使用新创建的角色创建用户
-        platform_steps.step_create_user(user_name, role_name)
+    def test_query_role_Authorized_user(self, create_role, create_user):
         time.sleep(3)
         # 查询角色授权用户
-        res = platform_steps.step_get_role_user(role_name)
+        res = platform_steps.step_get_role_user(create_role)
         # 验证用户数量
         pytest.assume(res.json()['totalItems'] == 1)
         # 验证用户名称
-        pytest.assume(res.json()['items'][0]['metadata']['name'] == user_name)
-        # 删除用户
-        platform_steps.step_delete_user(user_name)
-        # 删除角色
-        platform_steps.step_delete_role(role_name)
+        pytest.assume(res.json()['items'][0]['metadata']['name'] == create_user)
 
     @allure.story('角色列表')
-    @allure.severity(allure.severity_level.NORMAL)
+    @allure.severity(allure.severity_level.CRITICAL)
     @allure.title('删除已关联用户的角色')
-    def test_delete_role_Authorized(self):
-        role_name = 'role' + str(commonFunction.get_random())
-        user_name = 'user' + str(commonFunction.get_random())
-        # 创建角色
-        platform_steps.step_create_role(role_name)
-        # 使用新创建的角色创建用户
-        platform_steps.step_create_user(user_name, role_name)
+    def test_delete_role_Authorized(self, create_user, create_role):
         time.sleep(3)
         # 删除角色
+        response = platform_steps.step_delete_user(create_role)
+        with assume:
+            assert response.text == 'users.iam.kubesphere.io "' + create_role + '" not found\n'
+
+    @allure.story('角色详情')
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.title('添加无任何权限的角色')
+    def test_create_role_no_authority(self, create_role):
+        # 查询角色的权限信息
+        response = platform_steps.step_get_role_info(create_role)
+        authority = response.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']
+        assert authority == '["role-template-view-basic"]'
+
+    @allure.story('角色详情')
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.title('添加有权限的角色')
+    def test_create_role_with_authority(self):
+        authority = '["role-template-manage-clusters","role-template-view-clusters","role-template-manage-roles","role-template-view-roles","role-template-view-users","role-template-view-basic"]'
+        role_name = 'role' + str(commonFunction.get_random())
+        # 创建角色
+        platform_steps.step_create_role(role_name, authority)
+        # 查询角色的权限信息
+        response = platform_steps.step_get_role_info(role_name)
+        authority_actual = response.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']
+        with assume:
+            assert authority_actual == authority
+        # 删除角色
         platform_steps.step_delete_role(role_name)
-        # 删除用户
-        platform_steps.step_delete_user(user_name)
 
 
 if __name__ == "__main__":
