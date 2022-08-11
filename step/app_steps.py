@@ -448,10 +448,12 @@ def step_get_categories_id():
     r = requests.get(url=url, headers=get_header())
     # 获取分类的数量
     count = r.json()['total_count']
-    categories_id = []
-    for i in range(count):
-        categories_id.append(r.json()['items'][i]['category_id'])
-
+    if count > 0:
+        categories_id = []
+        for i in range(count):
+            categories_id.append(r.json()['items'][i]['category_id'])
+    else:
+        print('无分类')
     return categories_id
 
 
