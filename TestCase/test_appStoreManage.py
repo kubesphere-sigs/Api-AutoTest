@@ -31,11 +31,12 @@ class TestAppStoreManage(object):
         # 新建应用分类
         category_name = 'category' + str(commonFunction.get_random())
         response = app_steps.step_create_category(category_name)
+        time.sleep(1)
         # 获取创建分类的category_id
         category_id = response.json()['category_id']
         # 删除分类
         app_steps.step_delete_category(category_id)
-        time.sleep(3)
+        time.sleep(1)
         # 查询所有分类的category_id
         categories_id = app_steps.step_get_categories_id()
         # 验证被删除分类的category_id不存在
@@ -51,8 +52,10 @@ class TestAppStoreManage(object):
         response = app_steps.step_create_category(old_name)
         # 获取新建分类的category_id
         category_id = response.json()['category_id']
+        time.sleep(1)
         # 修改分类名称
         app_steps.step_change_category(category_id, new_name)
+        time.sleep(1)
         # 验证修改成功，使用修改后的名称查询category_id
         category_id_new = app_steps.step_get_category_id_by_name(new_name)
         with assume:
