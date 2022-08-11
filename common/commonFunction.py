@@ -339,7 +339,7 @@ def get_app_category():
 
 # 生成随机数字，用于拼接名称
 def get_random():
-    num = random.randint(1, 1000000)
+    num = random.randint(1, 10000000000)
     return num
 
 
