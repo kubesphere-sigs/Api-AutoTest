@@ -100,10 +100,8 @@ class TestProject(object):
     @pytest.fixture
     def create_workload(self, create_project, workload_name, container_name, strategy_info):
         image = 'nginx'  # 镜像名称
-        # condition = 'name=' + workload_name  # 查询条件
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
         volumeMounts = []  # 设置挂载的存储卷
-        # strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
         replicas = 2  # 副本数
         volume_info = []
         # 创建工作负载
