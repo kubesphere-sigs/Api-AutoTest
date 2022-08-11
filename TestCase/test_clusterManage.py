@@ -49,15 +49,24 @@ class TestCluster(object):
 
         commonFunction.request_resource(url, params, data, story, title, method, severity, condition, except_result)
 
+    @pytest.mark.run(order=1)
     @allure.story("节点/集群节点")
     @allure.title('为节点设置污点')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_set_taints(self):
         # 污点信息
-        taints = [{"key": "tester", "value": "wx", "effect": "NoSchedule"}]
+        taints = [{"key": "tester1", "value": "wx", "effect": "NoSchedule"}]
         # 获取节点列表中第一个节点的名称
         response = cluster_steps.step_get_nodes()
         node_name = response.json()['items'][0]['metadata']['name']
+        try:
+            # 获取节点的污点信息
+            r = cluster_steps.step_get_node_detail_info(node_name)
+            taints_old = r.json()['spec']['taints']
+        except Exception as e:
+            print(e)
+            print('节点:' + node_name + ' 无污点')
+            taints_old = []
         # 为节点设置污点
         cluster_steps.step_set_taints(node_name, taints)
         # 获取节点的污点信息
@@ -67,7 +76,7 @@ class TestCluster(object):
         with assume:
             assert taints == taints_actual
         # 清空设置的污点
-        cluster_steps.step_set_taints(node_name=node_name, taints=[])
+        cluster_steps.step_set_taints(node_name=node_name, taints=taints_old)
 
     @allure.story("节点/集群节点")
     @allure.title('为节点添加标签')
@@ -358,13 +367,23 @@ class TestCluster(object):
         # 获取集群中系统项目的数量
         response = cluster_steps.step_query_system_project('')
         project_count = response.json()['totalItems']
-        i = random.randint(0, project_count-1)
+        i = numpy.random.randint(0, project_count)
         # 获取集群任一系统项目的名称
         project_name = response.json()['items'][i]['metadata']['name']
-        # 查询项目的LimitRanges
-        r = cluster_steps.step_get_project_limit_ranges(project_name)
-        # 获取请求资源的kind
-        kind = r.json()['kind']
+        kind = ''
+        k = 0
+        while k < 60:
+            try:
+                # 查询项目的LimitRanges
+                r = cluster_steps.step_get_project_limit_ranges(project_name)
+                # 获取请求资源的kind
+                kind = r.json()['kind']
+                if kind:
+                    break
+            except Exception as e:
+                print(e)
+                k += 1
+                time.sleep(1)
         # 验证请求资源的kind为LimitRangeList
         assert kind == 'LimitRangeList'
 
@@ -811,16 +830,19 @@ class TestCluster(object):
         r = cluster_steps.step_get_resource_of_cluster(type, 'status=running')
         # 获取资源的数量
         count = r.json()['totalItems']
-        # 获取资源的readyReplicas和replicas
-        for i in range(0, count):
-            if type == 'daemonsets':
-                readyReplicas = r.json()['items'][i]['status']['numberReady']
-                replicas = r.json()['items'][i]['status']['numberAvailable']
-            else:
-                readyReplicas = r.json()['items'][i]['status']['readyReplicas']
-                replicas = r.json()['items'][i]['status']['replicas']
-            # 验证readyReplicas=replicas，从而判断资源的状态为running
-            assert readyReplicas == replicas
+        if count > 0:
+            # 获取资源的readyReplicas和replicas
+            for i in range(0, count):
+                if type == 'daemonsets':
+                    readyReplicas = r.json()['items'][i]['status']['numberReady']
+                    replicas = r.json()['items'][i]['status']['numberAvailable']
+                else:
+                    readyReplicas = r.json()['items'][i]['status']['readyReplicas']
+                    replicas = r.json()['items'][i]['status']['replicas']
+                # 验证readyReplicas=replicas，从而判断资源的状态为running
+                assert readyReplicas == replicas
+        else:
+            print('无状态为running的' + type)
 
     @allure.story('应用负载')
     @allure.title('按状态查询存在的jobs')
@@ -885,6 +907,7 @@ class TestCluster(object):
             # 验证查询的结果正确
             assert name in name_actual
 
+    @pytest.mark.run(order=2)
     @allure.story('应用负载')
     @allure.title('获取集群所有的容器组，并验证其数量与从项目管理中获取的数量一致')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -1039,20 +1062,32 @@ class TestCluster(object):
     @allure.title('查询任一CRD的FederatedGroupList')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_crd_federated_group_list(self):
-        # 查询集群中的crd
-        response = cluster_steps.step_get_resource_of_cluster(resource_type='customresourcedefinitions')
-        # 获取crd的数量
-        count = response.json()['totalItems']
-        # 获取任一crd的group和kind
-        i = numpy.random.randint(0, count)
-        # 获取crd的名称
-        name = response.json()['items'][i]['metadata']['name']
-        # 获取crd的group,version和kind
-        re = cluster_steps.step_get_crd_detail(name)
-        group = re.json()['spec']['group']
-        version = re.json()['spec']['versions'][0]['name']
-        kind = response.json()['items'][i]['spec']['names']['kind']
-        # 查询crd的FederatedGroupList信息
+        group = ''
+        version = ''
+        kind = ''
+        i = 0
+        while i < 60:
+            try:
+                # 查询集群中的crd
+                response = cluster_steps.step_get_resource_of_cluster(resource_type='customresourcedefinitions')
+                # 获取crd的数量
+                count = response.json()['totalItems']
+                # 获取任一crd的group和kind
+                i = numpy.random.randint(0, count)
+                # 获取crd的名称和kind
+                name = response.json()['items'][i]['metadata']['name']
+                kind = response.json()['items'][i]['spec']['names']['kind']
+                # 获取crd的group,version
+                re = cluster_steps.step_get_crd_detail(name)
+                group = re.json()['spec']['group']
+                version = re.json()['spec']['versions'][0]['name']
+                if group and version and kind:
+                    break
+            except Exception as e:
+                print(e)
+                i += 1
+                time.sleep(1)
+        # 查询crd的自定义资源信息
         r = cluster_steps.step_get_crd_federated_group_list(group, version, kind.lower())
         # 验证查询结果正确
         assert r.status_code == 200
@@ -1223,7 +1258,6 @@ class TestCluster(object):
         # 验证结果为false
         with assume:
             assert result == 'false'
-
         # 将任一存储类型设置为默认存储类型
         r = cluster_steps.step_set_default_storage_class(name, 'true')
         # 获取请求结果中的storageclass.kubernetes.io/is-default-class
@@ -1477,24 +1511,36 @@ class TestCluster(object):
     def test_open_cluster_gateway(self, type, title):
         # 开启集群网关
         cluster_steps.step_open_cluster_gateway(type)
-        # 查看集群网关，并验证网关类型
-        response = cluster_steps.step_get_cluster_gateway()
-        gateway_type = response.json()[0]['spec']['service']['type']
+        gateway_type = ''
+        i = 0
+        while i < 60:
+            try:
+                # 查看集群网关，并验证网关类型
+                response = cluster_steps.step_get_cluster_gateway()
+                gateway_type = response.json()[0]['spec']['service']['type']
+                if gateway_type:
+                    break
+            except Exception as e:
+                print(e)
+                i += 1
+                time.sleep(1)
         with assume:
             assert gateway_type == type
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
         sleep(10)
 
+    @pytest.mark.run(order=3)
     @allure.story('集群设置/网关设置')
     @allure.title('修改网关信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_edit_cluster_gateway(self):
         # 开启集群网关
-        response = cluster_steps.step_open_cluster_gateway(type='NodePort')
-        # 并获取获取uid和resourceversio
-        uid = response.json()['metadata']['uid']
-        resourceVersion = response.json()['metadata']['resourceVersion']
+        cluster_steps.step_open_cluster_gateway(type='NodePort')
+        # 查看网关详情并获取获取uid和resourceversion
+        response = cluster_steps.step_get_cluster_gateway_detail()
+        uid = response.json()[0]['metadata']['uid']
+        resourceVersion = response.json()[0]['metadata']['resourceVersion']
         # 编辑集群config信息
         config = {"4": "5"}
         status = 'true'
@@ -1504,13 +1550,16 @@ class TestCluster(object):
         status_actual = ''
         i = 0
         while i < 60:
-            re = cluster_steps.step_get_cluster_gateway()
-            config_actual = re.json()[0]['spec']['controller']['config']
-            status_actual = re.json()[0]['spec']['deployment']['annotations']['servicemesh.kubesphere.io/enabled']
-            if config_actual:
-                break
-            else:
-                sleep(1)
+            try:
+                re = cluster_steps.step_get_cluster_gateway()
+                config_actual = re.json()[0]['spec']['controller']['config']
+                status_actual = re.json()[0]['spec']['deployment']['annotations']['servicemesh.kubesphere.io/enabled']
+                if config_actual:
+                    break
+            except Exception as e:
+                print(e)
+            finally:
+                time.sleep(1)
                 i += 1
         # 验证config信息编辑成功
         with assume:
@@ -1521,6 +1570,7 @@ class TestCluster(object):
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
 
+    @pytest.mark.run(order=4)
     @allure.story('集群设置/网关设置')
     @allure.title('在网管设置中查询项目网关')
     @allure.severity(allure.severity_level.CRITICAL)

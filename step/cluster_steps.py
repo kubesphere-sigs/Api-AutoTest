@@ -337,7 +337,7 @@ def step_get_crd_detail(crd_name):
     return response
 
 
-@allure.step('查询CRD的FederatedGroupList信息')
+@allure.step('查询CRD的查看CRD的自定义资源信息信息')
 def step_get_crd_federated_group_list(group, version, kind):
     if kind.endswith('ateway'):
         url = env_url + '/apis/' + group + '/' + version + '/' + kind + 's'
