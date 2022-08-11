@@ -215,6 +215,7 @@ class TestAuditingOperatingSearch(object):
             assert component == 'auditing'
         assert enabled == 'true'
 
+    @pytest.mark.run(order=1)
     @allure.story('集群设置/日志接收器')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -226,65 +227,110 @@ class TestAuditingOperatingSearch(object):
     def test_add_log_receiver_auditing(self, type, log_type, title):
         # 添加日志收集器
         cluster_steps.step_add_log_receiver(type, log_type)
-        # 查看日志收集器
-        response = cluster_steps.step_get_log_receiver(log_type)
-        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        # 查看日志收集器，并获取新增日志接收器名称
+        log_receiver_name = ''
+        i = 0
+        while i < 60:
+            try:
+                response = cluster_steps.step_get_log_receiver(log_type)
+                log_receiver_name = response.json()['items'][1]['metadata']['name']
+                if log_receiver_name:
+                    break
+            except Exception as e:
+                print(e)
+                i += 1
+                time.sleep(1)
         # 验证日志接收器添加成功
         with assume:
             assert log_receiver_name == 'forward-' + log_type
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
 
+    @pytest.mark.run(order=2)
     @allure.story('集群设置/日志接收器')
-    @allure.title('{title}')
+    @allure.title('将审计日志的日志接收器状态更改为false')
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.parametrize('log_type, title',
-                             [
-                                 ('auditing', '将审计日志的日志接收器状态更改为false')
-                             ])
-    def test_modify_log_receiver_auditing_status(self, log_type, title):
+    def test_modify_log_receiver_auditing_status(self):
+        log_type = 'auditing'
         # 添加日志收集器
-        cluster_steps.step_add_log_receiver('fluentd', log_type)
+        cluster_steps.step_add_log_receiver('kafka', log_type)
         # 查看日志收集器，并获取新增日志接收器名称
-        response = cluster_steps.step_get_log_receiver(log_type)
-        log_receiver_name = response.json()['items'][1]['metadata']['name']
-        # 查看日志接收器详情
-        cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        log_receiver_name = ''
+        i = 0
+        while i < 60:
+            try:
+                response = cluster_steps.step_get_log_receiver(log_type)
+                log_receiver_name = response.json()['items'][1]['metadata']['name']
+                if log_receiver_name:
+                    break
+            except Exception as e:
+                print(e)
+                i += 1
+                time.sleep(1)
         # 更改日志接收器状态
         cluster_steps.step_modify_log_receiver_status(log_receiver_name, 'false')
-        # 查看日志接受器详情并验证更改成功
-        re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
-        status = re.json()['metadata']['labels']['logging.kubesphere.io/enabled']
+        status = ''
+        k = 0
+        while k < 60:
+            try:
+                # 查看日志接受器详情并验证更改成功
+                re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+                status = re.json()['metadata']['labels']['logging.kubesphere.io/enabled']
+                if status == 'false':
+                    break
+            except Exception as e:
+                print(e)
+            finally:
+                k += 1
+                time.sleep(1)
         with assume:
             assert status == 'false'
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
 
+    @pytest.mark.run(order=3)
     @allure.story('集群设置/日志接收器')
-    @allure.title('{title}')
+    @allure.title('修改审计日志的日志接收器的服务地址')
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.parametrize('log_type, title',
-                             [
-                                 ('auditing', '修改审计日志的日志接收器的服务地址')
-                             ])
-    def test_modify_log_receiver_auditing_address(self, log_type, title):
+    def test_modify_log_receiver_auditing_address(self):
+        log_type = 'auditing'
         # 添加日志收集器
         cluster_steps.step_add_log_receiver('fluentd', log_type)
         # 查看日志收集器，并获取新增日志接收器名称
-        response = cluster_steps.step_get_log_receiver(log_type)
-        log_receiver_name = response.json()['items'][1]['metadata']['name']
-        # 查看日志接收器详情
-        cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+        log_receiver_name = ''
+        i = 0
+        while i < 60:
+            try:
+                response = cluster_steps.step_get_log_receiver(log_type)
+                log_receiver_name = response.json()['items'][1]['metadata']['name']
+                if log_receiver_name:
+                    break
+            except Exception as e:
+                print(e)
+                i += 1
+                time.sleep(1)
         # 修改日志接收器的服务地址
         host = commonFunction.random_ip()
         port = random.randint(1, 65535)
         cluster_steps.step_modify_log_receiver_address(log_receiver_name, host, port)
-        # 查看日志接受器详情并验证修改成功
-        re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
-        host_actual = re.json()['spec']['forward']['host']
-        port_actual = re.json()['spec']['forward']['port']
+        host_actual = ''
+        port_actual = ''
+        k = 0
+        while k < 60:
+            try:
+                # 查看日志接受器详情并验证修改成功
+                re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
+                host_actual = re.json()['spec']['forward']['host']
+                port_actual = re.json()['spec']['forward']['port']
+                if port_actual:
+                    break
+            except Exception as e:
+                print(e)
+                k += 1
+                time.sleep(1)
         with assume:
             assert host_actual == host
-        assert port_actual == port
+        with assume:
+            assert port_actual == port
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
