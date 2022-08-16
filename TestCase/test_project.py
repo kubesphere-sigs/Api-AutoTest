@@ -6,7 +6,7 @@ import time
 from pytest import assume
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
-
+from fixtures.project import *
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import project_steps, platform_steps, workspace_steps, cluster_steps
@@ -26,11 +26,8 @@ class TestProject(object):
     user_role = 'users-manager'  # 用户角色
     ws_name = 'ws-for-test-project' + str(commonFunction.get_random())
     project_name = 'test-project' + str(commonFunction.get_random())
-    project_name_for_exel = 'test-project'  # 项目名称，从excle中获取的测试用例中用到了这个项目名称
-    ws_role_name = ws_name + '-viewer'  # 企业空间角色名称
-    project_role_name = 'test-project-role'  # 项目角色名称
-    job_name = 'demo-job'  # 任务名称,在创建和删除任务时使用
-    work_name = 'workload-demo'  # 工作负载名称，在创建、编辑、删除工作负载时使用
+    # 项目名称，从yaml中获取的测试用例中用到了这个项目名称
+    project_name_for_exel = 'test-project-for-exel' + str(commonFunction.get_random())
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/project.yaml')
 
@@ -60,55 +57,8 @@ class TestProject(object):
         project_steps.step_delete_project(self.ws_name, self.project_name_for_exel)
         time.sleep(5)
 
-        # workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的企业空间
-        # platform_steps.step_delete_user(self.user_name)  # 删除创建的用户
-
-    @pytest.fixture
-    def create_project(self):
-        # 创建项目
-        project_name = 'test-pro' + str(commonFunction.get_random())
-        project_steps.step_create_project(self.ws_name, project_name)
-        yield project_name
-        # 删除创建的项目
-        project_steps.step_delete_project(self.ws_name, project_name)
-
-    @pytest.fixture
-    def create_job(self, create_project):
-        # 创建任务
-        job_name = 'job' + str(commonFunction.get_random())
-        project_steps.step_create_job(create_project, job_name)
-        yield job_name
-        # 删除任务
-        project_steps.step_delete_job(create_project, job_name)
-
-    @pytest.fixture
-    def workload_name(self):
-        workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
-        return workload_name
-
-    @pytest.fixture
-    def container_name(self):
-        container_name = 'container-nginx' + str(commonFunction.get_random())  # 容器名称
-        return container_name
-
-    @pytest.fixture
-    def strategy_info(self):
-        # 创建deployment的策略信息
-        strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}
-        return strategy_info
-
-    @pytest.fixture
-    def create_workload(self, create_project, workload_name, container_name, strategy_info):
-        image = 'nginx'  # 镜像名称
-        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
-        volumeMounts = []  # 设置挂载的存储卷
-        replicas = 2  # 副本数
-        volume_info = []
-        # 创建工作负载
-        project_steps.step_create_deploy(project_name=create_project, work_name=workload_name,
-                                         container_name=container_name, ports=port, volumemount=volumeMounts,
-                                         image=image, replicas=replicas, volume_info=volume_info,
-                                         strategy=strategy_info)
+        workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的企业空间
+        platform_steps.step_delete_user(self.user_name)  # 删除创建的用户
 
     @allure.story('存储管理-存储卷')
     @allure.title('创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常')
@@ -368,33 +318,32 @@ class TestProject(object):
     @allure.story("项目设置-项目角色")
     @allure.title('查看project工程默认的所有角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_project_role_all(self):
-        role_name = ''
-        r = project_steps.step_get_role(self.project_name, role_name)
+    def test_project_role_all(self, create_project):
+        r = project_steps.step_get_role(create_project)
         assert r.json()['totalItems'] == 3  # 验证初始的角色数量为3
 
     @allure.story("项目设置-项目角色")
     @allure.title('查找project工程中指定的角色')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_project_role_one(self):
+    def test_project_role_one(self, create_project):
         role_name = 'viewer'
-        r = project_steps.step_get_role(self.project_name, role_name)
+        r = project_steps.step_get_role(create_project, role_name)
         assert r.json()['items'][0]['metadata']['name'] == role_name  # 验证查询的角色结果为viewer
 
     @allure.story("项目设置-项目角色")
     @allure.title('查找project工程中不存在的角色')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_project_role_none(self):
+    def test_project_role_none(self, create_project):
         role_name = 'viewer123'
-        response = project_steps.step_get_role(self.project_name, role_name)
+        response = project_steps.step_get_role(create_project, role_name)
         assert response.json()['totalItems'] == 0  # 验证查询到的结果为空
 
     @allure.story("项目设置-项目角色")
     @allure.title('模糊查找project工程中的角色')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_project_role_fuzzy(self):
+    def test_project_role_fuzzy(self, create_project):
         role_name = 'adm'
-        r = project_steps.step_get_role(self.project_name, role_name)
+        r = project_steps.step_get_role(create_project, role_name)
         assert r.json()['totalItems'] == 1  # 验证查询到的结果数量为2
         # 验证查找到的角色
         assert r.json()['items'][0]['metadata']['name'] == 'admin'
@@ -402,24 +351,24 @@ class TestProject(object):
     @allure.story("项目设置-项目角色")
     @allure.title('在project工程中创建角色')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_project_role_create(self):
+    def test_project_role_create(self, create_project):
         role_name = 'role' + str(commonFunction.get_random())
-        r = project_steps.step_create_role(self.project_name, role_name)
+        r = project_steps.step_create_role(create_project, role_name)
         assert r.json()['metadata']['name'] == role_name  # 验证新建的角色名称
 
     @allure.story("项目设置-项目角色")
     @allure.title('在project工程中创建角色-角色名称为空')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_project_role_create_name_none(self):
+    def test_project_role_create_name_none(self, create_project):
         role_name = ''
-        r = project_steps.step_create_role(self.project_name, role_name)
+        r = project_steps.step_create_role(create_project, role_name)
         # 验证创建角色失败的异常提示信息
         assert r.text.strip() == 'Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required'
 
     @allure.story("项目设置-项目角色")
     @allure.title('在project工程中编辑角色基本信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_project_role_edit_info(self):
+    def test_project_role_edit_info(self, create_project):
         alias_name = '我是别名'  # 别名
         role_name = 'role' + str(commonFunction.get_random())
         # 角色信息
@@ -429,21 +378,21 @@ class TestProject(object):
                        "kubesphere.io/description": "我是描述信息"}
         resourceVersion = ''
         # 创建角色
-        project_steps.step_create_role(self.project_name, role_name)
+        project_steps.step_create_role(create_project, role_name)
 
-        r = project_steps.step_edit_project_role(self.project_name, role_name, resourceVersion, annotations)
+        r = project_steps.step_edit_project_role(create_project, role_name, resourceVersion, annotations)
         assert r.json()['metadata']['annotations']['kubesphere.io/alias-name'] == '我是别名'  # 验证修改后的别名
         assert r.json()['metadata']['annotations']['kubesphere.io/description'] == '我是描述信息'  # 验证修改后的描述信息
 
     @allure.story("项目设置-项目角色")
     @allure.title('在project工程中编辑角色的权限信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_project_role_edit_authority(self):
+    def test_project_role_edit_authority(self, create_project):
         # 创建项目角色
         role_name = 'role' + str(commonFunction.get_random())
-        project_steps.step_create_role(self.project_name, role_name)
+        project_steps.step_create_role(create_project, role_name)
         # 获取角色的resourceVersion
-        response = project_steps.step_get_project_role(self.project_name, role_name)
+        response = project_steps.step_get_project_role(create_project, role_name)
         resourceVersion = response.json()['items'][0]['metadata']['resourceVersion']
         # 编辑角色的权限
         authority = '["role-template-view-basic","role-template-view-volumes","role-template-view-secrets",' \
@@ -451,27 +400,27 @@ class TestProject(object):
         annotations = {"iam.kubesphere.io/aggregation-roles": authority,
                        "kubesphere.io/alias-name": "",
                        "kubesphere.io/creator": "admin", "kubesphere.io/description": ""}
-        r = project_steps.step_edit_project_role(self.project_name, role_name, resourceVersion, annotations)
+        r = project_steps.step_edit_project_role(create_project, role_name, resourceVersion, annotations)
         pytest.assume(
             r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority)  # 验证修改后的权限信息
         # 删除项目角色
-        project_steps.step_project_delete_role(self.project_name, role_name)
+        project_steps.step_project_delete_role(create_project, role_name)
 
     @allure.story("项目设置-项目角色")
     @allure.title('在project工程中删除角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_project_delete_role(self):
+    def test_project_delete_role(self, create_project):
         # 创建角色
         role_name = 'role' + str(commonFunction.get_random())
-        project_steps.step_create_role(self.project_name, role_name)
+        project_steps.step_create_role(create_project, role_name)
         # 验证角色创建成功
-        response = project_steps.step_get_project_role(self.project_name, role_name)
+        response = project_steps.step_get_project_role(create_project, role_name)
         count = response.json()['totalItems']
         pytest.assume(count == 1)
         # 删除角色
-        project_steps.step_project_delete_role(self.project_name, role_name)
+        project_steps.step_project_delete_role(create_project, role_name)
         # 验证角色删除成功
-        r = project_steps.step_get_project_role(self.project_name, role_name)
+        r = project_steps.step_get_project_role(create_project, role_name)
         count_new = r.json()['totalItems']
         assert count_new == 0
 
@@ -605,7 +554,7 @@ class TestProject(object):
     @allure.story('应用负载-任务')
     @allure.title('创建任务，并验证运行正常')
     @allure.description('创建一个计算圆周率的任务')
-    @allure.severity(allure.severity_level.BLOCKER)
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_create_job(self, create_project, create_job):
         # 查看任务详情
         response = project_steps.step_get_job_detail(create_project, create_job)
@@ -1166,7 +1115,7 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('按状态查询存在的DaemonSets')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_daemonsets_by_name(self, workload_name, container_name):
+    def test_get_daemonsets_by_name(self, workload_name, container_name, create_project):
         name = ''
         condition = 'status=running'
         image = 'nginx'  # 镜像名称
@@ -1175,14 +1124,14 @@ class TestProject(object):
         volume_info = []
         volumemount = []
         # 创建工作负载
-        project_steps.step_create_daemonset(project_name=self.project_name, work_name=workload_name,
+        project_steps.step_create_daemonset(project_name=create_project, work_name=workload_name,
                                             container_name=container_name, image=image, ports=port,
                                             volume_info=volume_info, volumemount=volumemount)
         i = 0
         while i < 120:
             try:
                 # 按名称查询DaemonSets
-                response = project_steps.step_get_workload(self.project_name, type=type, condition=condition)
+                response = project_steps.step_get_workload(create_project, type=type, condition=condition)
                 # 获取并验证daemonsets的名称正确
                 name = response.json()['items'][0]['metadata']['name']
                 if name:
@@ -1194,12 +1143,12 @@ class TestProject(object):
         with assume:
             assert name == workload_name
         # 删除创建的daemonsets
-        project_steps.step_delete_workload(project_name=self.project_name, type=type, work_name=workload_name)
+        project_steps.step_delete_workload(project_name=create_project, type=type, work_name=workload_name)
 
     @allure.story('应用负载-服务')
     @allure.title('创建未绑定存储卷的service，并验证运行成功')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_service(self, workload_name, container_name, strategy_info):
+    def wx_test_create_service(self, workload_name, container_name, strategy_info, create_project):
         port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
         image = 'nginx'  # 镜像名称
         condition = 'name=' + workload_name  # 查询deploy和service条件
@@ -1208,20 +1157,20 @@ class TestProject(object):
         replicas = 2  # 副本数
         volume_info = []
         # 创建service
-        project_steps.step_create_service(self.project_name, workload_name, port_service)
+        project_steps.step_create_service(create_project, workload_name, port_service)
         # 创建service绑定的deployment
-        project_steps.step_create_deploy(project_name=self.project_name, work_name=workload_name,
+        project_steps.step_create_deploy(project_name=create_project, work_name=workload_name,
                                          container_name=container_name,
                                          ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
                                          volume_info=volume_info, strategy=strategy_info)
         # 验证service创建成功
-        response = project_steps.step_get_workload(self.project_name, type='services', condition=condition)
+        response = project_steps.step_get_workload(create_project, type='services', condition=condition)
         name = response.json()['items'][0]['metadata']['name']
         with assume:
             assert name == workload_name
         # 验证deploy创建成功
         time.sleep(3)
-        re = project_steps.step_get_workload(self.project_name, type='deployments', condition=condition)
+        re = project_steps.step_get_workload(create_project, type='deployments', condition=condition)
         # 获取并验证deployment的名称正确
         name = re.json()['items'][0]['metadata']['name']
         assert name == workload_name
@@ -1229,20 +1178,20 @@ class TestProject(object):
     @allure.story('应用负载-服务')
     @allure.title('删除service，并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_service(self, workload_name):
+    def test_create_service(self, workload_name, create_project):
         port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
         condition = 'name=' + workload_name  # 查询service的条件
         # 创建service
-        project_steps.step_create_service(self.project_name, workload_name, port_service)
+        project_steps.step_create_service(create_project, workload_name, port_service)
         # 验证service创建成功
-        response = project_steps.step_get_workload(self.project_name, type='services', condition=condition)
+        response = project_steps.step_get_workload(create_project, type='services', condition=condition)
         name = response.json()['items'][0]['metadata']['name']
         with assume:
             assert name == workload_name
         # 删除service
-        project_steps.step_delete_service(self.project_name, workload_name)
+        project_steps.step_delete_service(create_project, workload_name)
         # 验证service删除成功
-        response = project_steps.step_get_workload(self.project_name, type='services', condition=condition)
+        response = project_steps.step_get_workload(create_project, type='services', condition=condition)
         count = response.json()['totalItems']
         assert count == 0
 
@@ -1655,21 +1604,21 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('只设置项目配额-CPU')
-    def test_edit_project_quota_cpu(self):
+    def test_edit_project_quota_cpu(self, create_project):
         # 配额信息
         hard = {"limits.cpu": "11",
                 "requests.cpu": "1"
                 }
         # 获取项目配额的resource_version
-        resource_version = project_steps.step_get_project_quota_version(self.project_name)
+        resource_version = project_steps.step_get_project_quota_version(create_project)
         # 编辑配额信息
-        project_steps.step_edit_project_quota(self.project_name, hard, resource_version)
+        project_steps.step_edit_project_quota(create_project, hard, resource_version)
         hard_actual = ''
         i = 0
         while i < 60:
             try:
                 # 获取修改后的配额信息
-                response = project_steps.step_get_project_quota(self.project_name)
+                response = project_steps.step_get_project_quota(create_project)
                 hard_actual = response.json()['data']['hard']
                 if hard_actual:
                     break
@@ -1682,15 +1631,15 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('设置项目配额-输入错误的cpu信息(包含字母)')
-    def test_edit_project_quota_wrong_cpu(self):
+    def test_edit_project_quota_wrong_cpu(self, create_project):
         # 配额信息,错误的cpu信息
         hard = {"limits.cpu": "11www",
                 "requests.cpu": "1www"
                 }
         # 获取项目配额的resource_version
-        resource_version = project_steps.step_get_project_quota_version(self.project_name)
+        resource_version = project_steps.step_get_project_quota_version(create_project)
         # 编辑配额信息
-        r = project_steps.step_edit_project_quota(self.project_name, hard, resource_version)
+        r = project_steps.step_edit_project_quota(create_project, hard, resource_version)
         # 获取编辑结果
         status = r.json()['status']
         # 验证编辑失败
@@ -1698,15 +1647,15 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('设置项目配额-输入错误的cpu信息(包含负数)')
-    def test_edit_project_quota_wrong_cpu_1(self):
+    def test_edit_project_quota_wrong_cpu_1(self, create_project):
         # 配额信息,错误的cpu信息
         hard = {"limits.cpu": "-11",
                 "requests.cpu": "1"
                 }
         # 获取项目配额的resource_version
-        resource_version = project_steps.step_get_project_quota_version(self.project_name)
+        resource_version = project_steps.step_get_project_quota_version(create_project)
         # 编辑配额信息
-        r = project_steps.step_edit_project_quota(self.project_name, hard, resource_version)
+        r = project_steps.step_edit_project_quota(create_project, hard, resource_version)
         # 获取编辑结果
         status = r.json()['status']
         # 验证编辑失败
@@ -1730,13 +1679,13 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('设置项目配额-输入错误的内存(包含非单位字母)')
-    def test_edit_project_quota_wrong_memory(self):
+    def test_edit_project_quota_wrong_memory(self, create_project):
         # 配额信息
         hard = {"limits.memory": "10Gi", "requests.memory": "1Gi"}
         # 获取项目配额的resource_version
-        resource_version = project_steps.step_get_project_quota_version(self.project_name)
+        resource_version = project_steps.step_get_project_quota_version(create_project)
         # 编辑配额信息
-        response = project_steps.step_edit_project_quota(self.project_name, hard, resource_version)
+        response = project_steps.step_edit_project_quota(create_project, hard, resource_version)
         # 获取编辑结果
         status = response.json()['status']
         # 验证编辑失败
@@ -1744,13 +1693,13 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('设置项目配额-输入错误的内存(包含负数)')
-    def test_edit_project_quota_wrong_memory(self):
+    def test_edit_project_quota_wrong_memory(self, create_project):
         # 配额信息
         hard = {"limits.memory": "-10Gi", "requests.memory": "1Gi"}
         # 获取项目配额的resource_version
-        resource_version = project_steps.step_get_project_quota_version(self.project_name)
+        resource_version = project_steps.step_get_project_quota_version(create_project)
         # 编辑配额信息
-        response = project_steps.step_edit_project_quota(self.project_name, hard, resource_version)
+        response = project_steps.step_edit_project_quota(create_project, hard, resource_version)
         # 获取编辑结果
         status = response.json()['status']
         # 验证编辑失败
@@ -1758,16 +1707,16 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('设置项目配额-CPU、内存')
-    def test_edit_project_quota_cpu_memory(self):
+    def test_edit_project_quota_cpu_memory(self, create_project):
         # 配额信息
         hard = {"limits.memory": "10Gi", "requests.memory": "1Gi",
                 "limits.cpu": "10", "requests.cpu": "1"}
         # 获取项目配额的resource_version
-        resource_version = project_steps.step_get_project_quota_version(self.project_name)
+        resource_version = project_steps.step_get_project_quota_version(create_project)
         # 编辑配额信息
-        project_steps.step_edit_project_quota(self.project_name, hard, resource_version)
+        project_steps.step_edit_project_quota(create_project, hard, resource_version)
         # 获取修改后的配额信息
-        response = project_steps.step_get_project_quota(self.project_name)
+        response = project_steps.step_get_project_quota(create_project)
         hard_actual = response.json()['data']['hard']
         # 验证配额修改成功
         assert hard_actual == hard
@@ -1810,7 +1759,7 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('只设置项目配额-输入错误的资源配额信息(包含字母)')
-    def test_edit_project_quota_wrong_resource(self):
+    def test_edit_project_quota_wrong_resource(self, create_project):
         # 配额信息
         hard = {"count/pods": "100q",
                 "count/deployments.apps": "6",
@@ -1824,9 +1773,9 @@ class TestProject(object):
                 "count/secrets": "8",
                 "count/configmaps": "7"}
         # 获取项目配额的resource_version
-        resource_version = project_steps.step_get_project_quota_version(self.project_name)
+        resource_version = project_steps.step_get_project_quota_version(create_project)
         # 修改资源配额
-        response = project_steps.step_edit_project_quota(self.project_name, hard, resource_version)
+        response = project_steps.step_edit_project_quota(create_project, hard, resource_version)
         # 获取编辑结果
         status = response.json()['status']
         # 验证编辑失败
@@ -1834,7 +1783,7 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('只设置项目配额-输入错误的资源配额信息(包含负数)')
-    def test_edit_project_quota_wrong_resource_1(self):
+    def test_edit_project_quota_wrong_resource_1(self, create_project):
         # 配额信息
         hard = {"count/pods": "-100",
                 "count/deployments.apps": "6",
@@ -1848,9 +1797,9 @@ class TestProject(object):
                 "count/secrets": "8",
                 "count/configmaps": "7"}
         # 获取项目配额的resource_version
-        resource_version = project_steps.step_get_project_quota_version(self.project_name)
+        resource_version = project_steps.step_get_project_quota_version(create_project)
         # 修改资源配额
-        response = project_steps.step_edit_project_quota(self.project_name, hard, resource_version)
+        response = project_steps.step_edit_project_quota(create_project, hard, resource_version)
         # 获取编辑结果
         status = response.json()['status']
         # 验证编辑失败
@@ -1858,7 +1807,7 @@ class TestProject(object):
 
     @allure.story('项目设置-项目配额')
     @allure.title('设置项目配额-cpu、memory、资源配额')
-    def test_edit_project_quota(self):
+    def test_edit_project_quota(self, create_project):
         # 配额信息
         hard = {"count/configmaps": "7",
                 "count/cronjobs.batch": "4",
@@ -1874,20 +1823,20 @@ class TestProject(object):
                 "limits.cpu": "20", "limits.memory": "100Gi",
                 "requests.cpu": "2", "requests.memory": "3Gi"}
         # 获取项目配额的resource_version
-        resource_version = project_steps.step_get_project_quota_version(self.project_name)
+        resource_version = project_steps.step_get_project_quota_version(create_project)
         # 修改资源配额
-        project_steps.step_edit_project_quota(self.project_name, hard, resource_version)
+        project_steps.step_edit_project_quota(create_project, hard, resource_version)
         # 获取修改后的配额信息
-        response = project_steps.step_get_project_quota(self.project_name)
+        response = project_steps.step_get_project_quota(create_project)
         hard_actual = response.json()['data']['hard']
         # 验证配额修改成功
         assert hard_actual == hard
 
     @allure.story('项目设置-资源默认请求')
     @allure.title('只设置资源默认请求-cpu')
-    def test_edit_container_quota_cpu(self):
+    def test_edit_container_quota_cpu(self, create_project, create_ws):
         # 获取资源默认请求
-        response = project_steps.step_get_container_quota(self.project_name, self.ws_name)
+        response = project_steps.step_get_container_quota(create_project, create_ws)
         name = ''
         resource_version = None
         try:
@@ -1902,9 +1851,9 @@ class TestProject(object):
         # 编辑资源默认请求
         limit = {"cpu": "16"}
         request = {"cpu": "2"}
-        project_steps.step_edit_container_quota(self.project_name, name, resource_version, limit, request)
+        project_steps.step_edit_container_quota(create_project, name, resource_version, limit, request)
         # 查询编辑结果
-        response = project_steps.step_get_container_quota(self.project_name, self.ws_name)
+        response = project_steps.step_get_container_quota(create_project, create_ws)
         limit_actual = response.json()['items'][0]['spec']['limits'][0]['default']
         request_actual = response.json()['items'][0]['spec']['limits'][0]['defaultRequest']
         # 验证编辑成功
@@ -1913,9 +1862,9 @@ class TestProject(object):
 
     @allure.story('项目设置-资源默认请求')
     @allure.title('只设置资源默认请求-输入错误的cpu信息(包含字母)')
-    def test_edit_container_quota_wrong_cpu(self):
+    def test_edit_container_quota_wrong_cpu(self, create_project, create_ws):
         # 获取资源默认请求
-        response = project_steps.step_get_container_quota(self.project_name, self.ws_name)
+        response = project_steps.step_get_container_quota(create_project, create_ws)
         name = ''
         resource_version = None
         try:
@@ -1930,7 +1879,7 @@ class TestProject(object):
         # 编辑资源默认请求
         limit = {"cpu": "16aa"}
         request = {"cpu": "2"}
-        r = project_steps.step_edit_container_quota(self.project_name, name, resource_version, limit, request)
+        r = project_steps.step_edit_container_quota(create_project, name, resource_version, limit, request)
         # 获取编辑结果
         status = r.json()['status']
         # 验证编辑失败
@@ -1938,9 +1887,9 @@ class TestProject(object):
 
     @allure.story('项目设置-资源默认请求')
     @allure.title('只设置资源默认请求-输入错误的cpu信息(包含负数)')
-    def test_edit_container_quota_wrong_cpu_1(self):
+    def test_edit_container_quota_wrong_cpu_1(self, create_project, create_ws):
         # 获取资源默认请求
-        response = project_steps.step_get_container_quota(self.project_name, self.ws_name)
+        response = project_steps.step_get_container_quota(create_project, create_ws)
         name = ''
         resource_version = None
         try:
@@ -1955,7 +1904,7 @@ class TestProject(object):
         # 编辑资源默认请求
         limit = {"cpu": "-16"}
         request = {"cpu": "2"}
-        r = project_steps.step_edit_container_quota(self.project_name, name, resource_version, limit, request)
+        r = project_steps.step_edit_container_quota(create_project, name, resource_version, limit, request)
         # 获取编辑结果
         status = r.json()['status']
         # 验证编辑失败
@@ -1963,9 +1912,9 @@ class TestProject(object):
 
     @allure.story('项目设置-资源默认请求')
     @allure.title('只设置资源默认请求-内存')
-    def test_edit_container_quota_memory(self):
+    def test_edit_container_quota_memory(self, create_project, create_ws):
         # 获取资源默认请求
-        response = project_steps.step_get_container_quota(self.project_name, self.ws_name)
+        response = project_steps.step_get_container_quota(create_project, create_ws)
         name = ''
         resource_version = None
         try:
@@ -1980,9 +1929,9 @@ class TestProject(object):
         # 编辑资源默认请求
         limit = {"memory": "1000Mi"}
         request = {"memory": "1Mi"}
-        project_steps.step_edit_container_quota(self.project_name, name, resource_version, limit, request)
+        project_steps.step_edit_container_quota(create_project, name, resource_version, limit, request)
         # 查询编辑结果
-        response = project_steps.step_get_container_quota(self.project_name, self.ws_name)
+        response = project_steps.step_get_container_quota(create_project, create_ws)
         limit_actual = response.json()['items'][0]['spec']['limits'][0]['default']
         request_actual = response.json()['items'][0]['spec']['limits'][0]['defaultRequest']
         # 验证编辑成功
@@ -1993,9 +1942,9 @@ class TestProject(object):
 
     @allure.story('项目设置-资源默认请求')
     @allure.title('只设置资源默认请求-输入错误的内存信息(包含非单位字母)')
-    def test_edit_container_quota_wrong_memory(self):
+    def test_edit_container_quota_wrong_memory(self, create_project, create_ws):
         # 获取资源默认请求
-        response = project_steps.step_get_container_quota(self.project_name, self.ws_name)
+        response = project_steps.step_get_container_quota(create_project, create_ws)
         name = ''
         resource_version = None
         try:
@@ -2010,7 +1959,7 @@ class TestProject(object):
         # 编辑资源默认请求
         limit = {"memory": "100aMi"}
         request = {"memory": "1Mi"}
-        r = project_steps.step_edit_container_quota(self.project_name, name, resource_version, limit, request)
+        r = project_steps.step_edit_container_quota(create_project, name, resource_version, limit, request)
         # 获取编辑结果
         status = r.json()['status']
         # 验证编辑失败
@@ -2018,9 +1967,9 @@ class TestProject(object):
 
     @allure.story('项目设置-资源默认请求')
     @allure.title('只设置资源默认请求-输入错误的内存信息(包含负数)')
-    def test_edit_container_quota_wrong_memory_1(self):
+    def test_edit_container_quota_wrong_memory_1(self, create_project, create_ws):
         # 获取资源默认请求
-        response = project_steps.step_get_container_quota(self.project_name, self.ws_name)
+        response = project_steps.step_get_container_quota(create_project, create_ws)
         name = ''
         resource_version = None
         try:
@@ -2035,7 +1984,7 @@ class TestProject(object):
         # 编辑资源默认请求
         limit = {"memory": "-100Mi"}
         request = {"memory": "1Mi"}
-        r = project_steps.step_edit_container_quota(self.project_name, name, resource_version, limit, request)
+        r = project_steps.step_edit_container_quota(create_project, name, resource_version, limit, request)
         # 获取编辑结果
         status = r.json()['status']
         # 验证编辑失败
@@ -2043,9 +1992,9 @@ class TestProject(object):
 
     @allure.story('项目设置-资源默认请求')
     @allure.title('只设置资源默认请求-内存、cpu')
-    def test_edit_container_quota_memory(self):
+    def test_edit_container_quota_memory(self, create_project, create_ws):
         # 获取资源默认请求
-        response = project_steps.step_get_container_quota(self.project_name, self.ws_name)
+        response = project_steps.step_get_container_quota(create_project, create_ws)
         name = ''
         resource_version = None
         try:
@@ -2060,9 +2009,9 @@ class TestProject(object):
         # 编辑资源默认请求
         limit = {"cpu": "15", "memory": "1000Mi"}
         request = {"cpu": "2", "memory": "1Mi"}
-        project_steps.step_edit_container_quota(self.project_name, name, resource_version, limit, request)
+        project_steps.step_edit_container_quota(create_project, name, resource_version, limit, request)
         # 查询编辑结果
-        response = project_steps.step_get_container_quota(self.project_name, self.ws_name)
+        response = project_steps.step_get_container_quota(create_project, create_ws)
         limit_actual = response.json()['items'][0]['spec']['limits'][0]['default']
         request_actual = response.json()['items'][0]['spec']['limits'][0]['defaultRequest']
         # 验证编辑成功
@@ -2089,18 +2038,18 @@ class TestProject(object):
     @allure.story('项目设置-日志收集')
     @allure.title('开启日志收集，然后将其关闭')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_open_logsidecar(self):
+    def test_open_logsidecar(self, create_project, create_ws):
         # 开启日志收集
-        project_steps.step_set_logsidecar(self.ws_name, self.project_name, status='enabled')
+        project_steps.step_set_logsidecar(create_ws, create_project, status='enabled')
         # 查看并验证日志收集状态
-        response = project_steps.step_get_status_logsidecar(self.project_name)
+        response = project_steps.step_get_status_logsidecar(create_project)
         status_actual = response.json()['metadata']['labels']['logging.kubesphere.io/logsidecar-injection']
         with assume:
             assert status_actual == 'enabled'
         # 关闭日志收集
-        project_steps.step_set_logsidecar(self.ws_name, self.project_name, status='disabled')
+        project_steps.step_set_logsidecar(create_ws, create_project, status='disabled')
         # 查看并验证日志收集状态
-        response = project_steps.step_get_status_logsidecar(self.project_name)
+        response = project_steps.step_get_status_logsidecar(create_project)
         status_actual = response.json()['metadata']['labels']['logging.kubesphere.io/logsidecar-injection']
         assert status_actual == 'disabled'
 
@@ -2124,8 +2073,12 @@ class TestProject(object):
 
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
-        # 执行excel中的用例
-        commonFunction.request_resource(url, params, data, story, title, method, severity, condition, except_result)
+        # 将测试用例中的变量替换成指定内容
+        targets = commonFunction.replace_str(url, params, data, condition, except_result,
+                                             actual_value='${project_name}', expect_value=self.project_name_for_exel)
+        # 使用修改过的内容进行测试
+        commonFunction.request_resource(targets[0], targets[1], targets[2], story, title, method, severity,
+                                        targets[3], targets[4])
 
 
 if __name__ == "__main__":
