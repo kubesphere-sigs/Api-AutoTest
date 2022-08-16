@@ -553,8 +553,13 @@ def step_get_sa(project_name, sa_name):
 
 
 @allure.step('查询项目的角色信息')
-def step_get_role(project_name, role_name):
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + '/roles?name=' + role_name + '&annotation=kubesphere.io%2Fcreator'
+def step_get_role(project_name, *role_name):
+    if role_name:
+        for i in role_name:
+            path = '/roles?name=' + str(i) + '&annotation=kubesphere.io%2Fcreator'
+    else:
+        path = '/roles?annotation=kubesphere.io%2Fcreator'
+    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + project_name + path
     response = requests.get(url, headers=get_header())
     return response
 
