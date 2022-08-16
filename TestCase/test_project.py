@@ -52,8 +52,8 @@ class TestProject(object):
             if r.json()['totalItems'] == 0:
                 break
             else:
-                time.sleep(3)
-                i += 3
+                time.sleep(10)
+                i += 10
         project_steps.step_delete_project(self.ws_name, self.project_name_for_exel)
         time.sleep(5)
 
@@ -108,8 +108,8 @@ class TestProject(object):
             if re.json()['totalItems'] == 0:
                 break
             else:
-                time.sleep(3)
-                j += 3
+                time.sleep(10)
+                j += 10
         project_steps.step_delete_pvc(create_project, volume_name)
         # 等待pvc删除成功，再删除项目
         k = 0
@@ -118,8 +118,8 @@ class TestProject(object):
             if r.json()['totalItems'] == 0:
                 break
             else:
-                time.sleep(3)
-                k += 3
+                time.sleep(10)
+                k += 10
 
     @allure.story('存储管理-存储卷')
     @allure.title('创建存储卷，然后将存储卷绑定到新建的statefulsets上，最后验证资源和存储卷的状态正常')
@@ -156,8 +156,8 @@ class TestProject(object):
             if readyReplicas == replicas:
                 break
             else:
-                time.sleep(1)
-                i += 1
+                time.sleep(10)
+                i += 10
         # 获取存储卷状态
         response = project_steps.step_get_volume_status(create_project, volume_name)
         status = response.json()['items'][0]['status']['phase']
@@ -172,8 +172,8 @@ class TestProject(object):
             if re.json()['totalItems'] == 0:
                 break
             else:
-                time.sleep(3)
-                j += 3
+                time.sleep(10)
+                j += 10
         project_steps.step_delete_pvc(create_project, volume_name)
         # 等待pvc删除成功，再删除项目
         k = 0
@@ -182,8 +182,8 @@ class TestProject(object):
             if r.json()['totalItems'] == 0:
                 break
             else:
-                time.sleep(3)
-                k += 3
+                time.sleep(10)
+                k += 10
 
     @allure.story('存储管理-存储卷')
     @allure.title('创建daemonsets并使用hostpath存储卷，最后验证资源和存储卷的状态正常')
@@ -233,8 +233,8 @@ class TestProject(object):
             if re.json()['totalItems'] == 0:
                 break
             else:
-                time.sleep(3)
-                j += 3
+                time.sleep(10)
+                j += 10
         project_steps.step_delete_pvc(create_project, volume_name)
         # 等待pvc删除成功，再删除项目
         k = 0
@@ -243,8 +243,8 @@ class TestProject(object):
             if r.json()['totalItems'] == 0:
                 break
             else:
-                time.sleep(3)
-                k += 3
+                time.sleep(10)
+                k += 10
 
     @allure.story('存储管理-存储卷')
     @allure.title('创建存储卷，然后将存储卷绑定到新建的service上，最后验证资源和存储卷的状态正常')
@@ -302,8 +302,8 @@ class TestProject(object):
             if re.json()['totalItems'] == 0:
                 break
             else:
-                time.sleep(3)
-                j += 3
+                time.sleep(10)
+                j += 10
         project_steps.step_delete_pvc(create_project, volume_name)
         # 等待pvc删除成功，再删除项目
         k = 0
@@ -312,8 +312,8 @@ class TestProject(object):
             if r.json()['totalItems'] == 0:
                 break
             else:
-                time.sleep(3)
-                k += 3
+                time.sleep(10)
+                k += 10
 
     @allure.story("项目设置-项目角色")
     @allure.title('查看project工程默认的所有角色')
@@ -462,7 +462,6 @@ class TestProject(object):
     @allure.title('邀请用户到project')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_invite_user(self, create_project):
-        time.sleep(3)
         # 将用户邀请到项目
         role = 'viewer'
         project_steps.step_invite_member(create_project, self.user_name, role)
@@ -477,6 +476,8 @@ class TestProject(object):
                     break
             except Exception as e:
                 print(e)
+                i += 5
+                time.sleep(5)
         pytest.assume(role_actual == role)
 
     # 用例的执行结果应当为false。接口没有对不存在的用户做限制
@@ -517,6 +518,8 @@ class TestProject(object):
                     break
             except Exception as e:
                 print(e)
+                i += 5
+                time.sleep(5)
         pytest.assume(name == self.user_name)
         # 移出项目成员
         project_steps.step_remove_project_member(create_project, self.user_name)
@@ -752,8 +755,8 @@ class TestProject(object):
                     break
             except Exception as e:
                 print(e)
-                i += 1
-                time.sleep(1)
+                i += 3
+                time.sleep(3)
         # 运行中的pod数为2
         pytest.assume(count == 2)
         # 删除任务
@@ -768,11 +771,16 @@ class TestProject(object):
     def test_delete_job(self, create_project, create_job):
         i = 0
         while i < 200:
-            # 查看任务详情，并获取其完成pod数量,当完成数量为2时，表示已完成
-            re = project_steps.step_get_job_detail(create_project, create_job)
-            completions = re.json()['items'][0]['spec']['completions']
-            if completions == 2:
-                break
+            try:
+                # 查看任务详情，并获取其完成pod数量,当完成数量为2时，表示已完成
+                re = project_steps.step_get_job_detail(create_project, create_job)
+                completions = re.json()['items'][0]['spec']['completions']
+                if completions == 2:
+                    break
+            except Exception as e:
+                print(e)
+                i += 5
+                time.sleep(5)
         # 删除任务,并获取结果
         project_steps.step_delete_job(create_project, create_job)
         # 在列表中查询任务，验证查询结果为空
@@ -805,8 +813,8 @@ class TestProject(object):
             # 验证资源的所有副本已就绪
             if 'unavailableReplicas' not in status:
                 break
-            time.sleep(1)
-            i = i + 1
+            time.sleep(3)
+            i = i + 3
         pytest.assume('unavailableReplicas' not in status)
         # 删除工作负载
         project_steps.step_delete_workload(create_project, 'deployments', workload_name)
@@ -913,8 +921,8 @@ class TestProject(object):
                     break
             except Exception as e:
                 print(e)
-            time.sleep(1)
-            i = i + 1
+            time.sleep(3)
+            i = i + 3
         pytest.assume(readyReplicas == replicas)
         # 删除工作负载
         project_steps.step_delete_workload(project_name=create_project, type='statefulsets', work_name=workload_name)
@@ -996,8 +1004,9 @@ class TestProject(object):
                     break
             except Exception as e:
                 print(e)
-            i += 1
-            time.sleep(1)
+            finally:
+                i += 3
+                time.sleep(3)
         # 按状态精确查询statefulsets
         response = project_steps.step_get_workload(create_project, type=type, condition=condition)
         # 获取工作负载的名称
@@ -1093,7 +1102,6 @@ class TestProject(object):
                     break
             except Exception as e:
                 print(e)
-            finally:
                 i += 3
                 time.sleep(3)
         with assume:
@@ -1549,10 +1557,11 @@ class TestProject(object):
                 if response.json()['totalItems'] > 0:
                     sa_secret = response.json()['items'][0]['secrets'][0]['name']
                     break
-                i += 3
-                time.sleep(3)
             except Exception as e:
                 print(e)
+            finally:
+                i += 3
+                time.sleep(3)
         # 步骤3：查询sa详情
         project_steps.step_get_sa_detail(project_name=create_project, sa_name=sa_name)
         # 步骤4：查询sa的密钥信息并返回密钥类型
@@ -1749,10 +1758,10 @@ class TestProject(object):
                 hard_actual = response.json()['data']['hard']
                 if hard_actual:
                     break
-                i += 3
-                time.sleep(3)
             except Exception as e:
                 print(e)
+                i += 3
+                time.sleep(3)
         # 验证配额修改成功
         with assume:
             assert hard_actual == hard
