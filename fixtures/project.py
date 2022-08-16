@@ -9,7 +9,7 @@ def create_ws():
     # 创建企业空间
     ws_name = 'test-ws' + str(commonFunction.get_random())
     workspace_steps.step_create_workspace(ws_name)
-    print(ws_name)
+    time.sleep(2)
     yield ws_name
     # 删除创建的企业空间
     workspace_steps.step_delete_workspace(ws_name)
@@ -20,7 +20,7 @@ def create_project(create_ws):
     # 创建项目
     project_name = 'test-pro' + str(commonFunction.get_random())
     project_steps.step_create_project(create_ws, project_name)
-    print(project_name)
+    time.sleep(2)
     yield project_name
     # 删除创建的项目
     project_steps.step_delete_project(create_ws, project_name)
