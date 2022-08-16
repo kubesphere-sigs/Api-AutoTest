@@ -319,6 +319,7 @@ class TestProject(object):
     @allure.title('查看project工程默认的所有角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_role_all(self, create_project):
+        # 查看项目中的所有角色
         r = project_steps.step_get_role(create_project)
         assert r.json()['totalItems'] == 3  # 验证初始的角色数量为3
 
@@ -344,20 +345,24 @@ class TestProject(object):
     def test_project_role_fuzzy(self, create_project):
         role_name = 'adm'
         r = project_steps.step_get_role(create_project, role_name)
-        assert r.json()['totalItems'] == 1  # 验证查询到的结果数量为2
+        assert r.json()['totalItems'] == 1  # 验证查询到的结果数量为1
         # 验证查找到的角色
         assert r.json()['items'][0]['metadata']['name'] == 'admin'
 
     @allure.story("项目设置-项目角色")
-    @allure.title('在project工程中创建角色')
+    @allure.title('在项目中创建角色')
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_role_create(self, create_project):
         role_name = 'role' + str(commonFunction.get_random())
-        r = project_steps.step_create_role(create_project, role_name)
-        assert r.json()['metadata']['name'] == role_name  # 验证新建的角色名称
+        # 创建角色
+        project_steps.step_create_role(create_project, role_name)
+        time.sleep(1)
+        # 查看角色
+        r = project_steps.step_get_role(create_project, role_name)
+        assert r.json()['totalItems'] == 1
 
     @allure.story("项目设置-项目角色")
-    @allure.title('在project工程中创建角色-角色名称为空')
+    @allure.title('在项目中创建角色-角色名称为空')
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_role_create_name_none(self, create_project):
         role_name = ''
@@ -366,7 +371,7 @@ class TestProject(object):
         assert r.text.strip() == 'Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required'
 
     @allure.story("项目设置-项目角色")
-    @allure.title('在project工程中编辑角色基本信息')
+    @allure.title('项目中编辑角色基本信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_role_edit_info(self, create_project):
         alias_name = '我是别名'  # 别名
@@ -379,13 +384,15 @@ class TestProject(object):
         resourceVersion = ''
         # 创建角色
         project_steps.step_create_role(create_project, role_name)
-
-        r = project_steps.step_edit_project_role(create_project, role_name, resourceVersion, annotations)
-        assert r.json()['metadata']['annotations']['kubesphere.io/alias-name'] == '我是别名'  # 验证修改后的别名
-        assert r.json()['metadata']['annotations']['kubesphere.io/description'] == '我是描述信息'  # 验证修改后的描述信息
+        # 编辑角色
+        project_steps.step_edit_project_role(create_project, role_name, resourceVersion, annotations)
+        # 查看角色
+        r = project_steps.step_get_role(create_project, role_name)
+        assert r.json()['items'][0]['metadata']['annotations']['kubesphere.io/alias-name'] == alias_name  # 验证修改后的别名
+        assert r.json()['items'][0]['metadata']['annotations']['kubesphere.io/description'] == '我是描述信息'  # 验证修改后的描述信息
 
     @allure.story("项目设置-项目角色")
-    @allure.title('在project工程中编辑角色的权限信息')
+    @allure.title('项目中编辑角色的权限信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_role_edit_authority(self, create_project):
         # 创建项目角色
@@ -400,20 +407,24 @@ class TestProject(object):
         annotations = {"iam.kubesphere.io/aggregation-roles": authority,
                        "kubesphere.io/alias-name": "",
                        "kubesphere.io/creator": "admin", "kubesphere.io/description": ""}
-        r = project_steps.step_edit_project_role(create_project, role_name, resourceVersion, annotations)
+        project_steps.step_edit_project_role(create_project, role_name, resourceVersion, annotations)
+        time.sleep(1)
+        # 查看角色
+        r = project_steps.step_get_role(create_project, role_name)
         pytest.assume(
-            r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority)  # 验证修改后的权限信息
+            r.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority)  # 验证修改后的权限信息
         # 删除项目角色
         project_steps.step_project_delete_role(create_project, role_name)
 
     @allure.story("项目设置-项目角色")
-    @allure.title('在project工程中删除角色')
+    @allure.title('项目中删除角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_delete_role(self, create_project):
         # 创建角色
         role_name = 'role' + str(commonFunction.get_random())
         project_steps.step_create_role(create_project, role_name)
         # 验证角色创建成功
+        time.sleep(3)
         response = project_steps.step_get_project_role(create_project, role_name)
         count = response.json()['totalItems']
         pytest.assume(count == 1)
@@ -461,16 +472,16 @@ class TestProject(object):
     @allure.story("项目设置-项目成员")
     @allure.title('邀请用户到project')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_project_invite_user(self, create_project):
+    def test_project_invite_user(self):
         # 将用户邀请到项目
         role = 'viewer'
-        project_steps.step_invite_member(create_project, self.user_name, role)
+        project_steps.step_invite_member(self.project_name, self.user_name, role)
         role_actual = ''
         i = 0
         while i < 60:
             try:
                 # 查看项目成员，并获取其角色
-                response = project_steps.step_get_project_member(create_project, self.user_name)
+                response = project_steps.step_get_project_member(self.project_name, self.user_name)
                 role_actual = response.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/role']
                 if role_actual:
                     break
@@ -503,16 +514,16 @@ class TestProject(object):
     @allure.story("项目设置-项目成员")
     @allure.title('删除project的成员')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_project_delete_user(self, create_project):
+    def test_project_delete_user(self):
         # 将用户邀请到项目
         role = 'admin'
-        project_steps.step_invite_member(create_project, self.user_name, role)
+        project_steps.step_invite_member(self.project_name, self.user_name, role)
         # 查看项目成员，并验证添加成功
         name = ''
         i = 0
         while i < 60:
             try:
-                res = project_steps.step_get_project_member(create_project, self.user_name)
+                res = project_steps.step_get_project_member(self.project_name, self.user_name)
                 name = res.json()['items'][0]['metadata']['name']
                 if name:
                     break
@@ -522,33 +533,33 @@ class TestProject(object):
                 time.sleep(5)
         pytest.assume(name == self.user_name)
         # 移出项目成员
-        project_steps.step_remove_project_member(create_project, self.user_name)
+        project_steps.step_remove_project_member(self.project_name, self.user_name)
         # 查询被移出的成员
-        response = project_steps.step_get_project_member(create_project, self.user_name)
+        response = project_steps.step_get_project_member(self.project_name, self.user_name)
         count = response.json()['totalItems']
         # 验证查询结果为空
         pytest.assume(count == 0)
 
     # 以下4条用例的执行结果应当为false，未已test开头表示未执行。接口没有对角色的名称做限制
-    @allure.title('在project工程中创建角色-名称中包含大写字母')
+    @allure.title('项目中创建角色-名称中包含大写字母')
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_role_create_name(self):
         project_role_name = 'WX'
         project_steps.step_create_role(self.project_name, project_role_name)
 
-    @allure.title('在project工程中创建角色-名称中包含非分隔符("-")的特殊符号')
+    @allure.title('项目中创建角色-名称中包含非分隔符("-")的特殊符号')
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_role_create_name1(self):
         project_role_name = 'w@x'
         project_steps.step_create_role(self.project_name, project_role_name)
 
-    @allure.title('在project工程中创建角色-名称以分隔符("-")开头')
+    @allure.title('项目中创建角色-名称以分隔符("-")开头')
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_role_create_name2(self):
         project_role_name = '-wx'
         project_steps.step_create_role(self.project_name, project_role_name)
 
-    @allure.title('在project工程中创建角色-名称以分隔符("-")结尾')
+    @allure.title('项目中创建角色-名称以分隔符("-")结尾')
     @allure.severity(allure.severity_level.CRITICAL)
     def wx_test_project_role_create_name3(self):
         project_role_name = 'wx-'
