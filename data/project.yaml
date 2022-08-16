@@ -1,27 +1,27 @@
 - - 1
-  - /api/v1/namespaces/test-project/resourcequotas
+  - /api/v1/namespaces/${project_name}/resourcequotas
   - ''
-  - '{"apiVersion":"v1","kind":"ResourceQuota","metadata":{"name":"test-project","namespace":"test-project","cluster":"default","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"hard":{"limits.cpu":"2","requests.cpu":"1","requests.memory":"2Gi"}}}'
+  - '{"apiVersion":"v1","kind":"ResourceQuota","metadata":{"name":"${project_name}","namespace":"${project_name}","cluster":"default","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"hard":{"limits.cpu":"2","requests.cpu":"1","requests.memory":"2Gi"}}}'
   - 项目设置-基本信息
-  - 设置项目test-project配额
+  - 设置项目${project_name}配额
   - post
   - critical
   - r.json()['spec']['hard']['requests.memory']
   - 2Gi
 - - 2
-  - /api/v1/namespaces/test-project/limitranges
+  - /api/v1/namespaces/${project_name}/limitranges
   - ''
   - '{"apiVersion":"v1","kind":"LimitRange","metadata":{"annotations":{"kubesphere.io/creator":"admin"}},"spec":{"limits":[{"default":{"cpu":"2","memory":"4000Mi"},"defaultRequest":{"cpu":"1","memory":"500Mi"},"type":"Container"}]}}'
   - 项目设置-基本信息
-  - 设置项目test-project容器资源默认配置
+  - 设置项目${project_name}容器资源默认配置
   - post
   - critical
   - r.json()['spec']['limits'][0]['default']['memory']
   - 4000Mi
 - - 3
-  - /api/v1/namespaces/test-project/persistentvolumeclaims
+  - /api/v1/namespaces/${project_name}/persistentvolumeclaims
   - ''
-  - '{"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"namespace":"test-project","name":"test@volume1","labels":{},"annotations":{"kubesphere.io/creator":"admin"}},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"csi-standard"},"create_way":"storageclass"}'
+  - '{"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"namespace":"${project_name}","name":"test@volume1","labels":{},"annotations":{"kubesphere.io/creator":"admin"}},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"csi-standard"},"create_way":"storageclass"}'
   - 存储管理-存储卷
   - 创建存储卷时输入不符合规则的存储卷名称(包含符号@)
   - post
@@ -32,9 +32,9 @@
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
 - - 4
-  - /api/v1/namespaces/test-project/persistentvolumeclaims
+  - /api/v1/namespaces/${project_name}/persistentvolumeclaims
   - ''
-  - '{"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"namespace":"test-project","name":"testAvolume1","labels":{},"annotations":{"kubesphere.io/creator":"admin"}},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"csi-standard"},"create_way":"storageclass"}'
+  - '{"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"namespace":"${project_name}","name":"testAvolume1","labels":{},"annotations":{"kubesphere.io/creator":"admin"}},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"csi-standard"},"create_way":"storageclass"}'
   - 存储管理-存储卷
   - 创建存储卷时输入不符合规则的存储卷名称(包含大写字母)
   - post
@@ -45,9 +45,9 @@
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
 - - 5
-  - /api/v1/namespaces/test-project/persistentvolumeclaims
+  - /api/v1/namespaces/${project_name}/persistentvolumeclaims
   - ''
-  - '{"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"namespace":"test-project","name":"-testvolume1","labels":{},"annotations":{"kubesphere.io/creator":"admin"}},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"csi-standard"},"create_way":"storageclass"}'
+  - '{"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"namespace":"${project_name}","name":"-testvolume1","labels":{},"annotations":{"kubesphere.io/creator":"admin"}},"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"csi-standard"},"create_way":"storageclass"}'
   - 存储管理-存储卷
   - 创建存储卷时输入不符合规则的存储卷名称(以分隔符开头)
   - post
@@ -58,7 +58,7 @@
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
 - - 6
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/persistentvolumeclaims
   - name=testvolume
   - ''
   - 存储管理-存储卷
@@ -68,7 +68,7 @@
   - r.json()['items'][0]['metadata']['name']
   - testvolume
 - - 7
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/persistentvolumeclaims
   - name=estvolume
   - ''
   - 存储管理-存储卷
@@ -78,7 +78,7 @@
   - r.json()['items'][0]['metadata']['name']
   - testvolume
 - - 8
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/persistentvolumeclaims
   - name=wx1
   - ''
   - 存储管理-存储卷
@@ -88,7 +88,7 @@
   - r.json()['totalItems']
   - 0
 - - 9
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/persistentvolumeclaims
   - status=lost
   - ''
   - 存储管理-存储卷
@@ -98,39 +98,39 @@
   - r.json()['totalItems']
   - 0
 - - 10
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/persistentvolumeclaims
-  - name=test-project-volume&status=lost
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/persistentvolumeclaims
+  - name=${project_name}-volume&status=lost
   - ''
   - 存储管理-存储卷
   - 按名称和状态组合查询不存在的存储卷
   - get
-  - normal
+  - normalf
   - r.json()['totalItems']
   - 0
 - - 11
-  - /api/v1/namespaces/test-project/persistentvolumeclaims/test-project-vol
+  - /api/v1/namespaces/${project_name}/persistentvolumeclaims/${project_name}-vol
   - ''
   - ''
   - 存储管理-存储卷
-  - 在项目test-project中删除不存在的存储卷test-project-vol
+  - 在项目${project_name}中删除不存在的存储卷${project_name}-vol
   - delete
   - critical
   - r.json()['message']
-  - persistentvolumeclaims "test-project-vol" not found
+  - persistentvolumeclaims "${project_name}-vol" not found
 - - 12
-  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws-for-test-project/namespaces/wx-pro
+  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws-for-${project_name}/namespaces/wx-pro
   - ''
   - ''
   - 项目设置-基本信息
-  - 在企业空间ws-for-test-project删除不存在的项目wx-pro
+  - 在企业空间ws-for-${project_name}删除不存在的项目wx-pro
   - delete
   - critical
   - r.text
   - namespace "wx-pro" not found
 - - 13
-  - /api/v1/namespaces/test-project/secrets
+  - /api/v1/namespaces/${project_name}/secrets
   - ''
-  - '{"apiVersion":"v1","kind":"Secret","metadata":{"namespace":"test-project","labels":{},"name":"wx-secret","annotations":{"kubesphere.io/creator":"admin"}},"type":"Opaque","spec":{"template":{"metadata":{"labels":{}}}},"data":{"wx-key":"d3gtdmFsdWU="}}'
+  - '{"apiVersion":"v1","kind":"Secret","metadata":{"namespace":"${project_name}","labels":{},"name":"wx-secret","annotations":{"kubesphere.io/creator":"admin"}},"type":"Opaque","spec":{"template":{"metadata":{"labels":{}}}},"data":{"wx-key":"d3gtdmFsdWU="}}'
   - 配置中心-秘钥
   - 创建默认类型秘钥
   - post
@@ -138,9 +138,9 @@
   - r.json()['metadata']['name']
   - wx-secret
 - - 14
-  - /api/v1/namespaces/test-project/secrets
+  - /api/v1/namespaces/${project_name}/secrets
   - ''
-  - '{"apiVersion":"v1","kind":"Secret","metadata":{"namespace":"test-project","labels":{},"name":"wx-secret1","annotations":{"kubesphere.io/creator":"admin"}},"type":"kubernetes.io/tls","spec":{"template":{"metadata":{"labels":{}}}},"data":{"tls.crt":"cGluZ3poZW5n","tls.key":"c2l5YW8="}}'
+  - '{"apiVersion":"v1","kind":"Secret","metadata":{"namespace":"${project_name}","labels":{},"name":"wx-secret1","annotations":{"kubesphere.io/creator":"admin"}},"type":"kubernetes.io/tls","spec":{"template":{"metadata":{"labels":{}}}},"data":{"tls.crt":"cGluZ3poZW5n","tls.key":"c2l5YW8="}}'
   - 配置中心-秘钥
   - 创建TLS类型的秘钥
   - post
@@ -148,9 +148,9 @@
   - r.json()['data']['tls.crt']
   - cGluZ3poZW5n
 - - 15
-  - /api/v1/namespaces/test-project/secrets
+  - /api/v1/namespaces/${project_name}/secrets
   - ''
-  - '{"apiVersion":"v1","kind":"Secret","metadata":{"namespace":"test-project","labels":{},"name":"wx-secret2","annotations":{"kubesphere.io/creator":"admin"}},"type":"kubernetes.io/dockerconfigjson","spec":{"template":{"metadata":{"labels":{}}}},"data":{".dockerconfigjson":"eyJhdXRocyI6eyJodHRwczovL3d4Ijp7InVzZXJuYW1lIjoicm9vdCIsInBhc3N3b3JkIjoiYWRtaW4iLCJlbWFpbCI6IiIsImF1dGgiOiJjbTl2ZERwaFpHMXBiZz09In19fQ=="}}'
+  - '{"apiVersion":"v1","kind":"Secret","metadata":{"namespace":"${project_name}","labels":{},"name":"wx-secret2","annotations":{"kubesphere.io/creator":"admin"}},"type":"kubernetes.io/dockerconfigjson","spec":{"template":{"metadata":{"labels":{}}}},"data":{".dockerconfigjson":"eyJhdXRocyI6eyJodHRwczovL3d4Ijp7InVzZXJuYW1lIjoicm9vdCIsInBhc3N3b3JkIjoiYWRtaW4iLCJlbWFpbCI6IiIsImF1dGgiOiJjbTl2ZERwaFpHMXBiZz09In19fQ=="}}'
   - 配置中心-秘钥
   - 创建镜像仓库秘钥
   - post
@@ -158,9 +158,9 @@
   - r.json()['data']['.dockerconfigjson']
   - eyJhdXRocyI6eyJodHRwczovL3d4Ijp7InVzZXJuYW1lIjoicm9vdCIsInBhc3N3b3JkIjoiYWRtaW4iLCJlbWFpbCI6IiIsImF1dGgiOiJjbTl2ZERwaFpHMXBiZz09In19fQ==
 - - 16
-  - /api/v1/namespaces/test-project/secrets
+  - /api/v1/namespaces/${project_name}/secrets
   - ''
-  - '{"apiVersion":"v1","kind":"Secret","metadata":{"namespace":"test-project","labels":{},"name":"wx-secret3","annotations":{"kubesphere.io/creator":"admin"}},"type":"kubernetes.io/basic-auth","spec":{"template":{"metadata":{"labels":{}}}},"data":{"username":"cm9vdA==","password":"YWRtaW5AMTIz"}}'
+  - '{"apiVersion":"v1","kind":"Secret","metadata":{"namespace":"${project_name}","labels":{},"name":"wx-secret3","annotations":{"kubesphere.io/creator":"admin"}},"type":"kubernetes.io/basic-auth","spec":{"template":{"metadata":{"labels":{}}}},"data":{"username":"cm9vdA==","password":"YWRtaW5AMTIz"}}'
   - 配置中心-秘钥
   - 创建账号密码秘钥
   - post
@@ -168,9 +168,9 @@
   - r.json()['data']['username']
   - cm9vdA==
 - - 17
-  - /api/v1/namespaces/test-project/secrets
+  - /api/v1/namespaces/${project_name}/secrets
   - ''
-  - '{"apiVersion":"v1","kind":"Secret","metadata":{"namespace":"test-project","labels":{},"name":"wx-secret4","annotations":{"kubesphere.io/creator":"admin"}},"type":"","spec":{"template":{"metadata":{"labels":{}}}},"data":{"wx-key":"d3gtdmFsdWU="}}'
+  - '{"apiVersion":"v1","kind":"Secret","metadata":{"namespace":"${project_name}","labels":{},"name":"wx-secret4","annotations":{"kubesphere.io/creator":"admin"}},"type":"","spec":{"template":{"metadata":{"labels":{}}}},"data":{"wx-key":"d3gtdmFsdWU="}}'
   - 配置中心-秘钥
   - 创建自定义类型秘钥
   - post
@@ -178,7 +178,7 @@
   - r.json()['data']['wx-key']
   - d3gtdmFsdWU=
 - - 18
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/secrets
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/secrets
   - name=wx-secret4
   - ''
   - 配置中心-秘钥
@@ -188,7 +188,7 @@
   - r.json()['items'][0]['metadata']['name']
   - wx-secret4
 - - 19
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/secrets
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/secrets
   - name=wx-secret
   - ''
   - 配置中心-秘钥
@@ -198,7 +198,7 @@
   - r.json()['totalItems']
   - 5
 - - 20
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/secrets
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/secrets
   - name=wx-secret5
   - ''
   - 配置中心-秘钥
@@ -208,7 +208,7 @@
   - r.json()['totalItems']
   - 0
 - - 21
-  - /api/v1/namespaces/test-project/secrets/wx-secret4
+  - /api/v1/namespaces/${project_name}/secrets/wx-secret4
   - ''
   - ''
   - 配置中心-秘钥
@@ -218,9 +218,9 @@
   - r.json()['status']
   - Success
 - - 22
-  - /api/v1/namespaces/test-project/configmaps
+  - /api/v1/namespaces/${project_name}/configmaps
   - ''
-  - '{"apiVersion":"v1","kind":"ConfigMap","metadata":{"namespace":"test-project","labels":{},"name":"wx-peizhi","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"template":{"metadata":{"labels":{}}}},"data":{"key":"key"}}'
+  - '{"apiVersion":"v1","kind":"ConfigMap","metadata":{"namespace":"${project_name}","labels":{},"name":"wx-peizhi","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"template":{"metadata":{"labels":{}}}},"data":{"key":"key"}}'
   - 配置中心-配置
   - 创建配置
   - post
@@ -228,7 +228,7 @@
   - r.json()['metadata']['name']
   - wx-peizhi
 - - 23
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/configmaps
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/configmaps
   - name=wx-peizhi
   - ''
   - 配置中心-配置
@@ -238,7 +238,7 @@
   - r.json()['items'][0]['metadata']['name']
   - wx-peizhi
 - - 24
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/configmaps
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/configmaps
   - name=wx
   - ''
   - 配置中心-配置
@@ -248,7 +248,7 @@
   - r.json()['items'][0]['metadata']['name']
   - wx-peizhi
 - - 25
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/configmaps
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/configmaps
   - name=wx-peizhi2
   - ''
   - 配置中心-配置
@@ -258,7 +258,7 @@
   - r.json()['totalItems']
   - 0
 - - 26
-  - /api/v1/namespaces/test-project/configmaps/wx-peizhi
+  - /api/v1/namespaces/${project_name}/configmaps/wx-peizhi
   - ''
   - ''
   - 配置中心-配置
@@ -268,7 +268,7 @@
   - r.json()['status']
   - Success
 - - 27
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/serviceaccounts
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/serviceaccounts
   - ''
   - ''
   - 配置中心-服务账号
@@ -278,9 +278,9 @@
   - r.json()['items'][0]['metadata']['name']
   - default
 - - 28
-  - /api/v1/namespaces/test-project/serviceaccounts
+  - /api/v1/namespaces/${project_name}/serviceaccounts
   - ''
-  - '{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"namespace":"test-project","labels":{},"name":"test-sa","annotations":{"kubesphere.io/creator":"admin"}}}'
+  - '{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"namespace":"${project_name}","labels":{},"name":"test-sa","annotations":{"kubesphere.io/creator":"admin"}}}'
   - 配置中心-服务账号
   - 创建sa 'test-sa'
   - post
@@ -288,9 +288,9 @@
   - r.json()['metadata']['name']
   - test-sa
 - - 29
-  - /api/v1/namespaces/test-project/serviceaccounts
+  - /api/v1/namespaces/${project_name}/serviceaccounts
   - ''
-  - '{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"namespace":"test-project","labels":{},"name":"test-sa","annotations":{"kubesphere.io/creator":"admin"}}}'
+  - '{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"namespace":"${project_name}","labels":{},"name":"test-sa","annotations":{"kubesphere.io/creator":"admin"}}}'
   - 配置中心-服务账号
   - 使用重复的名称创建sa
   - post
@@ -298,9 +298,9 @@
   - r.json()['message']
   - serviceaccounts "test-sa" already exists
 - - 30
-  - /api/v1/namespaces/test-project/serviceaccounts
+  - /api/v1/namespaces/${project_name}/serviceaccounts
   - ''
-  - '{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"namespace":"test-project","labels":{},"name":"","annotations":{"kubesphere.io/creator":"admin"}}}'
+  - '{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"namespace":"${project_name}","labels":{},"name":"","annotations":{"kubesphere.io/creator":"admin"}}}'
   - 配置中心-服务账号
   - 不输入名称创建sa
   - post
@@ -309,9 +309,9 @@
   - 'ServiceAccount "" is invalid: metadata.name: Required value: name or generateName
     is required'
 - - 31
-  - /api/v1/namespaces/test-project/serviceaccounts
+  - /api/v1/namespaces/${project_name}/serviceaccounts
   - ''
-  - '{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"namespace":"test-project1","labels":{},"name":"111","annotations":{"kubesphere.io/creator":"admin"}}}'
+  - '{"apiVersion":"v1","kind":"ServiceAccount","metadata":{"namespace":"${project_name}1","labels":{},"name":"111","annotations":{"kubesphere.io/creator":"admin"}}}'
   - 配置中心-服务账号
   - 在编辑sa时修改namespace
   - post
@@ -320,7 +320,7 @@
   - the namespace of the provided object does not match the namespace sent on the
     request
 - - 32
-  - /api/v1/namespaces/test-project/serviceaccounts/test-sa
+  - /api/v1/namespaces/${project_name}/serviceaccounts/test-sa
   - ''
   - ''
   - 配置中心-服务账号
@@ -330,7 +330,7 @@
   - r.status_code
   - 200
 - - 33
-  - /api/v1/namespaces/test-project
+  - /api/v1/namespaces/${project_name}
   - ''
   - '{"metadata":{"annotations":{"kubesphere.io/network-isolate":"enabled"}}}'
   - 项目设置-网络隔离
@@ -340,9 +340,9 @@
   - r.json()['status']['phase']
   - Active
 - - 34
-  - /apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies
+  - /apis/network.kubesphere.io/v1alpha1/namespaces/${project_name}/namespacenetworkpolicies
   - ''
-  - '{"apiVersion":"network.kubesphere.io/v1alpha1","kind":"NamespaceNetworkPolicy","metadata":{"namespace":"test-project","name":"policy-to-girf49","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"egress":[{"to":[{"namespace":{"name":"test-project"}}]}]}}'
+  - '{"apiVersion":"network.kubesphere.io/v1alpha1","kind":"NamespaceNetworkPolicy","metadata":{"namespace":"${project_name}","name":"policy-to-girf49","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"egress":[{"to":[{"namespace":{"name":"${project_name}"}}]}]}}'
   - 项目设置-网络隔离
   - 添加集群内部白名单(出口)
   - post
@@ -350,9 +350,9 @@
   - r.json()['metadata']['name']
   - policy-to-girf49
 - - 35
-  - /apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies
+  - /apis/network.kubesphere.io/v1alpha1/namespaces/${project_name}/namespacenetworkpolicies
   - ''
-  - '{"apiVersion":"network.kubesphere.io/v1alpha1","kind":"NamespaceNetworkPolicy","metadata":{"namespace":"test-project","name":"policy-from-tlsxjr","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"ingress":[{"from":[{"namespace":{"name":"test-project"}}]}]}}'
+  - '{"apiVersion":"network.kubesphere.io/v1alpha1","kind":"NamespaceNetworkPolicy","metadata":{"namespace":"${project_name}","name":"policy-from-tlsxjr","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"ingress":[{"from":[{"namespace":{"name":"${project_name}"}}]}]}}'
   - 项目设置-网络隔离
   - 添加集群内部白名单(入口)
   - post
@@ -360,8 +360,8 @@
   - r.json()['metadata']['name']
   - policy-from-tlsxjr
 - - 36
-  - /apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies
-  - workspace=ws-for-test-project&limit=-1
+  - /apis/network.kubesphere.io/v1alpha1/namespaces/${project_name}/namespacenetworkpolicies
+  - workspace=ws-for-${project_name}&limit=-1
   - ''
   - 项目设置-网络隔离
   - 查看添加的集群内部白名单
@@ -370,9 +370,9 @@
   - r.json()['kind']
   - NamespaceNetworkPolicyList
 - - 37
-  - /apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies
+  - /apis/network.kubesphere.io/v1alpha1/namespaces/${project_name}/namespacenetworkpolicies
   - ''
-  - '{"apiVersion":"network.kubesphere.io/v1alpha1","kind":"NamespaceNetworkPolicy","metadata":{"namespace":"test-project","name":"policy-to-7gmirw","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"egress":[{"ports":[{"port":80,"protocol":"TCP"}],"to":[{"ipBlock":{"cidr":"192.168.1.1/24"}}]}]}}'
+  - '{"apiVersion":"network.kubesphere.io/v1alpha1","kind":"NamespaceNetworkPolicy","metadata":{"namespace":"${project_name}","name":"policy-to-7gmirw","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"egress":[{"ports":[{"port":80,"protocol":"TCP"}],"to":[{"ipBlock":{"cidr":"192.168.1.1/24"}}]}]}}'
   - 项目设置-网络隔离
   - 添加集群外部ip地址白名单(出口)
   - post
@@ -380,9 +380,9 @@
   - r.json()['metadata']['name']
   - policy-to-7gmirw
 - - 38
-  - /apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies
+  - /apis/network.kubesphere.io/v1alpha1/namespaces/${project_name}/namespacenetworkpolicies
   - ''
-  - '{"apiVersion":"network.kubesphere.io/v1alpha1","kind":"NamespaceNetworkPolicy","metadata":{"namespace":"test-project","name":"policy-from-sdf6k0","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"ingress":[{"ports":[{"port":88,"protocol":"TCP"}],"from":[{"ipBlock":{"cidr":"192.168.0.12/34"}}]}]}}'
+  - '{"apiVersion":"network.kubesphere.io/v1alpha1","kind":"NamespaceNetworkPolicy","metadata":{"namespace":"${project_name}","name":"policy-from-sdf6k0","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"ingress":[{"ports":[{"port":88,"protocol":"TCP"}],"from":[{"ipBlock":{"cidr":"192.168.0.12/34"}}]}]}}'
   - 项目设置-网络隔离
   - 添加集群外部ip地址白名单(入口)
   - post
@@ -390,7 +390,7 @@
   - r.json()['metadata']['name']
   - policy-from-sdf6k0
 - - 39
-  - /apis/network.kubesphere.io/v1alpha1/namespaces/test-project/namespacenetworkpolicies/policy-to-girf49
+  - /apis/network.kubesphere.io/v1alpha1/namespaces/${project_name}/namespacenetworkpolicies/policy-to-girf49
   - ''
   - ''
   - 项目设置-网络隔离
@@ -400,7 +400,7 @@
   - r.json()['status']
   - Success
 - - 40
-  - /api/v1/namespaces/test-project
+  - /api/v1/namespaces/${project_name}
   - ''
   - '{"metadata":{"annotations":{"kubesphere.io/network-isolate":""}}}'
   - 项目设置-网络隔离
@@ -420,7 +420,7 @@
   - r.json()['totalItems']
   - 0
 - - 42
-  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/test-project/deployments
+  - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/deployments
   - status=stopped&sortBy=updateTime&limit=10
   - ''
   - 应用负载-工作负载
