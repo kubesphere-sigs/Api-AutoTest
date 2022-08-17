@@ -1,12 +1,10 @@
 # -- coding: utf-8 --
-import pytest
 import allure
 import sys
-import time
-from pytest import assume
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
+from fixtures.platform import *
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import app_steps, workspace_steps
@@ -27,41 +25,26 @@ class TestAppStoreManage(object):
     @allure.story('应用分类')
     @allure.title('删除不包含应用的分类')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_delete_category(self):
-        # 新建应用分类
-        category_name = 'category' + str(commonFunction.get_random())
-        response = app_steps.step_create_category(category_name)
-        time.sleep(3)
-        # 获取创建分类的category_id
-        category_id = response.json()['category_id']
+    def test_delete_category(self, create_category):
         # 删除分类
-        app_steps.step_delete_category(category_id)
+        app_steps.step_delete_category(create_category)
         time.sleep(1)
         # 查询所有分类的category_id
         categories_id = app_steps.step_get_categories_id()
         # 验证被删除分类的category_id不存在
-        assert category_id not in categories_id
+        assert create_category not in categories_id
 
     @allure.story('应用分类')
     @allure.title('修改分类信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_change_category(self):
-        old_name = 'category' + str(commonFunction.get_random())
+    def test_change_category(self, create_category):
         new_name = 'category-new' + str(commonFunction.get_random())
-        # 新建应用分类
-        response = app_steps.step_create_category(old_name)
-        # 获取新建分类的category_id
-        category_id = response.json()['category_id']
-        time.sleep(3)
         # 修改分类名称
-        app_steps.step_change_category(category_id, new_name)
+        app_steps.step_change_category(create_category, new_name)
         time.sleep(3)
         # 验证修改成功，使用修改后的名称查询category_id
         category_id_new = app_steps.step_get_category_id_by_name(new_name)
-        with assume:
-            assert category_id == category_id_new
-        # 删除分类
-        app_steps.step_delete_category(category_id)
+        assert create_category == category_id_new
 
     @allure.story('应用商店')
     @allure.title('查看所有内置应用的详情信息')
@@ -78,7 +61,7 @@ class TestAppStoreManage(object):
     @allure.story('应用分类')
     @allure.title('删除包含应用的分类')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_delete_app_category(self):
+    def test_delete_app_category(self, create_category):
         # 创建企业空间
         ws_name = 'ws-for-test-app-store-manage' + str(commonFunction.get_random())
         workspace_steps.step_create_workspace(ws_name)
@@ -108,23 +91,16 @@ class TestAppStoreManage(object):
         app_steps.step_app_pass(app_id, version_id)
         # 发布模板到应用商店
         app_steps.step_release(app_id, version_id)
-        category_name = 'category' + str(commonFunction.get_random())
-        # 新建应用分类
-        response = app_steps.step_create_category(category_name)
-        # 获取新建分类的category_id
-        category_id = response.json()['category_id']
         # 向分类中添加新上架的应用
-        app_steps.step_app_to_category(app_id + '-store', category_id)
+        app_steps.step_app_to_category(app_id + '-store', create_category)
         time.sleep(3)
         # 删除分类
-        result = app_steps.step_delete_app_category(category_id)
+        result = app_steps.step_delete_app_category(create_category)
         # 验证删除结果
-        with assume:
-            assert result == 'category ' + category_name + ' owns application'
+        with pytest.assume:
+            assert ' owns application' in result
         # 下架新上架的应用
         app_steps.step_suspend_app(app_id)
-        # 删除新建的分类
-        app_steps.step_delete_category(category_id)
         # 删除创建的企业空间
         workspace_steps.step_delete_workspace(ws_name)
 
