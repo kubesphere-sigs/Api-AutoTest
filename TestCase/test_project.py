@@ -1,8 +1,6 @@
 # -- coding: utf-8 --
-import pytest
 import allure
 import sys
-import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 from fixtures.project import *
