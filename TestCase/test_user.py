@@ -3,11 +3,10 @@ import pytest
 import allure
 import sys
 import time
-import numpy
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
-from pytest import assume
+from fixtures.platform import create_user, create_role
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import platform_steps
@@ -18,16 +17,6 @@ from common.getHeader import get_header
 class TestUser(object):
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/system_user.yaml')
-
-    @pytest.fixture()
-    def create_user(self):
-        # 创建用户
-        user_name = 'test-user-' + str(commonFunction.get_random())
-        roles = ['workspaces-manager', 'users-manager', 'platform-regular', 'platform-admin']
-        i = numpy.random.randint(0, len(roles))
-        platform_steps.step_create_user(user_name, roles[i])
-        yield user_name
-        platform_steps.step_delete_user(user_name)
 
     @allure.title('{title}')  # 设置用例标题
     # 将用例信息以参数化的方式传入测试方法
@@ -50,10 +39,6 @@ class TestUser(object):
         # 执行yaml中的用例
         commonFunction.request_resource(url, params, data, story, title, method, severity, condition, except_result)
 
-    '''
-        以下用例由于存在较多的前置条件，不便于从excle中获取信息，故使用一个方法一个用例的方式
-    '''
-
     @allure.story('编辑用户')
     @allure.severity(allure.severity_level.CRITICAL)
     @allure.title('测试修改用户信息')
@@ -72,7 +57,7 @@ class TestUser(object):
         except Exception as e:
             print(e)
         # 验证修改用户后的邮箱信息
-        pytest.assume(email_actual == email_new)
+        assert email_actual == email_new
 
     @allure.story('用户')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -93,14 +78,17 @@ class TestUser(object):
         re = platform_steps.step_get_user_info(user_name)
         # 验证用户的状态为active
         status = re.json()['items'][0]['status']['state']
-        pytest.assume(status == 'Active')
+        with pytest.assume:
+            assert status == 'Active'
         # 获取并校验用户的角色
         user_role = re.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/globalrole']
-        pytest.assume(user_role == role)
+        with pytest.assume:
+            assert user_role == role
         # 登陆ks
         headers = platform_steps.step_get_headers(user_name, 'P@88w0rd')
         # 验证headers获取成功
-        pytest.assume(headers)
+        with pytest.assume:
+            assert headers
         # 删除用户
         platform_steps.step_delete_user(user_name)
 
@@ -126,11 +114,12 @@ class TestUser(object):
         elif type == 'user':
             response = platform_steps.step_modify_user_pwd(user_name=create_user, headers=headers, new_pwd=new_pwd)
         # 验证密码修改成功
-        pytest.assume(response.json()['message'] == 'success')
+        with pytest.assume:
+            assert response.json()['message'] == 'success'
         time.sleep(3)
         # 使用新创建的用户登陆，并获取headers
         headers_new = platform_steps.step_get_headers(user_name=create_user, pwd=new_pwd)
-        pytest.assume(headers_new)
+        assert headers_new
 
     @allure.story('用户')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -140,10 +129,11 @@ class TestUser(object):
         time.sleep(3)
         # 验证用户还未登陆
         res = platform_steps.step_get_user_info(create_user)
-        pytest.assume('lastLoginTime' not in res.json()['items'][0]['status'])
+        with pytest.assume:
+            assert 'lastLoginTime' not in res.json()['items'][0]['status']
         # 使用新创建的用户登陆，并获取headers
         try:
-            headers = platform_steps.step_get_headers(create_user, pwd='P@88w0rd')
+            platform_steps.step_get_headers(create_user, pwd='P@88w0rd')
         except Exception as e:
             print(e)
             print("新创建的用户登陆失败")
@@ -161,8 +151,7 @@ class TestUser(object):
                 time.sleep(1)
                 i += 1
         # 验证已有登陆时间信息
-        with assume:
-            assert 'lastLoginTime' in res.json()['items'][0]['status']
+        assert 'lastLoginTime' in res.json()['items'][0]['status']
 
 
 if __name__ == "__main__":

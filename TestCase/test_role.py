@@ -3,9 +3,9 @@ import time
 import pytest
 import allure
 import sys
-from pytest import assume
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
+from fixtures.platform import *
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import platform_steps
@@ -23,25 +23,6 @@ class TestRole(object):
                       '"role-template-manage-workspaces","role-template-manage-users","role-template-view-roles",' \
                       '"role-template-view-users","role-template-manage-app-templates",' \
                       '"role-template-view-app-templates","role-template-manage-platform-settings"]'
-
-    @pytest.fixture()
-    def create_role(self):
-        authority = '["role-template-view-basic"]'
-        role_name = 'role' + str(commonFunction.get_random())
-        # 创建角色
-        platform_steps.step_create_role(role_name, authority)
-        yield role_name
-        # 删除角色
-        platform_steps.step_delete_role(role_name)
-
-    @pytest.fixture()
-    def create_user(self, create_role):
-        user_name = 'user' + str(commonFunction.get_random())
-        # 使用新创建的角色创建用户
-        platform_steps.step_create_user(user_name, create_role)
-        yield user_name
-        # 删除用户
-        platform_steps.step_delete_user(user_name)
 
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/system_role.yaml')
@@ -118,9 +99,10 @@ class TestRole(object):
         # 查询角色授权用户
         res = platform_steps.step_get_role_user(create_role)
         # 验证用户数量
-        pytest.assume(res.json()['totalItems'] == 1)
+        with pytest.assume:
+            assert res.json()['totalItems'] == 1
         # 验证用户名称
-        pytest.assume(res.json()['items'][0]['metadata']['name'] == create_user)
+        assert res.json()['items'][0]['metadata']['name'] == create_user
 
     @allure.story('角色列表')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -129,7 +111,7 @@ class TestRole(object):
         time.sleep(3)
         # 删除角色
         response = platform_steps.step_delete_user(create_role)
-        with assume:
+        with pytest.assume:
             assert response.text == 'users.iam.kubesphere.io "' + create_role + '" not found\n'
 
     @allure.story('角色详情')
@@ -152,7 +134,7 @@ class TestRole(object):
         # 查询角色的权限信息
         response = platform_steps.step_get_role_info(role_name)
         authority_actual = response.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']
-        with assume:
+        with pytest.assume:
             assert authority_actual == authority
         # 删除角色
         platform_steps.step_delete_role(role_name)
