@@ -3,7 +3,6 @@ import pytest
 import allure
 import sys
 import time
-from pytest import assume
 from common.getData import DoexcleByPandas
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
@@ -251,7 +250,7 @@ class TestAppTemplate(object):
         response = app_steps.step_audit_records(app_id, version_id)
         # 验证应用审核通过
         status = response.json()['items'][0]['status']
-        with assume:
+        with pytest.assume:
             assert status == 'passed'
         # 获取应用模版中所有的版本version
         versions = app_steps.step_get_app_versions(self.ws_name, app_id)
@@ -314,7 +313,7 @@ class TestAppTemplate(object):
             time.sleep(10)
             i = i + 10
         print('应用部署耗时:' + str(i) + '秒')
-        with assume:
+        with pytest.assume:
             assert status == 'active'
         # 获取部署的应用的cluster_id
         r = app_steps.step_get_app(self.ws_name, self.project_name, create_app_template)
@@ -341,7 +340,7 @@ class TestAppTemplate(object):
         res = app_steps.step_deploy_template(self.ws_name, self.project_name, release_app[1], name, release_app[2])
         # 验证部署结果
         message = res.json()['message']
-        with assume:
+        with pytest.assume:
             assert message == 'success'
         # 在项目的应用列表中验证部署的应用运行正常,最长等待时间300s
         k = 0
@@ -362,7 +361,7 @@ class TestAppTemplate(object):
         time.sleep(5)  # 等待删除时间
         r = app_steps.step_get_app(self.ws_name, self.project_name, release_app[0])
         count = r.json()['total_count']
-        with assume:
+        with pytest.assume:
             assert count == 0
         # 下架应用
         app_steps.step_suspend_app(release_app[1])
@@ -404,7 +403,7 @@ class TestAppTemplate(object):
                 k += 2
                 time.sleep(2)
         # 验证应用的名称正确
-        with assume:
+        with pytest.assume:
             assert name_actual == name
         cluster_id = r.json()['items'][0]['cluster']['cluster_id']
         # 删除创建的应用
