@@ -8,6 +8,7 @@
   - normal
   - r.json()['items'][0]['name']
   - RabbitMQ
+
 - - 2
   - /kapis/openpitrix.io/v1/apps
   - orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm%2Ckeyword%3Drabbit&reverse=true
@@ -18,6 +19,7 @@
   - normal
   - r.json()['items'][0]['name']
   - RabbitMQ
+
 - - 3
   - /kapis/openpitrix.io/v1/apps
   - orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm%2Ckeyword%3Dramq&reverse=true
@@ -28,6 +30,7 @@
   - normal
   - r.json()['total_count']
   - 0
+
 - - 4
   - /kapis/openpitrix.io/v1/reviews
   - conditions=keyword%3Dnginx
@@ -38,6 +41,7 @@
   - normal
   - r.json()['items'][0]['app_name']
   - NGINX
+
 - - 5
   - /kapis/openpitrix.io/v1/reviews
   - conditions=keyword%3Dngin
@@ -48,6 +52,7 @@
   - normal
   - r.json()['items'][0]['app_name']
   - NGINX
+
 - - 6
   - /kapis/openpitrix.io/v1/reviews
   - conditions=keyword%3Dwxwxwx
@@ -58,6 +63,7 @@
   - normal
   - r.json()['total_count']
   - 0
+
 - - 7
   - /kapis/openpitrix.io/v1/apps
   - orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm%2Ccategory_id%3Dctg-uncategorized%2Ckeyword%3Dchaos-mesh&reverse=true
@@ -68,6 +74,7 @@
   - normal
   - r.json()['items'][0]['name']
   - chaos-mesh
+
 - - 8
   - /kapis/openpitrix.io/v1/apps
   - orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm%2Ccategory_id%3Dctg-uncategorized%2Ckeyword%3Dchaos-m&reverse=true
@@ -78,6 +85,7 @@
   - normal
   - r.json()['items'][0]['name']
   - chaos-mesh
+
 - - 9
   - /kapis/openpitrix.io/v1/apps
   - orderBy=create_time&paging=limit%3D10%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm%2Ccategory_id%3Dctg-uncategorized%2Ckeyword%3Dninx&reverse=true
