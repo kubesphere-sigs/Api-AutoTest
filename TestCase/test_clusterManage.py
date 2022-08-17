@@ -1,13 +1,10 @@
 # -- coding: utf-8 --
-import pytest
 import allure
 import sys
-import time
 import random
 import numpy
-from pytest import assume
-from datetime import datetime
 from common.getData import DoexcleByPandas
+from fixtures.platform import *
 from common import commonFunction
 from step import cluster_steps, platform_steps
 from time import sleep
@@ -53,12 +50,9 @@ class TestCluster(object):
     @allure.story("节点/集群节点")
     @allure.title('为节点设置污点')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_set_taints(self):
+    def test_set_taints(self, node_name):
         # 污点信息
         taints = [{"key": "tester1", "value": "wx", "effect": "NoSchedule"}]
-        # 获取节点列表中第一个节点的名称
-        response = cluster_steps.step_get_nodes()
-        node_name = response.json()['items'][0]['metadata']['name']
         try:
             # 获取节点的污点信息
             r = cluster_steps.step_get_node_detail_info(node_name)
@@ -73,7 +67,7 @@ class TestCluster(object):
         r = cluster_steps.step_get_node_detail_info(node_name)
         taints_actual = r.json()['spec']['taints']
         # 验证污点设置成功
-        with assume:
+        with pytest.assume:
             assert taints == taints_actual
         # 清空设置的污点
         cluster_steps.step_set_taints(node_name=node_name, taints=taints_old)
@@ -81,10 +75,7 @@ class TestCluster(object):
     @allure.story("节点/集群节点")
     @allure.title('为节点添加标签')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_add_labels(self):
-        # 获取节点列表中第一个节点的名称
-        response = cluster_steps.step_get_nodes()
-        node_name = response.json()['items'][0]['metadata']['name']
+    def test_add_labels(self, node_name):
         # 获取节点的标签信息
         re = cluster_steps.step_get_node_detail_info(node_name)
         labels_old = re.json()['metadata']['labels']  # 用于删除添加的标签
@@ -97,7 +88,7 @@ class TestCluster(object):
         r = cluster_steps.step_get_node_detail_info(node_name)
         labels_actual = r.json()['metadata']['labels']
         # 验证标签添加成功
-        with assume:
+        with pytest.assume:
             assert labels == labels_actual
         # 删除添加的标签
         labels_old['tester/label'] = None
@@ -106,27 +97,22 @@ class TestCluster(object):
     @allure.story('节点/集群节点')
     @allure.title('设置节点为停止调度, 然后设置为启用调度')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_set_uncordon_node(self):
-        # 获取节点列表中第一个节点的名称
-        response = cluster_steps.step_get_nodes()
-        node_name = response.json()['items'][0]['metadata']['name']
+    def test_set_uncordon_node(self, node_name):
         # 设置节点为停止调度
         cluster_steps.step_cordon_node(node_name, True)
         # 获取节点的调度状态
         response = cluster_steps.step_get_node_detail_info(node_name)
         cordon_status = response.json()['spec']['unschedulable']
         # 验证节点调度状态为停止调度
-        pytest.assume(cordon_status == True)
+        with pytest.assume:
+            assert cordon_status == True
         # 设置节点为启用调度
         cluster_steps.step_cordon_node(node_name, False)
 
     @allure.story('节点/集群节点')
     @allure.title('查看节点的pod信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_pods(self):
-        # 获取节点列表中第一个节点的名称
-        response = cluster_steps.step_get_nodes()
-        node_name = response.json()['items'][0]['metadata']['name']
+    def test_get_pods(self, node_name):
         # 查看节点的pod信息
         response = cluster_steps.step_get_pod_info(node_name)
         # 验证pod信息查询成功
@@ -135,10 +121,7 @@ class TestCluster(object):
     @allure.story('节点/集群节点')
     @allure.title('查看节点的event信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_events(self):
-        # 获取节点列表中第一个节点的名称
-        response = cluster_steps.step_get_nodes()
-        node_name = response.json()['items'][0]['metadata']['name']
+    def test_get_events(self, node_name):
         # 查看节点的event信息
         response = cluster_steps.step_get_event_of_node(node_name)
         # 获取资源类型
@@ -149,10 +132,7 @@ class TestCluster(object):
     @allure.story('节点/集群节点')
     @allure.title('查看节点的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_monitoring(self):
-        # 获取节点列表中第一个节点的名称
-        response = cluster_steps.step_get_nodes()
-        node_name = response.json()['items'][0]['metadata']['name']
+    def test_get_monitoring(self, node_name):
         # 获取当前时间的10位时间戳
         now_time = datetime.now()
         now_timestamp = str(datetime.timestamp(now_time))[0:10]
@@ -170,10 +150,7 @@ class TestCluster(object):
     @allure.story('节点/集群节点')
     @allure.title('查看节点的状态信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_status(self):
-        # 获取节点列表中第一个节点的名称
-        response = cluster_steps.step_get_nodes()
-        node_name = response.json()['items'][0]['metadata']['name']
+    def test_get_status(self, node_name):
         # 获取当前时间的10位时间戳
         now_time = datetime.now()
         now_timestamp = str(datetime.timestamp(now_time))[0:10]
@@ -191,10 +168,7 @@ class TestCluster(object):
     @allure.story('节点/集群节点')
     @allure.title('查询节点中不存在的pod')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_query_non_existent_pod(self):
-        # 获取节点列表中第一个节点的名称
-        response = cluster_steps.step_get_nodes()
-        node_name = response.json()['items'][0]['metadata']['name']
+    def test_query_non_existent_pod(self, node_name):
         # 查询不存在的pod
         pod_name = 'non-existent'
         re = cluster_steps.step_query_pod(node_name, pod_name)
@@ -206,10 +180,7 @@ class TestCluster(object):
     @allure.story('节点/集群节点')
     @allure.title('按名称精确查询节点中存在的pod')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_precise_query_existent_pod_in_node(self):
-        # 获取节点列表中第一个节点的名称
-        response = cluster_steps.step_get_nodes()
-        node_name = response.json()['items'][0]['metadata']['name']
+    def test_precise_query_existent_pod_in_node(self, node_name):
         # 获取节点的任意一个pod的名称
         re = cluster_steps.step_query_pod(node_name, '')
         pod_name = re.json()['items'][0]['metadata']['name']
@@ -223,10 +194,7 @@ class TestCluster(object):
     @allure.story('节点/集群节点')
     @allure.title('按名称模糊查询节点中存在的pod')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_fuzzy_query_existent_pod(self):
-        # 获取节点列表中第一个节点的名称
-        response = cluster_steps.step_get_nodes()
-        node_name = response.json()['items'][0]['metadata']['name']
+    def test_fuzzy_query_existent_pod(self, node_name):
         # 获取节点的任意一个pod的名称
         re = cluster_steps.step_get_pod_info(node_name)
         pod_name = re.json()['items'][0]['metadata']['name']
@@ -321,7 +289,7 @@ class TestCluster(object):
         # 获取查询结果
         project_name_actual = re.json()['items'][0]['metadata']['name']
         # 验证查询结果
-        with assume:
+        with pytest.assume:
             assert project_name_actual == project_name
         # 删除项目
         cluster_steps.step_delete_user_system(project_name)
@@ -428,7 +396,7 @@ class TestCluster(object):
             if state not in ['Running', 'Succeeded']:
                 print(pod_name)
             # 验证pod的运行状态
-                with assume:
+                with pytest.assume:
                     assert state in ['Running', 'Succeeded']
 
     @allure.story('项目')
@@ -505,7 +473,7 @@ class TestCluster(object):
         r = cluster_steps.step_get_user_project_detail(project_name)
         state = r.json()['status']['phase']
         # 验证项目的状态为active
-        with assume:
+        with pytest.assume:
             assert state == 'Active'
         # 删除创建的项目
         cluster_steps.step_delete_user_system(project_name)
@@ -524,7 +492,7 @@ class TestCluster(object):
         response = cluster_steps.step_get_user_project(project_name)
         # 获取项目数量并验证项目创建成功
         count = response.json()['totalItems']
-        with assume:
+        with pytest.assume:
             assert count == 1
         # 删除用户项目
         cluster_steps.step_delete_user_system(project_name)
@@ -1033,7 +1001,7 @@ class TestCluster(object):
                     name_actual = r.json()['items'][k]['metadata']['name']
                     names_actual.append(name_actual)
                 # 验证查询结果正确
-                with assume:
+                with pytest.assume:
                     assert name in names_actual
             else:
                 pytest.xfail('未查询到资源')
@@ -1233,7 +1201,7 @@ class TestCluster(object):
         response = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims',
                                                               'storageClassName=' + sc_name + '&name=' + pv_name)
         # 验证查询结果
-        with assume:
+        with pytest.assume:
             assert response.json()['totalItems'] >= 1
         # 根据名称模糊查询
         response = cluster_steps.step_get_resource_of_cluster('persistentvolumeclaims',
@@ -1256,7 +1224,7 @@ class TestCluster(object):
         # 获取请求结果中的storageclass.kubernetes.io/is-default-class
         result = r.json()['metadata']['annotations']['storageclass.kubernetes.io/is-default-class']
         # 验证结果为false
-        with assume:
+        with pytest.assume:
             assert result == 'false'
         # 将任一存储类型设置为默认存储类型
         r = cluster_steps.step_set_default_storage_class(name, 'true')
@@ -1284,7 +1252,7 @@ class TestCluster(object):
             if totalBackends != healthyBackends:
                 print('组件：' + component_name + ' 运行不正常')
                 # 校验失败仍能继续运行
-                with assume:
+                with pytest.assume:
                     assert totalBackends == healthyBackends
 
     @allure.story('监控告警/集群状态')
@@ -1459,7 +1427,7 @@ class TestCluster(object):
         time.sleep(150)
         re = cluster_steps.step_get_alert_custom_policy(alert_name)
         state = re.json()['items'][0]['state']
-        with assume:
+        with pytest.assume:
             assert state == 'firing'
         # 查看告警消息，并验证告警消息正确
         r = cluster_steps.step_get_alert_message('', 'label_filters=severity%3Dwarning')
@@ -1467,7 +1435,7 @@ class TestCluster(object):
         policy_names = []
         for i in range(0, message_count):
             policy_names.append(r.json()['items'][i]['ruleName'])
-        with assume:
+        with pytest.assume:
             assert alert_name in policy_names
         # 删除告警策略
         cluster_steps.step_delete_alert_custom_policy(alert_name)
@@ -1496,7 +1464,7 @@ class TestCluster(object):
         # 查看告警策略的详情，并验证持续时间修改成功
         r = cluster_steps.step_get_alert_custom_policy_detail(alert_name)
         duration = r.json()['duration']
-        with assume:
+        with pytest.assume:
             assert duration == '5m'
         # 删除告警策略
         cluster_steps.step_delete_alert_custom_policy(alert_name)
@@ -1524,7 +1492,7 @@ class TestCluster(object):
                 print(e)
                 i += 1
                 time.sleep(1)
-        with assume:
+        with pytest.assume:
             assert gateway_type == type
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
@@ -1562,10 +1530,10 @@ class TestCluster(object):
                 time.sleep(1)
                 i += 1
         # 验证config信息编辑成功
-        with assume:
+        with pytest.assume:
             assert config_actual == config
         # 验证集群网关的链路追踪的状态
-        with assume:
+        with pytest.assume:
             assert status_actual == status
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
@@ -1591,7 +1559,7 @@ class TestCluster(object):
                 i += 2
                 time.sleep(2)
         # 验证查询结果
-        with assume:
+        with pytest.assume:
             assert gateway_name == 'kubesphere-router-kubesphere-system'
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
@@ -1606,10 +1574,9 @@ class TestCluster(object):
         count = response.json()['totalItems']
         name = response.json()['items'][0]['metadata']['name']
         # 集群默认的成员仅有admin
-        with assume:
+        with pytest.assume:
             assert count == 1
-        with assume:
-            assert name == 'admin'
+        assert name == 'admin'
 
     @allure.story('集群设置/集群成员')
     @allure.title('邀请集群成员/移出集群成员')
@@ -1624,14 +1591,14 @@ class TestCluster(object):
         response = cluster_steps.step_get_cluster_member('name=' + user_name)
         # 验证集群成员邀请成功
         name = response.json()['items'][0]['metadata']['name']
-        with assume:
+        with pytest.assume:
             assert name == user_name
         # 将用户从集群成员中移出
         cluster_steps.step_remove_cluster_member(user_name)
         # 查询集群成员，验证移出成功
         re = cluster_steps.step_get_cluster_member('name=' + user_name)
         count = re.json()['totalItems']
-        with assume:
+        with pytest.assume:
             assert count == 0
         # 删除创建的用户
         platform_steps.step_delete_user(user_name)
@@ -1644,12 +1611,15 @@ class TestCluster(object):
         response = cluster_steps.step_get_cluster_role()
         count = response.json()['totalItems']
         # 验证角色数量
-        with assume:
+        with pytest.assume:
             assert count == 2
         name_1 = response.json()['items'][0]['metadata']['name']
         name_2 = response.json()['items'][1]['metadata']['name']
         # 验证角色名称
-        with assume:
+        with pytest.assume:
             assert name_1 == 'cluster-viewer'
-        with assume:
-            assert name_2 == 'cluster-admin'
+        assert name_2 == 'cluster-admin'
+
+
+if __name__ == "__main__":
+    pytest.main(['-s', 'test_clusterManage.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
