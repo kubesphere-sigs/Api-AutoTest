@@ -4,7 +4,6 @@ import sys
 import time
 import allure
 import pytest
-from pytest import assume
 from datetime import datetime
 from common import commonFunction
 from step import toolbox_steps, cluster_steps
@@ -37,7 +36,7 @@ class TestAuditingOperatingSearch(object):
         # 获取收集到的审计数量
         audit_counts = response.json()['statistics']['events']
         # 验证资源数量数量大于0
-        with assume:
+        with pytest.assume:
             assert resources_count > 0
         # 获取12小时之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
@@ -211,7 +210,7 @@ class TestAuditingOperatingSearch(object):
         component = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/component']
         enabled = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/enabled']
         # 校验接收器类型和启用状态，启用状态默认为开启
-        with assume:
+        with pytest.assume:
             assert component == 'auditing'
         assert enabled == 'true'
 
@@ -241,7 +240,7 @@ class TestAuditingOperatingSearch(object):
                 i += 1
                 time.sleep(1)
         # 验证日志接收器添加成功
-        with assume:
+        with pytest.assume:
             assert log_receiver_name == 'forward-' + log_type
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
@@ -283,7 +282,7 @@ class TestAuditingOperatingSearch(object):
             finally:
                 k += 1
                 time.sleep(1)
-        with assume:
+        with pytest.assume:
             assert status == 'false'
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
@@ -328,9 +327,13 @@ class TestAuditingOperatingSearch(object):
                 print(e)
                 k += 1
                 time.sleep(1)
-        with assume:
+        with pytest.assume:
             assert host_actual == host
-        with assume:
+        with pytest.assume:
             assert port_actual == port
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
+
+
+if __name__ == "__main__":
+    pytest.main(['-s', 'test_auditing.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
