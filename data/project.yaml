@@ -8,16 +8,18 @@
   - critical
   - r.json()['spec']['hard']['requests.memory']
   - 2Gi
+
 - - 2
   - /api/v1/namespaces/${project_name}/limitranges
   - ''
   - '{"apiVersion":"v1","kind":"LimitRange","metadata":{"annotations":{"kubesphere.io/creator":"admin"}},"spec":{"limits":[{"default":{"cpu":"2","memory":"4000Mi"},"defaultRequest":{"cpu":"1","memory":"500Mi"},"type":"Container"}]}}'
   - 项目设置-基本信息
-  - 设置项目${project_name}容器资源默认配置
+  - 设置项目中容器资源默认配置
   - post
   - critical
   - r.json()['spec']['limits'][0]['default']['memory']
   - 4000Mi
+
 - - 3
   - /api/v1/namespaces/${project_name}/persistentvolumeclaims
   - ''
@@ -31,6 +33,7 @@
     "test@volume1": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
+
 - - 4
   - /api/v1/namespaces/${project_name}/persistentvolumeclaims
   - ''
@@ -44,6 +47,7 @@
     "testAvolume1": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
+
 - - 5
   - /api/v1/namespaces/${project_name}/persistentvolumeclaims
   - ''
@@ -57,6 +61,7 @@
     "-testvolume1": a lowercase RFC 1123 subdomain must consist of lower case alphanumeric
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
+
 - - 6
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/persistentvolumeclaims
   - name=testvolume
@@ -67,6 +72,7 @@
   - normal
   - r.json()['items'][0]['metadata']['name']
   - testvolume
+
 - - 7
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/persistentvolumeclaims
   - name=estvolume
@@ -77,6 +83,7 @@
   - normal
   - r.json()['items'][0]['metadata']['name']
   - testvolume
+
 - - 8
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/persistentvolumeclaims
   - name=wx1
@@ -87,6 +94,7 @@
   - normal
   - r.json()['totalItems']
   - 0
+
 - - 9
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/persistentvolumeclaims
   - status=lost
@@ -97,6 +105,7 @@
   - normal
   - r.json()['totalItems']
   - 0
+
 - - 10
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/persistentvolumeclaims
   - name=${project_name}-volume&status=lost
@@ -107,26 +116,29 @@
   - normalf
   - r.json()['totalItems']
   - 0
+
 - - 11
   - /api/v1/namespaces/${project_name}/persistentvolumeclaims/${project_name}-vol
   - ''
   - ''
   - 存储管理-存储卷
-  - 在项目${project_name}中删除不存在的存储卷${project_name}-vol
+  - 在项目中删除不存在的存储卷
   - delete
   - critical
   - r.json()['message']
   - persistentvolumeclaims "${project_name}-vol" not found
+
 - - 12
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws-for-${project_name}/namespaces/wx-pro
   - ''
   - ''
   - 项目设置-基本信息
-  - 在企业空间ws-for-${project_name}删除不存在的项目wx-pro
+  - 在企业空间删除不存在的项目wx-pro
   - delete
   - critical
   - r.text
   - namespace "wx-pro" not found
+
 - - 13
   - /api/v1/namespaces/${project_name}/secrets
   - ''
@@ -137,6 +149,7 @@
   - critical
   - r.json()['metadata']['name']
   - wx-secret
+
 - - 14
   - /api/v1/namespaces/${project_name}/secrets
   - ''
@@ -147,6 +160,7 @@
   - critical
   - r.json()['data']['tls.crt']
   - cGluZ3poZW5n
+
 - - 15
   - /api/v1/namespaces/${project_name}/secrets
   - ''
@@ -157,6 +171,7 @@
   - critical
   - r.json()['data']['.dockerconfigjson']
   - eyJhdXRocyI6eyJodHRwczovL3d4Ijp7InVzZXJuYW1lIjoicm9vdCIsInBhc3N3b3JkIjoiYWRtaW4iLCJlbWFpbCI6IiIsImF1dGgiOiJjbTl2ZERwaFpHMXBiZz09In19fQ==
+
 - - 16
   - /api/v1/namespaces/${project_name}/secrets
   - ''
@@ -167,6 +182,7 @@
   - critical
   - r.json()['data']['username']
   - cm9vdA==
+
 - - 17
   - /api/v1/namespaces/${project_name}/secrets
   - ''
@@ -177,6 +193,7 @@
   - critical
   - r.json()['data']['wx-key']
   - d3gtdmFsdWU=
+
 - - 18
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/secrets
   - name=wx-secret4
@@ -187,6 +204,7 @@
   - critical
   - r.json()['items'][0]['metadata']['name']
   - wx-secret4
+
 - - 19
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/secrets
   - name=wx-secret
@@ -197,6 +215,7 @@
   - critical
   - r.json()['totalItems']
   - 5
+
 - - 20
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/secrets
   - name=wx-secret5
@@ -207,6 +226,7 @@
   - critical
   - r.json()['totalItems']
   - 0
+
 - - 21
   - /api/v1/namespaces/${project_name}/secrets/wx-secret4
   - ''
@@ -217,6 +237,7 @@
   - critical
   - r.json()['status']
   - Success
+
 - - 22
   - /api/v1/namespaces/${project_name}/configmaps
   - ''
@@ -227,6 +248,7 @@
   - critical
   - r.json()['metadata']['name']
   - wx-peizhi
+
 - - 23
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/configmaps
   - name=wx-peizhi
@@ -237,6 +259,7 @@
   - critical
   - r.json()['items'][0]['metadata']['name']
   - wx-peizhi
+
 - - 24
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/configmaps
   - name=wx
@@ -247,6 +270,7 @@
   - critical
   - r.json()['items'][0]['metadata']['name']
   - wx-peizhi
+
 - - 25
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/configmaps
   - name=wx-peizhi2
@@ -257,6 +281,7 @@
   - critical
   - r.json()['totalItems']
   - 0
+
 - - 26
   - /api/v1/namespaces/${project_name}/configmaps/wx-peizhi
   - ''
@@ -267,6 +292,7 @@
   - critical
   - r.json()['status']
   - Success
+
 - - 27
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/serviceaccounts
   - ''
@@ -277,6 +303,7 @@
   - normal
   - r.json()['items'][0]['metadata']['name']
   - default
+
 - - 28
   - /api/v1/namespaces/${project_name}/serviceaccounts
   - ''
@@ -287,6 +314,7 @@
   - critical
   - r.json()['metadata']['name']
   - test-sa
+
 - - 29
   - /api/v1/namespaces/${project_name}/serviceaccounts
   - ''
@@ -297,6 +325,7 @@
   - critical
   - r.json()['message']
   - serviceaccounts "test-sa" already exists
+
 - - 30
   - /api/v1/namespaces/${project_name}/serviceaccounts
   - ''
@@ -308,6 +337,7 @@
   - r.json()['message']
   - 'ServiceAccount "" is invalid: metadata.name: Required value: name or generateName
     is required'
+
 - - 31
   - /api/v1/namespaces/${project_name}/serviceaccounts
   - ''
@@ -319,6 +349,7 @@
   - r.json()['message']
   - the namespace of the provided object does not match the namespace sent on the
     request
+
 - - 32
   - /api/v1/namespaces/${project_name}/serviceaccounts/test-sa
   - ''
@@ -329,6 +360,7 @@
   - critical
   - r.status_code
   - 200
+
 - - 33
   - /api/v1/namespaces/${project_name}
   - ''
@@ -339,6 +371,7 @@
   - critical
   - r.json()['status']['phase']
   - Active
+
 - - 34
   - /apis/network.kubesphere.io/v1alpha1/namespaces/${project_name}/namespacenetworkpolicies
   - ''
@@ -349,6 +382,7 @@
   - critical
   - r.json()['metadata']['name']
   - policy-to-girf49
+
 - - 35
   - /apis/network.kubesphere.io/v1alpha1/namespaces/${project_name}/namespacenetworkpolicies
   - ''
@@ -359,6 +393,7 @@
   - critical
   - r.json()['metadata']['name']
   - policy-from-tlsxjr
+
 - - 36
   - /apis/network.kubesphere.io/v1alpha1/namespaces/${project_name}/namespacenetworkpolicies
   - workspace=ws-for-${project_name}&limit=-1
@@ -369,6 +404,7 @@
   - critical
   - r.json()['kind']
   - NamespaceNetworkPolicyList
+
 - - 37
   - /apis/network.kubesphere.io/v1alpha1/namespaces/${project_name}/namespacenetworkpolicies
   - ''
@@ -379,6 +415,7 @@
   - critical
   - r.json()['metadata']['name']
   - policy-to-7gmirw
+
 - - 38
   - /apis/network.kubesphere.io/v1alpha1/namespaces/${project_name}/namespacenetworkpolicies
   - ''
@@ -389,6 +426,7 @@
   - critical
   - r.json()['metadata']['name']
   - policy-from-sdf6k0
+
 - - 39
   - /apis/network.kubesphere.io/v1alpha1/namespaces/${project_name}/namespacenetworkpolicies/policy-to-girf49
   - ''
@@ -399,6 +437,7 @@
   - critical
   - r.json()['status']
   - Success
+
 - - 40
   - /api/v1/namespaces/${project_name}
   - ''
@@ -409,6 +448,7 @@
   - critical
   - r.status_code
   - 200
+
 - - 41
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/wx/deployments
   - name=wwwww&sortBy=updateTime&limit=10
@@ -419,6 +459,7 @@
   - normal
   - r.json()['totalItems']
   - 0
+
 - - 42
   - /kapis/resources.kubesphere.io/v1alpha3/namespaces/${project_name}/deployments
   - status=stopped&sortBy=updateTime&limit=10

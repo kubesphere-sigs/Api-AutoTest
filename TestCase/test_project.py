@@ -486,7 +486,7 @@ class TestProject(object):
         project_steps.step_invite_member(self.project_name, self.user_name, role)
         role_actual = ''
         i = 0
-        while i < 60:
+        while i < 120:
             try:
                 # 查看项目成员，并获取其角色
                 response = project_steps.step_get_project_member(self.project_name, self.user_name)
