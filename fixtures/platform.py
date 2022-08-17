@@ -2,7 +2,7 @@ import pytest
 import time
 from common import commonFunction
 from datetime import datetime
-from step import platform_steps, workspace_steps
+from step import platform_steps, workspace_steps, app_steps, cluster_steps
 
 
 @pytest.fixture()
@@ -47,3 +47,23 @@ def workbench_info():
     # 查询工作台的基本信息
     response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
     return response
+
+
+@pytest.fixture
+def create_category():
+    category_name = 'category' + str(commonFunction.get_random())
+    response = app_steps.step_create_category(category_name)
+    time.sleep(3)
+    # 获取创建分类的category_id
+    category_id = response.json()['category_id']
+    yield category_id
+    # 删除分类
+    app_steps.step_delete_category(category_id)
+
+
+@pytest.fixture
+def node_name():
+    # 获取节点列表中第一个节点的名称
+    response = cluster_steps.step_get_nodes()
+    node_name = response.json()['items'][0]['metadata']['name']
+    return node_name
