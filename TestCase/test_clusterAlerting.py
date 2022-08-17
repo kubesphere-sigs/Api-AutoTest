@@ -66,7 +66,6 @@ class TestClusterAlerting(object):
                               ('按告警级别/一般告警查询自定义的告警策略', 'warning', '')
                               ])
     def test_get_alert_policies_by_level(self, title, level, type):
-        pass
         # 按告警级别查询告警策略
         response = cluster_steps.step_get_alert_policies(type, 'label_filters=severity%3D' + level)
         # 获取告警策略的数量
@@ -121,3 +120,7 @@ class TestClusterAlerting(object):
         count = response.json()['total']
         # 验证数量>=0
         assert count >= 0
+
+
+if __name__ == "__main__":
+    pytest.main(['-s', 'test_clusterAlerting.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
