@@ -31,7 +31,7 @@ class TestAppStoreManage(object):
         # 新建应用分类
         category_name = 'category' + str(commonFunction.get_random())
         response = app_steps.step_create_category(category_name)
-        time.sleep(1)
+        time.sleep(3)
         # 获取创建分类的category_id
         category_id = response.json()['category_id']
         # 删除分类
@@ -47,15 +47,15 @@ class TestAppStoreManage(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_change_category(self):
         old_name = 'category' + str(commonFunction.get_random())
-        new_name = 'category' + str(commonFunction.get_random())
+        new_name = 'category-new' + str(commonFunction.get_random())
         # 新建应用分类
         response = app_steps.step_create_category(old_name)
         # 获取新建分类的category_id
         category_id = response.json()['category_id']
-        time.sleep(1)
+        time.sleep(3)
         # 修改分类名称
         app_steps.step_change_category(category_id, new_name)
-        time.sleep(1)
+        time.sleep(3)
         # 验证修改成功，使用修改后的名称查询category_id
         category_id_new = app_steps.step_get_category_id_by_name(new_name)
         with assume:

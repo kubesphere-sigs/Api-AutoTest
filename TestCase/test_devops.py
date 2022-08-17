@@ -250,6 +250,7 @@ class TestDevOps(object):
         pytest.assume(count == 1)
         # 删除凭证
         devops_steps.step_delete_credential(dev_name_new, credential_name)
+        time.sleep(3)
         # 查询创建的凭证
         response = devops_steps.step_get_credential(dev_name_new, credential_name)
         # 获取凭证的数量
