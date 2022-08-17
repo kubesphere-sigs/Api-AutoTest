@@ -1,21 +1,14 @@
 # -- coding: utf-8 --
-import requests
 import pytest
-import json
 import allure
 import sys
-from pytest import assume
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 import time
-from common.getHeader import get_header
 from common import commonFunction
 from step import devops_steps, platform_steps
 from step import workspace_steps, cluster_steps, project_steps
-from common.getConfig import get_apiserver
-
-env_url = get_apiserver()
 
 
 @allure.feature('DevOps')
@@ -70,7 +63,8 @@ class TestDevOps(object):
         # 获取devops的数量
         count = response.json()['totalItems']
         # 验证数量正确
-        pytest.assume(count == 1)
+        with pytest.assume:
+            assert count == 1
         # 删除创建的devops工程
         devops_steps.step_delete_devops(self.ws_name, devops_name_new)
         time.sleep(5)
@@ -138,7 +132,8 @@ class TestDevOps(object):
         # 创建凭证
         response = devops_steps.step_create_credential(self.dev_name_new, name, description, type, data)
         # 验证新建的凭证的type
-        pytest.assume(response.json()['type'] == 'credential.devops.kubesphere.io/' + type)
+        with pytest.assume:
+            assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
         # 删除凭证
         devops_steps.step_delete_credential(self.dev_name_new, name)
 
@@ -155,7 +150,8 @@ class TestDevOps(object):
         # 创建凭证
         response = devops_steps.step_create_credential(self.dev_name_new, name, description, type, data)
         # 验证新建的凭证的type
-        pytest.assume(response.json()['type'] == 'credential.devops.kubesphere.io/' + type)
+        with pytest.assume:
+            assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
         # 删除凭证
         devops_steps.step_delete_credential(self.dev_name_new, name)
 
@@ -171,7 +167,8 @@ class TestDevOps(object):
         # 创建凭证
         response = devops_steps.step_create_credential(self.dev_name_new, name, description, type, data)
         # 验证新建的凭证的type
-        pytest.assume(response.json()['type'] == 'credential.devops.kubesphere.io/' + type)
+        with pytest.assume:
+            assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
         # 删除凭证
         devops_steps.step_delete_credential(self.dev_name_new, name)
 
@@ -187,7 +184,8 @@ class TestDevOps(object):
         # 创建凭证
         response = devops_steps.step_create_credential(self.dev_name_new, name, description, type, data)
         # 验证新建的凭证的type
-        pytest.assume(response.json()['type'] == 'credential.devops.kubesphere.io/' + type)
+        with pytest.assume:
+            assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
         # 删除凭证
         devops_steps.step_delete_credential(self.dev_name_new, name)
 
@@ -202,7 +200,8 @@ class TestDevOps(object):
         condition = credential_name
         result = devops_steps.step_search_credential(devops_name=self.dev_name_new, condition=condition)
         # 校验查询结果
-        pytest.assume(result == condition)
+        with pytest.assume:
+            assert result == condition
         # 删除凭证
         devops_steps.step_delete_credential(self.dev_name_new, credential_name)
 
@@ -217,7 +216,8 @@ class TestDevOps(object):
         condition = credential_name
         result = devops_steps.step_search_credential(devops_name=self.dev_name_new, condition=condition)
         # 校验查询结果
-        pytest.assume(condition in result)
+        with pytest.assume:
+            assert condition in result
         # 删除凭证
         devops_steps.step_delete_credential(self.dev_name_new, credential_name)
 
@@ -247,7 +247,8 @@ class TestDevOps(object):
         # 获取凭证的数量
         count = response.json()['totalItems']
         # 验证凭证的数量正确
-        pytest.assume(count == 1)
+        with pytest.assume:
+            assert count == 1
         # 删除凭证
         devops_steps.step_delete_credential(dev_name_new, credential_name)
         time.sleep(3)
@@ -286,7 +287,8 @@ class TestDevOps(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_role_fuzzy(self):
         response = devops_steps.step_get_role(self.dev_name_new, 'adm')
-        pytest.assume(response.json()['totalItems'] == 1)  # 验证查询到的结果数量为2
+        with pytest.assume:
+            assert response.json()['totalItems'] == 1  # 验证查询到的结果数量为2
         # 验证查找到的角色
         assert response.json()['items'][0]['metadata']['name'] == 'admin'
 
@@ -297,7 +299,8 @@ class TestDevOps(object):
         # 创建角色
         role_name = 'test-role' + str(commonFunction.get_random())
         response = devops_steps.step_create_role(self.dev_name_new, role_name)
-        pytest.assume(response.json()['metadata']['name'] == role_name)  # 验证新建的角色名称
+        with pytest.assume:
+            assert response.json()['metadata']['name'] == role_name  # 验证新建的角色名称
         # 删除角色
         devops_steps.step_delete_role(self.dev_name, role_name)
 
@@ -312,100 +315,100 @@ class TestDevOps(object):
         assert response.text.strip() == 'Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required'
 
     # @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对角色的名称做限制')
-    @allure.story('工程管理-工程角色')
-    @allure.title('在devops工程中创建角色-名称中包含大写字母')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def wx_test_devops_role_create_name(self):
-        # 获取创建的devops工程的别名
-        response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-        dev_name_new = response.json()['items'][0]['metadata']['name']
-        devops_role_name = 'Wx'
-        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
-        data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-                "kind": "Role",
-                "metadata": {"namespace": dev_name_new,
-                             "name": devops_role_name,
-                             "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
-                                                                                    "\"role-template-view-credentials\","
-                                                                                    "\"role-template-view-basic\"]",
-                                             "kubesphere.io/creator": "admin"}
-                             },
-                "rules": []
-                }
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        print(r.text)
+    # @allure.story('工程管理-工程角色')
+    # @allure.title('在devops工程中创建角色-名称中包含大写字母')
+    # @allure.severity(allure.severity_level.CRITICAL)
+    # def wx_test_devops_role_create_name(self):
+    #     # 获取创建的devops工程的别名
+    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
+    #     dev_name_new = response.json()['items'][0]['metadata']['name']
+    #     devops_role_name = 'Wx'
+    #     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
+    #     data = {"apiVersion": "rbac.authorization.k8s.io/v1",
+    #             "kind": "Role",
+    #             "metadata": {"namespace": dev_name_new,
+    #                          "name": devops_role_name,
+    #                          "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
+    #                                                                                 "\"role-template-view-credentials\","
+    #                                                                                 "\"role-template-view-basic\"]",
+    #                                          "kubesphere.io/creator": "admin"}
+    #                          },
+    #             "rules": []
+    #             }
+    #     r = requests.post(url, headers=get_header(), data=json.dumps(data))
+    #     print(r.text)
 
     # @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对角色的名称做限制')
-    @allure.story('工程管理-工程角色')
-    @allure.title('在devops工程中创建角色-名称中包含非分隔符("-")的特殊符号')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def wx_test_devops_role_create_name1(self):
-        # 获取创建的devops工程的别名
-        response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-        dev_name_new = response.json()['items'][0]['metadata']['name']
-        devops_role_name = 'W@x'
-        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
-        data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-                "kind": "Role",
-                "metadata": {"namespace": dev_name_new,
-                             "name": devops_role_name,
-                             "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
-                                                                                    "\"role-template-view-credentials\","
-                                                                                    "\"role-template-view-basic\"]",
-                                             "kubesphere.io/creator": "admin"}
-                             },
-                "rules": []
-                }
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        print(r.text)
+    # @allure.story('工程管理-工程角色')
+    # @allure.title('在devops工程中创建角色-名称中包含非分隔符("-")的特殊符号')
+    # @allure.severity(allure.severity_level.CRITICAL)
+    # def wx_test_devops_role_create_name1(self):
+    #     # 获取创建的devops工程的别名
+    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
+    #     dev_name_new = response.json()['items'][0]['metadata']['name']
+    #     devops_role_name = 'W@x'
+    #     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
+    #     data = {"apiVersion": "rbac.authorization.k8s.io/v1",
+    #             "kind": "Role",
+    #             "metadata": {"namespace": dev_name_new,
+    #                          "name": devops_role_name,
+    #                          "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
+    #                                                                                 "\"role-template-view-credentials\","
+    #                                                                                 "\"role-template-view-basic\"]",
+    #                                          "kubesphere.io/creator": "admin"}
+    #                          },
+    #             "rules": []
+    #             }
+    #     r = requests.post(url, headers=get_header(), data=json.dumps(data))
+    #     print(r.text)
 
     # @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对角色的名称做限制')
-    @allure.story('工程管理-工程角色')
-    @allure.title('在devops工程中创建角色-名称以分隔符("-")开头')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def wx_test_devops_role_create_name2(self):
-        # 获取创建的devops工程的别名
-        response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-        dev_name_new = response.json()['items'][0]['metadata']['name']
-        devops_role_name = '-Wx'
-        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
-        data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-                "kind": "Role",
-                "metadata": {"namespace": dev_name_new,
-                             "name": devops_role_name,
-                             "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
-                                                                                    "\"role-template-view-credentials\","
-                                                                                    "\"role-template-view-basic\"]",
-                                             "kubesphere.io/creator": "admin"}
-                             },
-                "rules": []
-                }
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        print(r.text)
+    # @allure.story('工程管理-工程角色')
+    # @allure.title('在devops工程中创建角色-名称以分隔符("-")开头')
+    # @allure.severity(allure.severity_level.CRITICAL)
+    # def wx_test_devops_role_create_name2(self):
+    #     # 获取创建的devops工程的别名
+    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
+    #     dev_name_new = response.json()['items'][0]['metadata']['name']
+    #     devops_role_name = '-Wx'
+    #     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
+    #     data = {"apiVersion": "rbac.authorization.k8s.io/v1",
+    #             "kind": "Role",
+    #             "metadata": {"namespace": dev_name_new,
+    #                          "name": devops_role_name,
+    #                          "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
+    #                                                                                 "\"role-template-view-credentials\","
+    #                                                                                 "\"role-template-view-basic\"]",
+    #                                          "kubesphere.io/creator": "admin"}
+    #                          },
+    #             "rules": []
+    #             }
+    #     r = requests.post(url, headers=get_header(), data=json.dumps(data))
+    #     print(r.text)
 
     # @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对角色的名称做限制')
-    @allure.story('工程管理-工程角色')
-    @allure.title('在devops工程中创建角色-名称以分隔符("-")结尾')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def wx_test_devops_role_create_name3(self):
-        # 获取创建的devops工程的别名
-        response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-        dev_name_new = response.json()['items'][0]['metadata']['name']
-        devops_role_name = 'Wx-'
-        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
-        data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-                "kind": "Role",
-                "metadata": {"namespace": dev_name_new,
-                             "name": devops_role_name,
-                             "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
-                                                                                    "\"role-template-view-credentials\","
-                                                                                    "\"role-template-view-basic\"]",
-                                             "kubesphere.io/creator": "admin"}
-                             },
-                "rules": []
-                }
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        print(r.text)
+    # @allure.story('工程管理-工程角色')
+    # @allure.title('在devops工程中创建角色-名称以分隔符("-")结尾')
+    # @allure.severity(allure.severity_level.CRITICAL)
+    # def wx_test_devops_role_create_name3(self):
+    #     # 获取创建的devops工程的别名
+    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
+    #     dev_name_new = response.json()['items'][0]['metadata']['name']
+    #     devops_role_name = 'Wx-'
+    #     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
+    #     data = {"apiVersion": "rbac.authorization.k8s.io/v1",
+    #             "kind": "Role",
+    #             "metadata": {"namespace": dev_name_new,
+    #                          "name": devops_role_name,
+    #                          "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
+    #                                                                                 "\"role-template-view-credentials\","
+    #                                                                                 "\"role-template-view-basic\"]",
+    #                                          "kubesphere.io/creator": "admin"}
+    #                          },
+    #             "rules": []
+    #             }
+    #     r = requests.post(url, headers=get_header(), data=json.dumps(data))
+    #     print(r.text)
 
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中编辑角色基本信息')
@@ -418,8 +421,10 @@ class TestDevOps(object):
         alias = '测试别名test'
         description = '测试描述test'
         r = devops_steps.step_edit_role_info(self.dev_name_new, role_name, alias, description)
-        pytest.assume(r.json()['metadata']['annotations']['kubesphere.io/alias-name'] == alias)  # 验证修改后的别名
-        pytest.assume(r.json()['metadata']['annotations']['kubesphere.io/description'] == description)  # 验证修改后的描述信息
+        with pytest.assume:
+            assert r.json()['metadata']['annotations']['kubesphere.io/alias-name'] == alias  # 验证修改后的别名
+        with pytest.assume:
+            assert r.json()['metadata']['annotations']['kubesphere.io/description'] == description  # 验证修改后的描述信息
         # 删除创建的角色
         devops_steps.step_delete_role(self.dev_name_new, role_name)
 
@@ -440,8 +445,9 @@ class TestDevOps(object):
                        "kubesphere.io/description": "我是描述信息"}
 
         response = devops_steps.step_edit_role_authority(self.dev_name_new, role_name, annotations, resourceVersion)
-        pytest.assume(response.json()['metadata']['annotations'][
-                   'iam.kubesphere.io/aggregation-roles'] == authority)  # 验证修改后的权限信息
+        # 验证修改后的权限信息
+        with pytest.assume:
+            assert response.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority
         # 删除创建的devops角色
         devops_steps.step_delete_role(self.dev_name_new, role_name)
 
@@ -455,7 +461,8 @@ class TestDevOps(object):
         # 精确查询创建的角色
         count = devops_steps.step_get_role(self.dev_name_new, role_name).json()['totalItems']
         # 验证角色创建成功
-        pytest.assume(count == 1)
+        with pytest.assume:
+            assert count == 1
         # 删除角色
         devops_steps.step_delete_role(self.dev_name_new, role_name)
         time.sleep(10)
@@ -508,18 +515,18 @@ class TestDevOps(object):
         assert response.json()[0]['username'] == self.user_name  # 验证邀请后的用户名称
 
     # @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对不存在的用户做限制')
-    @allure.story('工程管理-工程成员')
-    @allure.title('邀请不存在的用户到devops工程')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def wx_test_devops_invite_none_user(self):
-        # 获取创建的devops工程的别名
-        response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-        dev_name_new = response.json()['items'][0]['metadata']['name']
-        url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + dev_name_new + '/members'
-        data = [{"username": 'wxqw',
-                 "roleRef": "viewer"}]
-        r = requests.post(url, headers=get_header(), data=json.dumps(data))
-        print(r.text)
+    # @allure.story('工程管理-工程成员')
+    # @allure.title('邀请不存在的用户到devops工程')
+    # @allure.severity(allure.severity_level.CRITICAL)
+    # def wx_test_devops_invite_none_user(self):
+    #     # 获取创建的devops工程的别名
+    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
+    #     dev_name_new = response.json()['items'][0]['metadata']['name']
+    #     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + dev_name_new + '/members'
+    #     data = [{"username": 'wxqw',
+    #              "roleRef": "viewer"}]
+    #     r = requests.post(url, headers=get_header(), data=json.dumps(data))
+    #     print(r.text)
 
     @allure.story('工程管理-工程成员')
     @allure.title('编辑devops工程成员的角色')
@@ -629,9 +636,9 @@ class TestDevOps(object):
                 time.sleep(5)
                 i += 5
         # 验证流水线的状态和分支数量正确
-        with assume:
+        with pytest.assume:
             assert weatherScore == 100
-        with assume:
+        with pytest.assume:
             assert branch_count == 1
         # 删除创建的流水线
         devops_steps.step_delete_pipeline(dev_name_new, pipeline_name)
@@ -694,7 +701,7 @@ class TestDevOps(object):
         # 获取仓库地址
         url_actual = response.json()['items'][0]['spec']['url']
         # 验证查询结果
-        with assume:
+        with pytest.assume:
             assert url == url_actual
         # 删除代码仓库
         devops_steps.step_delete_code_repository(self.dev_name_new, name)
@@ -718,7 +725,7 @@ class TestDevOps(object):
         # 获取仓库地址
         url_actual = response.json()['items'][0]['spec']['url']
         # 验证查询结果
-        with assume:
+        with pytest.assume:
             assert url_new == url_actual
         # 删除代码仓库
         devops_steps.step_delete_code_repository(self.dev_name_new, name)
@@ -737,7 +744,7 @@ class TestDevOps(object):
         # 获取仓库地址
         url_actual = response.json()['items'][0]['spec']['url']
         # 验证查询结果
-        with assume:
+        with pytest.assume:
             assert url == url_actual
         # 删除代码仓库
         devops_steps.step_delete_code_repository(self.dev_name_new, name)
@@ -775,7 +782,7 @@ class TestDevOps(object):
                 break
             time.sleep(10)
             i += 10
-        with assume:
+        with pytest.assume:
             assert count == 1
         # 删除cd任务并删除创建的资源
         devops_steps.step_delete_cd(self.dev_name_new, cd_name, 'true')
@@ -825,7 +832,7 @@ class TestDevOps(object):
             else:
                 break
         # 验证资源删除成功
-        with assume:
+        with pytest.assume:
             assert count_deploy == 0
         # 删除项目
         project_steps.step_delete_project_by_name(ns)
@@ -862,7 +869,8 @@ class TestDevOps(object):
         # 查看创建的资源
         re = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
         count_deploy = re.json()['totalItems']
-        pytest.assume(count_deploy == 1)
+        with pytest.assume:
+            assert count_deploy == 1
         # 删除项目
         project_steps.step_delete_project_by_name(ns)
 
