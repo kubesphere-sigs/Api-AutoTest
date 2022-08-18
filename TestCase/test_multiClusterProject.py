@@ -86,8 +86,6 @@ class TestProject(object):
         # 删除创建的用户
         platform_steps.step_delete_user(self.user_name)
 
-    # 多集群项目##########
-
     @allure.story('存储管理-存储卷')
     @allure.title('在多集群项目创建存储卷，然后将存储卷绑定到新建的deployment上，最后验证资源和存储卷的状态正常')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -1654,4 +1652,4 @@ class TestProject(object):
 
 
 if __name__ == "__main__":
-    pytest.main(['-s', 'test_project.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
+    pytest.main(['-s', 'test_multiClusterProject.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
