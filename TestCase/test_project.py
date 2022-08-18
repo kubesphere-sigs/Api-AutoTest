@@ -1778,8 +1778,17 @@ class TestProject(object):
         # 编辑配额信息
         project_steps.step_edit_project_quota(create_project, hard, resource_version)
         # 获取修改后的配额信息
-        response = project_steps.step_get_project_quota(create_project)
-        hard_actual = response.json()['data']['hard']
+        i = 0
+        while i < 60:
+            try:
+                response = project_steps.step_get_project_quota(create_project)
+                hard_actual = response.json()['data']['hard']
+                if hard_actual:
+                    break
+            except Exception as e:
+                print(e)
+                i += 1
+                time.sleep(1)
         # 验证配额修改成功
         assert hard_actual == hard
 
