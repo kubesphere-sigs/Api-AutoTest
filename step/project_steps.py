@@ -40,8 +40,9 @@ def step_create_job(project_name, job_name):
                                            "volumes": []}},
                      "backoffLimit": 2, "completions": 2, "parallelism": 2, "activeDeadlineSeconds": 200}}
 
-    requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     requests.post(url=url1, headers=get_header(), data=json.dumps(data))
+    return response
 
 
 @allure.step('查看任务信息')
@@ -423,7 +424,7 @@ def step_get_service(project_name, *service_name):
     if service_name:
         for i in service_name:
             url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/services?name=' \
-                          + str(i) + '&sortBy=createTime'
+                  + str(i) + '&sortBy=createTime'
     else:
         url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/services?sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
@@ -537,12 +538,15 @@ def step_get_volume_status(project_name, volume_name, *cluster_name):
 
 
 @allure.step('创建sa')
-def step_create_sa(project_name, sa_name):
+def step_create_sa(project_name, sa_name, role):
     url = env_url + '/api/v1/namespaces/' + project_name + '/serviceaccounts'
     data = {"apiVersion": "v1", "kind": "ServiceAccount",
             "metadata": {"namespace": project_name, "labels": {}, "name": sa_name,
-                         "annotations": {"kubesphere.io/creator": "admin"}}}
-    requests.post(url=url, headers=get_header(), data=json.dumps(data))
+                         "annotations": {
+                             "iam.kubesphere.io/role": role,
+                             "kubesphere.io/creator": "admin"}}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
 
 
 @allure.step('查询指定sa')
@@ -621,14 +625,76 @@ def step_get_project_member(project_name, user_name):
 @allure.step('查看指定sa详情信息')
 def step_get_sa_detail(project_name, sa_name):
     url = env_url + '/api/v1/namespaces/' + project_name + '/serviceaccounts/' + sa_name
-    r = requests.get(url=url, headers=get_header())
+    response = requests.get(url=url, headers=get_header())
+    return response
 
 
-@allure.step('查看指定密钥并返回密钥类型')
+@allure.step('创建保密字典')
+def step_create_secret(project_name, secret_name, type, data):
+    """
+    :param type: Opaque
+    :param project_name:
+    :param secret_name:
+    :param data: {"test": "d3g="}
+    """
+    url = env_url + '/api/v1/namespaces/' + project_name + '/secrets'
+    resource = {"apiVersion": "v1", "kind": "Secret",
+                "metadata": {"namespace": project_name, "labels": {}, "name": secret_name,
+                             "annotations": {"kubesphere.io/creator": "admin"}},
+                "type": type,
+                "spec": {"template": {"metadata": {"labels": {}}}},
+                "data": data}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(resource))
+    return response
+
+
+@allure.step('查看指定保密字典并返回保密字典类型')
 def step_get_secret(project_name, secret_name):
     url = env_url + '/api/v1/namespaces/' + project_name + '/secrets/' + secret_name
     r = requests.get(url=url, headers=get_header())
     return r.json()['type']
+
+
+@allure.step('删除项目中的保密字典')
+def step_delete_secret(project_name, secret_name):
+    url = env_url + '/api/v1/namespaces/' + project_name + '/secrets/' + secret_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('创建配置字典')
+def step_create_configmap(project_name, configmap_name, data):
+    """
+    :param project_name:
+    :param configmap_name:
+    :param data: {"wx": "test"}
+    :return:
+    """
+    url = env_url + '/api/v1/namespaces/' + project_name + '/configmaps'
+    resource = {"apiVersion": "v1", "kind": "ConfigMap",
+                "metadata": {"namespace": project_name, "labels": {},
+                             "name": configmap_name,
+                             "annotations": {"kubesphere.io/creator": "admin"}},
+                "spec": {"template":
+                             {"metadata": {"labels": {}}}},
+                "data": data}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(resource))
+    return response
+
+
+@allure.step('查看配置字典')
+def step_get_configmap(project_name, configmap_name):
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/configmaps' \
+                                                                                           '?name=' + configmap_name + '&sortBy=createTime'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('删除配置字典')
+def step_delete_configmap(project_name, configmap_name):
+    url = env_url + '/api/v1/namespaces/' + project_name + '/configmaps/' + configmap_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
 
 
 @allure.step('删除指定sa')
@@ -1055,7 +1121,7 @@ def step_delete_project_by_name(project_name):
     return response
 
 
-@allure.step('在单集群项目查询密钥')
+@allure.step('在单集群项目查询保密字典')
 def step_get_secret(project_name, secret_name):
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + \
           '/secrets?name=' + secret_name + '&sortBy=createTime'
@@ -1122,4 +1188,65 @@ def step_delete_deployment(project_name, deploy_name, *cluster_name):
         path = '/apis'
     url = env_url + path + '/apps/v1/namespaces/' + project_name + '/deployments/' + deploy_name
     response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('项目设置/网络隔离，设置网络隔离')
+def step_set_network_isolation(project_name, status):
+    """
+    :param status: enabled, ''
+    :param project_name:
+
+    """
+    url = env_url + '/api/v1/namespaces/' + project_name
+    data = {"metadata": {"annotations": {"kubesphere.io/network-isolate": status}}}
+    response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    return response
+
+
+@allure.step('项目设置/网络隔离，查看网络隔离状态')
+def step_get_network_isolation(ws_name, project_name):
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('项目设置/网络隔离，添加白名单')
+def step_add_allowlist(project_name, policy_name, spec):
+    url = env_url + '/apis/network.kubesphere.io/v1alpha1/namespaces/' + project_name + '/namespacenetworkpolicies'
+    data = {"apiVersion": "network.kubesphere.io/v1alpha1", "kind": "NamespaceNetworkPolicy",
+            "metadata": {"namespace": project_name, "name": policy_name,
+                         "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": spec
+            }
+    #
+    # data = {"apiVersion": "network.kubesphere.io/v1alpha1", "kind": "NamespaceNetworkPolicy",
+    #         "metadata": {"namespace": "pro", "name": "policy-from-0d6dct",
+    #                      "annotations": {"kubesphere.io/creator": "admin"}},
+    #         "spec": {"ingress": [{"from": [{"namespace": {"name": "default"}}]}]}
+    #         }
+    #
+    # data = {"apiVersion": "network.kubesphere.io/v1alpha1", "kind": "NamespaceNetworkPolicy",
+    #         "metadata": {"namespace": "pro", "name": "policy-to-eg7k1j",
+    #                      "annotations": {"kubesphere.io/creator": "admin"}},
+    #         "spec": {"egress": [
+    #             {"ports": [{"port": 80, "protocol": "TCP"}], "to": [{"ipBlock": {"cidr": "10.10.10.10/24"}}]}]}
+    #         }
+    #
+    # data = {"apiVersion": "network.kubesphere.io/v1alpha1", "kind": "NamespaceNetworkPolicy",
+    #         "metadata": {"namespace": "pro", "name": "policy-from-tgonyb",
+    #                      "annotations": {"kubesphere.io/creator": "admin"}},
+    #         "spec": {"ingress": [
+    #             {"ports": [{"port": 80, "protocol": "TCP"}], "from": [{"ipBlock": {"cidr": "10.10.10.10/24"}}]}]}
+    #         }
+
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
+@allure.step('项目设置、网络隔离，查看白名单')
+def step_get_allowlist(project_name, ws_name):
+    url = env_url + '/apis/network.kubesphere.io/v1alpha1/namespaces/' \
+          + project_name + '/namespacenetworkpolicies?workspace=' + ws_name + '&limit=-1'
+    response = requests.get(url=url, headers=get_header())
     return response
