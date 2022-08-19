@@ -616,6 +616,19 @@ class TestProject(object):
         assert '3.1415926' in logs
 
     @allure.story('应用负载-任务')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.MINOR)
+    @pytest.mark.parametrize('job_name, title',
+                             [('Test', '任务名称中包含大写字母'),
+                              ('te@st', '任务名称中包含符号'),
+                              ('test-', '任务名称以-结束'),
+                              ('-test', '任务名称以-开始')]
+                             )
+    def test_create_job_wrong_name(self, job_name, title, create_project):
+        # 创建任务并验证结果失败
+        assert project_steps.step_create_job(create_project, job_name).json()['status'] == 'Failure'
+
+    @allure.story('应用负载-任务')
     @allure.title('按名称模糊查询存在的任务')
     @allure.severity(allure.severity_level.NORMAL)
     def test_fuzzy_job(self, create_project, create_job):
@@ -828,9 +841,29 @@ class TestProject(object):
         assert result == 'Failure'
 
     @allure.story('应用负载-工作负载')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.MINOR)
+    @pytest.mark.parametrize('deploy_name, title',
+                             [('tEst', '创建的deployment的名称中包含大写字母'),
+                              ('te@st', '创建的deployment的名称中包含符号'),
+                              ('test-', '创建的deployment的名称以-结束'),
+                              ('-test', '创建的deployment的名称以-开始')])
+    def test_create_deployment_wrong_name(self, deploy_name, title, create_project, container_name, strategy_info):
+        image = 'nginx'  # 镜像名称
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
+        volumeMounts = []  # 设置挂载的存储卷
+        replicas = 2  # 副本数
+        volume_info = []
+        # 创建deployment并验证创建失败
+        assert project_steps.step_create_deploy(project_name=create_project, work_name=deploy_name,
+                                                container_name=container_name, ports=port, volumemount=volumeMounts,
+                                                image=image, replicas=replicas, volume_info=volume_info,
+                                                strategy=strategy_info).json()['status'] == 'Failure'
+
+    @allure.story('应用负载-工作负载')
     @allure.title('创建未绑定存储卷的deployment，并验证运行成功')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_workload(self, create_project, workload_name, container_name, create_workload):
+    def test_create_workload(self, create_project, workload_name, container_name, create_deployment):
         condition = 'name=' + workload_name  # 查询条件
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
         status = ''
@@ -861,7 +894,7 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('按状态查询存在的deployment')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_get_deployment_by_status(self, create_project, workload_name, create_workload):
+    def test_get_deployment_by_status(self, create_project, workload_name, create_deployment):
         condition = 'status=running'
         name = ''
         i = 0
@@ -894,7 +927,7 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('按名称查询存在的deployment')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_get_deployment_by_name(self, create_project, workload_name, create_workload):
+    def test_get_deployment_by_name(self, create_project, workload_name, create_deployment):
         conndition = 'name=' + workload_name  # 查询条件
         # 按名称精确查询deployment
         time.sleep(3)
@@ -918,6 +951,30 @@ class TestProject(object):
             finally:
                 time.sleep(3)
                 j += 3
+
+    @allure.story('应用负载-工作负载')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.MINOR)
+    @pytest.mark.parametrize('workload_name, title',
+                             [('tEst', '创建的statefulsets的名称中包含大写字母'),
+                              ('te@st', '创建的statefulsets的名称中包含符号'),
+                              ('test-', '创建的statefulsets的名称以-结束'),
+                              ('-test', '创建的statefulsets的名称以-开始')]
+                             )
+    def test_create_statefulsets_wrong_name(self, workload_name, title, create_project, container_name):
+        image = 'nginx'  # 镜像名称
+        replicas = 2  # 副本数
+        volume_info = []
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
+        service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
+        service_name = 'service' + workload_name
+        volumemounts = []
+        # 创建statefulsets并验证创建失败
+        assert project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
+                                                  container_name=container_name,
+                                                  image=image, replicas=replicas, volume_info=volume_info, ports=port,
+                                                  service_ports=service_port, volumemount=volumemounts,
+                                                  service_name=service_name).json()['status'] == 'Failure'
 
     @allure.story('应用负载-工作负载')
     @allure.title('创建未绑定存储卷的StatefulSets，并验证运行成功')
@@ -1062,6 +1119,26 @@ class TestProject(object):
                 j += 3
 
     @allure.story('应用负载-工作负载')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.MINOR)
+    @pytest.mark.parametrize('workload_name, title',
+                             [('tEst', '创建的DaemonSets的名称中包含大写字母'),
+                              ('te@st', '创建的DaemonSets的名称中包含符号'),
+                              ('test-', '创建的DaemonSets的名称以-结束'),
+                              ('-test', '创建的DaemonSets的名称以-开始')]
+                             )
+    def test_create_daemonsets_wrong_name(self, workload_name, title, create_project, container_name):
+        image = 'nginx'  # 镜像名称
+        port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
+        volume_info = []
+        volumemount = []
+        # 创建工作负载
+        assert project_steps.step_create_daemonset(project_name=create_project, work_name=workload_name,
+                                                   container_name=container_name, image=image, ports=port,
+                                                   volume_info=volume_info, volumemount=volumemount).json()[
+                   'status'] == 'Failure'
+
+    @allure.story('应用负载-工作负载')
     @allure.title('创建未绑定存储卷的DaemonSets，并验证运行成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_daemonsets(self, create_project, workload_name, container_name):
@@ -1189,37 +1266,7 @@ class TestProject(object):
         project_steps.step_delete_workload(project_name=create_project, type=type, work_name=workload_name)
 
     @allure.story('应用负载-服务')
-    @allure.title('创建未绑定存储卷的service，并验证运行成功')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def wx_test_create_service(self, workload_name, container_name, strategy_info, create_project):
-        port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
-        image = 'nginx'  # 镜像名称
-        condition = 'name=' + workload_name  # 查询deploy和service条件
-        port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]  # 容器的端口信息
-        volumeMounts = []  # 设置挂载的存储卷
-        replicas = 2  # 副本数
-        volume_info = []
-        # 创建service
-        project_steps.step_create_service(create_project, workload_name, port_service)
-        # 创建service绑定的deployment
-        project_steps.step_create_deploy(project_name=create_project, work_name=workload_name,
-                                         container_name=container_name,
-                                         ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
-                                         volume_info=volume_info, strategy=strategy_info)
-        # 验证service创建成功
-        response = project_steps.step_get_workload(create_project, type='services', condition=condition)
-        name = response.json()['items'][0]['metadata']['name']
-        with pytest.assume:
-            assert name == workload_name
-        # 验证deploy创建成功
-        time.sleep(3)
-        re = project_steps.step_get_workload(create_project, type='deployments', condition=condition)
-        # 获取并验证deployment的名称正确
-        name = re.json()['items'][0]['metadata']['name']
-        assert name == workload_name
-
-    @allure.story('应用负载-服务')
-    @allure.title('删除service，并验证删除成功')
+    @allure.title('创建、删除service，并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_service(self, workload_name, create_project):
         port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
@@ -1238,9 +1285,33 @@ class TestProject(object):
         count = response.json()['totalItems']
         assert count == 0
 
+    @allure.story('应用负载-服务')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.MINOR)
+    @pytest.mark.parametrize('service_name, title',
+                             [('tEst', '创建的服务的名称中包含大写字母'),
+                              ('te@st', '创建的服务的名称中包含符号'),
+                              ('test-', '创建的服务的名称以-结束'),
+                              ('-test', '创建的服务的名称以-开始')]
+                             )
+    def test_create_service_wrong_name(self, service_name, title, create_project):
+        # 创建服务并验证创建失败
+        port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
+        assert project_steps.step_create_service(create_project, service_name, port_service).json()[
+                   'status'] == 'Failure'
+
     @allure.story('应用负载-应用路由')
-    @allure.title('为服务创建应用路由')
-    def test_create_route(self, create_project, workload_name, container_name, strategy_info):
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.MINOR)
+    @pytest.mark.parametrize('ingress_name, title',
+                             [('tEst', '创建的路由的名称中包含大写字母'),
+                              ('te@st', '创建的路由的名称中包含符号'),
+                              ('test-', '创建的路由的名称以-结束'),
+                              ('-test', '创建的路由的名称以-开始'),
+                              ('test', '创建的路由的名称符合规定')]
+                             )
+    def test_create_route_wrong_name(self, ingress_name, title, create_project, workload_name, container_name,
+                                     strategy_info):
         # 创建服务
         port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
         image = 'nginx'  # 镜像名称
@@ -1269,19 +1340,26 @@ class TestProject(object):
         with pytest.assume:
             assert name == workload_name
         # 为服务创建路由
-        ingress_name = 'ingress' + str(commonFunction.get_random())
         host = 'www.test.com'
         service_info = {"name": workload_name, "port": {"number": 80}}
-        project_steps.step_create_route(project_name=create_project, ingress_name=ingress_name,
-                                        host=host, service_info=service_info)
-        # 查询应用路由，并获取名称
-        res = project_steps.step_get_route(create_project, 'name=' + ingress_name)
-        na = res.json()['items'][0]['metadata']['name']
-        # 验证路由创建成功
-        with pytest.assume:
-            assert na == ingress_name
-        # 删除路由
-        project_steps.step_delete_route(create_project, ingress_name)
+        if ingress_name == 'test':
+            ingress_name = 'ingress' + str(commonFunction.get_random())
+            project_steps.step_create_route(project_name=create_project, ingress_name=ingress_name,
+                                            host=host, service_info=service_info)
+            # 查询应用路由，并获取名称
+            res = project_steps.step_get_route(create_project, 'name=' + ingress_name)
+            na = res.json()['items'][0]['metadata']['name']
+            # 验证路由创建成功
+            with pytest.assume:
+                assert na == ingress_name
+            # 删除路由
+            project_steps.step_delete_route(create_project, ingress_name)
+        else:
+            with pytest.assume:
+                assert project_steps.step_create_route(project_name=create_project, ingress_name=ingress_name,
+                                                       host=host, service_info=service_info).json()[
+                           'status'] == 'Failure'
+
         # 删除服务
         project_steps.step_delete_service(create_project, workload_name)
         # 删除deployment
@@ -1406,6 +1484,7 @@ class TestProject(object):
         configuration = {"qa": "test"}
         status_new = 'false'
         project_steps.step_edit_gateway_np(create_project, uid, reVersion, configuration, status_new)
+        time.sleep(2)
         # 验证网关编辑成功
         re = project_steps.step_get_gateway(create_project)
         type_actual = re.json()[0]['spec']['service']['type']
@@ -1417,7 +1496,7 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('修改工作负载副本并验证运行正常')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_add_work_replica(self, create_project, workload_name, create_workload):
+    def test_add_work_replica(self, create_project, workload_name, create_deployment):
         time.sleep(5)
         replicas = 3  # 副本数
         # 修改副本数
@@ -1453,7 +1532,7 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('按状态查询存在的工作负载')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_query_work_by_status(self, create_project, workload_name, create_workload):
+    def test_query_work_by_status(self, create_project, workload_name, create_deployment):
         condition = 'status=running'
         count = 0
         i = 0
@@ -1485,7 +1564,7 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('按名称精确查询存在的工作负载')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_query_workload_by_name(self, create_project, workload_name, create_workload):
+    def test_query_workload_by_name(self, create_project, workload_name, create_deployment):
         condition = 'name=' + workload_name
         # 按名称查询工作负载
         name_actual = ''
@@ -1519,7 +1598,7 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('按名称模糊查询存在的工作负载')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_fuzzy_query_work_by_name(self, create_project, workload_name, create_workload):
+    def test_fuzzy_query_work_by_name(self, create_project, workload_name, create_deployment):
         condition = 'name=workload'
         # 按状态查询工作负载
         response = project_steps.step_get_workload(create_project, 'deployments', condition)
@@ -1552,7 +1631,7 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('工作负载设置弹性伸缩')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_work_by_status(self, create_project, workload_name, create_workload):
+    def test_get_work_by_status(self, create_project, workload_name, create_deployment):
         condition = 'name=' + workload_name
         # 设置弹性伸缩
         response = project_steps.step_set_auto_scale(create_project, workload_name)
@@ -1574,7 +1653,7 @@ class TestProject(object):
     @allure.story('应用负载-工作负载')
     @allure.title('删除工作负载')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_delete_workload(self, create_project, workload_name, create_workload):
+    def test_delete_workload(self, create_project, workload_name, create_deployment):
         # 按名称查询工作负载
         condition = 'name=' + workload_name
         response = project_steps.step_get_workload(create_project, 'deployments', condition)
@@ -1587,19 +1666,24 @@ class TestProject(object):
         re = project_steps.step_get_workload(create_project, 'deployments', condition)
         assert re.json()['totalItems'] == 0
 
-    @allure.story('配置中心-服务账号')
-    @allure.title('创建sa并验证sa内容正确、生成的密钥正确、然后删除sa')
+    @allure.story('配置-服务账户')
+    @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_sa(self, create_project):
-        sa_name = 'satest'
+    @pytest.mark.parametrize('role, title',
+                             [('operator', '创建的服务账号角色为operator'),
+                              ('viewer', '创建的服务账号角色为viewer'),
+                              ('admin', '创建的服务账号角色为admin')
+                              ])
+    def test_create_sa(self, role, title, create_project):
         # 步骤1：创建sa
-        project_steps.step_create_sa(project_name=create_project, sa_name=sa_name)
+        sa_name = 'sa-test-' + str(commonFunction.get_random())
+        project_steps.step_create_sa(create_project, sa_name, role)
         # 步骤2：验证sa创建成功并返回secret
         sa_secret = ''
         i = 0
         while i < 60:
             try:
-                response = project_steps.step_get_sa(project_name=create_project, sa_name=sa_name)
+                response = project_steps.step_get_sa(create_project, sa_name)
                 if response.json()['totalItems'] > 0:
                     sa_secret = response.json()['items'][0]['secrets'][0]['name']
                     break
@@ -1609,18 +1693,154 @@ class TestProject(object):
                 i += 3
                 time.sleep(3)
         # 步骤3：查询sa详情
-        project_steps.step_get_sa_detail(project_name=create_project, sa_name=sa_name)
+        re = project_steps.step_get_sa_detail(create_project, sa_name)
+        # 验证服务账户的角色正确
+        with pytest.assume:
+            assert re.json()['metadata']['annotations']['iam.kubesphere.io/role'] == role
         # 步骤4：查询sa的密钥信息并返回密钥类型
         secret_type = \
-        project_steps.step_get_secret(project_name=create_project, secret_name=sa_secret).json()['items'][0]['type']
+            project_steps.step_get_secret(create_project, sa_secret).json()['items'][0]['type']
         with pytest.assume:
             assert secret_type == 'kubernetes.io/service-account-token'
         # 步骤5：删除sa
-        project_steps.step_delete_sa(project_name=create_project, sa_name=sa_name)
+        project_steps.step_delete_sa(create_project, sa_name)
         # 步骤6：验证删除成功
-        num = project_steps.step_get_sa(project_name=create_project, sa_name=sa_name).json()['totalItems']
+        num = project_steps.step_get_sa(create_project, sa_name).json()['totalItems']
         with pytest.assume:
             assert num == 0
+
+    @allure.story('配置-服务账户')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.MINOR)
+    @pytest.mark.parametrize('sa_name, title',
+                             [('Test', '创建的服务账号名称包括大写字母'),
+                              ('', '创建的服务账号无名称'),
+                              ('te@st', '创建的服务账号名称包含特殊字符'),
+                              ('test-', '创建的服务账号名称以-结尾'),
+                              ('-test', '创建的服务账号名称以-开头')
+                              ])
+    def test_create_sa_wrong_name(self, sa_name, title, create_project):
+        # 创建服务账户
+        role = 'operator'
+        response = project_steps.step_create_sa(create_project, sa_name, role)
+        assert response.json()['status'] == 'Failure'
+
+    @allure.story('配置-保密字典')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('type, title, data',
+                             [('Opaque', '创建默认类型的保密字典', {"test": "d3g="}),
+                              ('kubernetes.io/tls', '创建TLS信息类型的保密字典', {"tls.crt": "cWE=", "tls.key": "cXc="}),
+                              ('kubernetes.io/basic-auth', '创建用户名和密码类型的保密字典',
+                               {"username": "dGVzdA==", "password": "d3g="}),
+                              ('kubernetes.io/dockerconfigjson', '创建镜像服务信息类型的保密字典', {
+                                  ".dockerconfigjson": "eyJhdXRocyI6eyJodHRwczovL2RvY2tlci5pbyI6eyJ1c2VybmFtZSI6InRlc3QiLCJwYXNzd29yZCI6Ind4IiwiZW1haWwiOiIiLCJhdXRoIjoiZEdWemREcDNlQT09In19fQ=="})
+                              ])
+    def test_create_secret(self, type, title, data, create_project):
+        # 创建保密字典
+        secret_name = 'test-secret-' + str(commonFunction.get_random())
+        project_steps.step_create_secret(create_project, secret_name, type, data)
+        i = 0
+        while i < 60:
+            try:
+                # 查看保密字典详情
+                response = project_steps.step_get_secret(create_project, secret_name)
+                # 获取保密字典的数据
+                data_actual = response.json()['items'][0]['data']
+                if data_actual:
+                    break
+            except Exception as e:
+                print(e)
+                i += 1
+                time.sleep(1)
+        # 验证数据正确
+        with pytest.assume:
+            assert data == data_actual
+        # 删除保密字典
+        project_steps.step_delete_secret(create_project, secret_name)
+
+    @allure.story('配置-保密字典')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.MINOR)
+    @pytest.mark.parametrize('secret_name, title',
+                             [('Test', '创建的保密字典名称包括大写字母'),
+                              ('', '创建的保密字典无名称'),
+                              ('te@st', '创建的保密字典名称包含特殊字符'),
+                              ('test-', '创建的保密字典名称以-结尾'),
+                              ('-test', '创建的保密字典名称以-开头')
+                              ])
+    def test_create_secret_wrong_name(self, secret_name, title, create_project):
+        # 创建保密字典
+        type = 'Opaque'
+        data = {"test": "d3g="}
+        response = project_steps.step_create_secret(create_project, secret_name, type, data)
+        assert response.json()['status'] == 'Failure'
+
+    @allure.story('配置-保密字典')
+    @allure.title('删除保密字典')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_delete_secret(self, create_project):
+        # 创建保密字典
+        secret_name = 'test-secret-' + str(commonFunction.get_random())
+        type = 'Opaque'
+        data = {"test": "d3g="}
+        project_steps.step_create_secret(create_project, secret_name, type, data)
+        # 验证创建成功
+        i = 0
+        while i < 60:
+            try:
+                # 查看保密字典详情
+                response = project_steps.step_get_secret(create_project, secret_name)
+                # 获取保密字典的数据
+                count = response.json()['totalItems']
+                if count:
+                    break
+            except Exception as e:
+                print(e)
+                i += 1
+                time.sleep(1)
+        with pytest.assume:
+            assert count == 1
+        # 删除创建的保密字典
+        project_steps.step_delete_secret(create_project, secret_name)
+        # 验证删除成功
+        time.sleep(1)
+        res = project_steps.step_get_secret(create_project, secret_name)
+        assert res.json()['totalItems'] == 0
+
+    @allure.story('配置-配置字典')
+    @allure.title('创建、查询、删除配置字典')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_create_configmap(self, create_project):
+        # 创建配置字典
+        configmap_name = 'test-configmap-' + str(commonFunction.get_random())
+        data = {"wx": "test"}
+        project_steps.step_create_configmap(create_project, configmap_name, data)
+        # 验证配置字典创建成功
+        time.sleep(1)
+        with pytest.assume:
+            assert project_steps.step_get_configmap(create_project, configmap_name).json()['items'][0]['data'] == data
+        # 删除配置字典
+        project_steps.step_delete_configmap(create_project, configmap_name)
+        # 验证删除成功
+        time.sleep(1)
+        assert project_steps.step_get_configmap(create_project, configmap_name).json()['totalItems'] == 0
+
+    @allure.story('配置-配置字典')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.MINOR)
+    @pytest.mark.parametrize('configmap_name, title',
+                             [('Test', '创建的配置字典名称包括大写字母'),
+                              ('', '创建的配置字典无名称'),
+                              ('te@st', '创建的配置字典名称包含特殊字符'),
+                              ('test-', '创建的配置字典名称以-结尾'),
+                              ('-test', '创建的配置字典名称以-开头')
+                              ])
+    def test_create_configmap_wrong_name(self, configmap_name, title, create_project):
+        # 创建配置字典
+        data = {"wx": "test"}
+        response = project_steps.step_create_configmap(create_project, configmap_name, data)
+        assert response.json()['status'] == 'Failure'
 
     @allure.story('存储管理-存储卷')
     @allure.title('删除存在的存储卷，并验证删除成功')
@@ -2116,6 +2336,47 @@ class TestProject(object):
             time.sleep(2)
             i = i + 2
         assert response.json()['totalItems'] == 0
+
+    @allure.story('项目设置-网络隔离')
+    @allure.title('开启、关闭网络隔离')
+    @allure.severity(allure.severity_level.CRITICAL)
+    def test_set_network_isolation(self, create_ws, create_project):
+        # 开启网络隔离
+        status = 'enabled'
+        project_steps.step_set_network_isolation(create_project, status)
+        # 验证网络隔离状态为开启
+        response = project_steps.step_get_network_isolation(create_ws, create_project)
+        assert response.json()['metadata']['annotations']['kubesphere.io/network-isolate'] == 'enabled'
+        # 关闭网络隔离
+        status = ''
+        project_steps.step_set_network_isolation(create_project, status)
+        # 验证网络隔离状态为关闭
+        response = project_steps.step_get_network_isolation(create_ws, create_project)
+        assert response.json()['metadata']['annotations']['kubesphere.io/network-isolate'] == ''
+
+    @allure.story('项目设置-网络隔离')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('title, spec',
+                             [('添加白名单条目/内部白名单/出站', {"egress": [{"to": [{"namespace": {"name": "default"}}]}]}),
+                              ('添加白名单条目/内部白名单/入站', {"ingress": [{"from": [{"namespace": {"name": "default"}}]}]}),
+                              ('添加白名单条目/外部白名单/出站', {"egress": [{"ports": [{"port": 80, "protocol": "TCP"}],
+                                                                "to": [{"ipBlock": {"cidr": "10.10.10.10/24"}}]}]}),
+                              ('添加白名单条目/外部白名单/入站', {"ingress": [{"ports": [{"port": 80, "protocol": "TCP"}],
+                                                                 "from": [{"ipBlock": {"cidr": "10.10.10.10/24"}}]}]}),
+                              ])
+    def test_add_allowlist(self, title, spec, create_ws, create_project):
+        # 开启网络隔离
+        status = 'enabled'
+        project_steps.step_set_network_isolation(create_project, status)
+        # 验证网络隔离状态为开启
+        response = project_steps.step_get_network_isolation(create_ws, create_project)
+        assert response.json()['metadata']['annotations']['kubesphere.io/network-isolate'] == 'enabled'
+        # 添加白名单
+        policy_name = 'test-policy-' + str(commonFunction.get_random())
+        project_steps.step_add_allowlist(create_project, policy_name, spec)
+        # 查看白名单详情，验证白名单创建成功
+        assert project_steps.step_get_allowlist(create_project, create_ws).json()['items'][0]['spec'] == spec
 
     @allure.story('项目设置-日志收集')
     @allure.title('开启日志收集，然后将其关闭')
