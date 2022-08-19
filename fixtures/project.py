@@ -39,7 +39,6 @@ def create_job(create_project):
 @pytest.fixture
 def workload_name():
     workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
-    print(workload_name)
     return workload_name
 
 
@@ -57,13 +56,13 @@ def strategy_info():
 
 
 @pytest.fixture
-def create_workload(create_project, workload_name, container_name, strategy_info):
+def create_deployment(create_project, workload_name, container_name, strategy_info):
     image = 'nginx'  # 镜像名称
     port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
     volumeMounts = []  # 设置挂载的存储卷
     replicas = 2  # 副本数
     volume_info = []
-    # 创建工作负载
+    # 创建deployment
     project_steps.step_create_deploy(project_name=create_project, work_name=workload_name,
                                      container_name=container_name, ports=port, volumemount=volumeMounts,
                                      image=image, replicas=replicas, volume_info=volume_info,
