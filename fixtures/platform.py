@@ -19,8 +19,10 @@ def create_role():
 @pytest.fixture()
 def create_user(create_role):
     user_name = 'user' + str(commonFunction.get_random())
+    email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
+    password = 'P@88w0rd'
     # 使用新创建的角色创建用户
-    platform_steps.step_create_user(user_name, create_role)
+    platform_steps.step_create_user(user_name, create_role, email, password)
     yield user_name
     # 删除用户
     platform_steps.step_delete_user(user_name)
@@ -34,7 +36,7 @@ def create_ws():
     time.sleep(1)
     yield ws_name
     # 删除企业空间
-    workspace_steps.step_delete_workspace(ws_name)
+    # workspace_steps.step_delete_workspace(ws_name)
 
 
 @pytest.fixture

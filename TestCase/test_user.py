@@ -6,7 +6,7 @@ import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
-from fixtures.platform import create_user, create_role
+from fixtures.platform import *
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import platform_steps
@@ -70,8 +70,10 @@ class TestUser(object):
                               ])
     def test_login_with_new_user(self, role, title):
         user_name = 'test' + str(commonFunction.get_random())
+        email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
+        password = 'P@88w0rd'
         # 创建用户
-        platform_steps.step_create_user(user_name, role)
+        platform_steps.step_create_user(user_name, role, email, password)
         # 等待创建的用户被激活
         time.sleep(3)
         # 查看用户详情
@@ -90,6 +92,77 @@ class TestUser(object):
         with pytest.assume:
             assert headers
         # 删除用户
+        platform_steps.step_delete_user(user_name)
+
+    @allure.story('用户')
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.title('创建用户-不输入密码')
+    def test_create_user_no_password(self):
+        # 创建用户
+        user_name = 'test' + str(commonFunction.get_random())
+        email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
+        role = 'users-manager'
+        password = ''
+        platform_steps.step_create_user(user_name, role, email, password)
+        # 查询创建的用户
+        response = platform_steps.step_get_user_info(user_name)
+        # 验证用户创建成功
+        with pytest.assume:
+            assert response.json()['items'][0]['metadata']['name'] == user_name
+        # 删除用户
+        platform_steps.step_delete_user(user_name)
+
+    @allure.story('用户')
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.title('创建用户-不输入邮箱')
+    def test_create_user_no_email(self):
+        # 创建用户
+        user_name = 'test' + str(commonFunction.get_random())
+        email = ''
+        role = 'users-manager'
+        password = 'P@88w0rd'
+        platform_steps.step_create_user(user_name, role, email, password)
+        # 查询创建的用户
+        response = platform_steps.step_get_user_info(user_name)
+        # 验证用户创建成功
+        with pytest.assume:
+            assert response.json()['items'][0]['metadata']['name'] == user_name
+        # 删除用户
+        platform_steps.step_delete_user(user_name)
+
+    @allure.story('用户')
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.title('创建用户-使用已经存在的用户名')
+    def test_create_user_exist_name(self):
+        # 创建用户
+        user_name = 'test' + str(commonFunction.get_random())
+        email = ''
+        role = 'users-manager'
+        password = 'P@88w0rd'
+        platform_steps.step_create_user(user_name, role, email, password)
+        # 使用重复的用户名创建用户
+        response = platform_steps.step_create_user(user_name, role, email, password)
+        with pytest.assume:
+            assert 'users.iam.kubesphere.io "' + user_name + '" already exists\n' == response.text
+        # 删除创建的用户
+        platform_steps.step_delete_user(user_name)
+
+    @allure.story('用户')
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.title('创建用户-使用已经存在的用户的邮箱')
+    def test_create_user_exist_name(self):
+        # 创建用户
+        user_name = 'test' + str(commonFunction.get_random())
+        user_name_1 = 'test' + str(commonFunction.get_random())
+        email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
+        role = 'users-manager'
+        password = 'P@88w0rd'
+        platform_steps.step_create_user(user_name, role, email, password)
+        # 使用重复的用户的邮箱创建用户
+        response = platform_steps.step_create_user(user_name_1, role, email, password)
+        with pytest.assume:
+            assert 'admission webhook "users.iam.kubesphere.io" denied the request: user email: ' + email + ' already exists\n' == response.text
+        # 删除创建的用户
         platform_steps.step_delete_user(user_name)
 
     @allure.story('用户')

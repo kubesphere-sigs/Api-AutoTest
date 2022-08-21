@@ -38,7 +38,7 @@ def step_get_ws_num_info(ws_name):
 
 
 @allure.step('创建企业空间的角色')
-def step_create_ws_role(ws_name, ws_role_name, authory):
+def step_create_ws_role(ws_name, ws_role_name, authority):
     """
     :param ws_name: 企业空间的名称
     :param ws_role_name: 企业空间的角色的名称
@@ -48,7 +48,7 @@ def step_create_ws_role(ws_name, ws_role_name, authory):
             "kind": "WorkspaceRole",
             "rules": [],
             "metadata": {"name": ws_role_name,
-                         "annotations": {"iam.kubesphere.io/aggregation-roles": authory,
+                         "annotations": {"iam.kubesphere.io/aggregation-roles": authority,
                                          "kubesphere.io/creator": "admin"}
                          }
             }
@@ -297,7 +297,6 @@ def step_delete_workspace(ws_name):
     return response
 
 
-
 @allure.step('开关企业空间网络隔离')
 def step_set_network_lsolation(ws_name, status):
     """
@@ -311,9 +310,14 @@ def step_set_network_lsolation(ws_name, status):
     return response
 
 
-@allure.step('在单集群环境查询企业空间')
-def step_get_ws_info(ws_name):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=' + ws_name
+@allure.step('查询企业空间')
+def step_get_ws_info(*ws_name):
+    if ws_name:
+        for i in ws_name:
+            path = '?name=' + str(i) + '&sortBy=createTime'
+    else:
+        path = '?sortBy=createTime'
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates' + path
     response = requests.get(url=url, headers=get_header())
     return response
 

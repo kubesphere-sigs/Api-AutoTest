@@ -3,7 +3,7 @@ import pytest
 import allure
 import sys
 import time
-from fixtures.platform import create_ws
+from fixtures.platform import *
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import workspace_steps, platform_steps, project_steps, devops_steps
@@ -24,6 +24,8 @@ class TestWorkSpace(object):
     user_role = 'users-manager'
     ws_name = 'ws-for-test-ws' + str(commonFunction.get_random())
     ws_name1 = 'ws1-for-test-ws'
+    email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
+    password = 'P@88w0rd'
     ws_role_name = ws_name + '-viewer'
     authority_viewer = '["role-template-view-projects","role-template-view-devops","role-template-view-app-templates","role-template-view-app-repos","role-template-view-members","role-template-view-roles","role-template-view-groups","role-template-view-workspace-settings"]'
     authority_admin = '["role-template-manage-workspace-settings","role-template-view-workspace-settings","role-template-manage-projects","role-template-view-projects","role-template-create-projects","role-template-create-devops","role-template-view-devops","role-template-manage-devops","role-template-manage-app-templates","role-template-view-app-templates","role-template-manage-app-repos","role-template-view-app-repos","role-template-view-members","role-template-manage-members","role-template-manage-roles","role-template-view-roles","role-template-manage-groups","role-template-view-groups"]'
@@ -34,7 +36,7 @@ class TestWorkSpace(object):
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
-        platform_steps.step_create_user(self.user_name, self.user_role)  # 创建一个用户
+        platform_steps.step_create_user(self.user_name, self.user_role, self.email, self.password)  # 创建一个用户
         workspace_steps.step_create_workspace(self.ws_name)  # 创建一个企业空间
         workspace_steps.step_create_workspace(self.ws_name1)  # 创建一个企业空间,供excle文件中的用例使用
         time.sleep(3)
@@ -78,6 +80,20 @@ class TestWorkSpace(object):
         mes = res.json()['message']
         # 判断删除成功
         assert mes == 'success'
+
+    @allure.story('项目管理')
+    @allure.title('创建重复的项目')
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_create_project_exist(self, create_ws):
+        # 创建项目
+        project_name = 'test-project' + str(commonFunction.get_random())
+        project_steps.step_create_project(create_ws, project_name)
+        # 创建重复的项目
+        r = project_steps.step_create_project(create_ws, project_name)
+        with pytest.assume:
+            assert 'namespaces "' + project_name + '" already exists\n' == r.text
+        # 删除创建的项目
+        project_steps.step_delete_project(create_ws, project_name)
 
     @allure.story('企业空间概览')
     @allure.title('资源用量-项目数量验证')
@@ -199,80 +215,66 @@ class TestWorkSpace(object):
     @allure.story('企业空间设置-企业成员')
     @allure.title('在企业空间邀请存在的新成员')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_ws_invite_user(self):
-        # 创建用户
-        user_name = 'user' + str(commonFunction.get_random())
-        user_role = 'users-manager'
-        platform_steps.step_create_user(user_name, user_role)
-        # 创建角色
+    def test_ws_invite_user(self, create_user):
+        # 在企业空间创建角色
         authority_create = '["role-template-view-basic"]'  # 创建角色的权限信息
         role_name = 'role' + str(commonFunction.get_random())
         workspace_steps.step_create_ws_role(self.ws_name, role_name, authority_create)
         # 将用户邀请到企业空间
-        workspace_steps.step_invite_user(self.ws_name, user_name, role_name)
+        workspace_steps.step_invite_user(self.ws_name, create_user, role_name)
         # 在企业空间中查询邀请的用户
-        response = workspace_steps.step_get_ws_user(self.ws_name, user_name)
+        response = workspace_steps.step_get_ws_user(self.ws_name, create_user)
         # 验证邀请后的成员名称
         with pytest.assume:
-            response.json()['items'][0]['metadata']['name'] == user_name
+            assert response.json()['items'][0]['metadata']['name'] == create_user
         # 将邀请的用户移除企业空间
-        workspace_steps.step_delete_ws_user(self.ws_name, user_name)
+        workspace_steps.step_delete_ws_user(self.ws_name, create_user)
         # 删除创建的用户
-        platform_steps.step_delete_user(user_name)
+        platform_steps.step_delete_user(create_user)
 
     @allure.story('企业空间设置-企业角色')
     @allure.title('在企业空间创建角色，关联到用户，验证权限正确')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_ws_role_authorized_user(self):
+    def test_ws_role_authorized_user(self, create_user):
         authority_create = '["role-template-view-basic"]'
         role_name = 'role-' + str(commonFunction.get_random())
         # 创建角色
         workspace_steps.step_create_ws_role(self.ws_name, role_name, authority_create)
-        # 在平台创建用户
-        user_name = 'user' + str(commonFunction.get_random())
-        user_role = 'platform-regular'
-        platform_steps.step_create_user(user_name, user_role)
         # 邀请用户到企业空间
-        workspace_steps.step_invite_user(self.ws_name, user_name, role_name)
+        workspace_steps.step_invite_user(self.ws_name, create_user, role_name)
         # 查询角色授权用户
         res = workspace_steps.step_get_role_user(self.ws_name, role_name)
         user = res.json()['items'][0]['metadata']['name']
         user_num = res.json()['totalItems']
         # 验证授权用户正确
         with pytest.assume:
-            assert user == user_name
+            assert user == create_user
         with pytest.assume:
             assert user_num == 1
         # 删除用户
-        platform_steps.step_delete_user(user_name)
+        platform_steps.step_delete_user(create_user)
         # 删除角色
         workspace_steps.step_delete_role(self.ws_name, role_name)
 
     @allure.story('企业空间设置-企业角色')
     @allure.title('在企业空间编辑邀请成员的角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_ws_edit_invite_user(self):
-        # 创建用户
-        user_name = 'user' + str(commonFunction.get_random())
-        user_role = 'users-manager'
-        platform_steps.step_create_user(user_name, user_role)
+    def test_ws_edit_invite_user(self, create_user):
         ws_role_create = self.ws_name + '-viewer'  # 邀请用户是赋予的角色
         ws_role_new = self.ws_name + '-admin'  # 修改的新角色
         # 将创建的用户邀请到创建的企业空间
-        workspace_steps.step_invite_user(self.ws_name, user_name, ws_role_create)
+        workspace_steps.step_invite_user(self.ws_name, create_user, ws_role_create)
         # 修改成员角色
-        workspace_steps.step_edit_ws_user_role(self.ws_name, user_name, ws_role_new)
+        workspace_steps.step_edit_ws_user_role(self.ws_name, create_user, ws_role_new)
         # 查询该企业空间成员的信息
-        r = workspace_steps.step_get_ws_user(self.ws_name, user_name)
+        r = workspace_steps.step_get_ws_user(self.ws_name, create_user)
         # 获取该成员的角色信息
         user_role = r.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/workspacerole']
         # 验证修改后的角色名称
         with pytest.assume:
             assert user_role == ws_role_new
         # 将邀请的用户移除企业空间
-        workspace_steps.step_delete_ws_user(self.ws_name, user_name)
-        # 删除创建的用户
-        platform_steps.step_delete_user(user_name)
+        workspace_steps.step_delete_ws_user(self.ws_name, create_user)
 
     @allure.story('企业空间设置-企业角色')
     @allure.title('{title}')
@@ -291,26 +293,33 @@ class TestWorkSpace(object):
         # 验证权限信息
         assert authority_actual == authority
 
+    @allure.story('企业空间设置-企业角色')
+    @allure.title('创建重复的角色')
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_create_role_exist(self, create_ws):
+        # 创建企业空间角色
+        role_name = 'test-role' + str(commonFunction.get_random())
+        workspace_steps.step_create_ws_role(create_ws, role_name, self.authority_viewer)
+        # 创建重复的企业空间角色
+        r = workspace_steps.step_create_ws_role(create_ws, role_name, self.authority_viewer)
+        with pytest.assume:
+            assert 'workspaceroles.iam.kubesphere.io "' + role_name + '" already exists\n' == r.text
+        # 删除企业空间角色
+        workspace_steps.step_delete_role(create_ws, role_name)
+
     @allure.story('企业空间设置-企业成员')
     @allure.title('在企业空间删除邀请的成员并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_ws_delete_invite_user(self):
-        # 创建用户
-        user_name = 'user' + str(commonFunction.get_random())
-        user_role = 'users-manager'
-        platform_steps.step_create_user(user_name, user_role)
+    def test_ws_delete_invite_user(self, create_user):
         ws_role_create = self.ws_name + '-viewer'  # 邀请用户是赋予的角色
         # 将创建的用户邀请到创建的企业空间
-        workspace_steps.step_invite_user(self.ws_name, user_name, ws_role_create)
+        workspace_steps.step_invite_user(self.ws_name, create_user, ws_role_create)
         # 将邀请的用户移除企业空间
-        workspace_steps.step_delete_ws_user(self.ws_name, user_name)
+        workspace_steps.step_delete_ws_user(self.ws_name, create_user)
         # 查询该企业空间成员的信息
-        response = workspace_steps.step_get_ws_user(self.ws_name, user_name)
+        response = workspace_steps.step_get_ws_user(self.ws_name, create_user)
         # 验证移除用户成功
-        with pytest.assume:
-            assert response.json()['totalItems'] == 0
-        # 删除创建的用户
-        platform_steps.step_delete_user(user_name)
+        assert response.json()['totalItems'] == 0
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('创建、编辑、删除企业组织')
@@ -434,13 +443,9 @@ class TestWorkSpace(object):
     @allure.story('企业空间设置-企业组织')
     @allure.title('为用户分配企业组织')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_assign_user(self, create_ws):
-        # 创建用户
-        user_name = 'user' + str(commonFunction.get_random())
-        user_role = 'users-manager'
-        platform_steps.step_create_user(user_name, user_role)
+    def test_assign_user(self, create_ws, create_user):
         # 将用户邀请到企业空间
-        workspace_steps.step_invite_user(create_ws, user_name, create_ws + '-viewer')
+        workspace_steps.step_invite_user(create_ws, create_user, create_ws + '-viewer')
         # 创建企业组织
         group_name = 'group' + str(commonFunction.get_random())
         data = {"kubesphere.io/workspace-role": create_ws + "-regular",
@@ -453,7 +458,7 @@ class TestWorkSpace(object):
         response = workspace_steps.step_create_department(create_ws, group_name, data)
         name = response.json()['metadata']['name']
         # 将指定用户绑定到指定企业组织
-        workspace_steps.step_binding_user(create_ws, name, user_name)
+        workspace_steps.step_binding_user(create_ws, name, create_user)
         # 获取企业组织可分配的用户数量
         time.sleep(5)
         res = workspace_steps.step_get_user_for_department(name)
@@ -473,13 +478,11 @@ class TestWorkSpace(object):
             user_in_group.append(user)
         # 验证用户在已分配的列表中
         with pytest.assume:
-            assert user_name in user_in_group
+            assert create_user in user_in_group
         with pytest.assume:
-            assert user_name not in user_not_in_group
+            assert create_user not in user_not_in_group
         # 删除创建的企业空间
         workspace_steps.step_delete_workspace(create_ws)
-        # 删除创建的用户
-        platform_steps.step_delete_user(user_name)
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('将已绑定企业组织的用户再次绑定该企业组织')
@@ -505,11 +508,7 @@ class TestWorkSpace(object):
     @allure.story('企业空间设置-企业组织')
     @allure.title('将用户从企业组织解绑')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_unbind_user(self):
-        # 创建用户
-        user_name = 'user' + str(commonFunction.get_random())
-        user_role = 'users-manager'
-        platform_steps.step_create_user(user_name, user_role)
+    def test_unbind_user(self, create_user):
         group_name = 'group' + str(commonFunction.get_random())
         data = {"kubesphere.io/workspace-role": self.ws_name + "-regular",
                 "kubesphere.io/alias-name": "",
@@ -521,7 +520,7 @@ class TestWorkSpace(object):
         response = workspace_steps.step_create_department(self.ws_name, group_name, data)
         name = response.json()['metadata']['name']
         # 将指定用户绑定到指定企业组织
-        res = workspace_steps.step_binding_user(self.ws_name, name, user_name)
+        res = workspace_steps.step_binding_user(self.ws_name, name, create_user)
         # 获取绑定后返回的用户名
         binding_user = res.json()[0]['metadata']['name']
         # 将用户从企业组织解绑
@@ -530,7 +529,7 @@ class TestWorkSpace(object):
         with pytest.assume:
             assert response.json()['message'] == 'success'
         # 删除创建的用户
-        platform_steps.step_delete_user(user_name)
+        platform_steps.step_delete_user(create_user)
         # 删除创建的企业组织
         workspace_steps.step_delete_department(self.ws_name, group_name)
 
@@ -573,31 +572,20 @@ class TestWorkSpace(object):
                         reason='集群未开启networkpolicy功能')
     @allure.story('企业空间设置-网络策略')
     @allure.title('关闭企业空间网络隔离')
+    @pytest.mark.parametrize('status, title',
+                             [(False, '关闭企业空间网络隔离'),
+                              (True, '开启企业空间网络隔离')
+                              ])
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_off_network_lsolation(self):
+    def test_off_network_lsolation(self, status, title, create_ws):
         # 关闭企业空间网络隔离
-        workspace_steps.step_set_network_lsolation(self.ws_name, False)
+        workspace_steps.step_set_network_lsolation(create_ws, status)
         # 验证企业空间信息
-        response = workspace_steps.step_get_ws_info(self.ws_name)
+        response = workspace_steps.step_get_ws_info(create_ws)
         # 获取企业空间的网络隔离状态
         network_lsolation = response.json()['items'][0]['spec']['template']['spec']['networkIsolation']
         # 验证设置成功
-        assert network_lsolation is False
-
-    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('network') is False,
-                        reason='集群未开启networkpolicy功能')
-    @allure.story('企业空间设置-网络策略')
-    @allure.title('开启企业空间网络隔离')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def test_enable_network_lsolation(self):
-        # 开启企业空间网络隔离
-        workspace_steps.step_set_network_lsolation(self.ws_name, True)
-        # 验证企业空间信息
-        response = workspace_steps.step_get_ws_info(self.ws_name)
-        # 获取企业空间的网络隔离状态
-        network_lsolation = response.json()['items'][0]['spec']['template']['spec']['networkIsolation']
-        # 验证设置成功
-        assert network_lsolation is True
+        assert network_lsolation is status
 
     @allure.story('概览/用量排行')
     @allure.title('{title}')

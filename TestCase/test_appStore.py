@@ -161,8 +161,6 @@ class TestAppStore(object):
                 elif status == 'failed':
                     print('应用部署失败')
                     break
-                # elif status == 'created':
-                    # print('应用创建中')
             except Exception as e:
                 print(e)
             finally:

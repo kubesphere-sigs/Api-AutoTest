@@ -80,8 +80,7 @@ def step_delete_role(role_name):
 
 
 @allure.step('创建用户')
-def step_create_user(user_name, role):
-    email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
+def step_create_user(user_name, role, email, password):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users'
     data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
             "kind": "User",
@@ -90,7 +89,7 @@ def step_create_user(user_name, role):
                              {"iam.kubesphere.io/globalrole": role,
                               "iam.kubesphere.io/uninitialized": "true",
                               "kubesphere.io/creator": "admin"}},
-            "spec": {"email": email, "password": "P@88w0rd"}}
+            "spec": {"email": email, "password": password}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 

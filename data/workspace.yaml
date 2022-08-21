@@ -91,7 +91,7 @@
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"wx-role","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
   - 企业空间设置-企业角色
-  - 在企业空间auoto-wx-ws创建角色wx-role（该角色没有任何权限）
+  - 在企业空间创建角色wx-role（该角色没有任何权限）
   - post
   - critical
   - r.json()['metadata']['name']
@@ -102,7 +102,7 @@
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"wx-role1","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-create-projects\",\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
   - 企业空间设置-企业角色
-  - 在企业空间auoto-wx-ws创建角色wx-role1（该角色有项目创建的权限）
+  - 在企业空间创建角色wx-role1（该角色有项目创建的权限）
   - post
   - critical
   - r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']
@@ -113,23 +113,12 @@
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
   - 企业空间设置-企业角色
-  - 在企业空间auoto-wx-ws创建角色( 不输入角色名）
+  - 在企业空间创建角色( 不输入角色名）
   - post
   - critical
   - r.text
   - 'WorkspaceRole.iam.kubesphere.io "" is invalid: metadata.name: Required value:
     name or generateName is required'
-
-- - 12
-  - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
-  - ''
-  - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"wx-role1","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-create-projects\",\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
-  - 企业空间设置-企业角色
-  - 在企业空间ws1-for-test-ws创建角色（输入已存在的角色名wx-role）
-  - post
-  - critical
-  - r.text
-  - workspaceroles.iam.kubesphere.io "wx-role1" already exists
 
 - - 13
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
@@ -216,7 +205,7 @@
   - r.json()['message']
   - success
 
-- - 18
+- - 19
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role1
   - ''
   - ''
@@ -227,7 +216,7 @@
   - r.json()['message']
   - success
 
-- - 19
+- - 20
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?sortBy=createTime&limit=10
   - ''
   - ''
@@ -238,7 +227,7 @@
   - r.status_code
   - 200
 
-- - 20
+- - 21
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=admin&sortBy=createTime&limit=10
   - ''
   - ''
@@ -249,7 +238,7 @@
   - r.json()['items'][0]['metadata']['name']
   - admin
 
-- - 21
+- - 22
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=qweasd&sortBy=createTime&limit=10
   - ''
   - ''
@@ -260,7 +249,7 @@
   - r.json()['totalItems']
   - 0
 
-- - 22
+- - 23
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=ad&sortBy=createTime&limit=10
   - ''
   - ''
@@ -271,73 +260,29 @@
   - r.json()['items'][0]['metadata']['name']
   - admin
 
-- - 23
-  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws
-  - ''
-  - '{"spec":{"template":{"spec":{"networkIsolation":False}}}}'
-  - 企业空间设置-基本信息
-  - 开启企业空间ws1-for-test-ws网络隔离
-  - patch
-  - critical
-  - r.json()['spec']['template']['spec']['networkIsolation']
-  - 0
-
 - - 24
-  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws
+  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/system-workspace/namespaces?name=default
   - ''
-  - '{"spec":{"template":{"spec":{"networkIsolation":True}}}}'
-  - 企业空间设置-基本信息
-  - 关闭企业空间ws1-for-test-ws网络隔离
-  - patch
-  - critical
-  - r.json()['spec']['template']['spec']['networkIsolation']
-  - true
+  - ''
+  - 项目管理
+  - 在企业空间中精确查询存在的项目
+  - get
+  - normal
+  - r.json()['items'][0]['metadata']['name']
+  - default
 
 - - 25
-  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces
+  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/system-workspace/namespaces?name=defaul
   - ''
-  - '{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"wx-project","labels":{"kubesphere.io/workspace":"ws1-for-test-ws"},"annotations":{"kubesphere.io/creator":"admin"}}}'
+  - ''
   - 项目管理
-  - 在企业空间ws1-for-test-ws创建项目wx-project
-  - post
-  - critical
-  - r.json()['metadata']['name']
-  - wx-project
+  - 在企业空间中模糊查询存在的项目
+  - get
+  - normal
+  - r.json()['items'][0]['metadata']['name']
+  - default
 
 - - 26
-  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces
-  - ''
-  - '{"apiVersion":"v1","kind":"Namespace","metadata":{"name":"wx-project","labels":{"kubesphere.io/workspace":"ws1-for-test-ws"},"annotations":{"kubesphere.io/creator":"admin"}}}'
-  - 项目管理
-  - 在企业空间ws1-for-test-ws创建重复的项目wx-project
-  - post
-  - critical
-  - r.text
-  - namespaces "wx-project" already exists
-
-- - 27
-  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx-project
-  - ''
-  - ''
-  - 项目管理
-  - 在企业空间ws1-for-test-ws中精确查询存在的项目
-  - get
-  - normal
-  - r.json()['items'][0]['metadata']['name']
-  - wx-project
-
-- - 28
-  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=w
-  - ''
-  - ''
-  - 项目管理
-  - 在企业空间ws1-for-test-ws中模糊查询存在的项目
-  - get
-  - normal
-  - r.json()['items'][0]['metadata']['name']
-  - wx-project
-
-- - 29
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx1
   - ''
   - ''
@@ -347,36 +292,3 @@
   - normal
   - r.json()['totalItems']
   - 0
-
-- - 30
-  - /api/v1/namespaces/wx-project/resourcequotas
-  - ''
-  - '{"apiVersion":"v1","kind":"ResourceQuota","metadata":{"name":"wx-project","namespace":"wx-project","cluster":"default","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"hard":{"limits.cpu":"2","requests.cpu":"1","requests.memory":"2Gi"}}}'
-  - 概览
-  - 设置项目wx-project配置
-  - post
-  - critical
-  - r.json()['spec']['hard']['requests.memory']
-  - 2Gi
-
-- - 31
-  - /api/v1/namespaces/wx-project/limitranges
-  - ''
-  - '{"apiVersion":"v1","kind":"LimitRange","metadata":{"annotations":{"kubesphere.io/creator":"admin"}},"spec":{"limits":[{"default":{"cpu":"2","memory":"4000Mi"},"defaultRequest":{"cpu":"1","memory":"500Mi"},"type":"Container"}]}}'
-  - 概览
-  - 设置项目wx-project容器资源默认配置
-  - post
-  - critical
-  - r.json()['spec']['limits'][0]['default']['memory']
-  - 4000Mi
-
-- - 32
-  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces/wx-project
-  - ''
-  - ''
-  - 项目管理
-  - 在企业空间ws1-for-test-ws删除项目wx-project
-  - delete
-  - critical
-  - r.json()['message']
-  - success

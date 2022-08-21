@@ -268,6 +268,7 @@ class TestAppTemplate(object):
         app_id = response.json()['items'][0]['app_id']
         # 添加应用版本
         app_steps.step_add_version(self.ws_name, app_id)
+        time.sleep(2)
         # 获取应用模版中所有的版本version
         versions = app_steps.step_get_app_versions(self.ws_name, app_id)
         # 删除应用版本

@@ -8,6 +8,7 @@
   - normal
   - r.status_code
   - 200
+
 - - 2
   - /kapis/iam.kubesphere.io/v1alpha2/users
   - name=admin
@@ -18,6 +19,7 @@
   - normal
   - r.json()['items'][0]['metadata']['name']
   - admin
+
 - - 3
   - /kapis/iam.kubesphere.io/v1alpha2/users
   - name=wx13124421
@@ -28,6 +30,7 @@
   - normal
   - r.json()['totalItems']
   - 0
+
 - - 4
   - /kapis/iam.kubesphere.io/v1alpha2/users
   - name=admi
@@ -38,6 +41,7 @@
   - normal
   - r.json()['items'][0]['metadata']['name']
   - admin
+
 - - 5
   - /kapis/iam.kubesphere.io/v1alpha2/users
   - ''
@@ -49,68 +53,8 @@
   - r.text
   - 'User.iam.kubesphere.io "" is invalid: metadata.name: Required value: name or
     generateName is required'
+
 - - 6
-  - /kapis/iam.kubesphere.io/v1alpha2/users
-  - ''
-  - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"User","metadata":{"name":"wx1","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"email":"","password":"P@88w1rd"}}'
-  - 添加用户
-  - 增加用户(不输入邮箱)
-  - post
-  - critical
-  - r.json()['metadata']['name']
-  - wx1
-- - 7
-  - /kapis/iam.kubesphere.io/v1alpha2/users
-  - ''
-  - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"User","metadata":{"name":"wx2","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"email":"stevewen9@yunify.com","password":""}}'
-  - 添加用户
-  - 增加用户(不输入密码)
-  - post
-  - critical
-  - r.json()['metadata']['name']
-  - wx2
-- - 8
-  - /kapis/iam.kubesphere.io/v1alpha2/users
-  - ''
-  - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"User","metadata":{"name":"wx1234","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"email":"stevewen21241441@yunify.com","password":"P@88w0rd"}}'
-  - 添加用户
-  - 增加用户wx1234
-  - post
-  - critical
-  - r.json()['metadata']['name']
-  - wx1234
-- - 9
-  - /kapis/iam.kubesphere.io/v1alpha2/users/wx1234
-  - ''
-  - ''
-  - 查询用户
-  - 查看指定用户详情信息
-  - get
-  - critical
-  - r.json()['metadata']['name']
-  - wx1234
-- - 10
-  - /kapis/iam.kubesphere.io/v1alpha2/users
-  - ''
-  - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"User","metadata":{"name":"wx1234","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"email":"stevewen2@yunify.com","password":"P@88w0rd"}}'
-  - 添加用户
-  - 增加已经存在的用户
-  - post
-  - critical
-  - r.text
-  - users.iam.kubesphere.io "wx1234" already exists
-- - 11
-  - /kapis/iam.kubesphere.io/v1alpha2/users
-  - ''
-  - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"User","metadata":{"name":"wx","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"email":"stevewen9@yunify.com","password":"P@88w0rd"}}'
-  - 添加用户
-  - 增加用户(使用其它用户的邮箱)
-  - post
-  - critical
-  - r.text
-  - 'admission webhook "users.iam.kubesphere.io" denied the request: user email: stevewen9@yunify.com
-    already exists'
-- - 12
   - /kapis/iam.kubesphere.io/v1alpha2/users
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"User","metadata":{"name":"Wqwe","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"email":"stevewen@yunify.com","password":"P@88w0rd"}}'
@@ -123,7 +67,8 @@
     a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters,
     ''-'' or ''.'', and must start and end with an alphanumeric character (e.g. ''example.com'',
     regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
-- - 13
+
+- - 7
   - /kapis/iam.kubesphere.io/v1alpha2/users
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"User","metadata":{"name":"wx@wx","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"email":"stevewen@yunify.com","password":"P@88w0rd"}}'
@@ -136,7 +81,8 @@
     a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters,
     ''-'' or ''.'', and must start and end with an alphanumeric character (e.g. ''example.com'',
     regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
-- - 14
+
+- - 8
   - /kapis/iam.kubesphere.io/v1alpha2/users
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"User","metadata":{"name":"wx","annotations":{"kubesphere.io/creator":"admin"}},"spec":{"email":"stevewen@.com","password":"P@88w0rd"}}'
@@ -147,42 +93,13 @@
   - r.text
   - 'admission webhook "users.iam.kubesphere.io" denied the request: invalid email
     address:stevewen@.com'
-- - 15
-  - /kapis/iam.kubesphere.io/v1alpha2/users/wx1234
-  - ''
-  - ''
-  - 删除用户
-  - 删除用户wx1234
-  - delete
-  - critical
-  - r.json()['message']
-  - success
-- - 16
-  - /kapis/iam.kubesphere.io/v1alpha2/users/wx1
-  - ''
-  - ''
-  - 删除用户
-  - 删除用户wx1
-  - delete
-  - critical
-  - r.json()['message']
-  - success
-- - 17
-  - /kapis/iam.kubesphere.io/v1alpha2/users/wx2
-  - ''
-  - ''
-  - 删除用户
-  - 删除用户wx2
-  - delete
-  - critical
-  - r.json()['message']
-  - success
-- - 18
+
+- - 9
   - /kapis/iam.kubesphere.io/v1alpha2/users/w
   - ''
   - ''
   - 删除用户
-  - 删除用户wx（输入不正确的用户名）
+  - 删除不存在的用户
   - delete
   - critical
   - r.text
