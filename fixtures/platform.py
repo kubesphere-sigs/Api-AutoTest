@@ -36,7 +36,7 @@ def create_ws():
     time.sleep(1)
     yield ws_name
     # 删除企业空间
-    # workspace_steps.step_delete_workspace(ws_name)
+    workspace_steps.step_delete_workspace(ws_name)
 
 
 @pytest.fixture
