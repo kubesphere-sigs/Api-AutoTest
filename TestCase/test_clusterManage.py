@@ -1584,6 +1584,8 @@ class TestCluster(object):
     def test_get_invite_cluster_member(self):
         # 创建平台用户
         user_name = 'user' + str(commonFunction.get_random())
+        email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
+        password = 'P@88w0rd'
         platform_steps.step_create_user(user_name, 'platform-regular')
         # 邀请用户到集群成员
         cluster_steps.step_invite_cluster_member(user_name, 'cluster-viewer')

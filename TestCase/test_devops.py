@@ -25,6 +25,8 @@ class TestDevOps(object):
 
     user_name = 'wx-user' + str(commonFunction.get_random())
     user_role = 'users-manager' + str(commonFunction.get_random())
+    email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
+    password = 'P@88w0rd'
     ws_name = 'ws-dev' + str(commonFunction.get_random())
     dev_name = 'wx-dev' + str(commonFunction.get_random())
     ws_role_name = ws_name + '-viewer' + str(commonFunction.get_random())

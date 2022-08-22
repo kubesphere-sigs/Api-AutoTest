@@ -21,6 +21,8 @@ class TestProject(object):
     volume_name = 'testvolume'  # 存储卷名称，在创建、删除存储卷时使用,excle中的用例也用到了这个存储卷
     user_name = 'user-for-test-project'  # 系统用户名称
     user_role = 'users-manager'  # 用户角色
+    email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
+    password = 'P@88w0rd'
     ws_name = 'ws-for-test-project' + str(commonFunction.get_random())
     project_name = 'test-project' + str(commonFunction.get_random())
     # 项目名称，从yaml中获取的测试用例中用到了这个项目名称
@@ -30,7 +32,7 @@ class TestProject(object):
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
-        platform_steps.step_create_user(self.user_name, self.user_role)  # 创建一个用户
+        platform_steps.step_create_user(self.user_name, self.user_role, self.email, self.password)  # 创建一个用户
         workspace_steps.step_create_workspace(self.ws_name)  # 创建一个企业空间
         workspace_steps.step_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
         project_steps.step_create_project(self.ws_name, self.project_name)  # 创建一个project工程
@@ -601,8 +603,8 @@ class TestProject(object):
                 if res.json()['items'][0]['status']['succeeded'] == 2:
                     break
             except KeyError:
-                time.sleep(3)
-                i = i + 3
+                time.sleep(5)
+                i = i + 5
         # 获取任务的成功的容器数量
         succeeded = res.json()['items'][0]['status']['succeeded']
         # 验证指定容器组完成数量==实际成功的容器数量
@@ -681,8 +683,8 @@ class TestProject(object):
                 if res.json()['items'][0]['status']['succeeded'] == 2:
                     break
             except KeyError:
-                time.sleep(3)
-                i = i + 3
+                time.sleep(5)
+                i = i + 5
         uid = res.json()['items'][0]['metadata']['uid']
         # 查看任务的资源状态，并获取容器组名称
         response = project_steps.step_get_job_pods(create_project, uid)
@@ -695,22 +697,11 @@ class TestProject(object):
     @allure.story('应用负载-容器组')
     @allure.title('按名称模糊查询存在的容器组')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_fuzzy_query_pod(self, create_project, create_job):
-        # 捕获异常，不对异常作处理,每隔5秒查询一次任务状态
-        i = 0
-        while i < 60:
-            try:
-                res = project_steps.step_get_job_detail(create_project, create_job)
-                if res.json()['items'][0]['status']['succeeded'] == 2:
-                    break
-            except KeyError:
-                time.sleep(3)
-                i = i + 3
-        pod_name = create_job
+    def test_fuzzy_query_pod(self):
         # 在项目中查询pod信息
-        r = project_steps.step_get_pod_info(create_project, pod_name)
+        r = project_steps.step_get_pod_info('kubesphere-system', 'controller')
         # 验证查询到的容器数量
-        assert r.json()['totalItems'] == 2
+        assert r.json()['totalItems'] == 1
 
     @allure.story('应用负载-容器组')
     @allure.title('按名称查询不存在的容器组')
@@ -1374,8 +1365,9 @@ class TestProject(object):
                               ])
     def test_create_project_gateway(self, type, title, create_project):
         status = 'true'  # 链路追踪开启状态
-        # 创建网关
+        # 创建项目网关
         project_steps.step_create_gateway(create_project, type, status)
+        time.sleep(5)
         # 查看项目网关，并验证网关类型
         response = project_steps.step_get_gateway(create_project)
         type_actual = response.json()[0]['spec']['service']['type']
@@ -1383,7 +1375,6 @@ class TestProject(object):
             assert type_actual == type
         # 关闭网关
         project_steps.step_delete_gateway(create_project)
-        time.sleep(10)
 
     @allure.story('项目设置-网关设置')
     @allure.title('{title}')
@@ -1398,8 +1389,9 @@ class TestProject(object):
     def test_create_project_gateway_after_cluster(self, project_type, cluster_type, title, create_project):
         # 开启集群网关
         cluster_steps.step_open_cluster_gateway(cluster_type)
+        time.sleep(2)
         status = 'true'  # 链路追踪开启状态
-        # 创建网关
+        # 创建项目网关
         response = project_steps.step_create_gateway(create_project, project_type, status)
         result = response.text
         # 验证创建结果
@@ -1421,8 +1413,10 @@ class TestProject(object):
         status = 'true'  # 链路追踪开启状态
         # 创建项目网关
         project_steps.step_create_gateway(create_project, project_type, status)
+        time.sleep(3)
         # 创建集群网关
         cluster_steps.step_open_cluster_gateway(cluster_type)
+        time.sleep(2)
         # 在项目中查看网关信息
         response = project_steps.step_get_gateway(create_project)
         cluster_gateway_name = response.json()[0]['metadata']['name']
