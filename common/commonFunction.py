@@ -615,11 +615,13 @@ def write_data_excle_to_yaml(filename, sheet_name):
 # 获取测试环境信息
 def write_environment_info():
     response = cluster_steps.step_get_cluster_info()
+    # 测试环境信息
     env = {
         "TEST_URL": env_url,
         "KS_VERSION": response.json()['gitVersion'],
         "K8S_VERSION": response.json()['kubernetes']['gitVersion'],
         "PLATFORM": response.json()['platform']
     }
+    # 将测试环境信息写入yaml文件
     with open('../environment.properties', 'w', encoding='utf-8') as f:
         yaml.dump(env, f, sort_keys=False)
