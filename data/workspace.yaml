@@ -176,24 +176,6 @@
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
 
-- - 17
-  - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role
-  - ''
-  - "{\"metadata\": {\"name\": \"wx-role\",\n             \"labels\": {\"kubesphere.io/workspace\"\
-    :\"ws1-for-test-ws\"},\n             \"annotations\": {\"iam.kubesphere.io/aggregation-roles\"\
-    : \"[\\\"role-template-create-projects\\\",\"\n                              \
-    \                                      \"\\\"role-template-view-basic\\\"]\",\n\
-    \                            \"kubesphere.io/creator\": \"admin\",\n         \
-    \                   \"kubesphere.io/alias-name\": \"我是别名\",\n                \
-    \            \"kubesphere.io/description\": \"我是描述\"\n                       \
-    \      }\n             },\n}"
-  - 企业空间设置-企业角色
-  - 在企业空间ws1-for-test-ws修改角色wx-role的基本信息
-  - patch
-  - normal
-  - r.json()['metadata']['annotations']['kubesphere.io/description']
-  - 我是描述
-
 - - 18
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role
   - ''

@@ -20,7 +20,7 @@ def create_project(create_ws):
     # 创建项目
     project_name = 'test-pro' + str(commonFunction.get_random())
     project_steps.step_create_project(create_ws, project_name)
-    time.sleep(2)
+    time.sleep(3)
     yield project_name
     # 删除创建的项目
     project_steps.step_delete_project(create_ws, project_name)
@@ -31,6 +31,7 @@ def create_job(create_project):
     # 创建任务
     job_name = 'job' + str(commonFunction.get_random())
     project_steps.step_create_job(create_project, job_name)
+    time.sleep(2)
     yield job_name
     # 删除任务
     project_steps.step_delete_job(create_project, job_name)
