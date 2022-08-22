@@ -7,6 +7,7 @@ from step import project_steps, multi_cluster_steps
 import time
 import datetime
 from common.getHeader import get_header, get_header_for_patch
+from step import cluster_steps
 import allure
 from common.getConfig import get_apiserver
 from common.getData import DoexcleByPandas
@@ -609,3 +610,16 @@ def write_data_excle_to_yaml(filename, sheet_name):
     # 将数据写入yaml
     with open('../data/storage.yaml', 'w', encoding='utf-8') as f:
         yaml.dump(data=p, stream=f, allow_unicode=True)
+
+
+# 获取测试环境信息
+def write_environment_info():
+    response = cluster_steps.step_get_cluster_info()
+    env = {
+        "TEST_URL": env_url,
+        "KS_VERSION": response.json()['gitVersion'],
+        "K8S_VERSION": response.json()['kubernetes']['gitVersion'],
+        "PLATFORM": response.json()['platform']
+    }
+    with open('../environment.properties', 'w', encoding='utf-8') as f:
+        yaml.dump(env, f, sort_keys=False)

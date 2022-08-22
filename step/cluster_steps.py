@@ -19,6 +19,13 @@ def step_get_cluster_name():
     return clusters
 
 
+@allure.step('获取集群信息')
+def step_get_cluster_info():
+    url = env_url + '/kapis/version'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
 @allure.step('查询容器的日志')
 def step_get_container_log(pod_name, container_name, start_time, end_time):
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/logs?operation=query&log_query=&pods=' + pod_name + \
