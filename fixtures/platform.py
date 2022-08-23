@@ -2,7 +2,7 @@ import pytest
 import time
 from common import commonFunction
 from datetime import datetime
-from step import platform_steps, workspace_steps, app_steps, cluster_steps
+from step import platform_steps, workspace_steps, app_steps, cluster_steps, ippool_steps
 
 
 @pytest.fixture()
@@ -69,3 +69,16 @@ def node_name():
     response = cluster_steps.step_get_nodes()
     node_name = response.json()['items'][0]['metadata']['name']
     return node_name
+
+
+@pytest.fixture()
+def create_ippool():
+    ippool_name = 'ippool-' + str(commonFunction.get_random())
+    cidr = commonFunction.random_ip() + '/24'
+    description = ' '
+    # 创建ippool
+    ippool_steps.step_create_ippool(ippool_name, cidr, description)
+    time.sleep(1)
+    yield ippool_name
+    # 删除ippool
+    ippool_steps.step_delete_ippool(ippool_name)
