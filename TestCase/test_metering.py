@@ -67,13 +67,15 @@ class TestMetering(object):
             try:
                 result_type = response.json()['results'][i]['data']['resultType']
                 # 验证数据类型为matrix
-                pytest.assume(result_type == 'matrix')
+                with pytest.assume:
+                    assert (result_type == 'matrix')
                 # 获取趋势图数据的时间间隔
                 time_1 = response.json()['results'][i]['data']['result'][0]['values'][0][0]
                 time_2 = response.json()['results'][i]['data']['result'][0]['values'][1][0]
                 time_interval = time_2 - time_1
                 # 验证时间间隔正确
-                assert time_interval == int(step)
+                with pytest.assume:
+                    assert time_interval == int(step)
             except Exception as e:
                 print(e)
                 print('集群无资源消费信息')
@@ -103,7 +105,8 @@ class TestMetering(object):
                 # 获取metric_name
                 metric = r.json()['results'][0]['metric_name']
                 # 验证metric正确
-                assert metric == metric_name
+                with pytest.assume:
+                    assert metric == metric_name
             except Exception as e:
                 print(e)
                 print('节点无资源消费信息')
@@ -133,20 +136,22 @@ class TestMetering(object):
             name = response.json()['items'][i]['metadata']['name']
             # 获取截止到昨天的最近7天的消费历史
             re = toolbox_steps.step_get_consumption_history(type='node', start_time=before_timestamp,
-                                                                  end_time=now_timestamp,
-                                                                  step=step, name=name)
+                                                            end_time=now_timestamp,
+                                                            step=step, name=name)
             # 获取查询结果的数据类型
             for j in range(0, 5):
                 try:
                     result_type = re.json()['results'][j]['data']['resultType']
                     # 验证数据类型为matrix
-                    pytest.assume(result_type == 'matrix')
+                    with pytest.assume:
+                        assert (result_type == 'matrix')
                     # 获取趋势图数据的时间间隔
                     time_1 = re.json()['results'][j]['data']['result'][0]['values'][0][0]
                     time_2 = re.json()['results'][j]['data']['result'][0]['values'][1][0]
                     time_interval = time_2 - time_1
                     # 验证时间间隔正确
-                    assert time_interval == int(step)
+                    with pytest.assume:
+                        assert time_interval == int(step)
                 except Exception as e:
                     print(e)
                     print('节点: ' + name + '无资源消费信息')
@@ -177,7 +182,8 @@ class TestMetering(object):
                 # 获取metric_name
                 metric = r.json()['results'][0]['metric_name']
                 # 验证metric正确
-                assert metric == metric_name
+                with pytest.assume:
+                    assert metric == metric_name
             except Exception as e:
                 print(e)
                 print('pod：' + name + '无资源消费信息')
@@ -217,7 +223,8 @@ class TestMetering(object):
                         time_2 = r.json()['results'][k]['data']['result'][0]['values'][1][0]
                         time_interval = time_2 - time_1
                         # 验证时间间隔正确
-                        assert time_interval == int(step)
+                        with pytest.assume:
+                            assert time_interval == int(step)
                     except Exception as e:
                         print(e)
                         print('pod:' + pod_name + ' 没有消费数据')
@@ -227,203 +234,185 @@ class TestMetering(object):
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('step, title',
-                             [('3600', '查看所有企业空间截止到昨天的消费情况，时间间隔为1小时'),
-                              ('7200', '查看所有企业空间截止到昨天的消费情况，时间间隔为2小时'),
-                              ('14400', '查看所有企业空间截止到昨天的消费情况，时间间隔为4小时'),
-                              ('28800', '查看所有企业空间截止到昨天的消费情况，时间间隔为7小时'),
-                              ('86400', '查看所有企业空间截止到昨天的消费情况，时间间隔为1天')
+                             [('3600', '查看企业空间system-workspace截止到昨天的消费情况，时间间隔为1小时'),
+                              ('7200', '查看企业空间system-workspace截止到昨天的消费情况，时间间隔为2小时'),
+                              ('14400', '查看企业空间system-workspace截止到昨天的消费情况，时间间隔为4小时'),
+                              ('28800', '查看企业空间system-workspace截止到昨天的消费情况，时间间隔为7小时'),
+                              ('86400', '查看企业空间system-workspace截止到昨天的消费情况，时间间隔为1天')
                               ])
     def test_get_workspace_consumption_by_yesterday(self, step, title):
         # 获取当前日期的时间戳
         now_timestamp = commonFunction.get_timestamp()
         # 获取7天之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp_day(7)
-        # 查询企业空间信息
-        response = workspace_steps.step_get_ws_info('')
-        # 获取企业空间的数量
-        ws_count = response.json()['totalItems']
-        # 获取企业空间的名称
-        for i in range(0, ws_count):
-            ws_name = response.json()['items'][i]['metadata']['name']
-            # 查询企业空间的历史消费信息
-            r = toolbox_steps.step_get_workspace_consumption_history(ws_name, before_timestamp, now_timestamp, step)
-            # 查询每个指标的消费历史数据
-            for j in range(0, 5):
-                try:
-                    # 获取数据类型
-                    result_type = r.json()['results'][j]['data']['resultType']
-                    # 验证数据类型为matrix
-                    pytest.assume(result_type == 'matrix')
-                    # 获取并验证数据的时间间隔
-                    time_1 = r.json()['results'][j]['data']['result'][0]['values'][0][0]
-                    time_2 = r.json()['results'][j]['data']['result'][0]['values'][1][0]
-                    time_interval = time_2 - time_1
+        # 设置企业空间的名称
+        ws_name = 'system-workspace'
+        # 查询企业空间的历史消费信息
+        r = toolbox_steps.step_get_workspace_consumption_history(ws_name, before_timestamp, now_timestamp, step)
+        # 查询每个指标的消费历史数据
+        for j in range(0, 5):
+            try:
+                # 获取数据类型
+                result_type = r.json()['results'][j]['data']['resultType']
+                # 验证数据类型为matrix
+                with pytest.assume:
+                    assert (result_type == 'matrix')
+                # 获取并验证数据的时间间隔
+                time_1 = r.json()['results'][j]['data']['result'][0]['values'][0][0]
+                time_2 = r.json()['results'][j]['data']['result'][0]['values'][1][0]
+                time_interval = time_2 - time_1
+                with pytest.assume:
                     assert time_interval == int(step)
-                except Exception as e:
-                    print(e)
-                    print('企业空间：' + ws_name + '没有资源历史消费信息')
-                    break
+            except Exception as e:
+                print(e)
+                print('企业空间：' + ws_name + '没有资源历史消费信息')
+                break
 
     @allure.story('企业空间资源消费情况')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('metric, title',
-                             [('meter_namespace_cpu_usage', '按cpu查看企业空间所有项目最近1h的消费情况'),
-                              ('meter_namespace_memory_usage_wo_cache', '按memoory查看企业空间所有项目最近1h的消费情况'),
-                              ('meter_namespace_pvc_bytes_total', '按pvc查看企业空间所有项目最近1h的消费情况'),
-                              ('meter_namespace_net_bytes_received', '按网络流入查看企业空间所有项目最近1h的消费情况'),
-                              ('meter_namespace_net_bytes_transmitted', '按网络流出查看企业空间所有项目最近1h的消费情况'),
+                             [('meter_namespace_cpu_usage', '按cpu查看企业空间system-workspace所有项目最近1h的消费情况'),
+                              ('meter_namespace_memory_usage_wo_cache', '按memoory查看企业空间system-workspace所有项目最近1h的消费情况'),
+                              ('meter_namespace_pvc_bytes_total', '按pvc查看企业空间system-workspace所有项目最近1h的消费情况'),
+                              ('meter_namespace_net_bytes_received', '按网络流入查看企业空间system-workspace所有项目最近1h的消费情况'),
+                              ('meter_namespace_net_bytes_transmitted', '按网络流出查看企业空间system-workspace所有项目最近1h的消费情况'),
                               ])
     def test_get_project_consumption(self, metric, title):
-        # 查询企业空间信息
-        response = workspace_steps.step_get_ws_info('')
-        # 获取企业空间的数量
-        ws_count = response.json()['totalItems']
-        # 获取企业空间的名称
-        for i in range(0, ws_count):
-            ws_name = response.json()['items'][i]['metadata']['name']
-            # 查询每个企业空间的项目信息
-            re = workspace_steps.step_get_project_info(ws_name)
-            # 获取项目的数量
-            project_count = re.json()['totalItems']
-            project_names = []
-            # 获取企业空间中项目的名称
-            for j in range(0, project_count):
-                project_name = re.json()['items'][j]['metadata']['name']
-                project_names.append(project_name)
-            # 查询每个项目最近1h的资源消费信息
-            if len(project_names) > 0:
-                r = toolbox_steps.step_get_project_consumption(metric, project_names)
-                # 获取查询结果中的metric_name
-                metric_name = r.json()['results'][0]['metric_name']
-                # 验证metric_name正确
+        # 设置企业空间的名称
+        ws_name = 'system-workspace'
+        # 查询每个企业空间的项目信息
+        re = workspace_steps.step_get_project_info(ws_name)
+        # 获取项目的数量
+        project_count = re.json()['totalItems']
+        project_names = []
+        # 获取企业空间中项目的名称
+        for j in range(0, project_count):
+            project_name = re.json()['items'][j]['metadata']['name']
+            project_names.append(project_name)
+        # 查询每个项目最近1h的资源消费信息
+        if len(project_names) > 0:
+            r = toolbox_steps.step_get_project_consumption(metric, project_names)
+            # 获取查询结果中的metric_name
+            metric_name = r.json()['results'][0]['metric_name']
+            # 验证metric_name正确
+            with pytest.assume:
                 assert metric_name == metric
-            else:
-                print('企业空间：' + ws_name + '没有项目')
+        else:
+            print('企业空间：' + ws_name + '没有项目')
 
     @allure.story('企业空间资源消费情况')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('step, title',
-                             [('3600', '查看所有企业空间的所有项目截止到昨天的消费情况，时间间隔为1小时'),
-                              ('7200', '查看所有企业空间的所有项目截止到昨天的消费情况，时间间隔为2小时'),
-                              ('14400', '查看所有企业空间的所有项目截止到昨天的消费情况，时间间隔为4小时'),
-                              ('28800', '查看所有企业空间的所有项目截止到昨天的消费情况，时间间隔为7小时'),
-                              ('86400', '查看所有企业空间的所有项目截止到昨天的消费情况，时间间隔为1天')
+                             [('3600', '查看企业空间system-workspace中所有项目截止到昨天的消费情况，时间间隔为1小时'),
+                              ('7200', '查看企业空间system-workspace中所有项目截止到昨天的消费情况，时间间隔为2小时'),
+                              ('14400', '查看企业空间system-workspace中所有项目截止到昨天的消费情况，时间间隔为4小时'),
+                              ('28800', '查看企业空间system-workspace中所有项目截止到昨天的消费情况，时间间隔为7小时'),
+                              ('86400', '查看企业空间system-workspace中所有项目截止到昨天的消费情况，时间间隔为1天')
                               ])
     def test_get_project_consumption_by_yesterday(self, step, title):
         # 获取当前日期的时间戳
         now_timestamp = commonFunction.get_timestamp()
         # 获取7天之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp_day(7)
-        # 查询企业空间信息
-        response = workspace_steps.step_get_ws_info('')
-        # 获取企业空间的数量
-        ws_count = response.json()['totalItems']
-        # 获取企业空间的名称
-        for i in range(0, ws_count):
-            ws_name = response.json()['items'][i]['metadata']['name']
-            # 查询每个企业空间的项目信息
-            re = workspace_steps.step_get_project_info(ws_name)
-            # 获取项目的数量
-            project_count = re.json()['totalItems']
-            # 获取企业空间中项目的名称
-            for j in range(0, project_count):
-                project_name = re.json()['items'][j]['metadata']['name']
-                # 查询项目截止到昨天最近7天的资源消费历史
-                r = toolbox_steps.step_get_project_consumption_history(project_name, before_timestamp, now_timestamp,
-                                                                       step)
-                for k in range(1, 5):
-                    try:
-                        # 获取并验证查询结果中每个指标的数据类型
-                        result_type = r.json()['results'][k]['data']['resultType']
-                        pytest.assume(result_type == 'matrix')
-                        # 获取并验证查询结果中每个指标的时间间隔
-                        time_1 = r.json()['results'][k]['data']['result'][0]['values'][0][0]
-                        time_2 = r.json()['results'][k]['data']['result'][0]['values'][1][0]
-                        time_interval = time_2 - time_1
+        # 设置企业空间的名称
+        ws_name = 'system-workspace'
+        # 查询每个企业空间的项目信息
+        re = workspace_steps.step_get_project_info(ws_name)
+        # 获取项目的数量
+        project_count = re.json()['totalItems']
+        # 获取企业空间中项目的名称
+        for j in range(0, project_count):
+            project_name = re.json()['items'][j]['metadata']['name']
+            # 查询项目截止到昨天最近7天的资源消费历史
+            r = toolbox_steps.step_get_project_consumption_history(project_name, before_timestamp, now_timestamp,
+                                                                   step)
+            for k in range(1, 5):
+                try:
+                    # 获取并验证查询结果中每个指标的数据类型
+                    result_type = r.json()['results'][k]['data']['resultType']
+                    with pytest.assume:
+                        assert (result_type == 'matrix')
+                    # 获取并验证查询结果中每个指标的时间间隔
+                    time_1 = r.json()['results'][k]['data']['result'][0]['values'][0][0]
+                    time_2 = r.json()['results'][k]['data']['result'][0]['values'][1][0]
+                    time_interval = time_2 - time_1
+                    with pytest.assume:
                         assert time_interval == int(step)
-                    except Exception as e:
-                        print(e)
-                        print('企业空间：' + ws_name + '的项目 ' + project_name + '没有历史消费信息')
-                        break
+                except Exception as e:
+                    print(e)
+                    print('企业空间：' + ws_name + '的项目 ' + project_name + '没有历史消费信息')
+                    break
 
     @allure.story('企业空间资源消费情况')
-    @allure.title('查询所有项目最近1h消费的资源信息')
+    @allure.title('查询企业空间system-workspace中所有项目最近1h消费的资源信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_hierarchy_consumption(self):
-        # 查询企业空间信息
-        response = workspace_steps.step_get_ws_info('')
-        # 获取企业空间的数量
-        ws_count = response.json()['totalItems']
-        # 获取企业空间的名称
-        for i in range(0, ws_count):
-            ws_name = response.json()['items'][i]['metadata']['name']
-            # 查询每个企业空间的项目信息
-            re = workspace_steps.step_get_project_info(ws_name)
-            # 获取项目的数量
-            project_count = re.json()['totalItems']
-            # 获取企业空间中项目的名称
-            for j in range(0, project_count):
-                project_name = re.json()['items'][j]['metadata']['name']
-                # 查询最近1h消费的资源信息
-                r = toolbox_steps.step_get_hierarchy_consumption(ws_name, project_name)
-                # 验证资源查询成功
-                assert r.status_code == 200
+        # 设置企业空间的名称
+        ws_name = 'system-workspace'
+        # 查询每个企业空间的项目信息
+        re = workspace_steps.step_get_project_info(ws_name)
+        # 获取项目的数量
+        project_count = re.json()['totalItems']
+        # 获取企业空间中项目的名称
+        for j in range(0, project_count):
+            project_name = re.json()['items'][j]['metadata']['name']
+            # 查询最近1h消费的资源信息
+            r = toolbox_steps.step_get_hierarchy_consumption(ws_name, project_name)
+            # 验证资源查询成功
+            assert r.status_code == 200
 
     @allure.story('企业空间资源消费情况')
     @allure.title('{title}')
     @pytest.mark.parametrize('step, title',
-                             [('3600', '查询所有项目下包含的资源截止到昨天的最近7天的资源消费历史数据，时间间隔为1小时'),
-                              ('7200', '查询所有项目下包含的资源截止到昨天的最近7天的资源消费历史数据，时间间隔为2小时'),
-                              ('14400', '查询所有项目下包含的资源截止到昨天的最近7天的资源消费历史数据，时间间隔为4小时'),
-                              ('28800', '查询所有项目下包含的资源截止到昨天的最近7天的资源消费历史数据，时间间隔为7小时'),
-                              ('86400', '查询所有项目下包含的资源截止到昨天的最近7天的资源消费历史数据，时间间隔为1天')
+                             [('3600', '查询企业空间system-workspace中所有项目下包含的资源截止到昨天的最近7天的资源消费历史数据，时间间隔为1小时'),
+                              ('7200', '查询企业空间system-workspace中项目下包含的资源截止到昨天的最近7天的资源消费历史数据，时间间隔为2小时'),
+                              ('14400', '查询企业空间system-workspace中项目下包含的资源截止到昨天的最近7天的资源消费历史数据，时间间隔为4小时'),
+                              ('28800', '查询企业空间system-workspace中项目下包含的资源截止到昨天的最近7天的资源消费历史数据，时间间隔为7小时'),
+                              ('86400', '查询企业空间system-workspace中项目下包含的资源截止到昨天的最近7天的资源消费历史数据，时间间隔为1天')
                               ])
     def test_get_hierarchy_consumption_history(self, step, title):
         # 获取当前日期的时间戳
         now_timestamp = commonFunction.get_timestamp()
         # 获取7天之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp_day(7)
-        # 查询企业空间信息
-        response = workspace_steps.step_get_ws_info('')
-        # 获取企业空间的数量
-        ws_count = response.json()['totalItems']
-        # 获取企业空间的名称
-        for i in range(0, ws_count):
-            ws_name = response.json()['items'][i]['metadata']['name']
-            # 查询每个企业空间的项目信息
-            re = workspace_steps.step_get_project_info(ws_name)
-            # 获取项目的数量
-            project_count = re.json()['totalItems']
-            if project_count > 0:
+        # 设置企业空间的名称
+        ws_name = 'system-workspace'
+        # 查询每个企业空间的项目信息
+        re = workspace_steps.step_get_project_info(ws_name)
+        # 获取项目的数量
+        project_count = re.json()['totalItems']
+        if project_count > 0:
             # 获取企业空间中项目的名称
-                for j in range(project_count):
-                    project_name = re.json()['items'][j]['metadata']['name']
-                    # 查询最近1h消费的资源信息
-                    r = toolbox_steps.step_get_hierarchy_consumption(ws_name, project_name)
-                    hierarchy_list = ['apps', 'daemonsets', 'deployments', 'openpitrixs', 'statefulsets']
-                    for k in hierarchy_list:
-                        if r.json()[k] is not None:
-                            hierarchy = r.json()[k]
-                            for key in hierarchy.keys():
-                                # 查询资源截止到昨天的最近7天消费历史
-                                rep = toolbox_steps.step_get_hierarchy_consumption_history(project_name,
-                                                                                           before_timestamp,
-                                                                                           now_timestamp,
-                                                                                           step, key, k)
-                                # 获取查询结果中所有指标的数据类型
-                                for m in range(4):
-                                    try:
-                                        result_type = rep.json()['results'][m]['data']['resultType']
-                                        # 验证数据类型正确
-                                        pytest.assume(result_type == 'matrix')
-                                        # 获取并验证查询结果中每个指标的时间间隔
-                                        time_1 = rep.json()['results'][m]['data']['result'][0]['values'][0][0]
-                                        time_2 = rep.json()['results'][m]['data']['result'][0]['values'][1][0]
-                                        time_interval = time_2 - time_1
+            for j in range(project_count):
+                project_name = re.json()['items'][j]['metadata']['name']
+                # 查询最近1h消费的资源信息
+                r = toolbox_steps.step_get_hierarchy_consumption(ws_name, project_name)
+                hierarchy_list = ['apps', 'daemonsets', 'deployments', 'openpitrixs', 'statefulsets']
+                for k in hierarchy_list:
+                    if r.json()[k] is not None:
+                        hierarchy = r.json()[k]
+                        for key in hierarchy.keys():
+                            # 查询资源截止到昨天的最近7天消费历史
+                            rep = toolbox_steps.step_get_hierarchy_consumption_history(project_name,
+                                                                                       before_timestamp,
+                                                                                       now_timestamp,
+                                                                                       step, key, k)
+                            # 获取查询结果中所有指标的数据类型
+                            for m in range(4):
+                                try:
+                                    result_type = rep.json()['results'][m]['data']['resultType']
+                                    # 验证数据类型正确
+                                    with pytest.assume:
+                                        assert result_type == 'matrix'
+                                    # 获取并验证查询结果中每个指标的时间间隔
+                                    time_1 = rep.json()['results'][m]['data']['result'][0]['values'][0][0]
+                                    time_2 = rep.json()['results'][m]['data']['result'][0]['values'][1][0]
+                                    time_interval = time_2 - time_1
+                                    with pytest.assume:
                                         assert time_interval == int(step)
-                                    except Exception as e:
-                                        print(e)
-                                        print('项目：' + project_name + ' 资源类型：' + k + ' 资源名称：' + key + ' 无历史消费信息')
-                                        break
+                                except Exception as e:
+                                    print(e)
+                                    print('项目：' + project_name + ' 资源类型：' + k + ' 资源名称：' + key + ' 无历史消费信息')
+                                    break
