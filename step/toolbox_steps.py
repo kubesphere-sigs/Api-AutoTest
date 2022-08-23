@@ -17,7 +17,7 @@ def step_get_audits(start_time, end_time, *cluster_name):
             path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/auditing/events'
     else:
         path = '/kapis/tenant.kubesphere.io/v1alpha2/auditing/events'
-    url = env_url +  path + '?operation=statistics&start_time=' + start_time + '&end_time=' + end_time + '&interval=30m'
+    url = env_url + path + '?operation=statistics&start_time=' + start_time + '&end_time=' + end_time + '&interval=30m'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -359,7 +359,7 @@ def step_get_hierarchy_consumption_history(project_name, start_time, end_time, s
           'meter_workload_net_bytes_transmitted%7Cmeter_workload_net_bytes_received&' \
           'resources_filter=' + name + '&kind=' + kind
     response = requests.get(url=url, headers=get_header())
-    return response.text
+    return response
 
 
 @allure.step('获取kubeconfig')
