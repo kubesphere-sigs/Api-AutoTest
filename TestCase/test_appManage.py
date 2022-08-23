@@ -268,11 +268,21 @@ class TestAppTemplate(object):
         app_id = response.json()['items'][0]['app_id']
         # 添加应用版本
         app_steps.step_add_version(self.ws_name, app_id)
-        time.sleep(2)
-        # 获取应用模版中所有的版本version
-        versions = app_steps.step_get_app_versions(self.ws_name, app_id)
+        # 等待应用版本添加成功
+        i = 0
+        while i < 60:
+            try:
+                # 获取应用模版中所有的版本version
+                versions = app_steps.step_get_app_versions(self.ws_name, app_id)
+                if versions:
+                    break
+            except Exception as e:
+                print(e)
+                i += 1
+                time.sleep(1)
         # 删除应用版本
         app_steps.step_delete_version(app_id, versions)
+        time.sleep(3)
         # 删除应用模板
         re = app_steps.step_delete_app_template(self.ws_name, app_id)
         # 验证应用模版删除成功
