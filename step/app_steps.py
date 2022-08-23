@@ -359,53 +359,44 @@ def step_deployment_app(project_name, app_id, app_version_id, name, conf):
 
 @allure.step('获取appstore中应用的app_id')
 def step_get_app_id():
-    url = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D2&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
-    url2 = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
-    url3 = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D3&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
-    r = requests.get(url, headers=get_header())  # 获取app的id和name，将其组合成一个字典
-    r2 = requests.get(url2, headers=get_header())  # 获取app的id和name，将其组合成一个字典
-    r3 = requests.get(url3, headers=get_header())  # 获取app的id和name，将其组合成一个字典
+    # 获取应用商店中应用的数量
+    url = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+    response = requests.get(url, headers=get_header())
+    count = response.json()['total_count']
+    # 获取应用列表的页数
+    pages = ceil(count/12)
+    # 访问每一页应用，然后获取app的id和name，并将其组合成一个字典
     item_name = []
     item_app_id = []
-    items = r.json()['items']
-    for item in items:
-        item_name.append(item['name'])
-        item_app_id.append(item['app_id'])
-    items2 = r2.json()['items']
-    for item in items2:
-        item_name.append(item['name'])
-        item_app_id.append(item['app_id'])
-    items3 = r3.json()['items']
-    for item in items3:
-        item_name.append(item['name'])
-        item_app_id.append(item['app_id'])
+    for page in range(1, pages + 1):
+        url = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D' + str(page) + '&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+        r = requests.get(url, headers=get_header())  # 获取app的id和name，将其组合成一个字典
+        items = r.json()['items']
+        for item in items:
+            item_name.append(item['name'])
+            item_app_id.append(item['app_id'])
     dic = dict(zip(item_name, item_app_id))
     return dic
 
 
 @allure.step('获取appstore中所有应用的name, version_id')
 def step_get_app_version():
-    url = env_url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D2&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
-    url2 = env_url + '/kapis/openpitrix.io/v1/apps??orderBy=create_time&paging=limit%3D12%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
-    url3 = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D3&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
-    r = requests.get(url, headers=get_header())  # 获取app的id和name，将其组合成一个字典
-    r2 = requests.get(url2, headers=get_header())  # 获取app的id和name，将其组合成一个字典
-    r3 = requests.get(url3, headers=get_header())  # 获取app的id和name，将其组合成一个字典
+    # 获取应用商店中应用的数量
+    url = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D1&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+    response = requests.get(url, headers=get_header())
+    count = response.json()['total_count']
+    # 获取应用列表的页数
+    pages = ceil(count/12)
+    # 访问每一页应用，然后获取app的id和name，并将其组合成一个字典
     item_name = []
     item_version_id = []
-    items = r.json()['items']
-    for item in items:
-        item_name.append(item['name'])
-        item_version_id.append(item['latest_app_version']['version_id'])
-    items2 = r2.json()['items']
-    for item in items2:
-        item_name.append(item['name'])
-        item_version_id.append(item['latest_app_version']['version_id'])
-
-    items3 = r3.json()['items']
-    for item in items3:
-        item_name.append(item['name'])
-        item_version_id.append(item['latest_app_version']['version_id'])
+    for page in range(1, pages + 1):
+        url = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D12%2Cpage%3D' + str(page) + '&conditions=status%3Dactive%2Crepo_id%3Drepo-helm&reverse=true'
+        r = requests.get(url, headers=get_header())  # 获取app的id和name，将其组合成一个字典
+        items = r.json()['items']
+        for item in items:
+            item_name.append(item['name'])
+            item_version_id.append(item['latest_app_version']['version_id'])
     dic = dict(zip(item_name, item_version_id))
     return dic
 
