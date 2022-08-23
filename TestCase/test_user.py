@@ -40,7 +40,7 @@ class TestUser(object):
         commonFunction.request_resource(url, params, data, story, title, method, severity, condition, except_result)
 
     @allure.story('编辑用户')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @allure.title('测试修改用户信息')
     def test_edit_user(self, create_user):
         email_new = 'test' + str(commonFunction.get_random()) + '@yunify.com'
@@ -195,7 +195,7 @@ class TestUser(object):
         assert headers_new
 
     @allure.story('用户')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @allure.title('用户历史登陆时间')
     def test_user_login_history(self, create_user):
         # 等待创建的用户被激活

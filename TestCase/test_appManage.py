@@ -118,7 +118,7 @@ class TestAppTemplate(object):
 
     @allure.story('应用管理-应用仓库')
     @allure.title('使用正确的信息新建应用仓库')
-    @allure.severity(allure.severity_level.BLOCKER)
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_add_app_repository(self):
         repo_name = 'repo' + str(commonFunction.get_random())  # 仓库名称
         repo_url = 'https://helm-chart-repo.pek3a.qingstor.com/kubernetes-charts/'  # 仓库的url信息

@@ -106,7 +106,7 @@ class TestLogSearch(object):
 
     @allure.story('日志查询规则')
     @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize(('search_rule', 'title'),
                              [('namespaces=kubesphere', '按项目精确查询日志趋势'),
                               ('log_query=error', '按关键字查询日志趋势'),
@@ -130,7 +130,7 @@ class TestLogSearch(object):
 
     @allure.story('日志查询规则')
     @allure.title('按关键字查询日志的详情信息')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_logs_by_keyword(self):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
@@ -143,7 +143,7 @@ class TestLogSearch(object):
 
     @allure.story('日志查询规则')
     @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize(('query_rule', 'title'),
                              [('Exact Query', '按项目精确查询日志的详情信息'),
                               ('Fuzzy Query', '按项目模糊查询日志的详情信息')
@@ -181,7 +181,7 @@ class TestLogSearch(object):
                              [('Exact Query', '按容器组精确查询日志的详情信息'),
                               ('Fuzzy Query', '按容器组模糊查询日志的详情信息')
                               ])
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_logs_by_pod(self, query_rule, title):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
@@ -198,7 +198,7 @@ class TestLogSearch(object):
                              [('Exact Query', '按容器精确查询日志的详情信息'),
                               ('Fuzzy Query', '按容器模糊查询日志的详情信息')
                               ])
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_logs_by_container(self, query_rule, title):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
@@ -216,7 +216,7 @@ class TestLogSearch(object):
                               (180, '6m', '按容器模糊查询最近3小时日志的详情信息'),
                               (1440, '48m', '按容器模糊查询最近一天日志的详情信息')
                               ])
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_logs_by_time_limit(self, limit, interval, title):
         # 获取当前时间的10位时间戳（结束时间）
         now_time = datetime.now()
@@ -231,6 +231,7 @@ class TestLogSearch(object):
 
     @allure.story('日志查询规则')
     @allure.title('查询任一KS自带容器的日志详情')
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_all_containers_log(self):
         # 获取当前时间的10位时间戳
         now_time = datetime.now()

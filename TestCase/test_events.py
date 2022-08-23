@@ -121,7 +121,7 @@ class TestEventSearch(object):
 
     @allure.story('事件查询规则')
     @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize(('search_rule', 'title'),
                              [('message_search=test', '按消息查询事件趋势'),
                               ('workspace_search=sys', '按企业空间模糊查询事件趋势'),
@@ -164,7 +164,7 @@ class TestEventSearch(object):
                               ('type_search=Warning', '按类别模糊查询事件趋势'),
                               ('reason_search=Failed', '按原因模糊查询事件趋势')
                               ])
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_events_by_search(self, search_rule, title):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
@@ -182,7 +182,7 @@ class TestEventSearch(object):
                               (180, '6m', '按时间范围查询最近3小时事件趋势'),
                               (1440, '48m', '按时间范围查询最近一天事件趋势')
                               ])
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_events_by_time_limit(self, limit, interval, title):
         # 获取当前时间的10位时间戳
         now_time = datetime.now()

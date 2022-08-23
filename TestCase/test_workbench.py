@@ -68,6 +68,7 @@ class TestWorkbench(object):
 
     @allure.story('工具箱')
     @allure.title('获取集群的kubeconfig信息')
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_get_kubeconfig(self):
         # 获取集群的kubeconfig信息
         response = platform_steps.step_get_kubeconfig()

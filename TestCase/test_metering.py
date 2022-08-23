@@ -45,7 +45,7 @@ class TestMetering(object):
 
     @allure.story('集群资源消费情况')
     @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('step, title',
                              [('3600', '查看集群截止到昨天的消费情况，时间间隔为1小时'),
                               ('7200', '查看集群截止到昨天的消费情况，时间间隔为2小时'),
@@ -83,7 +83,7 @@ class TestMetering(object):
 
     @allure.story('集群资源消费情况')
     @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('metric_name, title',
                              [('meter_node_cpu_usage', '查看所有节点的cpu消费情况'),
                               ('meter_node_memory_usage_wo_cache', '查看所有节点的内存消费情况'),
@@ -114,7 +114,7 @@ class TestMetering(object):
 
     @allure.story('集群资源消费情况')
     @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('step, title',
                              [('3600', '查看所有节点截止到昨天的消费情况，时间间隔为1小时'),
                               ('7200', '查看所有节点截止到昨天的消费情况，时间间隔为2小时'),
@@ -159,7 +159,7 @@ class TestMetering(object):
 
     @allure.story('集群资源消费情况')
     @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('metric_name, title',
                              [('meter_pod_cpu_usage', '查看所有pod的cpu消费情况'),
                               ('meter_pod_memory_usage_wo_cache', '查看所有pod的内存消费情况'),
@@ -190,7 +190,7 @@ class TestMetering(object):
                 break
 
     @allure.story('集群资源消费情况')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_pod_consumption_by_yesterday(self):
         step = random.choice(['3600', '7200', '14400', '28800', '86400'])
         title = '查看所有pod截止到昨天的消费情况，时间间隔为' + str(int(step) / 60 / 60) + '小时'
@@ -232,7 +232,7 @@ class TestMetering(object):
 
     @allure.story('企业空间资源消费情况')
     @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('step, title',
                              [('3600', '查看企业空间system-workspace截止到昨天的消费情况，时间间隔为1小时'),
                               ('7200', '查看企业空间system-workspace截止到昨天的消费情况，时间间隔为2小时'),
@@ -270,7 +270,7 @@ class TestMetering(object):
 
     @allure.story('企业空间资源消费情况')
     @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('metric, title',
                              [('meter_namespace_cpu_usage', '按cpu查看企业空间system-workspace所有项目最近1h的消费情况'),
                               ('meter_namespace_memory_usage_wo_cache', '按memoory查看企业空间system-workspace所有项目最近1h的消费情况'),
@@ -303,7 +303,7 @@ class TestMetering(object):
 
     @allure.story('企业空间资源消费情况')
     @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('step, title',
                              [('3600', '查看企业空间system-workspace中所有项目截止到昨天的消费情况，时间间隔为1小时'),
                               ('7200', '查看企业空间system-workspace中所有项目截止到昨天的消费情况，时间间隔为2小时'),

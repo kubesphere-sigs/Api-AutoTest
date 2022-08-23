@@ -258,7 +258,7 @@ class TestWorkSpace(object):
 
     @allure.story('企业空间设置-企业角色')
     @allure.title('在企业空间编辑邀请成员的角色')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_ws_edit_invite_user(self, create_user):
         ws_role_create = self.ws_name + '-viewer'  # 邀请用户是赋予的角色
         ws_role_new = self.ws_name + '-admin'  # 修改的新角色
@@ -278,7 +278,7 @@ class TestWorkSpace(object):
 
     @allure.story('企业空间设置-企业角色')
     @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('role_name, title, authority',
                              [('viewer', '查看默认角色viewer的权限信息', authority_viewer),
                               ('admin', '查看默认角色viewer的权限信息', authority_admin),
@@ -535,7 +535,7 @@ class TestWorkSpace(object):
 
     @allure.story('企业空间设置-配额管理')
     @allure.title('编辑配额')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_edit_quota(self):
         # 初始化企业配额
         workspace_steps.step_init_quota(ws_name=self.ws_name, cluster='default')

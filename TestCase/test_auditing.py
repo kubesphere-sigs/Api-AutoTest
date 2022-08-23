@@ -81,7 +81,7 @@ class TestAuditingOperatingSearch(object):
 
     @allure.story('审计总量')
     @allure.title('查询最近 12 小时操作审计总数变化趋势')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_audits_trend(self):
         # 时间间隔,单位是秒
         interval = '1800'
@@ -105,7 +105,7 @@ class TestAuditingOperatingSearch(object):
 
     @allure.story('审计查询规则')
     @allure.title('{title}')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize(('search_rule', 'title'),
                              [
                               ('workspace_search=sys', '按企业空间模糊查询审计趋势'),
@@ -138,7 +138,7 @@ class TestAuditingOperatingSearch(object):
                               (180, '6m', '按时间查询最近3小时审计趋势'),
                               (1440, '48m', '按时间查询最近一天审计趋势')
                               ])
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_audits_trend_by_time_limit(self, limit, interval, title):
         # 获取当前时间的10位时间戳（结束时间）
         now_time = datetime.now()
@@ -168,7 +168,7 @@ class TestAuditingOperatingSearch(object):
                               ('user_filter=admin', '按操作账户精确查询审计详情'),
                               ('source_ip_search=192.', '按来源ip查询审计详情')
                               ])
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_audits_by_search(self, search_rule, title):
         # 获取当前时间的10位时间戳
         now_time = datetime.now()
@@ -187,7 +187,7 @@ class TestAuditingOperatingSearch(object):
                               (180, '6m', '按时间查询最近3小时审计详情'),
                               (1440, '48m', '按时间查询最近一天审计详情')
                               ])
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_audits_detail_by_time_limit(self, limit, interval, title):
         # 获取当前时间的10位时间戳（结束时间）
         now_time = datetime.now()
