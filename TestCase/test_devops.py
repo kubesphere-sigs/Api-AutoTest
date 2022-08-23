@@ -35,7 +35,7 @@ class TestDevOps(object):
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
-        platform_steps.step_create_user(self.user_name, self.user_role)  # 创建一个用户
+        platform_steps.step_create_user(self.user_name, self.user_role, self.email, self.password)  # 创建一个用户
         workspace_steps.step_create_workspace(self.ws_name)  # 创建一个企业空间
         commonFunction.ws_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
         devops_steps.step_create_devops(self.ws_name, self.dev_name)  # 创建一个devops工程
