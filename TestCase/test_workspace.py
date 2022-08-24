@@ -236,7 +236,7 @@ class TestWorkSpace(object):
     @allure.title('在企业空间创建角色，关联到用户，验证权限正确')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_ws_role_authorized_user(self, create_user):
-        authority_create = '["role-template-view-basic"]'
+        authority_create = '["role-template-create-projects","role-template-view-basic"]'
         role_name = 'role-' + str(commonFunction.get_random())
         # 创建角色
         workspace_steps.step_create_ws_role(self.ws_name, role_name, authority_create)
@@ -254,6 +254,21 @@ class TestWorkSpace(object):
         # 删除用户
         platform_steps.step_delete_user(create_user)
         # 删除角色
+        workspace_steps.step_delete_role(self.ws_name, role_name)
+
+    @allure.story('企业空间设置-企业角色')
+    @allure.title('在企业空间创建无权限的角色')
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_ws_create_role_no_authority(self):
+        authority_create = '["role-template-view-basic"]'
+        role_name = 'role-' + str(commonFunction.get_random())
+        # 创建角色
+        workspace_steps.step_create_ws_role(self.ws_name, role_name, authority_create)
+        # 查询创建的角色
+        response = workspace_steps.step_get_ws_role(self.ws_name, role_name)
+        with pytest.assume:
+            assert response.json()['items'][0]['metadata']['annotations']
+            ['iam.kubesphere.io/aggregation-roles'] == authority_create
         workspace_steps.step_delete_role(self.ws_name, role_name)
 
     @allure.story('企业空间设置-企业角色')

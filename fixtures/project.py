@@ -23,6 +23,7 @@ def create_project(create_ws):
     time.sleep(3)
     yield project_name
     # 删除创建的项目
+    time.sleep(1)
     project_steps.step_delete_project(create_ws, project_name)
 
 
@@ -34,6 +35,7 @@ def create_job(create_project):
     time.sleep(2)
     yield job_name
     # 删除任务
+    time.sleep(1)
     project_steps.step_delete_job(create_project, job_name)
 
 
@@ -85,3 +87,14 @@ def create_service(workload_name, container_name, strategy_info, create_project)
                                      container_name=container_name,
                                      ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
                                      volume_info=volume_info, strategy=strategy_info)
+
+
+@pytest.fixture
+def create_role(create_project):
+    role_name = 'role' + str(commonFunction.get_random())
+    # 创建角色
+    project_steps.step_create_role(create_project, role_name)
+    time.sleep(1)
+    yield role_name
+    time.sleep(1)
+    project_steps.step_project_delete_role(create_project, role_name)

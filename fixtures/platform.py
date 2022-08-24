@@ -2,7 +2,7 @@ import pytest
 import time
 from common import commonFunction
 from datetime import datetime
-from step import platform_steps, workspace_steps, app_steps, cluster_steps, ippool_steps
+from step import platform_steps, workspace_steps, app_steps, cluster_steps, ippool_steps, project_steps
 
 
 @pytest.fixture()
@@ -11,6 +11,7 @@ def create_role():
     role_name = 'role' + str(commonFunction.get_random())
     # 创建角色
     platform_steps.step_create_role(role_name, authority)
+    time.sleep(1)
     yield role_name
     # 删除角色
     platform_steps.step_delete_role(role_name)
@@ -36,7 +37,20 @@ def create_ws():
     time.sleep(1)
     yield ws_name
     # 删除企业空间
+    time.sleep(1)
     workspace_steps.step_delete_workspace(ws_name)
+
+
+@pytest.fixture
+def create_project(create_ws):
+    # 创建项目
+    project_name = 'test-pro' + str(commonFunction.get_random())
+    project_steps.step_create_project(create_ws, project_name)
+    time.sleep(3)
+    yield project_name
+    # 删除创建的项目
+    time.sleep(1)
+    project_steps.step_delete_project(create_ws, project_name)
 
 
 @pytest.fixture
@@ -60,6 +74,7 @@ def create_category():
     category_id = response.json()['category_id']
     yield category_id
     # 删除分类
+    time.sleep(1)
     app_steps.step_delete_category(category_id)
 
 
@@ -81,4 +96,5 @@ def create_ippool():
     time.sleep(1)
     yield ippool_name
     # 删除ippool
+    time.sleep(1)
     ippool_steps.step_delete_ippool(ippool_name)

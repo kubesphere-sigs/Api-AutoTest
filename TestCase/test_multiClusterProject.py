@@ -19,6 +19,8 @@ class TestProject(object):
     user_name = 'user-for-test-project' + str(commonFunction.get_random())  # 系统用户名称
     user_role = 'workspaces-manager'
     ws_name = 'ws-for-test-project'
+    email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
+    password = 'P@88w0rd'
     alias_name = '多集群'
     description = '用于测试多集群项目管理'
     project_name = 'test-project' + str(commonFunction.get_random())
@@ -28,7 +30,7 @@ class TestProject(object):
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
-        platform_steps.step_create_user(self.user_name, self.user_role)  # 创建一个用户
+        platform_steps.step_create_user(self.user_name, self.user_role, self.email, self.password)  # 创建一个用户
         # 获取集群名称
         clusters = cluster_steps.step_get_cluster_name()
         # 创建一个多集群企业空间（包含所有的集群）

@@ -104,7 +104,7 @@ class TestAppStore(object):
                 i += 5
 
     @allure.title('从应用商店部署应用时使用不符合规则的名称')
-    @allure.severity(allure.severity_level.NORMAL)
+    @allure.severity(allure.severity_level.MINOR)
     def test_deployment_mongdb_wrong_name(self):
         app_id = app_steps.step_get_app_id()['MongoDB']
         version_id = app_steps.step_get_app_version()['MongoDB']

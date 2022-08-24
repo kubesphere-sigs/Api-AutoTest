@@ -71,7 +71,7 @@ def step_get_ws_ippool_number(ippool_name, ws_name):
     return num
 
 
-@allure.step('获取应用负载')
+@allure.step('查询所有的容器组')
 def step_get_job(ippool_name):
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/pods?limit=6&labelSelector=ippool.network.kubesphere.io%2Fname%3D' \
           + ippool_name + '&sortBy=startTime'

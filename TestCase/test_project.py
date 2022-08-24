@@ -355,13 +355,9 @@ class TestProject(object):
     @allure.story("项目设置-项目角色")
     @allure.title('在项目中创建角色')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_project_role_create(self, create_project):
-        role_name = 'role' + str(commonFunction.get_random())
-        # 创建角色
-        project_steps.step_create_role(create_project, role_name)
-        time.sleep(1)
+    def test_project_role_create(self, create_role, create_project):
         # 查看角色
-        r = project_steps.step_get_role(create_project, role_name)
+        r = project_steps.step_get_role(create_project, create_role)
         assert r.json()['totalItems'] == 1
 
     @allure.story("项目设置-项目角色")
@@ -375,24 +371,20 @@ class TestProject(object):
 
     @allure.story("项目设置-项目角色")
     @allure.title('项目中编辑角色基本信息')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def test_project_role_edit_info(self, create_project):
+    @allure.severity(allure.severity_level.NORMAL)
+    def test_project_role_edit_info(self, create_role, create_project):
         alias_name = '我是别名'  # 别名
-        role_name = 'role' + str(commonFunction.get_random())
         # 角色信息
         annotations = {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-basic\"]",
                        "kubesphere.io/alias-name": alias_name,
                        "kubesphere.io/creator": "admin",
                        "kubesphere.io/description": "我是描述信息"}
         resourceVersion = ''
-        # 创建角色
-        project_steps.step_create_role(create_project, role_name)
-        time.sleep(1)
         # 编辑角色
-        project_steps.step_edit_project_role(create_project, role_name, resourceVersion, annotations)
+        project_steps.step_edit_project_role(create_project, create_role, resourceVersion, annotations)
         time.sleep(1)
         # 查看角色
-        r = project_steps.step_get_role(create_project, role_name)
+        r = project_steps.step_get_role(create_project, create_role)
         assert r.json()['items'][0]['metadata']['annotations']['kubesphere.io/alias-name'] == alias_name  # 验证修改后的别名
         assert r.json()['items'][0]['metadata']['annotations']['kubesphere.io/description'] == '我是描述信息'  # 验证修改后的描述信息
 
@@ -426,20 +418,17 @@ class TestProject(object):
     @allure.story("项目设置-项目角色")
     @allure.title('项目中删除角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_project_delete_role(self, create_project):
-        # 创建角色
-        role_name = 'role' + str(commonFunction.get_random())
-        project_steps.step_create_role(create_project, role_name)
+    def test_project_delete_role(self, create_role, create_project):
         # 验证角色创建成功
         time.sleep(3)
-        response = project_steps.step_get_project_role(create_project, role_name)
+        response = project_steps.step_get_project_role(create_project, create_role)
         count = response.json()['totalItems']
         with pytest.assume:
             assert count == 1
         # 删除角色
-        project_steps.step_project_delete_role(create_project, role_name)
+        project_steps.step_project_delete_role(create_project, create_role)
         # 验证角色删除成功
-        r = project_steps.step_get_project_role(create_project, role_name)
+        r = project_steps.step_get_project_role(create_project, create_role)
         count_new = r.json()['totalItems']
         assert count_new == 0
 
