@@ -298,7 +298,7 @@ class TestLogSearch(object):
         cluster_steps.step_add_log_receiver(type, log_type)
         # 查看日志收集器
         response = cluster_steps.step_get_log_receiver(log_type)
-        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        log_receiver_name = response.json()['items'][0]['metadata']['name']
         # 验证日志接收器添加成功
         pytest.assume(log_receiver_name == 'forward-' + log_type)
         # 删除创建的日志接收器
@@ -315,7 +315,7 @@ class TestLogSearch(object):
         cluster_steps.step_add_log_receiver('fluentd', log_type)
         # 查看日志收集器，并获取新增日志接收器名称
         response = cluster_steps.step_get_log_receiver(log_type)
-        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        log_receiver_name = response.json()['items'][0]['metadata']['name']
         # 查看日志接收器详情
         cluster_steps.step_get_log_receiver_detail(log_receiver_name)
         # 更改日志接收器状态
@@ -339,7 +339,7 @@ class TestLogSearch(object):
         cluster_steps.step_add_log_receiver('fluentd', log_type)
         # 查看日志收集器，并获取新增日志接收器名称
         response = cluster_steps.step_get_log_receiver(log_type)
-        log_receiver_name = response.json()['items'][1]['metadata']['name']
+        log_receiver_name = response.json()['items'][0]['metadata']['name']
         # 查看日志接收器详情
         cluster_steps.step_get_log_receiver_detail(log_receiver_name)
         # 修改日志接收器的服务地址
@@ -354,3 +354,7 @@ class TestLogSearch(object):
         pytest.assume(port_actual == port)
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
+
+
+if __name__ == "__main__":
+    pytest.main(['-s', 'test_logging.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程

@@ -277,7 +277,7 @@ class TestCluster(object):
 
     @allure.story('项目')
     @allure.title('按名称模糊查询集群中存在的用户项目')
-    @allure.severity(allure.severity_level.NORMAL)
+    @allure.severity(allure.severity_level.MINOR)
     def test_precise_query_existent_user_project(self):
         # 创建用户项目
         project_name = 'pro-' + str(commonFunction.get_random())
@@ -285,7 +285,7 @@ class TestCluster(object):
         description = ''
         cluster_steps.step_create_user_project(project_name, alias_name, description)
         # 按名称精确查询用户项目
-        re = cluster_steps.step_query_user_system('pro')
+        re = cluster_steps.step_query_user_system(project_name[:-1])
         # 获取查询结果
         project_name_actual = re.json()['items'][0]['metadata']['name']
         # 验证查询结果

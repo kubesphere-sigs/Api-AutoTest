@@ -200,20 +200,6 @@ class TestAuditingOperatingSearch(object):
         # 验证查询成功
         assert audits_num >= 0
 
-    @allure.story("集群设置")
-    @allure.title('查看日志接收器中的审计日志')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_log_receiver_audit(self):
-        # 查询日志接收器/审计日志
-        response = cluster_steps.step_get_log_receiver('auditing')
-        # 获取接收器类型和启用状态
-        component = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/component']
-        enabled = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/enabled']
-        # 校验接收器类型和启用状态，启用状态默认为开启
-        with pytest.assume:
-            assert component == 'auditing'
-        assert enabled == 'true'
-
     @pytest.mark.run(order=1)
     @allure.story('集群设置/日志接收器')
     @allure.title('{title}')
@@ -232,7 +218,7 @@ class TestAuditingOperatingSearch(object):
         while i < 60:
             try:
                 response = cluster_steps.step_get_log_receiver(log_type)
-                log_receiver_name = response.json()['items'][1]['metadata']['name']
+                log_receiver_name = response.json()['items'][0]['metadata']['name']
                 if log_receiver_name:
                     break
             except Exception as e:
@@ -259,7 +245,7 @@ class TestAuditingOperatingSearch(object):
         while i < 60:
             try:
                 response = cluster_steps.step_get_log_receiver(log_type)
-                log_receiver_name = response.json()['items'][1]['metadata']['name']
+                log_receiver_name = response.json()['items'][0]['metadata']['name']
                 if log_receiver_name:
                     break
             except Exception as e:
@@ -301,13 +287,13 @@ class TestAuditingOperatingSearch(object):
         while i < 60:
             try:
                 response = cluster_steps.step_get_log_receiver(log_type)
-                log_receiver_name = response.json()['items'][1]['metadata']['name']
+                log_receiver_name = response.json()['items'][0]['metadata']['name']
                 if log_receiver_name:
                     break
             except Exception as e:
                 print(e)
-                i += 1
-                time.sleep(1)
+                i += 3
+                time.sleep(3)
         # 修改日志接收器的服务地址
         host = commonFunction.random_ip()
         port = random.randint(1, 65535)
@@ -325,8 +311,8 @@ class TestAuditingOperatingSearch(object):
                     break
             except Exception as e:
                 print(e)
-                k += 1
-                time.sleep(1)
+                k += 3
+                time.sleep(3)
         with pytest.assume:
             assert host_actual == host
         with pytest.assume:
