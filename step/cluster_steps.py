@@ -2,6 +2,7 @@ import requests
 import allure
 import sys
 import json
+import time
 from common.getHeader import get_header, get_header_for_patch
 from common.getConfig import get_apiserver
 
@@ -497,6 +498,7 @@ def step_add_log_receiver(type, log_type):
                          "annotations": {"kubesphere.io/creator": "admin"}},
             "spec": spec}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    time.sleep(2)
     return response
 
 
