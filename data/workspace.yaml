@@ -89,28 +89,6 @@
 - - 9
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
-  - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"wx-role","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
-  - 企业空间设置-企业角色
-  - 在企业空间创建角色wx-role（该角色没有任何权限）
-  - post
-  - critical
-  - r.json()['metadata']['name']
-  - wx-role
-
-- - 10
-  - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
-  - ''
-  - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"wx-role1","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-create-projects\",\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
-  - 企业空间设置-企业角色
-  - 在企业空间创建角色wx-role1（该角色有项目创建的权限）
-  - post
-  - critical
-  - r.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles']
-  - '["role-template-create-projects","role-template-view-basic"]'
-
-- - 11
-  - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
-  - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
   - 企业空间设置-企业角色
   - 在企业空间创建角色( 不输入角色名）
@@ -120,7 +98,7 @@
   - 'WorkspaceRole.iam.kubesphere.io "" is invalid: metadata.name: Required value:
     name or generateName is required'
 
-- - 13
+- - 10
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"WX","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
@@ -134,7 +112,7 @@
     ''-'' or ''.'', and must start and end with an alphanumeric character (e.g. ''example.com'',
     regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
 
-- - 14
+- - 11
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"wx@wx","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
@@ -148,7 +126,7 @@
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
 
-- - 15
+- - 12
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"-wx","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
@@ -162,7 +140,7 @@
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
 
-- - 16
+- - 13
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles
   - ''
   - '{"apiVersion":"iam.kubesphere.io/v1alpha2","kind":"WorkspaceRole","rules":[],"metadata":{"name":"wx-","annotations":{"iam.kubesphere.io/aggregation-roles":"[\"role-template-view-basic\"]","kubesphere.io/creator":"admin"}}}'
@@ -176,29 +154,7 @@
     characters, ''-'' or ''.'', and must start and end with an alphanumeric character
     (e.g. ''example.com'', regex used for validation is ''[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*'')'
 
-- - 18
-  - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role
-  - ''
-  - ''
-  - 企业空间设置-企业角色
-  - 在企业空间ws1-for-test-ws删除角色wx-role
-  - delete
-  - critical
-  - r.json()['message']
-  - success
-
-- - 19
-  - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspaceroles/wx-role1
-  - ''
-  - ''
-  - 企业空间设置-企业角色
-  - 在企业空间ws1-for-test-ws删除角色wx-role1
-  - delete
-  - critical
-  - r.json()['message']
-  - success
-
-- - 20
+- - 14
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?sortBy=createTime&limit=10
   - ''
   - ''
@@ -209,7 +165,7 @@
   - r.status_code
   - 200
 
-- - 21
+- - 15
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=admin&sortBy=createTime&limit=10
   - ''
   - ''
@@ -220,7 +176,7 @@
   - r.json()['items'][0]['metadata']['name']
   - admin
 
-- - 22
+- - 16
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=qweasd&sortBy=createTime&limit=10
   - ''
   - ''
@@ -231,7 +187,7 @@
   - r.json()['totalItems']
   - 0
 
-- - 23
+- - 17
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/workspacemembers?name=ad&sortBy=createTime&limit=10
   - ''
   - ''
@@ -242,7 +198,7 @@
   - r.json()['items'][0]['metadata']['name']
   - admin
 
-- - 24
+- - 18
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/system-workspace/namespaces?name=default
   - ''
   - ''
@@ -253,7 +209,7 @@
   - r.json()['items'][0]['metadata']['name']
   - default
 
-- - 25
+- - 19
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/system-workspace/namespaces?name=defaul
   - ''
   - ''
@@ -264,7 +220,7 @@
   - r.json()['items'][0]['metadata']['name']
   - default
 
-- - 26
+- - 20
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws/namespaces?name=wx1
   - ''
   - ''
