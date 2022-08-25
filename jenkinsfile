@@ -1,0 +1,87 @@
+pipeline {
+  agent {
+    kubernetes {
+      inheritFrom 'base'
+      yaml '''
+      spec:
+        containers:
+        - name: python
+          image: kubespheredev/builder-python:v3.2.0
+          command: [\'sleep\']
+          args: [\'1d\']
+      '''
+      label 'default'
+    }
+
+  }
+  stages {
+    stage('拉取测试代码') {
+      steps {
+        container('python') {
+          git(url: 'https://github.com/kubesphere-sigs/Api-AutoTest.git', branch: 'master', changelog: true, poll: false)
+        }
+
+      }
+    }
+
+    stage('安装第三方python依赖') {
+      steps {
+        container('python') {
+          sh 'pip install -r requirements.txt'
+        }
+
+      }
+    }
+
+    stage('运行测试脚本') {
+      agent none
+      environment {
+        ENV_URL = "139.198.113.205:30881"
+        PATH = "$PATH:/usr/local/src/allure-2.17.2/bin"
+      }
+      steps {
+        container('python') {
+          script {
+            try {
+              sh '''
+                envsubst < ${WORKSPACE}/config/config.yaml > ${WORKSPACE}/config/config_new.yaml
+                cd ${WORKSPACE}/TestCase
+                pytest test_*.py -v -n 4 --reruns=1 --reruns-delay=10 --alluredir ../result
+                exit 0
+                '''
+            }
+            catch (Exception err) {
+              echo 'test failed'
+            }
+          }
+
+        }
+
+      }
+    }
+
+  }
+  post {
+    always {
+      container('python') {
+        sh '''
+           cd ${WORKSPACE}
+           cp environment.properties result
+           '''
+        sh 'chmod -R o+xw result'
+        script {
+          allure([
+            includeProperties: false,
+            jdk: '',
+            properties: [],
+            reportBuildPolicy: 'ALWAYS',
+            results: [[path: 'result']]
+          ])
+        }
+
+      }
+
+    }
+
+  }
+}
