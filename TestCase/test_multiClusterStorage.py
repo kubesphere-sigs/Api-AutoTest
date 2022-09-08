@@ -2,6 +2,7 @@ from time import sleep
 
 import allure
 import pytest
+from fixtures.storage import *
 from common import commonFunction
 from common.commonFunction import get_random, request_resource
 from common.getData import DoexcleByPandas
@@ -19,11 +20,7 @@ class Test_Multi_Cluster_Storage:
     sc_name = 'test-multi-cluster-sc'
     sc_name1 = 'test-multi-cluster-vsc'
     ws_name = 'multi-ws-' + str(get_random())
-    ws1_name = 'multi-ws1-' + str(get_random())
     pro_ws_name = 'multi-ws-pro-' + str(get_random())
-    pro_ws_name1 = 'multi-ws-pro1-' + str(get_random())
-    pro_ws1_name = 'multi-ws1-test-' + str(get_random())
-    pro_ws1_name1 = 'multi-ws1-test-' + str(get_random())
     allowVolumeExpansion = True
     volume_name = 'volume-' + str(get_random())
     work_name = 'deploy-test'
@@ -39,24 +36,12 @@ class Test_Multi_Cluster_Storage:
         self.cluster_name = multi_cluster_steps.step_get_host_cluster_name()
         multi_workspace_steps.step_create_multi_ws(ws_name=self.ws_name, alias_name='', description='',
                                                    cluster_names=self.cluster_name)
-        multi_workspace_steps.step_create_multi_ws(ws_name=self.ws1_name, alias_name='', description='',
-                                                   cluster_names=self.cluster_name)
         multi_project_steps.step_create_multi_project(ws_name=self.ws_name, project_name=self.pro_ws_name,
-                                                      clusters=self.cluster_name)
-        multi_project_steps.step_create_multi_project(ws_name=self.ws_name, project_name=self.pro_ws_name1,
-                                                      clusters=self.cluster_name)
-        multi_project_steps.step_create_multi_project(ws_name=self.ws1_name, project_name=self.pro_ws1_name,
-                                                      clusters=self.cluster_name)
-        multi_project_steps.step_create_multi_project(ws_name=self.ws1_name, project_name=self.pro_ws1_name1,
                                                       clusters=self.cluster_name)
         multi_cluster_storages_step.step_create_sc(cluster_name=self.cluster_name, sc_name=self.sc_name,
                                                    expansion=self.allowVolumeExpansion)
-        multi_cluster_storages_step.create_vsc(cluster_name=self.cluster_name, vsc_name=self.sc_name,
-                                               driver="disk.csi.qingcloud.com", policy='Delete')
         multi_cluster_storages_step.step_create_sc(cluster_name=self.cluster_name, sc_name=self.sc_name1,
                                                    expansion=self.allowVolumeExpansion)
-        multi_cluster_storages_step.create_vsc(cluster_name=self.cluster_name, vsc_name=self.sc_name1,
-                                               driver="disk.csi.qingcloud.com", policy='Delete')
         multi_cluster_storages_step.step_create_volume(cluster_name=self.cluster_name, project_name=self.pro_ws_name,
                                                        volume_name=self.volume_name, sc_name=self.sc_name1)
         multi_project_steps.step_create_deploy_in_multi_project(cluster_name=self.cluster_name,
@@ -81,14 +66,7 @@ class Test_Multi_Cluster_Storage:
     def teardown_class(self):
         multi_project_steps.step_delete_project_from_cluster(cluster_name=self.cluster_name, ws_name=self.ws_name,
                                                              project_name=self.pro_ws_name)
-        multi_project_steps.step_delete_project_from_cluster(cluster_name=self.cluster_name, ws_name=self.ws_name,
-                                                             project_name=self.pro_ws_name1)
-        multi_project_steps.step_delete_project_from_cluster(cluster_name=self.cluster_name, ws_name=self.ws1_name,
-                                                             project_name=self.pro_ws1_name)
-        multi_project_steps.step_delete_project_from_cluster(cluster_name=self.cluster_name, ws_name=self.ws1_name,
-                                                             project_name=self.pro_ws1_name1)
         multi_workspace_steps.step_delete_workspace(ws_name=self.ws_name)
-        multi_workspace_steps.step_delete_workspace(ws_name=self.ws1_name)
         multi_project_steps.step_delete_workload_in_multi_project(project_name=self.pro_ws_name, type='deployments',
                                                                   work_name=self.work_name)
         multi_cluster_storages_step.delete_volume(cluster_name=self.cluster_name, project_name=self.pro_ws_name,
@@ -116,22 +94,17 @@ class Test_Multi_Cluster_Storage:
     @allure.story("存储-存储类")
     @allure.title('设置卷操作')
     @allure.severity('normal')
-    def test_set_volume_operations(self):
-        sc_name = 'sc-' + str(get_random())
+    def test_set_volume_operations(self, create_multi_cluster_sc):
         ex = True
-        # 创建存储类
-        multi_cluster_storages_step.step_create_sc(self.cluster_name, sc_name, ex)
         # 设置关闭克隆和创建快照
         allow_clone = 'false'
         allow_snapshot = 'false'
-        multi_cluster_storages_step.set_volume_operations(self.cluster_name, sc_name, ex, allow_clone, allow_snapshot)
+        multi_cluster_storages_step.set_volume_operations(self.cluster_name, create_multi_cluster_sc, ex, allow_clone, allow_snapshot)
         # 查看存储类详细信息
-        re = multi_cluster_storages_step.get_sc_info(self.cluster_name, sc_name)
+        re = multi_cluster_storages_step.get_sc_info(self.cluster_name, create_multi_cluster_sc)
         # 验证设置成功
-        assert re.json()['metadata']['annotations']['storageclass.kubesphere.io/allow-clone'] == 'false'
-        assert re.json()['metadata']['annotations']['storageclass.kubesphere.io/allow-snapshot'] == 'false'
-        # 删除存储类
-        multi_cluster_storages_step.delete_sc(self.cluster_name, sc_name)
+        pytest.assume(re.json()['metadata']['annotations']['storageclass.kubesphere.io/allow-clone'] == 'false')
+        pytest.assume(re.json()['metadata']['annotations']['storageclass.kubesphere.io/allow-snapshot'] == 'false')
 
     @allure.story("存储-存储类")
     @allure.title('设置默认类')
@@ -151,36 +124,31 @@ class Test_Multi_Cluster_Storage:
     @allure.story("存储-存储类")
     @allure.title('存储类的存储卷信息')
     @allure.severity('normal')
-    def test_sc_pvc(self):
-        sc_name = 'sc-' + str(get_random())
+    def test_sc_pvc(self, create_multi_cluster_sc):
         ex = True
-        # 创建存储类
-        multi_cluster_storages_step.step_create_sc(self.cluster_name, sc_name, ex)
         # 创建存储卷
         volume_name = 'volume-' + str(get_random())
-        multi_cluster_storages_step.step_create_volume(self.cluster_name, self.pro_ws_name, sc_name, volume_name)
+        multi_cluster_storages_step.step_create_volume(self.cluster_name, self.pro_ws_name, create_multi_cluster_sc, volume_name)
         # 查询存储类已有存储卷信息
-        re = multi_cluster_storages_step.search_volume_by_sc(self.cluster_name, sc_name)
+        re = multi_cluster_storages_step.search_volume_by_sc(self.cluster_name, create_multi_cluster_sc)
         # 查询存储卷数量
-        num = multi_cluster_storages_step.search_sc_by_name(self.cluster_name, sc_name).json()['items'][0]['metadata'][
+        num = multi_cluster_storages_step.search_sc_by_name(self.cluster_name, create_multi_cluster_sc).json()['items'][0]['metadata'][
             'annotations'][
             'kubesphere.io/pvc-count']
         # 验证存储卷存在以及数量正确
-        assert re.json()['items'][0]['metadata']['name'] == volume_name
-        assert num == '1'
+        pytest.assume(re.json()['items'][0]['metadata']['name'] == volume_name)
+        pytest.assume(num == '1')
         # 删除存储卷
         multi_cluster_storages_step.delete_volume(self.cluster_name, self.pro_ws_name, volume_name)
         # 查询存储卷数量
-        num1 = multi_cluster_storages_step.search_sc_by_name(self.cluster_name, sc_name).json()['items'][0]['metadata'][
+        num1 = multi_cluster_storages_step.search_sc_by_name(self.cluster_name, create_multi_cluster_sc).json()['items'][0]['metadata'][
             'annotations'][
             'kubesphere.io/pvc-count']
         # 查询存储类已有存储卷信息
-        re = multi_cluster_storages_step.search_volume_by_sc(self.cluster_name, sc_name)
+        re = multi_cluster_storages_step.search_volume_by_sc(self.cluster_name, create_multi_cluster_sc)
         # 验证存储卷不存在以及数量正确
-        assert re.json()['totalItems'] == 0
-        assert num1 == '0'
-        # 删除存储类
-        multi_cluster_storages_step.delete_sc(self.cluster_name, sc_name)
+        pytest.assume(re.json()['totalItems'] == 0)
+        pytest.assume(num1 == '0')
 
     @allure.story("存储-存储类")
     @allure.title('查询存储类已有存储卷')
@@ -236,9 +204,9 @@ class Test_Multi_Cluster_Storage:
                                             generation, version, uid, alias_name, des)
         # 验证别名设置成功
         res = multi_cluster_storages_step.search_vsc_by_name(self.cluster_name, vsc_name)
-        assert res.json()['items'][0]['metadata']['annotations']['kubesphere.io/alias-name'] == alias_name
+        pytest.assume(res.json()['items'][0]['metadata']['annotations']['kubesphere.io/alias-name'] == alias_name)
         # 验证描述信息设置成功
-        assert res.json()['items'][0]['metadata']['annotations']['kubesphere.io/description'] == des
+        pytest.assume(res.json()['items'][0]['metadata']['annotations']['kubesphere.io/description'] == des)
 
     @allure.story("存储-卷快照类")
     @allure.title('验证卷快照类的卷快照数量')
