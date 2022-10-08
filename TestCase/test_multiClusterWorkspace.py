@@ -9,7 +9,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 from common.getData import DoexcleByPandas
 from common import commonFunction
-from step import multi_workspace_steps
+from step import multi_workspace_steps, workspace_steps
 
 
 @allure.feature('多集群环境企业空间')
@@ -127,13 +127,13 @@ class TestWorkSpace(object):
             if ws_name != 'system-workspace':
                 # 将用户邀请到企业空间
                 ws_role_invite = ws_name + '-viewer'  # 邀请用户时赋予的角色
-                multi_workspace_steps.step_invite_user(ws_name, user_name, ws_role_invite)
+                workspace_steps.step_invite_user(ws_name, user_name, ws_role_invite)
                 # 在企业空间中查询邀请的用户
                 re = multi_workspace_steps.step_get_ws_user(ws_name, user_name)
                 # 验证邀请后的成员名称
                 pytest.assume(re.json()['items'][0]['metadata']['name'] == user_name)
                 # 将邀请的用户移除企业空间
-                multi_workspace_steps.step_delete_ws_user(ws_name, user_name)
+                workspace_steps.step_delete_ws_user(ws_name, user_name)
         # 删除用户
         multi_workspace_steps.step_delete_user(user_name)
 
@@ -154,9 +154,9 @@ class TestWorkSpace(object):
                 ws_role_create = ws_name + '-viewer'  # 邀请用户时赋予的角色
                 ws_role_new = ws_name + '-admin'  # 修改的新角色
                 # 将创建的用户邀请到创建的企业空间
-                multi_workspace_steps.step_invite_user(ws_name, user_name, ws_role_create)
+                workspace_steps.step_invite_user(ws_name, user_name, ws_role_create)
                 # 修改成员角色
-                multi_workspace_steps.step_edit_ws_user_role(ws_name, user_name, ws_role_new)
+                workspace_steps.step_edit_ws_user_role(ws_name, user_name, ws_role_new)
                 # 查询该企业空间成员的信息
                 r = multi_workspace_steps.step_get_ws_user(ws_name, user_name)
                 # 获取该成员的角色信息
@@ -164,7 +164,7 @@ class TestWorkSpace(object):
                 # 验证修改后的角色名称
                 pytest.assume(user_role == ws_role_new)
                 # 将邀请的用户移除企业空间
-                multi_workspace_steps.step_delete_ws_user(ws_name, self.user_name)
+                workspace_steps.step_delete_ws_user(ws_name, self.user_name)
         # 删除创建的用户
         multi_workspace_steps.step_delete_user(user_name)
 
@@ -181,9 +181,9 @@ class TestWorkSpace(object):
             if ws_name != 'system-workspace':
                 ws_role_create = ws_name + '-viewer'  # 邀请用户是赋予的角色
                 # 将创建的用户邀请到创建的企业空间
-                multi_workspace_steps.step_invite_user(ws_name, self.user_name, ws_role_create)
+                workspace_steps.step_invite_user(ws_name, self.user_name, ws_role_create)
                 # 将邀请的用户移除企业空间
-                multi_workspace_steps.step_delete_ws_user(ws_name, self.user_name)
+                workspace_steps.step_delete_ws_user(ws_name, self.user_name)
                 # 查询该企业空间成员的信息
                 re = multi_workspace_steps.step_get_ws_user(ws_name, self.user_name)
                 # 验证删除成功
@@ -204,7 +204,7 @@ class TestWorkSpace(object):
         res = multi_workspace_steps.step_create_department(self.ws_name, group_name, data)
         name = res.json()['metadata']['name']
         # 获取所有的企业组织名称
-        group_name_actual = multi_workspace_steps.step_get_department(self.ws_name)
+        group_name_actual = workspace_steps.step_get_department(self.ws_name)
         # 校验企业组织名称，已验证企业组织创建成功
         pytest.assume(group_name in group_name_actual)
         # 编辑企业组织
@@ -213,11 +213,11 @@ class TestWorkSpace(object):
                                                   "kubesphere.io/project-roles": "[]",
                                                   "kubesphere.io/devops-roles": "[]",
                                                   "kubesphere.io/creator": "admin"}}}
-        annotations = multi_workspace_steps.step_edit_department(self.ws_name, name, edit_data)
+        annotations = workspace_steps.step_edit_department(self.ws_name, name, edit_data)
         # 验证编辑后的内容
         pytest.assume("我是别名" == annotations['kubesphere.io/alias-name'])
         # 删除企业组织,并获取返回信息
-        re = multi_workspace_steps.step_delete_department(self.ws_name, name)
+        re = workspace_steps.step_delete_department(self.ws_name, name)
         # 验证删除成功
         assert re.json()['message'] == 'success'
 
@@ -243,7 +243,7 @@ class TestWorkSpace(object):
                          '": a group named ' + group_name + ' already exists in the workspace\n'
         pytest.assume(re.text == assert_message)
         # 删除创建的企业空间
-        multi_workspace_steps.step_delete_department(self.ws_name, name)
+        workspace_steps.step_delete_department(self.ws_name, name)
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('创建的企业组织名称中包含大写字母')
@@ -325,7 +325,7 @@ class TestWorkSpace(object):
         resp = multi_workspace_steps.step_create_department(self.ws_name, group_name, data)
         name = resp.json()['metadata']['name']
         # 将指定用户绑定到指定企业组织
-        re = multi_workspace_steps.step_binding_user(self.ws_name, name, self.user_name)
+        re = workspace_steps.step_binding_user(self.ws_name, name, self.user_name)
         # 获取绑定后返回的用户名
         binding_user = re.json()[0]['users'][0]
         # 校验绑定的用户名称
@@ -355,9 +355,9 @@ class TestWorkSpace(object):
         response = multi_workspace_steps.step_create_department(self.ws_name, group_name, data)
         name = response.json()['metadata']['name']
         # 将指定用户绑定到指定企业组织
-        multi_workspace_steps.step_binding_user(self.ws_name, name, self.user_name)
+        workspace_steps.step_binding_user(self.ws_name, name, self.user_name)
         # 将指定用户再次绑定到该企业空间
-        response = multi_workspace_steps.step_binding_user(self.ws_name, name, self.user_name)
+        response = workspace_steps.step_binding_user(self.ws_name, name, self.user_name)
         print(response.text)
 
     @allure.story('企业空间设置-企业组织')
@@ -375,15 +375,15 @@ class TestWorkSpace(object):
         res = multi_workspace_steps.step_create_department(self.ws_name, group_name, data)
         name = res.json()['metadata']['name']
         # 将指定用户绑定到指定企业组织
-        re = multi_workspace_steps.step_binding_user(self.ws_name, name, self.user_name)
+        re = workspace_steps.step_binding_user(self.ws_name, name, self.user_name)
         # 获取绑定后返回的用户名
         binding_user = re.json()[0]['metadata']['name']
         # 将用户从企业组织解绑
-        r = multi_workspace_steps.step_unbind_user(ws_name=self.ws_name, user_name=binding_user)
+        r = workspace_steps.step_unbind_user(ws_name=self.ws_name, user_name=binding_user)
         # 校验解绑结果
         pytest.assume(r.json()['message'] == 'success')
         # 删除企业组织
-        multi_workspace_steps.step_delete_department(self.ws_name, name)
+        workspace_steps.step_delete_department(self.ws_name, name)
 
     @allure.story('企业空间设置-配额管理')
     @allure.title('编辑企业空间配额')
