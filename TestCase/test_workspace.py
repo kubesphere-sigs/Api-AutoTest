@@ -49,7 +49,7 @@ class TestWorkSpace(object):
 
     @allure.title('{title}')  # 设置用例标题
     # 将用例信息以参数化的方式传入测试方法
-    @pytest.mark.parametrize('id,url,params, data,story,title,method,severity,condition,except_result', parametrize)
+    @pytest.mark.parametrize('id,url,params,data,story,title,method,severity,condition,except_result', parametrize)
     def test_ws(self, id, url, params, data, story, title, method, severity, condition, except_result):
 
         '''
@@ -149,22 +149,22 @@ class TestWorkSpace(object):
     def test_get_ws_role_num(self, create_ws):
         # 获取概览信息
         res = workspace_steps.step_get_ws_num_info(create_ws)
-        role_num = res.json()['results'][2]['data']['result'][0]['value'][1]
+        role_num = res.json()['results'][3]['data']['result'][0]['value'][1]
         with pytest.assume:
-            assert role_num == '1'
+            assert role_num == '4'
         # 在企业空间创建角色
         authory = '[\"role-template-create-projects\",\"role-template-view-basic\"]'
         role_name = 'role-' + str(commonFunction.get_random())
         workspace_steps.step_create_ws_role(create_ws, role_name, authory)
         # 获取概览信息
         res_new = workspace_steps.step_get_ws_num_info(create_ws)
-        new_role_num = res_new.json()['results'][2]['data']['result'][0]['value'][1]
-        assert new_role_num == '2'
+        new_role_num = res_new.json()['results'][3]['data']['result'][0]['value'][1]
+        assert new_role_num == '5'
 
     @allure.story('企业空间概览')
     @allure.title('资源用量-用户数量验证')
     @allure.severity('critical')
-    def test_get_ws_role_num(self, create_ws):
+    def test_get_ws_user_num(self, create_ws, create_user):
         user_name = ''
         i = 0
         while i < 60:
@@ -182,7 +182,7 @@ class TestWorkSpace(object):
             assert user_name == 'admin'
         # 将用户邀请到企业空间
         role = create_ws + '-viewer'
-        workspace_steps.step_invite_user(create_ws, self.user_name, role)
+        workspace_steps.step_invite_user(create_ws, create_user, role)
         # 查询企业空间用户信息
         res = workspace_steps.step_get_ws_user(create_ws, '')
         # 获取用户数量
@@ -593,12 +593,12 @@ class TestWorkSpace(object):
                               ])
     @allure.severity(allure.severity_level.CRITICAL)
     def test_off_network_lsolation(self, status, title, create_ws):
-        # 关闭企业空间网络隔离
+        # 设置企业空间网络隔离
         workspace_steps.step_set_network_lsolation(create_ws, status)
-        # 验证企业空间信息
-        response = workspace_steps.step_get_ws_info(create_ws)
+        # 获取企业空间信息
+        response = workspace_steps.step_get_ws_network_info(create_ws)
         # 获取企业空间的网络隔离状态
-        network_lsolation = response.json()['items'][0]['spec']['template']['spec']['networkIsolation']
+        network_lsolation = response.json()['spec']['template']['spec']['networkIsolation']
         # 验证设置成功
         assert network_lsolation is status
 
