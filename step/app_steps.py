@@ -6,7 +6,7 @@ import sys
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from common.getHeader import get_header, get_header_for_patch
-from step import project_steps
+from step import project_steps, cluster_steps
 from common import commonFunction
 from math import ceil
 from common.getConfig import get_apiserver
@@ -404,6 +404,9 @@ def step_get_app_version():
 @allure.step('从应用商店部署应用')
 def step_deploy_app_from_app_store(ws_name, project_name, app_id, name, version_id, conf):
     url = env_url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/namespaces/' + project_name + '/applications'
+    if 'edgemesh' in name:
+        any_node_name = cluster_steps.step_get_nodes().json()['items'][0]['metadata']['name']
+        conf = step_correct_edgemesh_conf(conf, any_node_name)
     data = {
         "app_id": app_id,
         "name": name,
@@ -514,6 +517,12 @@ def step_get_app_detail(app_id):
     url = env_url + '/kapis/openpitrix.io/v1/apps/' + app_id
     response = requests.get(url=url, headers=get_header())
     return response
+
+
+@allure.step('在appstore部署edgemesh时处理conf')
+def step_correct_edgemesh_conf(conf, node_name):
+    conf_new = conf.replace('your node name', node_name)
+    return conf_new
 
 
 #########多集群环境############
