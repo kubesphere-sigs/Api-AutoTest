@@ -1,13 +1,13 @@
 - - 1
-  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/ws1-for-test-ws
+  - /kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates/ws1-for-test-ws
   - ''
-  - '{"metadata":{"name":"ws1-for-test-ws","annotations":{"kubesphere.io/creator":"admin","kubesphere.io/alias-name":"我是别名","kubesphere.io/description":"我是描述信息"}}}'
+  - '[{"op":"add","path":"/metadata/annotations","value":{"kubesphere.io/creator":"admin","kubesphere.io/alias-name":"qa"}},{"op":"add","path":"/spec","value":{"template":{"spec":{"manager":"admin"}},"placement":{}}}]'
   - 企业空间列表
-  - 修改企业空间ws1-for-test-ws信息
+  - 修改企业空间ws1-for-test-ws的信息
   - patch
   - critical
   - r.json()['metadata']['annotations']['kubesphere.io/alias-name']
-  - 我是别名
+  - qa
 
 - - 2
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces
