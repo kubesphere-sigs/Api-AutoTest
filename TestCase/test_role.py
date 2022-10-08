@@ -13,10 +13,7 @@ from step import platform_steps
 
 @allure.feature('系统角色管理')
 class TestRole(object):
-    authority_workspaces_manager = '["role-template-view-workspaces","role-template-manage-workspaces",' \
-                                   '"role-template-view-users"]'
-    authority_users_manager = '["role-template-view-users","role-template-manage-users","role-template-view-roles",' \
-                              '"role-template-manage-roles"]'
+    authority_platform_self_provisioner = '["role-template-create-workspaces"]'
     authority_platform_regular = '["role-template-view-app-templates"]'
     authority_admin = '["role-template-manage-clusters","role-template-view-clusters","role-template-view-roles",' \
                       '"role-template-manage-roles","role-template-view-roles","role-template-view-workspaces",' \
@@ -80,8 +77,7 @@ class TestRole(object):
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('role_name, title, authority',
                              [
-                                 ('workspaces-manager', '查询角色workspaces-manager的权限列表', authority_workspaces_manager),
-                                 ('users-manager', '查询角色users-manager的权限列表', authority_users_manager),
+                                 ('platform-self-provisioner', '查询角色platform-self-provisioner的权限列表', authority_platform_self_provisioner),
                                  ('platform-regular', '查询角色platform_regular的权限列表', authority_platform_regular),
                                  ('platform-admin', '查询角色platform-admin的权限列表', authority_admin)
                              ])

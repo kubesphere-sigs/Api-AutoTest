@@ -11,24 +11,26 @@
 
 - - 2
   - /kapis/iam.kubesphere.io/v1alpha2/globalroles
-  - name=users-manager
+  - name=platform-self-provisioner
   - ''
   - 查询角色
   - 查询指定角色信息
   - get
   - normal
   - r.json()['items'][0]['metadata']['name']
-  - users-manager
+  - platform-self-provisioner
+
 - - 3
   - /kapis/iam.kubesphere.io/v1alpha2/globalroles
-  - name=manager
+  - name=self-provisioner
   - ''
   - 查询角色
   - 模糊查询角色信息
   - get
   - normal
   - r.json()['totalItems']
-  - 2
+  - 1
+
 - - 4
   - /kapis/iam.kubesphere.io/v1alpha2/globalroles
   - ''
