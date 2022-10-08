@@ -11,7 +11,7 @@ from common import commonFunction
 from step import platform_steps
 
 
-@allure.feature('系统角色管理')
+@allure.feature('平台角色管理')
 class TestRole(object):
     authority_platform_self_provisioner = '["role-template-create-workspaces"]'
     authority_platform_regular = '["role-template-view-app-templates"]'
