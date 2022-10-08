@@ -13,7 +13,7 @@ from step import platform_steps
 from common.getHeader import get_header
 
 
-@allure.feature('系统账户管理')
+@allure.feature('平台账户管理')
 class TestUser(object):
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/system_user.yaml')
@@ -44,7 +44,7 @@ class TestUser(object):
     @allure.title('测试修改用户信息')
     def test_edit_user(self, create_user):
         email_new = 'test' + str(commonFunction.get_random()) + '@yunify.com'
-        role_new = 'users-manager'
+        role_new = 'platform-self-provisioner'
         description = 'test'
         time.sleep(3)
         version = platform_steps.step_get_user_version(create_user)  # 获取创建用户的resourceVersion
@@ -63,8 +63,8 @@ class TestUser(object):
     @allure.severity(allure.severity_level.CRITICAL)
     @allure.title('{title}')
     @pytest.mark.parametrize('role, title',
-                             [('workspaces-manager', '使用系统的内置角色workspaces-manager创建用户，查看用户详情，然后使用新用户登陆ks,最后删除用户'),
-                              ('users-manager', '使用系统的内置角色users-manager创建用户，查看用户详情，然后使用新用户登陆ks,最后删除用户'),
+                             [
+                              ('platform-self-provisioner', '使用系统的内置角色platform-self-provisioner创建用户，查看用户详情，然后使用新用户登陆ks,最后删除用户'),
                               ('platform-regular', '使用系统的内置角色platform-regular创建用户，查看用户详情，然后使用新用户登陆ks,最后删除用户'),
                               ('platform-admin', '使用系统的内置角色platform-admin创建用户，查看用户详情，然后使用新用户登陆ks,最后删除用户'),
                               ])
@@ -101,7 +101,7 @@ class TestUser(object):
         # 创建用户
         user_name = 'test' + str(commonFunction.get_random())
         email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
-        role = 'users-manager'
+        role = 'platform-self-provisioner'
         password = ''
         platform_steps.step_create_user(user_name, role, email, password)
         # 查询创建的用户
@@ -119,7 +119,7 @@ class TestUser(object):
         # 创建用户
         user_name = 'test' + str(commonFunction.get_random())
         email = ''
-        role = 'users-manager'
+        role = 'platform-self-provisioner'
         password = 'P@88w0rd'
         platform_steps.step_create_user(user_name, role, email, password)
         # 查询创建的用户
@@ -137,7 +137,7 @@ class TestUser(object):
         # 创建用户
         user_name = 'test' + str(commonFunction.get_random())
         email = ''
-        role = 'users-manager'
+        role = 'platform-self-provisioner'
         password = 'P@88w0rd'
         platform_steps.step_create_user(user_name, role, email, password)
         # 使用重复的用户名创建用户
@@ -155,7 +155,7 @@ class TestUser(object):
         user_name = 'test' + str(commonFunction.get_random())
         user_name_1 = 'test' + str(commonFunction.get_random())
         email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
-        role = 'users-manager'
+        role = 'platform-self-provisioner'
         password = 'P@88w0rd'
         platform_steps.step_create_user(user_name, role, email, password)
         # 使用重复的用户的邮箱创建用户
