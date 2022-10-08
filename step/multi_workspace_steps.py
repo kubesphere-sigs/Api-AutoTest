@@ -131,37 +131,6 @@ def step_delete_role(ws_name, role_name):
     return response
 
 
-@allure.step('邀请用户到企业空间')
-def step_invite_user(ws_name, user_name, role_name):
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers'
-    # 邀请成员的信息
-    data = [{"username": user_name, "roleRef": role_name}]
-    # 邀请成员
-    response = requests.post(url, headers=get_header(), data=json.dumps(data))
-    return response
-
-
-@allure.step('修改企业成员的角色')
-def step_edit_ws_user_role(ws_name, user_name, role_name):
-    # 修改企业空间成员角色的url地址
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers/' + user_name
-    # 修改的目标数据
-    data = {"username": user_name,
-            "roleRef": role_name}
-    # 修改成员角色
-    response = requests.put(url, headers=get_header(), data=json.dumps(data))
-    return response
-
-
-@allure.step('将用户从企业空间移除')
-def step_delete_ws_user(ws_name, user_name):
-    # 删除邀请成员的url地址
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers/' + user_name
-    # 删除邀请成员
-    response = requests.delete(url, headers=get_header())
-    return response
-
-
 @allure.step('在企业空间中查询指定用户')
 def step_get_ws_user(ws_name, user_name):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers?name=' + user_name
@@ -203,64 +172,6 @@ def step_get_user_for_department(name):
 def step_get_user_assigned_department(name):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users?ingroup=' + name
     response = requests.get(url)
-    return response
-
-
-@allure.step('将指定用户绑定到指定企业组织')
-def step_binding_user(ws_name, group_name, user_name):
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groupbindings'
-    data = [{"userName": user_name, "groupName": group_name}]
-    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
-    return response
-
-
-@allure.step('将用户从企业组织解绑')
-def step_unbind_user(ws_name, user_name):
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groupbindings/' + user_name
-    response = requests.delete(url=url, headers=get_header())
-    return response
-
-
-@allure.step('查询企业组织')
-def step_get_department(ws_name):
-    """
-    :param ws_name: 企业空间名称
-    :return: 所有的企业组织名称
-    """
-    name_list = []
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groups'
-    r = requests.get(url=url, headers=get_header())
-    count = r.json()['totalItems']
-    for i in range(0, count):
-        name_list.append(r.json()['items'][i]['metadata']['generateName'])
-
-    return name_list
-
-
-@allure.step('编辑企业组织')
-def step_edit_department(ws_name, group_name, data):
-    """
-    :param data: 需要编辑的数据
-    :param ws_name: 企业空间名称
-    :param group_name: 企业组织的名称
-    :return:
-    """
-    # 修改企业空间的annotations信息，并返回annotations
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groups/' + group_name
-    r = requests.patch(url=url, headers=get_header(), data=json.dumps(data))
-    return r.json()['metadata']['annotations']
-
-
-@allure.step('删除企业组织')
-def step_delete_department(ws_name, group_name):
-    """
-
-    :param ws_name: 企业空间名称
-    :param group_name: 企业组织name
-    :return:
-    """
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/groups/' + group_name
-    response = requests.delete(url=url, headers=get_header())
     return response
 
 
