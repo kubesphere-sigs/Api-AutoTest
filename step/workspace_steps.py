@@ -300,24 +300,18 @@ def step_delete_workspace(ws_name):
 @allure.step('开关企业空间网络隔离')
 def step_set_network_lsolation(ws_name, status):
     """
-
     :param ws_name:
     :param status: True or False
     """
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
-    data = {"spec": {"template": {"spec": {"networkIsolation": status}}}}
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates/' + ws_name
+    data = [{"op": "add", "path": "/spec/template/spec", "value": {"manager": "admin", "networkIsolation": status}}]
     response = requests.patch(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
 
-@allure.step('查询企业空间')
-def step_get_ws_info(*ws_name):
-    if ws_name:
-        for i in ws_name:
-            path = '?name=' + str(i) + '&sortBy=createTime'
-    else:
-        path = '?sortBy=createTime'
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates' + path
+@allure.step('查询企业空间网络隔离信息')
+def step_get_ws_network_info(ws_name):
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates/' + ws_name
     response = requests.get(url=url, headers=get_header())
     return response
 
