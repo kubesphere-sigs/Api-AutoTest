@@ -149,7 +149,7 @@ class TestAppStore(object):
                                                  app_id=app_id, name=name, version_id=version_id, conf=conf)
         status = ''
         i = 0
-        while i < 100:
+        while i < 180:
             try:
                 # 查看应用部署情况
                 response = project_steps.step_get_app(self.ws_name, project_name, name)
