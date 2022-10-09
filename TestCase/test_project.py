@@ -20,7 +20,7 @@ class TestProject(object):
 
     volume_name = 'testvolume'  # 存储卷名称，在创建、删除存储卷时使用,excle中的用例也用到了这个存储卷
     user_name = 'user-for-test-project'  # 系统用户名称
-    user_role = 'users-manager'  # 用户角色
+    user_role = 'platform-self-provisioner'  # 用户角色
     email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
     password = 'P@88w0rd'
     ws_name = 'ws-for-test-project' + str(commonFunction.get_random())
