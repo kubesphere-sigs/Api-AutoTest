@@ -3,11 +3,12 @@ import pytest
 import allure
 import sys
 import time
+from datetime import datetime
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from common import commonFunction
-from step import project_steps, cluster_steps, workspace_steps, platform_steps, multi_project_steps, multi_cluster_steps
+from step import project_steps, cluster_steps, workspace_steps, platform_steps, multi_project_steps, multi_cluster_steps, multi_workspace_steps
 
 
 @allure.feature('多集群项目管理')
@@ -45,14 +46,14 @@ class TestProject(object):
                 workspace_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name,
                                                      self.description, clusters[i])
         # 在每个企业空间创建多集群项目,且将其部署在所有和单个集群上
-        response = workspace_steps.step_get_ws_info(self.ws_name)
+        response = multi_workspace_steps.step_get_ws_info(self.ws_name)
         ws_count = response.json()['totalItems']
         for k in range(0, ws_count):
             # 获取每个企业空间的名称
             ws_name = response.json()['items'][k]['metadata']['name']
-            # 获取企业空间的集群信息
+            # 获取企业空间的集群信
             clusters_name = []
-            re = workspace_steps.step_get_ws_info(ws_name)
+            re = multi_workspace_steps.step_get_ws_info(ws_name)
             clusters = re.json()['items'][0]['spec']['placement']['clusters']
             for i in range(0, len(clusters)):
                 clusters_name.append(clusters[i]['name'])
@@ -77,7 +78,7 @@ class TestProject(object):
         # 删除在host集群创建的项目
         multi_project_steps.step_delete_project_in_ws(self.ws_all_cluster, self.cluster_host_name, self.project_host)
         # 获取环境中所有的企业空间
-        response = workspace_steps.step_get_ws_info(self.ws_name)
+        response = multi_workspace_steps.step_get_ws_info(self.ws_name)
         ws_count = response.json()['totalItems']
         for k in range(0, ws_count):
             # 获取每个企业空间的名称
@@ -822,7 +823,7 @@ class TestProject(object):
             i = 0
             # 验证存储卷被删除，最长等待时间为30s
             while i < 30:
-                response = multi_project_steps.step_get_volume(project_info[0], volume_name)
+                response = project_steps.step_get_volume(project_info[0], volume_name)
                 # 存储卷快照的状态为布尔值，故先将结果转换我字符类型
                 if response.json()['totalItems'] == 0:
                     print("删除存储卷耗时:" + str(i) + '秒')
@@ -1536,7 +1537,7 @@ class TestProject(object):
             # 获取当前时间的10位时间戳
             now_timestamp = str(time.time())[0:10]
             # 获取720分钟之前的戳
-            before_timestamp = commonFunction.get_before_timestamp(720)
+            before_timestamp = commonFunction.get_before_timestamp(datetime.now(), 720)
             # 查询每个项目最近12h的监控信息
             response = multi_project_steps.step_get_project_metrics_in_multi_project(cluster_name=project_info[1],
                                                                                      project_name=project_info[0],

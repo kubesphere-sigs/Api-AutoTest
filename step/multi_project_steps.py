@@ -3,7 +3,7 @@ import allure
 import sys
 import json
 from common.getConfig import get_apiserver
-from step import workspace_steps
+from step import multi_workspace_steps
 
 env_url = get_apiserver()
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
@@ -181,12 +181,11 @@ def step_get_project_in_multi_project(ws_name, project_name):
 @allure.step('获取环境中所有的多集群项目的名称和部署集群')
 def step_get_multi_project_all(ws):
     """
-
     :param ws: 查询的企业空间名称
     :return:
     """
     multi_projects = []
-    response = workspace_steps.step_get_ws_info(ws)
+    response = multi_workspace_steps.step_get_ws_info(ws)
     ws_count = response.json()['totalItems']
     for k in range(0, ws_count):
         # 获取每个企业空间的名称
