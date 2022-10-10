@@ -3,7 +3,8 @@ import pytest
 import allure
 import sys
 from common import commonFunction
-from step import platform_steps, workspace_steps
+from datetime import datetime
+from step import platform_steps, multi_workspace_steps
 import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
@@ -23,7 +24,7 @@ class TestWorkbench(object):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
         # 获取180分钟戳
-        before_timestamp = commonFunction.get_before_timestamp(180)
+        before_timestamp = commonFunction.get_before_timestamp(datetime.now(), 180)
         # 查询工作台的基本信息
         response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
         # 获取平台的集群数量
@@ -38,13 +39,13 @@ class TestWorkbench(object):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
         # 获取180分钟戳
-        before_timestamp = commonFunction.get_before_timestamp(180)
+        before_timestamp = commonFunction.get_before_timestamp(datetime.now(), 180)
         # 查询工作台的基本信息
         response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
         # 获取平台的workspace数量
         ws_count = response.json()['results'][1]['data']['result'][0]['value'][1]
         # 查询集群的企业空间信息，并获取企业空间数量
-        r = workspace_steps.step_get_ws_info('')
+        r = multi_workspace_steps.step_get_ws_info('')
         ws_count_actual = r.json()['totalItems']
         # 验证企业空间数量正确
         assert int(ws_count) == ws_count_actual
@@ -56,7 +57,7 @@ class TestWorkbench(object):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
         # 获取180分钟戳
-        before_timestamp = commonFunction.get_before_timestamp(180)
+        before_timestamp = commonFunction.get_before_timestamp(datetime.now(), 180)
         # 查询工作台的基本信息
         response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
         # 获取平台的用户数量
@@ -74,7 +75,7 @@ class TestWorkbench(object):
         # 获取当前时间的10位时间戳
         now_timestamp = str(time.time())[0:10]
         # 获取180分钟戳
-        before_timestamp = commonFunction.get_before_timestamp(180)
+        before_timestamp = commonFunction.get_before_timestamp(datetime.now(), 180)
         # 查询工作台的基本信息
         response = platform_steps.step_get_base_info(before_timestamp, now_timestamp, '600', '20')
         # 获取平台的应用模版数量
