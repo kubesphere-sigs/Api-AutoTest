@@ -347,6 +347,7 @@ def get_random():
 # 获取x分钟之前的10位时间戳
 def get_before_timestamp(now_time, minutes):
     """
+    :param now_time: 当前时间 datetime.datetime.now()
     :return: 多少分钟之前的10位时间戳
     :param minutes: 需要计算多少分钟之前的时间戳
     """
