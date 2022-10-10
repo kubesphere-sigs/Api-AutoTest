@@ -185,7 +185,7 @@ def step_get_multi_project_all(ws):
     :return:
     """
     multi_projects = []
-    response = multi_workspace_steps.step_get_ws_info(ws)
+    response = multi_workspace_steps.step_query_ws(ws)
     ws_count = response.json()['totalItems']
     for k in range(0, ws_count):
         # 获取每个企业空间的名称

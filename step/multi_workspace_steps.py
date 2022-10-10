@@ -339,9 +339,16 @@ def step_delete_multi_project(multi_project_name):
     return response
 
 
-@allure.step('在多集群环境查询企业空间')
+@allure.step('查看企业空间概览信息')
 def step_get_ws_info(ws_name):
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates/' + ws_name
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在企业空间列表查询指定企业空间')
+def step_query_ws(ws_name):
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates?name=' + ws_name
     response = requests.get(url=url, headers=get_header())
     return response
 

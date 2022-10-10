@@ -46,14 +46,14 @@ class TestProject(object):
                 workspace_steps.step_create_multi_ws(self.ws_name + str(commonFunction.get_random()), self.alias_name,
                                                      self.description, clusters[i])
         # 在每个企业空间创建多集群项目,且将其部署在所有和单个集群上
-        response = multi_workspace_steps.step_get_ws_info(self.ws_name)
+        response = multi_workspace_steps.step_query_ws(self.ws_name)
         ws_count = response.json()['totalItems']
         for k in range(0, ws_count):
             # 获取每个企业空间的名称
             ws_name = response.json()['items'][k]['metadata']['name']
             # 获取企业空间的集群信
             clusters_name = []
-            re = multi_workspace_steps.step_get_ws_info(ws_name)
+            re = multi_workspace_steps.step_query_ws(ws_name)
             clusters = re.json()['items'][0]['spec']['placement']['clusters']
             for i in range(0, len(clusters)):
                 clusters_name.append(clusters[i]['name'])
@@ -78,7 +78,7 @@ class TestProject(object):
         # 删除在host集群创建的项目
         multi_project_steps.step_delete_project_in_ws(self.ws_all_cluster, self.cluster_host_name, self.project_host)
         # 获取环境中所有的企业空间
-        response = multi_workspace_steps.step_get_ws_info(self.ws_name)
+        response = multi_workspace_steps.step_query_ws(self.ws_name)
         ws_count = response.json()['totalItems']
         for k in range(0, ws_count):
             # 获取每个企业空间的名称
