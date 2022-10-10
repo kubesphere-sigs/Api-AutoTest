@@ -1036,7 +1036,7 @@ class TestCluster(object):
         assert kind == 'CustomResourceDefinition'
 
     @allure.story('CRDs')
-    @allure.title('在某个集群查询所有CRD的FederatedGroupList')
+    @allure.title('在某个集群查询任一CRD的FederatedGroupList')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_crd_federated_group_list(self):
         # 查询集群中的crd
@@ -1452,7 +1452,7 @@ class TestCluster(object):
         description = ''
         cluster_name = self.cluster_host_name
         multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
-        # 取消企业空间在host集群的授权
+        # # 取消企业空间在host集群的授权
         multi_cluster_steps.step_unauthorized_cluster_visibility(self.cluster_host_name, ws_name)
         time.sleep(3)
         # 查看集群可见性
@@ -1511,7 +1511,10 @@ class TestCluster(object):
     def test_get_invite_cluster_member(self):
         # 创建平台用户
         user_name = 'user' + str(commonFunction.get_random())
-        platform_steps.step_create_user(user_name, 'platform-regular')
+        role = 'platform-regular'
+        email = 'test' + str(commonFunction.get_random()) + '@qq.com'
+        password = 'P@88w0rd'
+        platform_steps.step_create_user(user_name, role, email, password)
         # 遍历所有集群
         for cluster_name in self.cluster_names:
             # 邀请用户到集群成员

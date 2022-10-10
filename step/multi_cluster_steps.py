@@ -582,8 +582,8 @@ def step_get_alert_policies(cluster_name, type, condition):
 
 @allure.step('集群设置/基本信息，查看基本信息')
 def step_get_information(cluster_name):
-    url = env_url + '/kapis/clusters/host/monitoring.kubesphere.io/v1alpha3/cluster?' \
-                    'cluster=' + cluster_name + '&metrics_filter=cluster_cpu_total%7Ccluster_memory_total%7Ccluster_disk_size_capacity%7Ccluster_node_total%24'
+    url = env_url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/cluster?' \
+                                                        'cluster=' + cluster_name + '&metrics_filter=cluster_cpu_total%7Ccluster_memory_total%7Ccluster_disk_size_capacity%7Ccluster_node_total%24'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -591,7 +591,7 @@ def step_get_information(cluster_name):
 @allure.step('集群设置/基本信息，编辑信息')
 def step_edit_information(cluster_name, group, description, provider):
     url = env_url + '/apis/cluster.kubesphere.io/v1alpha1/clusters/' + cluster_name
-    data = {"metadata": {"name": "host",
+    data = {"metadata": {"name": cluster_name,
                          "labels": {"cluster-role.kubesphere.io/host": "",
                                     "kubesphere.io/managed": "true",
                                     "cluster.kubesphere.io/group": group
@@ -623,7 +623,7 @@ def step_unauthorized_cluster_visibility(cluster_name, ws_name):
     url = env_url + '/apis/cluster.kubesphere.io/v1alpha1/clusters/' + cluster_name
     url_1 = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates/' + ws_name
     data = {"metadata": {"labels": {"cluster.kubesphere.io/visibility": "private"}}}
-    data_1 = {"spec": {"placement": {"clusters": []}}}
+    data_1 = [{"op": "remove", "path": "/spec/placement/clusters/0", "value": {"name": cluster_name}}]
     requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
     requests.patch(url=url_1, headers=get_header_for_patch(), data=json.dumps(data_1))
 
@@ -633,7 +633,7 @@ def step_authorized_cluster_visibility(cluster_name, ws_name):
     url = env_url + '/apis/cluster.kubesphere.io/v1alpha1/clusters/' + cluster_name
     url_1 = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates/' + ws_name
     data = {"metadata": {"labels": {"cluster.kubesphere.io/visibility": "private"}}}
-    data_1 = {"spec": {"placement": {"clusters": [{"name": cluster_name}]}}}
+    data_1 = [{"op": "add", "path": "/spec/placement", "value": {"clusters": [{"name": cluster_name}]}}]
     requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
     requests.patch(url=url_1, headers=get_header_for_patch(), data=json.dumps(data_1))
 
