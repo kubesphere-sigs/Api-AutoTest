@@ -22,24 +22,27 @@ class TestWorkSpace(object):
     alias_name = '多集群'
     description = '用于测试多集群环境企业空间'
     ws_name = 'ws-for-test-multi-ws' + str(commonFunction.get_random())
+    ws_name_yaml = 'ws-for-test-multi-ws' + str(commonFunction.get_random())
     ws_role_name = ws_name + '-viewer-test'
+    # 获取集群名称
+    clusters = multi_workspace_steps.step_get_cluster_name()
+    print(clusters)
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/multi_cluster_workspace.yaml')
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
         multi_workspace_steps.step_create_user(self.user_name)  # 创建一个用户
-        # 获取集群名称
-        clusters = multi_workspace_steps.step_get_cluster_name()
         # 创建一个多集群企业空间（包含所有的集群）
-        multi_workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, clusters)
+        multi_workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, self.clusters)
         # 创建若干个多集群企业空间（只部署在单个集群）
-        if len(clusters) > 1:
-            for i in range(len(clusters)):
-                multi_workspace_steps.step_create_multi_ws(self.ws_name,
-                                                           self.alias_name, self.description, clusters[i])
-        # 创建一个多集群企业空间,供excle文件中的用例使用
-        multi_workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, clusters)
+        if len(self.clusters) > 1:
+            for i in range(0, len(self.clusters)):
+                ws_name_1 = 'ws-for-test-single-ws' + str(commonFunction.get_random())
+                multi_workspace_steps.step_create_multi_ws(ws_name_1,
+                                                           self.alias_name, self.description, self.clusters[i])
+        # 创建一个多集群企业空间,供yaml文件中的用例使用
+        multi_workspace_steps.step_create_multi_ws(self.ws_name_yaml, self.alias_name, self.description, self.clusters)
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
@@ -69,8 +72,8 @@ class TestWorkSpace(object):
         # 将测试用例中的变量替换成指定内容
         targets = commonFunction.replace_str(url, params, data, title, condition, except_result,
                                              actual_value='${ws_name}', expect_value=self.ws_name)
+
         # 使用修改过的内容进行测试
-        print(targets[0])
         commonFunction.request_resource(targets[0], targets[1], targets[2], story, targets[3], method, severity,
                                         targets[4], targets[5])
 
@@ -399,7 +402,7 @@ class TestWorkSpace(object):
             if ws_name != 'system-workspace':
                 clusters_name = []
                 res = multi_workspace_steps.step_get_ws_info(ws_name)
-                clusters = res.json()['items'][0]['spec']['placement']['clusters']
+                clusters = res.json()['spec']['placement']['clusters']
                 for i in range(0, len(clusters)):
                     clusters_name.append(clusters[i]['name'])
                 # 遍历集群名称，在每个集群创建项目
@@ -434,7 +437,7 @@ class TestWorkSpace(object):
             if ws_name != 'system-workspace':
                 clusters_name = []
                 res = multi_workspace_steps.step_get_ws_info(ws_name)
-                clusters = res.json()['items'][0]['spec']['placement']['clusters']
+                clusters = res.json()['spec']['placement']['clusters']
                 for i in range(0, len(clusters)):
                     clusters_name.append(clusters[i]['name'])
                 # 遍历集群名称，在每个集群创建项目
@@ -461,7 +464,7 @@ class TestWorkSpace(object):
             if ws_name != 'system-workspace':
                 clusters_name = []
                 res = multi_workspace_steps.step_get_ws_info(ws_name)
-                clusters = res.json()['items'][0]['spec']['placement']['clusters']
+                clusters = res.json()['spec']['placement']['clusters']
                 for i in range(0, len(clusters)):
                     clusters_name.append(clusters[i]['name'])
                 # 遍历集群名称，在每个集群创建项目
@@ -492,7 +495,7 @@ class TestWorkSpace(object):
             if ws_name != 'system-workspace':
                 clusters_name = []
                 re = multi_workspace_steps.step_get_ws_info(ws_name)
-                clusters = re.json()['items'][0]['spec']['placement']['clusters']
+                clusters = re.json()['spec']['placement']['clusters']
                 for i in range(0, len(clusters)):
                     clusters_name.append(clusters[i]['name'])
                 if len(clusters_name) > 1:
@@ -517,30 +520,30 @@ class TestWorkSpace(object):
     @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('network') is False,
                         reason='集群未开启networkpolicy功能')
     @allure.story('企业空间设置-网络策略')
-    @allure.title('关闭企业空间网络隔离')
-    def wx_test_off_network_lsolation(self):
+    @allure.title('开启企业空间网络隔离')
+    def test_enable_network_lsolation(self):
         # 关闭企业空间网络隔离
-        multi_workspace_steps.step_set_network_lsolation(self.ws_name, False)
+        multi_workspace_steps.step_set_network_lsolation(self.ws_name, True, self.clusters)
         # 验证企业空间信息
         response = multi_workspace_steps.step_get_ws_info(self.ws_name)
         # 获取企业空间的网络隔离状态
-        network_lsolation = response.json()['spec']['template']['spec']['networkIsolation']
+        network_lsolation = response.json()['spec']['overrides'][0]['clusterOverrides'][0]['value']
         # 验证设置成功
-        assert network_lsolation is False
+        assert network_lsolation is True
 
     @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('network') is False,
                         reason='集群未开启networkpolicy功能')
     @allure.story('企业空间设置-网络策略')
-    @allure.title('开启企业空间网络隔离')
-    def wx_test_enable_network_lsolation(self):
+    @allure.title('关闭企业空间网络隔离')
+    def test_off_network_lsolation(self):
         # 关闭企业空间网络隔离
-        multi_workspace_steps.step_set_network_lsolation(self.ws_name, True)
+        multi_workspace_steps.step_set_network_lsolation(self.ws_name, False, self.clusters)
         # 验证企业空间信息
         response = multi_workspace_steps.step_get_ws_info(self.ws_name)
         # 获取企业空间的网络隔离状态
-        network_lsolation = response.json()['spec']['template']['spec']['networkIsolation']
+        network_lsolation = response.json()['spec']['overrides'][0]['clusterOverrides'][0]['value']
         # 验证设置成功
-        assert network_lsolation is True
+        assert network_lsolation is False
 
 
 if __name__ == "__main__":
