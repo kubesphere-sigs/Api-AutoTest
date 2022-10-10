@@ -1,13 +1,14 @@
-- - 1
-  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/${ws_name}
-  - ''
-  - '{"metadata":{"name":"${ws_name}","annotations":{"kubesphere.io/creator":"admin","kubesphere.io/alias-name":"我是别名","kubesphere.io/description":"我是描述信息"}}}'
-  - 企业空间列表
-  - 修改企业空间信息
-  - patch
-  - critical
-  - r.json()['metadata']['annotations']['kubesphere.io/alias-name']
-  - 我是别名
+#- - 1
+#  - /kapis/tenant.kubesphere.io/v1alpha2/workspaces/${ws_name}
+#  - ''
+#  - [{"op":"add","path":"/metadata/annotations","value":{"kubesphere.io/alias-name":"test","kubesphere.io/creator":"admin","kubesphere.io/description":"test-des"}},{"op":"add","path":"/spec","value":{"template":{"metadata":{"creationTimestamp":null},"spec":{"manager":"admin"}},"placement":{"clusters":[{"name":${cluster_name}}]}}}]
+#  - 企业空间列表
+#  - 修改企业空间信息
+#  - patch
+#  - critical
+#  - r.json()['metadata']['annotations']['kubesphere.io/alias-name']
+#  - 我是别名
+
 - - 2
   - /kapis/tenant.kubesphere.io/v1alpha2/workspaces
   - name=wx-wx
@@ -18,6 +19,7 @@
   - normal
   - r.json()['totalItems']
   - 0
+
 - - 3
   - /kapis/iam.kubesphere.io/v1alpha2/workspaces/${ws_name}/workspaceroles
   - ''
