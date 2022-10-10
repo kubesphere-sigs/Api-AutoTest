@@ -26,7 +26,6 @@ class TestWorkSpace(object):
     ws_role_name = ws_name + '-viewer-test'
     # 获取集群名称
     clusters = multi_workspace_steps.step_get_cluster_name()
-    print(clusters)
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/multi_cluster_workspace.yaml')
 
