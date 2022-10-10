@@ -212,7 +212,7 @@ def step_create_user(user_name):
     """
     :param user_name: 系统用户的名称
     """
-    email = 'stevewen' + str(commonFunction.get_random()) + '@yunify.com'
+    email = 'stevewen' + str(commonFunction.get_random()) + '@test.com'
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/users'
     data = {"apiVersion": "iam.kubesphere.io/v1alpha2",
             "kind": "User",
@@ -341,20 +341,21 @@ def step_delete_multi_project(multi_project_name):
 
 @allure.step('在多集群环境查询企业空间')
 def step_get_ws_info(ws_name):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces?name=' + ws_name
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates/' + ws_name
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('开关企业空间网络隔离')
-def step_set_network_lsolation(ws_name, status):
+def step_set_network_lsolation(ws_name, status, cluster_name):
     """
-
     :param ws_name:
     :param status: True or False
     """
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
-    data = {"spec": {"template": {"spec": {"networkIsolation": status}}}}
+    data = [{"op": "replace", "path": "/metadata/name", "value": ws_name},
+            {"op": "add", "path": "/spec/overrides", "value": [
+                {"clusterName": cluster_name[0], "clusterOverrides": [{"path": "/spec/networkIsolation", "value": status}]}]}]
     response = requests.patch(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
