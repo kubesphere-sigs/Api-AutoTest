@@ -1644,8 +1644,7 @@ class TestProject(object):
             assert response.json()['totalItems'] == 1
         # 删除工作负载
         project_steps.step_delete_workload(create_project, 'deployments', workload_name)
-        # 验证删除成功
-        # 按名称查询工作负载
+        # 按名称查询工作负载，验证删除成功
         re = project_steps.step_get_workload(create_project, 'deployments', condition)
         assert re.json()['totalItems'] == 0
 
@@ -1754,9 +1753,9 @@ class TestProject(object):
                               ])
     def test_create_secret_wrong_name(self, secret_name, title, create_project):
         # 创建保密字典
-        type = 'Opaque'
+        configuration_type = 'Opaque'
         data = {"test": "d3g="}
-        response = project_steps.step_create_secret(create_project, secret_name, type, data)
+        response = project_steps.step_create_secret(create_project, secret_name, configuration_type, data)
         assert response.json()['status'] == 'Failure'
 
     @allure.story('配置-保密字典')
@@ -1765,9 +1764,9 @@ class TestProject(object):
     def test_delete_secret(self, create_project):
         # 创建保密字典
         secret_name = 'test-secret-' + str(commonFunction.get_random())
-        type = 'Opaque'
+        configuration_type = 'Opaque'
         data = {"test": "d3g="}
-        project_steps.step_create_secret(create_project, secret_name, type, data)
+        project_steps.step_create_secret(create_project, secret_name, configuration_type, data)
         # 验证创建成功
         i = 0
         while i < 60:
