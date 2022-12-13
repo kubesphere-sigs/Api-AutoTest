@@ -199,7 +199,7 @@ class TestMetering(object):
         now_timestamp = commonFunction.get_timestamp()
         # 获取7天之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp_day(7)
-        # 查询集群所有的节点
+        # 查询集群的所有节点
         response = cluster_steps.step_get_node_info()
         # 获取集群的节点数量
         node_count = response.json()['totalItems']
