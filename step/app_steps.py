@@ -428,11 +428,11 @@ def step_get_category_id_by_name(category_name):
     # 获取分类的数量
     count = r.json()['total_count']
     name = []
-    id = []
+    category_id = []
     for i in range(0, count):
         name.append(r.json()['items'][i]['category_id'])
-        id.append(r.json()['items'][i]['name'])
-    name_id = dict(zip(id, name))
+        category_id.append(r.json()['items'][i]['name'])
+    name_id = dict(zip(category_id, name))
     return name_id[category_name]
 
 
