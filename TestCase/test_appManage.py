@@ -24,6 +24,7 @@ class TestAppTemplate(object):
     project_name = 'project-for-test-app' + str(commonFunction.get_random())
     alias_name = 'for app store'
     description = '在多集群企业空间部署app store 中的应用'
+    repo_url = 'https://helm-chart-repo.pek3a.qingstor.com/kubernetes-charts/' # 仓库的url信息
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
@@ -121,9 +122,8 @@ class TestAppTemplate(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_add_app_repository(self):
         repo_name = 'repo' + str(commonFunction.get_random())  # 仓库名称
-        repo_url = 'https://helm-chart-repo.pek3a.qingstor.com/kubernetes-charts/'  # 仓库的url信息
         # 添加仓库
-        app_steps.step_add_app_repository(self.ws_name, repo_name, repo_url)
+        app_steps.step_add_app_repository(self.ws_name, repo_name, self.repo_url)
         # 查询列表，并获取查询到的仓库的id、名称
         response = app_steps.step_get_app_repository(self.ws_name, repo_name)
         repo_id = response.json()['items'][0]['repo_id']
@@ -152,9 +152,8 @@ class TestAppTemplate(object):
     @allure.title('按名称精确查询应用仓库')
     def test_get_app_repository(self):
         repo_name = 'repo' + str(commonFunction.get_random())  # 仓库名称
-        repo_url = 'https://helm-chart-repo.pek3a.qingstor.com/kubernetes-charts/'  # 仓库的url信息
         # 添加仓库
-        app_steps.step_add_app_repository(self.ws_name, repo_name, repo_url)
+        app_steps.step_add_app_repository(self.ws_name, repo_name, self.repo_url)
         # 查询列表，并获取创建的仓库的名称和id
         response = app_steps.step_get_app_repository(self.ws_name, repo_name)
         repo_id = response.json()['items'][0]['repo_id']
@@ -169,9 +168,8 @@ class TestAppTemplate(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_app_repository(self):
         repo_name = 'repo' + str(commonFunction.get_random())  # 仓库名称
-        repo_url = 'https://helm-chart-repo.pek3a.qingstor.com/kubernetes-charts/'  # 仓库的url信息
         # 添加仓库
-        app_steps.step_add_app_repository(self.ws_name, repo_name, repo_url)
+        app_steps.step_add_app_repository(self.ws_name, repo_name, self.repo_url)
         # 查询列表，并获取查询到的仓库的repo_id
         response = app_steps.step_get_app_repository(self.ws_name, repo_name)
         repo_id = response.json()['items'][0]['repo_id']
