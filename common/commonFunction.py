@@ -355,7 +355,6 @@ def get_before_timestamp(now_time, minutes):
     now_reduce = now_time - datetime.timedelta(minutes=minutes)
     # 转换成时间数组
     timeArray = time.strptime(str(now_reduce)[0:19], "%Y-%m-%d %H:%M:%S")
-    # print(timeArray)
     # 转换成时间戳
     before_timestamp = str(time.mktime(timeArray))[0:10]
     return before_timestamp
