@@ -268,6 +268,7 @@ class TestWorkSpace(object):
         response = workspace_steps.step_get_ws_role(self.ws_name, role_name)
         with pytest.assume:
             assert response.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority_create
+        # 删除角色
         workspace_steps.step_delete_role(self.ws_name, role_name)
 
     @allure.story('企业空间设置-企业角色')
