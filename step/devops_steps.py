@@ -244,7 +244,6 @@ def step_delete_pipeline(devops_name_new, pipeline_name):
 @allure.step('创建账户类型凭证')
 def step_create_account_credential(devops_name, name, username, password):
     url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + devops_name + '/credentials'
-    name = name
     description = '我是描述信息'
 
     data = {"apiVersion": "v1", "kind": "Secret",
