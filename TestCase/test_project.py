@@ -1010,9 +1010,9 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_statefulstes_by_name(self, create_project, workload_name, container_name):
         condition = 'name=' + workload_name
-        type = 'statefulsets'
+        workload_type = 'statefulsets'
         image = 'nginx'  # 镜像名称
-        replicas = 2  # 副本数
+        replicas = 2  # 副本数workload_
         volume_info = []
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
@@ -1027,13 +1027,13 @@ class TestProject(object):
 
         # 按名称精确查询statefulsets
         time.sleep(1)
-        response = project_steps.step_get_workload(create_project, type=type, condition=condition)
+        response = project_steps.step_get_workload(create_project, type=workload_type, condition=condition)
         # 获取并验证deployment的名称正确
         name = response.json()['items'][0]['metadata']['name']
         with pytest.assume:
             assert name == workload_name
         # 删除创建的statefulsets
-        project_steps.step_delete_workload(project_name=create_project, type=type, work_name=workload_name)
+        project_steps.step_delete_workload(project_name=create_project, type=workload_type, work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
         j = 0
         while j < 300:
@@ -1049,7 +1049,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.NORMAL)
     def test_get_statefulstes_by_status(self, create_project, workload_name, container_name):
         condition = 'status=running'
-        type = 'statefulsets'
+        workload_type = 'statefulsets'
         image = 'nginx'  # 镜像名称
         replicas = 2  # 副本数
         volume_info = []
@@ -1067,7 +1067,7 @@ class TestProject(object):
         # 查询工作负载，直至其状态为运行中
         i = 0
         while i < 60:
-            r = project_steps.step_get_workload(create_project, type=type, condition='name=' + workload_name)
+            r = project_steps.step_get_workload(create_project, type=workload_type, condition='name=' + workload_name)
             try:
                 readyReplicas = r.json()['items'][0]['status']['readyReplicas']
                 if readyReplicas == replicas:
@@ -1078,14 +1078,14 @@ class TestProject(object):
                 i += 3
                 time.sleep(3)
         # 按状态精确查询statefulsets
-        response = project_steps.step_get_workload(create_project, type=type, condition=condition)
+        response = project_steps.step_get_workload(create_project, type=workload_type, condition=condition)
         # 获取工作负载的名称
         name = response.json()['items'][0]['metadata']['name']
         # 验证deployment的名称正确
         with pytest.assume:
             assert workload_name == name
         # 删除创建的statefulsets
-        re = project_steps.step_delete_workload(project_name=create_project, type=type, work_name=workload_name)
+        re = project_steps.step_delete_workload(project_name=create_project, type=workload_type, work_name=workload_name)
         with pytest.assume:
             assert re.json()['status'] == 'Success'
         # 等待工作负载删除成功，再删除项目
@@ -1174,7 +1174,7 @@ class TestProject(object):
     def test_get_daemonsets_by_name(self, create_project, workload_name, container_name):
         condition = 'name=' + workload_name
         image = 'nginx'  # 镜像名称
-        type = 'daemonsets'
+        workload_type = 'daemonsets'
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
         volume_info = []
         volumemount = []
@@ -1187,7 +1187,7 @@ class TestProject(object):
         i = 0
         while i < 60:
             try:
-                response = project_steps.step_get_workload(create_project, type=type, condition=condition)
+                response = project_steps.step_get_workload(create_project, type=workload_type, condition=condition)
                 # 获取并验证deployment的名称正确
                 name = response.json()['items'][0]['metadata']['name']
                 if name:
@@ -1199,7 +1199,7 @@ class TestProject(object):
         with pytest.assume:
             assert name == workload_name
         # 删除创建的daemonsets
-        re = project_steps.step_delete_workload(project_name=create_project, type=type, work_name=workload_name)
+        re = project_steps.step_delete_workload(project_name=create_project, type=workload_type, work_name=workload_name)
         with pytest.assume:
             assert re.json()['status'] == 'Success'
         # 等待工作负载删除成功，再删除项目
@@ -1219,7 +1219,7 @@ class TestProject(object):
         name = ''
         condition = 'status=running'
         image = 'nginx'  # 镜像名称
-        type = 'daemonsets'
+        workload_type = 'daemonsets'
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
         volume_info = []
         volumemount = []
@@ -1231,7 +1231,7 @@ class TestProject(object):
         while i < 120:
             try:
                 # 按名称查询DaemonSets
-                response = project_steps.step_get_workload(create_project, type=type, condition=condition)
+                response = project_steps.step_get_workload(create_project, type=workload_type, condition=condition)
                 # 获取并验证daemonsets的名称正确
                 name = response.json()['items'][0]['metadata']['name']
                 if name:
@@ -1243,7 +1243,7 @@ class TestProject(object):
         with pytest.assume:
             assert name == workload_name
         # 删除创建的daemonsets
-        project_steps.step_delete_workload(project_name=create_project, type=type, work_name=workload_name)
+        project_steps.step_delete_workload(project_name=create_project, type=workload_type, work_name=workload_name)
 
     @allure.story('应用负载-服务')
     @allure.title('创建、删除service，并验证删除成功')
