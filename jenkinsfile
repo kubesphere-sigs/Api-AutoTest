@@ -24,7 +24,7 @@ pipeline {
       }
     }
 
-    stage('安装第三方python依赖') {
+    stage('安装三方python依赖') {
       steps {
         container('python') {
           sh 'pip install -r requirements.txt'
