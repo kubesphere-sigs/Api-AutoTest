@@ -1219,27 +1219,6 @@ def step_add_allowlist(project_name, policy_name, spec):
                          "annotations": {"kubesphere.io/creator": "admin"}},
             "spec": spec
             }
-    #
-    # data = {"apiVersion": "network.kubesphere.io/v1alpha1", "kind": "NamespaceNetworkPolicy",
-    #         "metadata": {"namespace": "pro", "name": "policy-from-0d6dct",
-    #                      "annotations": {"kubesphere.io/creator": "admin"}},
-    #         "spec": {"ingress": [{"from": [{"namespace": {"name": "default"}}]}]}
-    #         }
-    #
-    # data = {"apiVersion": "network.kubesphere.io/v1alpha1", "kind": "NamespaceNetworkPolicy",
-    #         "metadata": {"namespace": "pro", "name": "policy-to-eg7k1j",
-    #                      "annotations": {"kubesphere.io/creator": "admin"}},
-    #         "spec": {"egress": [
-    #             {"ports": [{"port": 80, "protocol": "TCP"}], "to": [{"ipBlock": {"cidr": "10.10.10.10/24"}}]}]}
-    #         }
-    #
-    # data = {"apiVersion": "network.kubesphere.io/v1alpha1", "kind": "NamespaceNetworkPolicy",
-    #         "metadata": {"namespace": "pro", "name": "policy-from-tgonyb",
-    #                      "annotations": {"kubesphere.io/creator": "admin"}},
-    #         "spec": {"ingress": [
-    #             {"ports": [{"port": 80, "protocol": "TCP"}], "from": [{"ipBlock": {"cidr": "10.10.10.10/24"}}]}]}
-    #         }
-
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
