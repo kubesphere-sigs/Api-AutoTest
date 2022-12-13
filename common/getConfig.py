@@ -16,8 +16,6 @@ def get_apiserver():
     else:
         f = open(yamlPath_1, 'r', encoding='utf-8')
     cfg = f.read()
-    # print(type(cfg))  # 读出来是字符串
-    # print(cfg)
 
     d = yaml.safe_load(cfg)  # 用load方法转字典
     url = d['env']['url']
