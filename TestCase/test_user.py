@@ -15,6 +15,9 @@ from common.getHeader import get_header
 
 @allure.feature('平台账户管理')
 class TestUser(object):
+
+    role = 'platform-self-provisioner'
+    password = 'P@88w0rd'
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/system_user.yaml')
 
@@ -101,9 +104,8 @@ class TestUser(object):
         # 创建用户
         user_name = 'test' + str(commonFunction.get_random())
         email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
-        role = 'platform-self-provisioner'
         password = ''
-        platform_steps.step_create_user(user_name, role, email, password)
+        platform_steps.step_create_user(user_name, self.role, email, password)
         # 查询创建的用户
         response = platform_steps.step_get_user_info(user_name)
         # 验证用户创建成功
@@ -119,9 +121,7 @@ class TestUser(object):
         # 创建用户
         user_name = 'test' + str(commonFunction.get_random())
         email = ''
-        role = 'platform-self-provisioner'
-        password = 'P@88w0rd'
-        platform_steps.step_create_user(user_name, role, email, password)
+        platform_steps.step_create_user(user_name, self.role, email, self.password)
         # 查询创建的用户
         response = platform_steps.step_get_user_info(user_name)
         # 验证用户创建成功
@@ -137,11 +137,9 @@ class TestUser(object):
         # 创建用户
         user_name = 'test' + str(commonFunction.get_random())
         email = ''
-        role = 'platform-self-provisioner'
-        password = 'P@88w0rd'
-        platform_steps.step_create_user(user_name, role, email, password)
+        platform_steps.step_create_user(user_name, self.role, email, self.password)
         # 使用重复的用户名创建用户
-        response = platform_steps.step_create_user(user_name, role, email, password)
+        response = platform_steps.step_create_user(user_name, self.role, email, self.password)
         with pytest.assume:
             assert 'users.iam.kubesphere.io "' + user_name + '" already exists\n' == response.text
         # 删除创建的用户
@@ -155,11 +153,9 @@ class TestUser(object):
         user_name = 'test' + str(commonFunction.get_random())
         user_name_1 = 'test' + str(commonFunction.get_random())
         email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
-        role = 'platform-self-provisioner'
-        password = 'P@88w0rd'
-        platform_steps.step_create_user(user_name, role, email, password)
+        platform_steps.step_create_user(user_name, self.role, email, self.password)
         # 使用重复的用户的邮箱创建用户
-        response = platform_steps.step_create_user(user_name_1, role, email, password)
+        response = platform_steps.step_create_user(user_name_1, self.role, email, self.password)
         with pytest.assume:
             assert 'admission webhook "users.iam.kubesphere.io" denied the request: user email: ' + email + ' already exists\n' == response.text
         # 删除创建的用户
