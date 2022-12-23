@@ -31,6 +31,7 @@ class TestWorkSpace(object):
     authority_admin = '["role-template-manage-workspace-settings","role-template-view-workspace-settings","role-template-manage-projects","role-template-view-projects","role-template-create-projects","role-template-create-devops","role-template-view-devops","role-template-manage-devops","role-template-manage-app-templates","role-template-view-app-templates","role-template-manage-app-repos","role-template-view-app-repos","role-template-view-members","role-template-manage-members","role-template-manage-roles","role-template-view-roles","role-template-manage-groups","role-template-view-groups"]'
     authority_self_provisioner = '["role-template-create-projects","role-template-create-devops","role-template-view-app-templates","role-template-manage-app-templates","role-template-view-workspace-settings"]'
     authority_regular = '["role-template-view-workspace-settings"]'
+
     # 从文件中读取用例信息
     parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/workspace.yaml')
 
@@ -441,21 +442,6 @@ class TestWorkSpace(object):
         assert assert_message in response.text
 
     @allure.story('企业空间设置-企业组织')
-    @allure.title('创建企业组织时绑定不存在的项目')
-    # 接口没有校验企业空间的角色、项目和角色是否存在
-    def wx_test_create_wrong_pro_department(self):
-        group_name = 'test-group'
-        data = {"kubesphere.io/workspace-role": "wx-regular",
-                "kubesphere.io/alias-name": "",
-                "kubesphere.io/project-roles": "[{\"cluster\":\"\",\"namespace\":\"test\",\"role\":\"viewer1\"}]",
-                "kubesphere.io/devops-roles": "[]",
-                "kubesphere.io/creator": "admin"
-                }
-        # 获取返回信息
-        response = workspace_steps.step_create_department(self.ws_name, group_name, data)
-        print(response.text)
-
-    @allure.story('企业空间设置-企业组织')
     @allure.title('为用户分配企业组织')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_assign_user(self, create_ws, create_user):
@@ -498,27 +484,6 @@ class TestWorkSpace(object):
             assert create_user not in user_not_in_group
         # 删除创建的企业空间
         workspace_steps.step_delete_workspace(create_ws)
-
-    @allure.story('企业空间设置-企业组织')
-    @allure.title('将已绑定企业组织的用户再次绑定该企业组织')
-    @allure.severity(allure.severity_level.NORMAL)
-    # 接口没有限制将同一个用户重复绑定到一个企业组织
-    def wx_test_reassign_user(self):
-        group_name = 'test2'
-        data = {"kubesphere.io/workspace-role": "wx-regular",
-                "kubesphere.io/alias-name": "",
-                "kubesphere.io/project-roles": "[]",
-                "kubesphere.io/devops-roles": "[]",
-                "kubesphere.io/creator": "admin"
-                }
-        # 创建企业组织,并获取创建的企业组织的name
-        response = workspace_steps.step_create_department(self.ws_name, group_name, data)
-        name = response.json()['metadata']['name']
-        # 将指定用户绑定到指定企业组织
-        workspace_steps.step_binding_user(self.ws_name, name, self.user_name)
-        # 将指定用户再次绑定到该企业空间
-        response = workspace_steps.step_binding_user(self.ws_name, name, self.user_name)
-        print(response.text)
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('将用户从企业组织解绑')
@@ -566,22 +531,6 @@ class TestWorkSpace(object):
         hard_info = response.json()['spec']['quota']['hard']
         # 校验修改后的配额信息
         assert hard_data == hard_info
-
-    @allure.story('配额管理')
-    @allure.title('编辑配额是的request.cpu > limit.cpu')
-    # 接口没有限制limit >= request
-    def wx_test_edit_quota_cpu(self):
-        # 初始化企业配额
-        workspace_steps.step_init_quota(ws_name=self.ws_name, cluster='default')
-        # 获取企业配额的resourceVersion
-        res = workspace_steps.step_get_quota_resource_version(self.ws_name)
-        resource_version = res.json()['metadata']['resourceVersion']
-        # 编辑企业配额
-        hard_data = {"limits.cpu": "1", "limits.memory": "100Gi",
-                     "requests.cpu": "2", "requests.memory": "1Gi"}
-        response = workspace_steps.step_edit_quota(ws_name=self.ws_name, hard_data=hard_data, cluster='default',
-                                                   resource_version=resource_version)
-        print(response.text)
 
     @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('network') is False,
                         reason='集群未开启networkpolicy功能')
