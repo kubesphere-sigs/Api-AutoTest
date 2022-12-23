@@ -74,3 +74,7 @@ class TestWorkbench(object):
         response = platform_steps.step_get_kubeconfig()
         # 验证获取信息成功
         assert response.status_code == 200
+
+
+if __name__ == "__main__":
+    pytest.main(['-s', 'test_workbench.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
