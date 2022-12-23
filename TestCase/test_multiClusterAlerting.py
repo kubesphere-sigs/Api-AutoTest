@@ -148,7 +148,6 @@ class TestMultiClusterAlerting(object):
                               ('按告警级别/一般告警查询自定义的告警策略', 'warning', '')
                               ])
     def test_get_alert_policies_by_level(self, title, level, type):
-        pass
         # 按告警级别查询告警策略
         response = multi_cluster_steps.step_get_alert_policies(self.cluster_host_name, type, 'label_filters=severity%3D' + level)
         # 获取告警策略的数量

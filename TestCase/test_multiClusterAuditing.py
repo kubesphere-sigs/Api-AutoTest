@@ -47,8 +47,7 @@ class TestAuditingOperatingSearch(object):
         re = toolbox_steps.step_get_audits_trend(before_timestamp, now_timestamp, self.cluster_host_name)
         # 获取最近12小时的审计总量
         audit_count = re.json()['histogram']['total']
-        # 验证今日事件总量和最近12小时事件总量的关系
-        # 获取当前日期
+        # 验证今日事件总量和最近12小时事件总量的关系,获取当前日期
         today = commonFunction.get_today()
         # 获取当天12点的时间戳
         tamp = commonFunction.get_custom_timestamp(today, '12:00:00')
