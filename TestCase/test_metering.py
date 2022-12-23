@@ -416,3 +416,7 @@ class TestMetering(object):
                                     print(e)
                                     print('项目：' + project_name + ' 资源类型：' + k + ' 资源名称：' + key + ' 无历史消费信息')
                                     break
+
+
+if __name__ == "__main__":
+    pytest.main(['-s', 'test_metering.py'])  # -s参数是为了显示用例的打印信息。 -q参数只显示结果，不显示过程
