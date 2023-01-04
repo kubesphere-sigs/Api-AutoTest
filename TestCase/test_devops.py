@@ -9,6 +9,8 @@ import time
 from common import commonFunction
 from step import devops_steps, platform_steps
 from step import workspace_steps, cluster_steps, project_steps
+from fixtures.devops import create_devops
+from fixtures.platform import create_ws
 
 
 @allure.feature('DevOps')
@@ -124,7 +126,7 @@ class TestDevOps(object):
     @allure.story('工程管理-凭证')
     @allure.title('创建账户凭证')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_account_credential(self):
+    def test_create_account_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
         description = '我是描述信息'
         username = 'dXNlcm5hbWU='
@@ -132,17 +134,17 @@ class TestDevOps(object):
         type = 'basic-auth'
         data = {"username": username, "password": password}
         # 创建凭证
-        response = devops_steps.step_create_credential(self.dev_name_new, name, description, type, data)
+        response = devops_steps.step_create_credential(create_devops, name, description, type, data)
         # 验证新建的凭证的type
         with pytest.assume:
             assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
         # 删除凭证
-        devops_steps.step_delete_credential(self.dev_name_new, name)
+        devops_steps.step_delete_credential(create_devops, name)
 
     @allure.story('工程管理-凭证')
     @allure.title('创建SSH凭证')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_ssh_credential(self):
+    def test_create_ssh_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
         description = 'test'
         username = 'cXdl'
@@ -150,86 +152,86 @@ class TestDevOps(object):
         type = 'ssh-auth'
         data = {"username": username, "private_key": private_key}
         # 创建凭证
-        response = devops_steps.step_create_credential(self.dev_name_new, name, description, type, data)
+        response = devops_steps.step_create_credential(create_devops, name, description, type, data)
         # 验证新建的凭证的type
         with pytest.assume:
             assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
         # 删除凭证
-        devops_steps.step_delete_credential(self.dev_name_new, name)
+        devops_steps.step_delete_credential(create_devops, name)
 
     @allure.story('工程管理-凭证')
     @allure.title('创建secret_text凭证')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_secret_text_credential(self):
+    def test_create_secret_text_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
         description = '我是描述信息'
         secret = 'cXdlYXNk'
         type = 'secret-text'
         data = {"secret": secret}
         # 创建凭证
-        response = devops_steps.step_create_credential(self.dev_name_new, name, description, type, data)
+        response = devops_steps.step_create_credential(create_devops, name, description, type, data)
         # 验证新建的凭证的type
         with pytest.assume:
             assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
         # 删除凭证
-        devops_steps.step_delete_credential(self.dev_name_new, name)
+        devops_steps.step_delete_credential(create_devops, name)
 
     @allure.story('工程管理-凭证')
     @allure.title('创建kubeconfig凭证')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_kubeconfig_credential(self):
+    def test_create_kubeconfig_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
         description = '我是描述信息'
         type = 'kubeconfig'
         data = {
             "content": "YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIGNlcnRpZmljYXRlLWF1dGhvcml0eS1kYXRhOiBMUzB0TFMxQ1JVZEpUaUJEUlZKVVNVWkpRMEZVUlMwdExTMHRDazFKU1VONVJFTkRRV0pEWjBGM1NVSkJaMGxDUVVSQlRrSm5hM0ZvYTJsSE9YY3dRa0ZSYzBaQlJFRldUVkpOZDBWUldVUldVVkZFUlhkd2NtUlhTbXdLWTIwMWJHUkhWbnBOUWpSWVJGUkplRTFFUlhkT1ZFRjVUWHBKZVU1R2IxaEVWRTE0VFVSRmQwMTZRWGxOZWtsNVRrWnZkMFpVUlZSTlFrVkhRVEZWUlFwQmVFMUxZVE5XYVZwWVNuVmFXRkpzWTNwRFEwRlRTWGRFVVZsS1MyOWFTV2gyWTA1QlVVVkNRbEZCUkdkblJWQkJSRU5EUVZGdlEyZG5SVUpCUzBaaENuaEpVRFJOZWxoNksxRjBTMUYwT0hRNWRVRjNiR05hU1VSMFVXUjBRekl2TVdoRFIyWjZjVEpSTkN0VEwwSndiamxaVG1kblZFeDJXR3hVTjBkNmVGWUtkRk56TjFsRVNsbHFaak5pYUhsNmFHWjNXazVIWmtGU2MwUk9NazVRWVVaRE1XcEhNMmxCV2tOWUwwTldWblY2WXpsV1YzbzFRMjhyUlhsR0wxUjJlQXB2Y0RaMWIzUmhXR2syYlM5emVVWk5SMVExY1RablVIaDFSSE51YWpaaFNIaFJWRkEzVDB0S1dFcGhPRGdyUVVSVGFUTkhNMDFZVEd0YWRuWnZNVlpoQ2xKcVZtVnRhRTU1TDBSNWIxbE9ORWRKUkN0eE5sZzFLemRVUVZGNWRtTTBaV3BNZUdGVk5HSk9WRzl6ZEhCb1lUZEZjWE5XVHk5ak5qTkpRWGQ1VFhRS09YVkVUVUppYTJkbGRHWlJhVUp6Y0dKVWRVeEhSbWN5UW1OamMyVnFaalJ3V0haaFZtaG5WMnhTVXpOWWIyMDVXU3R0VW5oM2EwaFRZa3BoZEdwdk5ncFNZUzlXTkVWVVVEQjZXSE0xTjJSdmFVY3dRMEYzUlVGQllVMXFUVU5GZDBSbldVUldVakJRUVZGSUwwSkJVVVJCWjB0clRVRTRSMEV4VldSRmQwVkNDaTkzVVVaTlFVMUNRV1k0ZDBSUldVcExiMXBKYUhaalRrRlJSVXhDVVVGRVoyZEZRa0ZKSzFOcWIwOTVMMlpzVGpacVdtMWxRVWg2WlhOUmFuaG5NM01LZWpjMGNtaHZTMmswYVRFeVdDOVBORzFCY0hGc1RtRTBZV1pFVERKV1N6RTVjbVpIZDNaSVYwMW1TalJaU1d0ak5VczFjMHRzU21SblJuRXlaRnBFTVFwSU56WlZkakowVTAxdGNVOXJWVlZDY1RWQkwydHhPWFZ2YUhwMGNGTTJSM3BVUTFVNEwza3hZMHRWYWpoMWJETjZhVVpvSzJKSmMzaHRWa1pxWmpaVENsWjNZbWQ2WlRZd09XTTVaelJNVkZWUVJHWmFkVGxSTWpaaWJtWXdLM3BwWVZjMGVYTlBibWhzYXl0b1RGUm1UM0ZGT1UxSVRYVnVVbTh5SzJwVFdqRUtlWEF6WTNwbVRrRklSM3BDZUU1SFZUWmtja1I0ZVhZNVUzRTFaa1ZaVEhsS05FRTFiSEUxTlVaeFdVRlBWV1F4U3pkRlJXUmtSbFpPUmtaRVdtZE9SZ3BOYkhjMFMwWlRkVGxJTkVWNVFrMVVOa3BRVUUxaE1saG1WemwyU1ROUFZIbEJLeTlxYlhOS2MyaHFaMlJpU0dVcmJUaGtiVnBRZW00elVUMEtMUzB0TFMxRlRrUWdRMFZTVkVsR1NVTkJWRVV0TFMwdExRbz0KICAgIHNlcnZlcjogaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjCiAgbmFtZToga3ViZXJuZXRlcwpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3Rlcjoga3ViZXJuZXRlcwogICAgbmFtZXNwYWNlOiBkZWZhdWx0CiAgICB1c2VyOiBhZG1pbgogIG5hbWU6IGFkbWluQGt1YmVybmV0ZXMKY3VycmVudC1jb250ZXh0OiBhZG1pbkBrdWJlcm5ldGVzCmtpbmQ6IENvbmZpZwpwcmVmZXJlbmNlczoge30KdXNlcnM6Ci0gbmFtZTogYWRtaW4KICB1c2VyOgogICAgdG9rZW46IGV5SmhiR2NpT2lKU1V6STFOaUlzSW10cFpDSTZJblE1YmpoMlJqWlNhSEJpYm01QlZsQjBZVU10TWw4d04xTTVRMjFVZVd0ellqWXliMmxRU1ZWb2NVVWlmUS5leUpwYzNNaU9pSnJkV0psY201bGRHVnpMM05sY25acFkyVmhZMk52ZFc1MElpd2lhM1ZpWlhKdVpYUmxjeTVwYnk5elpYSjJhV05sWVdOamIzVnVkQzl1WVcxbGMzQmhZMlVpT2lKcmRXSmxjM0JvWlhKbExYTjVjM1JsYlNJc0ltdDFZbVZ5Ym1WMFpYTXVhVzh2YzJWeWRtbGpaV0ZqWTI5MWJuUXZjMlZqY21WMExtNWhiV1VpT2lKcmRXSmxjM0JvWlhKbExYUnZhMlZ1TFRSa2JqZHJJaXdpYTNWaVpYSnVaWFJsY3k1cGJ5OXpaWEoyYVdObFlXTmpiM1Z1ZEM5elpYSjJhV05sTFdGalkyOTFiblF1Ym1GdFpTSTZJbXQxWW1WemNHaGxjbVVpTENKcmRXSmxjbTVsZEdWekxtbHZMM05sY25acFkyVmhZMk52ZFc1MEwzTmxjblpwWTJVdFlXTmpiM1Z1ZEM1MWFXUWlPaUkzTm1JMFltWXpPQzAyTURoa0xUUmtPV1V0T1dZeU9DMHpaVE5rTm1ReFptSmtZekVpTENKemRXSWlPaUp6ZVhOMFpXMDZjMlZ5ZG1salpXRmpZMjkxYm5RNmEzVmlaWE53YUdWeVpTMXplWE4wWlcwNmEzVmlaWE53YUdWeVpTSjkuR1VGOW1GYzlkQWpLdm5MMDNOMHlLWlNtUk1IT2VWQlBhUTBpT0xBYTZ6Zl9ZbmN6TmpmTHJvU2txWVNGdU1WSDdXSTNYejQ2QWdLalBKZXA0NGtHbTVQbVE3MldHY2hwTkhuek82TGNWUkhQMV9TZDBqUDVKRDdKaktMN1ZyQ3lQb2l6b2VFMi1EM3V5QWxybXN1cGV0bnJWYVM1OVctcXkzZ1pWdGt1Z1BHQ2NBcGlMOHp0M2xsVC03dVlWN1RWcEFIUkFCTEQ2eFJSM3gxdnk5N3NUTXl4S2NoRjMxa3M3a0ZUdmJkRHZjeV93ZUtoWm5RTmRWWkllNDQwTktLYmFpRHotS3dzRks4UzZzMzZpRkowdWwyd1NTaWZCcG96aENmY2JIMGV4NTZkTFZyVFlMRWFoS2JWTEJSbUpDRGZUbTUzY2VndXExYXlNZUVuUTBkQU5nCg=="}
         # 创建凭证
-        response = devops_steps.step_create_credential(self.dev_name_new, name, description, type, data)
+        response = devops_steps.step_create_credential(create_devops, name, description, type, data)
         # 验证新建的凭证的type
         with pytest.assume:
             assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
         # 删除凭证
-        devops_steps.step_delete_credential(self.dev_name_new, name)
+        devops_steps.step_delete_credential(create_devops, name)
 
     @allure.story('工程管理-凭证')
     @allure.title('精确查询存在的凭证')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_search_credential(self):
+    def test_search_credential(self, create_devops):
         # 创建ssh凭证
         credential_name = 'ssh' + str(commonFunction.get_random())
-        devops_steps.step_create_ssh_credential(self.dev_name_new, credential_name)
+        devops_steps.step_create_ssh_credential(create_devops, credential_name)
         # 查询之前用例创建的SSH凭证
         condition = credential_name
-        result = devops_steps.step_search_credential(devops_name=self.dev_name_new, condition=condition)
+        result = devops_steps.step_search_credential(devops_name=create_devops, condition=condition)
         # 校验查询结果
         with pytest.assume:
             assert result == condition
         # 删除凭证
-        devops_steps.step_delete_credential(self.dev_name_new, credential_name)
+        devops_steps.step_delete_credential(create_devops, credential_name)
 
     @allure.story('工程管理-凭证')
     @allure.title('模糊查询存在的凭证')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_fuzzy_search_credential(self):
+    def test_fuzzy_search_credential(self, create_devops):
         # 创建ssh凭证
         credential_name = 'ssh' + str(commonFunction.get_random())
-        devops_steps.step_create_ssh_credential(self.dev_name_new, credential_name)
+        devops_steps.step_create_ssh_credential(create_devops, credential_name)
         # 查询之前创建的凭证
         condition = credential_name
-        result = devops_steps.step_search_credential(devops_name=self.dev_name_new, condition=condition)
+        result = devops_steps.step_search_credential(devops_name=create_devops, condition=condition)
         # 校验查询结果
         with pytest.assume:
             assert condition in result
         # 删除凭证
-        devops_steps.step_delete_credential(self.dev_name_new, credential_name)
+        devops_steps.step_delete_credential(create_devops, credential_name)
 
     @allure.story('工程管理-凭证')
     @allure.title('查询不存在的凭证')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_search_credential_no(self):
+    def test_search_credential_no(self, create_devops):
         # 查询之前用例创建的SSH凭证
         condition = 'test321'
-        result = devops_steps.step_search_credential(devops_name=self.dev_name_new, condition=condition)
+        result = devops_steps.step_search_credential(devops_name=create_devops, condition=condition)
         # 校验查询结果
         assert result == 0
 
@@ -264,31 +266,31 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('查看devops工程默认的所有角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_all(self):
-        r = devops_steps.step_get_role(self.dev_name_new, '')
+    def test_devops_role_all(self, create_devops):
+        r = devops_steps.step_get_role(create_devops, '')
         assert r.json()['totalItems'] == 3  # 验证初始的角色数量为3
 
     @allure.story('工程管理-工程角色')
     @allure.title('查找devops工程指定的角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_one(self):
+    def test_devops_role_one(self, create_devops):
         role_name = 'viewer'
-        r = devops_steps.step_get_role(self.dev_name_new, role_name)
+        r = devops_steps.step_get_role(create_devops, role_name)
         assert r.json()['items'][0]['metadata']['name'] == role_name  # 验证查询的角色结果为viewer
 
     @allure.story('工程管理-工程角色')
     @allure.title('查找devops工程中不存在的角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_none(self):
+    def test_devops_role_none(self, create_devops):
         role_name = 'no-exist'
-        r = devops_steps.step_get_role(self.dev_name_new, role_name)
+        r = devops_steps.step_get_role(create_devops, role_name)
         assert r.json()['totalItems'] == 0  # 验证查询到的结果为空
 
     @allure.story('工程管理-工程角色')
     @allure.title('模糊查找devops工程中的角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_fuzzy(self):
-        response = devops_steps.step_get_role(self.dev_name_new, 'adm')
+    def test_devops_role_fuzzy(self, create_devops):
+        response = devops_steps.step_get_role(create_devops, 'adm')
         with pytest.assume:
             assert response.json()['totalItems'] == 1  # 验证查询到的结果数量为2
         # 验证查找到的角色
@@ -297,52 +299,52 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中创建角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_create(self):
+    def test_devops_role_create(self, create_devops):
         # 创建角色
         role_name = 'test-role' + str(commonFunction.get_random())
-        response = devops_steps.step_create_role(self.dev_name_new, role_name)
+        response = devops_steps.step_create_role(create_devops, role_name)
         with pytest.assume:
             assert response.json()['metadata']['name'] == role_name  # 验证新建的角色名称
         # 删除角色
-        devops_steps.step_delete_role(self.dev_name, role_name)
+        devops_steps.step_delete_role(create_devops, role_name)
 
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中创建角色-角色名称为空')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_create_name_none(self):
+    def test_devops_role_create_name_none(self, create_devops):
         # 创建角色
         role_name = ''
-        response = devops_steps.step_create_role(self.dev_name_new, role_name)
+        response = devops_steps.step_create_role(create_devops, role_name)
         # 验证创建角色失败的异常提示信息
         assert response.text.strip() == 'Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required'
 
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中编辑角色基本信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_edit_info(self):
+    def test_devops_role_edit_info(self, create_devops):
         # 创建角色
         role_name = 'test-role' + str(commonFunction.get_random())
-        devops_steps.step_create_role(self.dev_name_new, role_name)
+        devops_steps.step_create_role(create_devops, role_name)
         # 编辑角色的基本信息
         alias = '测试别名test'
         description = '测试描述test'
-        r = devops_steps.step_edit_role_info(self.dev_name_new, role_name, alias, description)
+        r = devops_steps.step_edit_role_info(create_devops, role_name, alias, description)
         with pytest.assume:
             assert r.json()['metadata']['annotations']['kubesphere.io/alias-name'] == alias  # 验证修改后的别名
         with pytest.assume:
             assert r.json()['metadata']['annotations']['kubesphere.io/description'] == description  # 验证修改后的描述信息
         # 删除创建的角色
-        devops_steps.step_delete_role(self.dev_name_new, role_name)
+        devops_steps.step_delete_role(create_devops, role_name)
 
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中编辑角色的权限信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_edit_authority(self):
+    def test_devops_role_edit_authority(self, create_devops):
         # 创建角色
         role_name = 'test-role' + str(commonFunction.get_random())
-        devops_steps.step_create_role(self.dev_name_new, role_name)
+        devops_steps.step_create_role(create_devops, role_name)
         # 获取角色的resourceVersion
-        resourceVersion = commonFunction.get_devops_resourceVersion(self.dev_name_new, role_name)
+        resourceVersion = commonFunction.get_devops_resourceVersion(create_devops, role_name)
         # 编辑角色的权限
         authority = '["role-template-view-pipelines","role-template-view-credentials","role-template-view-basic","role-template-manage-pipelines"]'
         annotations = {"iam.kubesphere.io/aggregation-roles": authority,
@@ -350,89 +352,89 @@ class TestDevOps(object):
                        "kubesphere.io/creator": "admin",
                        "kubesphere.io/description": "我是描述信息"}
 
-        response = devops_steps.step_edit_role_authority(self.dev_name_new, role_name, annotations, resourceVersion)
+        response = devops_steps.step_edit_role_authority(create_devops, role_name, annotations, resourceVersion)
         # 验证修改后的权限信息
         with pytest.assume:
             assert response.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority
         # 删除创建的devops角色
-        devops_steps.step_delete_role(self.dev_name_new, role_name)
+        devops_steps.step_delete_role(create_devops, role_name)
 
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中删除角色,并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_delete(self):
+    def test_devops_role_delete(self, create_devops):
         # 创建角色
         role_name = 'test-role' + str(commonFunction.get_random())
-        devops_steps.step_create_role(self.dev_name_new, role_name)
+        devops_steps.step_create_role(create_devops, role_name)
         # 精确查询创建的角色
-        count = devops_steps.step_get_role(self.dev_name_new, role_name).json()['totalItems']
+        count = devops_steps.step_get_role(create_devops, role_name).json()['totalItems']
         # 验证角色创建成功
         with pytest.assume:
             assert count == 1
         # 删除角色
-        devops_steps.step_delete_role(self.dev_name_new, role_name)
+        devops_steps.step_delete_role(create_devops, role_name)
         time.sleep(10)
         # 精确查询创建的角色
-        count1 = devops_steps.step_get_role(self.dev_name_new, role_name).json()['totalItems']
+        count1 = devops_steps.step_get_role(create_devops, role_name).json()['totalItems']
         # 验证角色删除成功
         assert count1 == 0
 
     @allure.story('工程管理-工程成员')
     @allure.title('查看devops工程默认的所有用户')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_user_all(self):
+    def test_devops_user_all(self, create_devops):
         # 查询成员
-        response = devops_steps.step_get_member(self.dev_name_new, '')
+        response = devops_steps.step_get_member(create_devops, '')
         assert response.json()['items'][0]['metadata']['name'] == 'admin'  # 验证默认的用户仅有admin
 
     @allure.story('工程管理-工程成员')
     @allure.title('查找devops工程指定的用户')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_devops_user_one(self):
+    def test_devops_user_one(self, create_devops):
         user_condition = 'admin'
         # 查询成员
-        response = devops_steps.step_get_member(self.dev_name_new, user_condition)
+        response = devops_steps.step_get_member(create_devops, user_condition)
         assert response.json()['items'][0]['metadata']['name'] == 'admin'  # 验证查找的结果为admin
 
     @allure.story('工程管理-工程成员')
     @allure.title('模糊查找devops工程的用户')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_devops_user_fuzzy(self):
+    def test_devops_user_fuzzy(self, create_devops):
         user_condition = 'ad'
         # 查询成员
-        response = devops_steps.step_get_member(self.dev_name_new, user_condition)
+        response = devops_steps.step_get_member(create_devops, user_condition)
         assert response.json()['items'][0]['metadata']['name'] == 'admin'  # 验证查找的结果为admin
 
     @allure.story('工程管理-工程成员')
     @allure.title('查找devops工程不存在的用户')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_devops_user_none(self):
+    def test_devops_user_none(self, create_devops):
         user_condition = 'wx-ad'
         # 查询成员
-        response = devops_steps.step_get_member(self.dev_name_new, user_condition)
+        response = devops_steps.step_get_member(create_devops, user_condition)
         assert response.json()['totalItems'] == 0  # 验证查找的结果为空
 
     @allure.story('工程管理-工程成员')
     @allure.title('邀请用户到devops工程')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_invite_user(self):
+    def test_devops_invite_user(self, create_devops):
         role = 'viewer'
-        response = devops_steps.step_invite_member(self.dev_name_new, self.user_name, role)
+        response = devops_steps.step_invite_member(create_devops, self.user_name, role)
         assert response.json()[0]['username'] == self.user_name  # 验证邀请后的用户名称
 
     @allure.story('工程管理-工程成员')
     @allure.title('编辑devops工程成员的角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_edit_user(self):
+    def test_devops_edit_user(self, create_devops):
         role = 'operator'
-        response = devops_steps.step_edit_member(self.dev_name_new, self.user_name, role)
+        response = devops_steps.step_edit_member(create_devops, self.user_name, role)
         assert response.json()['roleRef'] == 'operator'  # 验证修改后的用户角色
 
     @allure.story('工程管理-工程成员')
     @allure.title('删除devops工程的成员')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_delete_user(self):
-        response = devops_steps.step_remove_member(self.dev_name_new, self.user_name)
+    def test_devops_delete_user(self, create_devops):
+        response = devops_steps.step_remove_member(create_devops, self.user_name)
         assert response.json()['message'] == 'success'  # 验证删除成功
 
     @allure.story('流水线')
@@ -476,64 +478,64 @@ class TestDevOps(object):
     @allure.story('代码仓库')
     @allure.title('基于git导入代码仓库')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_import_code_rep_by_git(self):
+    def test_import_code_rep_by_git(self, create_devops):
         # 创建代码仓库
         name = 'test-git' + str(commonFunction.get_random())
         provider = 'git'
         url = 'https://gitee.com/linuxsuren/demo-go-http'
-        devops_steps.step_import_code_repository(self.dev_name_new, name, provider, url)
+        devops_steps.step_import_code_repository(create_devops, name, provider, url)
         # 查询代码仓库
-        response = devops_steps.step_get_code_repository(self.dev_name_new, name)
+        response = devops_steps.step_get_code_repository(create_devops, name)
         # 获取仓库地址
         url_actual = response.json()['items'][0]['spec']['url']
         # 验证查询结果
         with pytest.assume:
             assert url == url_actual
         # 删除代码仓库
-        devops_steps.step_delete_code_repository(self.dev_name_new, name)
+        devops_steps.step_delete_code_repository(create_devops, name)
 
     @allure.story('代码仓库')
     @allure.title('编辑代码仓库')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_edit_rep(self):
+    def test_edit_rep(self, create_devops):
         # 创建代码仓库
         name = 'test-git' + str(commonFunction.get_random())
         provider = 'git'
         url = 'https://github.com/wenxin-01/open-podcasts'
-        devops_steps.step_import_code_repository(self.dev_name_new, name, provider, url)
+        devops_steps.step_import_code_repository(create_devops, name, provider, url)
         # 编辑代码仓库
         annotations = {"kubesphere.io/creator": "admin", "kubesphere.io/alias-name": "bieming",
                        "kubesphere.io/description": "miaoshu "}
         url_new = 'https://gitee.com/linuxsuren/demo-go-http/tree'
-        devops_steps.step_edit_code_repository(self.dev_name_new, name, provider, annotations, url_new)
+        devops_steps.step_edit_code_repository(create_devops, name, provider, annotations, url_new)
         # 查询代码仓库
-        response = devops_steps.step_get_code_repository(self.dev_name_new, name)
+        response = devops_steps.step_get_code_repository(create_devops, name)
         # 获取仓库地址
         url_actual = response.json()['items'][0]['spec']['url']
         # 验证查询结果
         with pytest.assume:
             assert url_new == url_actual
         # 删除代码仓库
-        devops_steps.step_delete_code_repository(self.dev_name_new, name)
+        devops_steps.step_delete_code_repository(create_devops, name)
 
     @allure.story('代码仓库')
     @allure.title('删除代码仓库')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_delete_rep(self):
+    def test_delete_rep(self, create_devops):
         # 创建代码仓库
         name = 'test-git' + str(commonFunction.get_random())
         provider = 'git'
         url = 'https://gitee.com/linuxsuren/demo-go-http'
-        devops_steps.step_import_code_repository(self.dev_name_new, name, provider, url)
+        devops_steps.step_import_code_repository(create_devops, name, provider, url)
         # 模糊查询代码仓库
-        response = devops_steps.step_get_code_repository(self.dev_name_new, name[:-1])
+        response = devops_steps.step_get_code_repository(create_devops, name[:-1])
         # 获取仓库地址
         url_actual = response.json()['items'][0]['spec']['url']
         # 验证查询结果
         with pytest.assume:
             assert url == url_actual
         # 删除代码仓库
-        devops_steps.step_delete_code_repository(self.dev_name_new, name)
+        devops_steps.step_delete_code_repository(create_devops, name)
         time.sleep(2)
         # 查询代码仓库
         re = devops_steps.step_get_code_repository(self.dev_name_new, name)
@@ -543,12 +545,12 @@ class TestDevOps(object):
     @allure.story('持续部署')
     @allure.title('创建持续部署任务')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_cd(self):
+    def test_create_cd(self, create_devops):
         # 创建代码仓库
         name = 'test-git' + str(commonFunction.get_random())
         provider = 'git'
         url = 'https://gitee.com/linuxsuren/demo-go-http'
-        devops_steps.step_import_code_repository(self.dev_name_new, name, provider, url)
+        devops_steps.step_import_code_repository(create_devops, name, provider, url)
         time.sleep(2)
         # 创建cd任务
         cd_name = 'test-cd' + str(commonFunction.get_random())
@@ -556,7 +558,7 @@ class TestDevOps(object):
                        "kubesphere.io/creator": "admin"}
         ns = 'test-pro' + str(commonFunction.get_random())
         path = 'manifest'
-        devops_steps.step_create_cd(self.dev_name_new, cd_name, annotations, ns, url, path)
+        devops_steps.step_create_cd(create_devops, cd_name, annotations, ns, url, path)
         # 查看cd任务创建的资源
         i = 0
         count = 0
@@ -571,7 +573,7 @@ class TestDevOps(object):
         with pytest.assume:
             assert count == 1
         # 删除cd任务并删除创建的资源
-        devops_steps.step_delete_cd(self.dev_name_new, cd_name, 'true')
+        devops_steps.step_delete_cd(create_devops, cd_name, 'true')
         time.sleep(5)
         # 删除创建的项目
         project_steps.step_delete_project_by_name(ns)
@@ -579,12 +581,12 @@ class TestDevOps(object):
     @allure.story('持续部署')
     @allure.title('删除持续部署任务,并删除创建的资源')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_delete_cd_all(self):
+    def test_delete_cd_all(self, create_devops):
         # 创建代码仓库
         name = 'test-git' + str(commonFunction.get_random())
         provider = 'git'
         url = 'https://gitee.com/linuxsuren/demo-go-http'
-        devops_steps.step_import_code_repository(self.dev_name_new, name, provider, url)
+        devops_steps.step_import_code_repository(create_devops, name, provider, url)
 
         # 创建cd任务
         cd_name = 'test-cd' + str(commonFunction.get_random())
@@ -592,7 +594,7 @@ class TestDevOps(object):
                        "kubesphere.io/creator": "admin"}
         ns = 'test-pro' + str(commonFunction.get_random())
         path = 'manifest'
-        devops_steps.step_create_cd(self.dev_name_new, cd_name, annotations, ns, url, path)
+        devops_steps.step_create_cd(create_devops, cd_name, annotations, ns, url, path)
         # 查看cd任务创建的资源
         i = 0
         while i < 60:
@@ -604,7 +606,7 @@ class TestDevOps(object):
             time.sleep(1)
             i += 1
         # 删除cd任务并删除创建的资源
-        devops_steps.step_delete_cd(self.dev_name_new, cd_name, 'true')
+        devops_steps.step_delete_cd(create_devops, cd_name, 'true')
         # 等待资源删除成功
         count_deploy = 0
         i = 0
@@ -626,12 +628,12 @@ class TestDevOps(object):
     @allure.story('持续部署')
     @allure.title('删除持续部署任务,但不删除创建的资源')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_delete_cd(self):
+    def test_delete_cd(self, create_devops):
         # 创建代码仓库
         name = 'test-git' + str(commonFunction.get_random())
         provider = 'git'
         url = 'https://gitee.com/linuxsuren/demo-go-http'
-        devops_steps.step_import_code_repository(self.dev_name_new, name, provider, url)
+        devops_steps.step_import_code_repository(create_devops, name, provider, url)
 
         # 创建cd任务
         cd_name = 'test-cd' + str(commonFunction.get_random())
@@ -639,7 +641,7 @@ class TestDevOps(object):
                        "kubesphere.io/creator": "admin"}
         ns = 'test-pro' + str(commonFunction.get_random())
         path = 'manifest'
-        devops_steps.step_create_cd(self.dev_name_new, cd_name, annotations, ns, url, path)
+        devops_steps.step_create_cd(create_devops, cd_name, annotations, ns, url, path)
         # 查看cd任务创建的资源
         i = 0
         while i < 60:
@@ -651,7 +653,7 @@ class TestDevOps(object):
             time.sleep(1)
             i += 1
         # 删除cd任务并删除创建的资源
-        devops_steps.step_delete_cd(self.dev_name_new, cd_name, 'false')
+        devops_steps.step_delete_cd(create_devops, cd_name, 'false')
         # 查看创建的资源
         re = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
         count_deploy = re.json()['totalItems']
