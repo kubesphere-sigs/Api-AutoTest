@@ -7,7 +7,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 from fixtures.platform import create_ws
 
 
-@pytest.fixture()
+@pytest.fixture
 def create_devops(create_ws):
     dev_name = 'test-dev' + str(commonFunction.get_random())
     devops_steps.step_create_devops(create_ws, dev_name)  # 创建一个devops工程
