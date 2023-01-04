@@ -1,12 +1,15 @@
 # -- coding: utf-8 --
 import allure
+import pytest
 import sys
+import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
-from fixtures.project import *
+
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import project_steps, platform_steps, workspace_steps, cluster_steps
+from fixtures.project import create_ws, create_project, workload_name, container_name, create_role, create_job, create_deployment, strategy_info
 
 
 @allure.feature('Project')
@@ -1680,8 +1683,7 @@ class TestProject(object):
         with pytest.assume:
             assert re.json()['metadata']['annotations']['iam.kubesphere.io/role'] == role
         # 步骤4：查询sa的密钥信息并返回密钥类型
-        secret_type = \
-            project_steps.step_get_secret(create_project, sa_secret).json()['items'][0]['type']
+        secret_type = project_steps.step_get_secret(create_project, sa_secret).json()['items'][0]['type']
         with pytest.assume:
             assert secret_type == 'kubernetes.io/service-account-token'
         # 步骤5：删除sa
