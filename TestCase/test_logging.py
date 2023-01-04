@@ -47,8 +47,7 @@ class TestLogSearch(object):
         re = toolbox_steps.step_get_logs_trend(before_timestamp, now_timestamp, interval)
         # 获取最近12小时的日志总量
         logs_count = re.json()['histogram']['total']
-        # 验证今日日志总量和最近12小时日志总量的关系
-        # 获取当前日期
+        # 验证今日日志总量和最近12小时日志总量的关系，获取当前日期
         today = commonFunction.get_today()
         # 获取当天12点的时间戳
         tamp = commonFunction.get_custom_timestamp(today, '12:00:00')
