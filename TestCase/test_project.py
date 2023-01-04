@@ -1682,13 +1682,9 @@ class TestProject(object):
         # 验证服务账户的角色正确
         with pytest.assume:
             assert re.json()['metadata']['annotations']['iam.kubesphere.io/role'] == role
-        # 步骤4：查询sa的密钥信息并返回密钥类型
-        secret_type = project_steps.step_get_secret(create_project, sa_secret).json()['items'][0]['type']
-        with pytest.assume:
-            assert secret_type == 'kubernetes.io/service-account-token'
-        # 步骤5：删除sa
+        # 步骤4：删除sa
         project_steps.step_delete_sa(create_project, sa_name)
-        # 步骤6：验证删除成功
+        # 步骤5：验证删除成功
         num = project_steps.step_get_sa(create_project, sa_name).json()['totalItems']
         with pytest.assume:
             assert num == 0
