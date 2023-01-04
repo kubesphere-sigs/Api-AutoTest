@@ -344,7 +344,7 @@ class TestDevOps(object):
         role_name = 'test-role' + str(commonFunction.get_random())
         devops_steps.step_create_role(create_devops, role_name)
         # 获取角色的resourceVersion
-        resourceVersion = commonFunction.get_devops_resourceVersion(create_devops, role_name)
+        resource_version = commonFunction.get_devops_resource_version(create_devops, role_name)
         # 编辑角色的权限
         authority = '["role-template-view-pipelines","role-template-view-credentials","role-template-view-basic","role-template-manage-pipelines"]'
         annotations = {"iam.kubesphere.io/aggregation-roles": authority,
@@ -352,7 +352,7 @@ class TestDevOps(object):
                        "kubesphere.io/creator": "admin",
                        "kubesphere.io/description": "我是描述信息"}
 
-        response = devops_steps.step_edit_role_authority(create_devops, role_name, annotations, resourceVersion)
+        response = devops_steps.step_edit_role_authority(create_devops, role_name, annotations, resource_version)
         # 验证修改后的权限信息
         with pytest.assume:
             assert response.json()['metadata']['annotations']['iam.kubesphere.io/aggregation-roles'] == authority
