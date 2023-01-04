@@ -45,8 +45,7 @@ class TestEventSearch(object):
         re = toolbox_steps.step_get_events_trend(before_timestamp, now_timestamp, interval)
         # 获取最近12小时的事件总量
         event_count = re.json()['histogram']['total']
-        # 验证今日事件总量和最近12小时事件总量的关系
-        # 获取当前日期
+        # 验证今日事件总量和最近12小时事件总量的关系,获取当前日期
         today = commonFunction.get_today()
         # 获取当天12点的时间戳
         tamp = commonFunction.get_custom_timestamp(today, '12:00:00')
@@ -59,15 +58,13 @@ class TestEventSearch(object):
         # 获取当天的事件趋势图
         interval = '1h'  # 时间间隔
         re = toolbox_steps.step_get_events_trend(day_timestamp, now_timestamp, interval)
-        # # 获取趋势图的横坐标数量
+        # 获取趋势图的横坐标数量
         count = len(re.json()['histogram']['buckets'])
         # 获取每个时间段的事件数量之和
         events_count_actual = 0
         for i in range(0, count):
             number = re.json()['histogram']['buckets'][i]['count']
             events_count_actual += number
-        # 获取事件总量
-        # events_count_actual = re.json()['histogram']['total']
         # 验证接口返回的事件数量和趋势图中的事件之和一致
         assert events_count_actual == event_counts
 
