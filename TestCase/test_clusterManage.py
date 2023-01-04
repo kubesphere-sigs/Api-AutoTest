@@ -1,13 +1,15 @@
 # -- coding: utf-8 --
 import allure
+import pytest
 import sys
 import random
 import numpy
+import time
 from common.getData import DoexcleByPandas
-from fixtures.platform import *
 from common import commonFunction
 from step import cluster_steps, platform_steps
-from time import sleep
+from datetime import datetime
+from fixtures.platform import node_name
 
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
@@ -487,7 +489,7 @@ class TestCluster(object):
         description = 'create user-system'
         # 创建用户项目
         cluster_steps.step_create_user_project(project_name, alias_name, description)
-        sleep(3)
+        time.sleep(3)
         # 查询项目
         response = cluster_steps.step_get_user_project(project_name)
         # 获取项目数量并验证项目创建成功
@@ -503,7 +505,7 @@ class TestCluster(object):
             r = cluster_steps.step_get_user_project(project_name)
             count_result = r.json()['totalItems']
             if count_result > 0:
-                sleep(10)
+                time.sleep(10)
                 i += 10
             else:
                 break
@@ -1496,7 +1498,7 @@ class TestCluster(object):
             assert gateway_type == type
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
-        sleep(10)
+        time.sleep(10)
 
     @pytest.mark.run(order=3)
     @allure.story('集群设置/网关设置')
