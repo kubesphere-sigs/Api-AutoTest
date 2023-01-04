@@ -581,7 +581,12 @@ class TestDevOps(object):
     @allure.story('持续部署')
     @allure.title('删除持续部署任务,并删除创建的资源')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_delete_cd_all(self, create_devops):
+    @pytest.mark.parametrize('delete_resource, title',
+                             [
+                                 ('true', '删除持续部署任务,并删除创建的资源'),
+                                 ('false', '删除持续部署任务,不删除创建的资源')
+                             ])
+    def test_delete_cd_all(self, create_devops, delete_resource, title):
         # 创建代码仓库
         name = 'test-git' + str(commonFunction.get_random())
         provider = 'git'
@@ -605,60 +610,32 @@ class TestDevOps(object):
                 break
             time.sleep(1)
             i += 1
-        # 删除cd任务并删除创建的资源
-        devops_steps.step_delete_cd(create_devops, cd_name, 'true')
-        # 等待资源删除成功
-        count_deploy = 0
-        i = 0
-        while i < 60:
-            # 查询被删除的资源并获取查询结果
-            r = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
-            count_deploy = r.json()['totalItems']
-            if count_deploy > 0:
-                time.sleep(1)
-                i += 1
-            else:
-                break
-        # 验证资源删除成功
-        with pytest.assume:
-            assert count_deploy == 0
-        # 删除项目
-        project_steps.step_delete_project_by_name(ns)
-
-    @allure.story('持续部署')
-    @allure.title('删除持续部署任务,但不删除创建的资源')
-    @allure.severity(allure.severity_level.CRITICAL)
-    def test_delete_cd(self, create_devops):
-        # 创建代码仓库
-        name = 'test-git' + str(commonFunction.get_random())
-        provider = 'git'
-        url = 'https://gitee.com/linuxsuren/demo-go-http'
-        devops_steps.step_import_code_repository(create_devops, name, provider, url)
-
-        # 创建cd任务
-        cd_name = 'test-cd' + str(commonFunction.get_random())
-        annotations = {"kubesphere.io/alias-name": "bieming", "kubesphere.io/description": "miaoshu",
-                       "kubesphere.io/creator": "admin"}
-        ns = 'test-pro' + str(commonFunction.get_random())
-        path = 'manifest'
-        devops_steps.step_create_cd(create_devops, cd_name, annotations, ns, url, path)
-        # 查看cd任务创建的资源
-        i = 0
-        while i < 60:
-            response = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
-            count = response.json()['totalItems']
-            # 数量不为0 表示资源创建成功
-            if count != 0:
-                break
-            time.sleep(1)
-            i += 1
-        # 删除cd任务并删除创建的资源
-        devops_steps.step_delete_cd(create_devops, cd_name, 'false')
-        # 查看创建的资源
-        re = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
-        count_deploy = re.json()['totalItems']
-        with pytest.assume:
-            assert count_deploy == 1
+        if delete_resource == 'true':
+            # 删除cd任务并删除
+            devops_steps.step_delete_cd(create_devops, cd_name, delete_resource)
+            # 等待资源删除成功
+            count_deploy = 0
+            i = 0
+            while i < 60:
+                # 查询被删除的资源并获取查询结果
+                r = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
+                count_deploy = r.json()['totalItems']
+                if count_deploy > 0:
+                    time.sleep(1)
+                    i += 1
+                else:
+                    break
+            # 验证资源删除成功
+            with pytest.assume:
+                assert count_deploy == 0
+        elif delete_resource == 'false':
+            # 删除cd任务但不删除创建的资源
+            devops_steps.step_delete_cd(create_devops, cd_name, 'false')
+            # 查看创建的资源
+            re = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
+            count_deploy = re.json()['totalItems']
+            with pytest.assume:
+                assert count_deploy == 1
         # 删除项目
         project_steps.step_delete_project_by_name(ns)
 
