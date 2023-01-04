@@ -5,7 +5,7 @@ from datetime import datetime
 from step import platform_steps, workspace_steps, app_steps, cluster_steps, ippool_steps, project_steps
 
 
-@pytest.fixture()
+@pytest.fixture
 def create_role():
     authority = '["role-template-view-basic"]'
     role_name = 'role' + str(commonFunction.get_random())
@@ -17,7 +17,7 @@ def create_role():
     platform_steps.step_delete_role(role_name)
 
 
-@pytest.fixture()
+@pytest.fixture
 def create_user(create_role):
     user_name = 'user' + str(commonFunction.get_random())
     email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
@@ -42,7 +42,7 @@ def create_ws():
 
 
 @pytest.fixture
-def create_project(create_ws):
+def create_project():
     # 创建项目
     project_name = 'test-pro' + str(commonFunction.get_random())
     project_steps.step_create_project(create_ws, project_name)
@@ -86,7 +86,7 @@ def node_name():
     return node_name
 
 
-@pytest.fixture()
+@pytest.fixture
 def create_ippool():
     ippool_name = 'ippool-' + str(commonFunction.get_random())
     cidr = commonFunction.random_ip() + '/24'
