@@ -13,6 +13,7 @@ def create_sc():
     # 删除存储类
     storage_steps.delete_sc(sc_name)
 
+
 @pytest.fixture
 def create_multi_cluster_sc():
     sc_name = 'sc-' + str(get_random())
