@@ -1664,13 +1664,11 @@ class TestProject(object):
         sa_name = 'sa-test-' + str(commonFunction.get_random())
         project_steps.step_create_sa(create_project, sa_name, role)
         # 步骤2：验证sa创建成功并返回secret
-        sa_secret = ''
         i = 0
         while i < 60:
             try:
                 response = project_steps.step_get_sa(create_project, sa_name)
                 if response.json()['totalItems'] > 0:
-                    sa_secret = response.json()['items'][0]['secrets'][0]['name']
                     break
             except Exception as e:
                 print(e)
