@@ -2,17 +2,17 @@ from time import sleep
 
 import allure
 import pytest
-from fixtures.storage import *
 from common import commonFunction
 from common.commonFunction import get_random, request_resource
 from common.getData import DoexcleByPandas
 from step import workspace_steps, project_steps, storage_steps
+from fixtures.storage import create_sc
 
 
 @allure.feature('storage')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is True, reason='多集群环境下不执行')
 @pytest.mark.skipif(commonFunction.get_sc_qingcloud() is False, reason='csi-qingcloud存储插件不存在')
-class Test_Storage:
+class TestStorage:
     if commonFunction.check_multi_cluster() is True:
         # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
         __test__ = False

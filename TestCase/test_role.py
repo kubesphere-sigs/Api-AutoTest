@@ -5,10 +5,10 @@ import allure
 import sys
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
-from fixtures.platform import *
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import platform_steps
+from fixtures.platform import create_role, create_user
 
 
 @allure.feature('平台角色管理')
