@@ -316,102 +316,6 @@ class TestDevOps(object):
         # 验证创建角色失败的异常提示信息
         assert response.text.strip() == 'Role.rbac.authorization.k8s.io "" is invalid: metadata.name: Required value: name or generateName is required'
 
-    # @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对角色的名称做限制')
-    # @allure.story('工程管理-工程角色')
-    # @allure.title('在devops工程中创建角色-名称中包含大写字母')
-    # @allure.severity(allure.severity_level.CRITICAL)
-    # def wx_test_devops_role_create_name(self):
-    #     # 获取创建的devops工程的别名
-    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-    #     dev_name_new = response.json()['items'][0]['metadata']['name']
-    #     devops_role_name = 'Wx'
-    #     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
-    #     data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-    #             "kind": "Role",
-    #             "metadata": {"namespace": dev_name_new,
-    #                          "name": devops_role_name,
-    #                          "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
-    #                                                                                 "\"role-template-view-credentials\","
-    #                                                                                 "\"role-template-view-basic\"]",
-    #                                          "kubesphere.io/creator": "admin"}
-    #                          },
-    #             "rules": []
-    #             }
-    #     r = requests.post(url, headers=get_header(), data=json.dumps(data))
-    #     print(r.text)
-
-    # @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对角色的名称做限制')
-    # @allure.story('工程管理-工程角色')
-    # @allure.title('在devops工程中创建角色-名称中包含非分隔符("-")的特殊符号')
-    # @allure.severity(allure.severity_level.CRITICAL)
-    # def wx_test_devops_role_create_name1(self):
-    #     # 获取创建的devops工程的别名
-    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-    #     dev_name_new = response.json()['items'][0]['metadata']['name']
-    #     devops_role_name = 'W@x'
-    #     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
-    #     data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-    #             "kind": "Role",
-    #             "metadata": {"namespace": dev_name_new,
-    #                          "name": devops_role_name,
-    #                          "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
-    #                                                                                 "\"role-template-view-credentials\","
-    #                                                                                 "\"role-template-view-basic\"]",
-    #                                          "kubesphere.io/creator": "admin"}
-    #                          },
-    #             "rules": []
-    #             }
-    #     r = requests.post(url, headers=get_header(), data=json.dumps(data))
-    #     print(r.text)
-
-    # @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对角色的名称做限制')
-    # @allure.story('工程管理-工程角色')
-    # @allure.title('在devops工程中创建角色-名称以分隔符("-")开头')
-    # @allure.severity(allure.severity_level.CRITICAL)
-    # def wx_test_devops_role_create_name2(self):
-    #     # 获取创建的devops工程的别名
-    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-    #     dev_name_new = response.json()['items'][0]['metadata']['name']
-    #     devops_role_name = '-Wx'
-    #     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
-    #     data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-    #             "kind": "Role",
-    #             "metadata": {"namespace": dev_name_new,
-    #                          "name": devops_role_name,
-    #                          "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
-    #                                                                                 "\"role-template-view-credentials\","
-    #                                                                                 "\"role-template-view-basic\"]",
-    #                                          "kubesphere.io/creator": "admin"}
-    #                          },
-    #             "rules": []
-    #             }
-    #     r = requests.post(url, headers=get_header(), data=json.dumps(data))
-    #     print(r.text)
-
-    # @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对角色的名称做限制')
-    # @allure.story('工程管理-工程角色')
-    # @allure.title('在devops工程中创建角色-名称以分隔符("-")结尾')
-    # @allure.severity(allure.severity_level.CRITICAL)
-    # def wx_test_devops_role_create_name3(self):
-    #     # 获取创建的devops工程的别名
-    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-    #     dev_name_new = response.json()['items'][0]['metadata']['name']
-    #     devops_role_name = 'Wx-'
-    #     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name_new + '/roles'
-    #     data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-    #             "kind": "Role",
-    #             "metadata": {"namespace": dev_name_new,
-    #                          "name": devops_role_name,
-    #                          "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
-    #                                                                                 "\"role-template-view-credentials\","
-    #                                                                                 "\"role-template-view-basic\"]",
-    #                                          "kubesphere.io/creator": "admin"}
-    #                          },
-    #             "rules": []
-    #             }
-    #     r = requests.post(url, headers=get_header(), data=json.dumps(data))
-    #     print(r.text)
-
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中编辑角色基本信息')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -516,20 +420,6 @@ class TestDevOps(object):
         response = devops_steps.step_invite_member(self.dev_name_new, self.user_name, role)
         assert response.json()[0]['username'] == self.user_name  # 验证邀请后的用户名称
 
-    # @pytest.mark.skip(reason='用例的执行结果应当为false。接口没有对不存在的用户做限制')
-    # @allure.story('工程管理-工程成员')
-    # @allure.title('邀请不存在的用户到devops工程')
-    # @allure.severity(allure.severity_level.CRITICAL)
-    # def wx_test_devops_invite_none_user(self):
-    #     # 获取创建的devops工程的别名
-    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-    #     dev_name_new = response.json()['items'][0]['metadata']['name']
-    #     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + dev_name_new + '/members'
-    #     data = [{"username": 'wxqw',
-    #              "roleRef": "viewer"}]
-    #     r = requests.post(url, headers=get_header(), data=json.dumps(data))
-    #     print(r.text)
-
     @allure.story('工程管理-工程成员')
     @allure.title('编辑devops工程成员的角色')
     @allure.severity(allure.severity_level.CRITICAL)
@@ -544,68 +434,6 @@ class TestDevOps(object):
     def test_devops_delete_user(self):
         response = devops_steps.step_remove_member(self.dev_name_new, self.user_name)
         assert response.json()['message'] == 'success'  # 验证删除成功
-
-    # @allure.story('流水线')
-    # @allure.title('基于github创建多分支流水线, 已启用发现tag分支')
-    # @allure.severity(allure.severity_level.CRITICAL)
-    # def test_create_pipeline_base_github_with_tag(self):
-    #     credential_name = 'github' + str(commonFunction.get_random())
-    #     pipeline_name = 'github' + str(commonFunction.get_random())
-    #     patch = 'Jenkinsfile-online'    # 脚本路径
-    #     # 获取创建的devops工程的别名
-    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-    #     dev_name_new = response.json()['items'][0]['metadata']['name']
-    #     # 创建凭证
-    #     username = ''
-    #     password = ''
-    #     devops_steps.step_create_account_credential(dev_name_new, credential_name, username, password)
-    #     # 创建流水线
-    #     devops_steps.step_create_pipeline_base_github(self.dev_name, dev_name_new, pipeline_name,
-    #                                                   credential_name, patch, True)
-    #     # 等待流水线分支拉取成功
-    #     time.sleep(40)
-    #     # 获取流水线的健康状态
-    #     weatherScore = devops_steps.step_get_pipeline_weather(dev_name_new, pipeline_name)
-    #     # 获取流水线的分支数量
-    #     branch_count = devops_steps.step_get_pipeline_branch(dev_name_new, pipeline_name)
-    #     # 验证流水线的状态和分支数量正确
-    #     assert weatherScore == 100
-    #     assert branch_count == 22
-    #     # 删除创建的流水线
-    #     devops_steps.step_delete_pipeline(dev_name_new, pipeline_name)
-    #     # 删除凭证
-    #     devops_steps.step_delete_credential(dev_name_new, credential_name)
-
-    # @allure.story('流水线')
-    # @allure.title('基于github创建多分支流水线, 已停用发现tag分支')
-    # @allure.severity(allure.severity_level.CRITICAL)
-    # def test_create_pipeline_base_github_no_tag(self):
-    #     credential_name = 'github' + str(commonFunction.get_random())
-    #     pipeline_name = 'github' + str(commonFunction.get_random())
-    #     patch = 'Jenkinsfile-online'  # 脚本路径
-    #     # 获取创建的devops工程的别名
-    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-    #     dev_name_new = response.json()['items'][0]['metadata']['name']
-    #     # 创建凭证
-    #     username = ''
-    #     password = ''
-    #     devops_steps.step_create_account_credential(dev_name_new, credential_name, username, password)
-    #     # 创建流水线
-    #     devops_steps.step_create_pipeline_base_github(self.dev_name, dev_name_new, pipeline_name,
-    #                                                   credential_name, patch, False)
-    #     # 等待流水线分支拉取成功
-    #     time.sleep(30)
-    #     # 获取流水线的健康状态
-    #     weatherScore = devops_steps.step_get_pipeline_weather(dev_name_new, pipeline_name)
-    #     # 获取流水线的分支数量
-    #     branch_count = devops_steps.step_get_pipeline_branch(dev_name_new, pipeline_name)
-    #     # 验证流水线的状态和分支数量正确
-    #     assert weatherScore == 100
-    #     assert branch_count == 12
-    #     # 删除创建的流水线
-    #     devops_steps.step_delete_pipeline(dev_name_new, pipeline_name)
-    #     # 删除凭证
-    #     devops_steps.step_delete_credential(dev_name_new, credential_name)
 
     @allure.story('流水线')
     @allure.title('基于gitlab公用仓库创建多分支流水线')
@@ -644,50 +472,6 @@ class TestDevOps(object):
             assert branch_count == 1
         # 删除创建的流水线
         devops_steps.step_delete_pipeline(dev_name_new, pipeline_name)
-
-    # @allure.story('流水线')
-    # @allure.title('maven流水线实例')
-    # @allure.severity(allure.severity_level.CRITICAL)
-    # def test_maven(self):
-    #     credential_name = 'dockerhub-wx'
-    #     credential_name1 = 'wx'
-    #     pipeline_name = 'gitlab' + str(commonFunction.get_random())
-    #     # 获取创建的devops工程的别名
-    #     response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
-    #     dev_name_new = response.json()['items'][0]['metadata']['name']
-    #     # 创建用户名和密码凭证
-    #     username = 'd2VueGlueGlu'
-    #     password = 'd2VueGluMTIzNDU2'
-    #     devops_steps.step_create_account_credential(dev_name_new, credential_name, username, password)
-    #     # 创建kubeconfig类型凭证
-    #     kubeconfig = toolbox_steps.step_get_kubeconfig()
-    #     content = base64.b64encode(kubeconfig.encode("utf-8")).decode("utf-8")  # 将kubeconfig编码成base64,然后转换成str类型
-    #     devops_steps.step_create_kubeconfig_credential(dev_name_new, credential_name1, content)
-    #     # 使用图形化方式创建流水线并获取resourceVersion
-    #     r = devops_steps.step_create_pipeline(self.dev_name, dev_name_new, pipeline_name)
-    #     resourceVersion = r.json()['metadata']['resourceVersion']
-    #     # 查看流水线详情并获取spechash和uid
-    #     r1 = devops_steps.step_get_pipeline(dev_name_new, pipeline_name)
-    #     spechash = r1.json()['items'][0]['metadata']['annotations']["pipeline.devops.kubesphere.io/spechash"]
-    #     uid = r1.json()['items'][0]['metadata']['uid']
-    #     # 编辑jenkinsfile
-    #     # 从jenkinsfile文件中读取jenkinsfile信息
-    #     with open('../data/jenkinsfile') as file_object:
-    #         contents = file_object.read()
-    #     # 将jenkinsfile编码为encodeURIComponent
-    #     jenkinsfile = parse.quote(contents)
-    #     # 1、checkScriptCompile
-    #     devops_steps.step_edit_jenkinsfile_checkScriptCompile(dev_name_new, pipeline_name, jenkinsfile)
-    #     # 2、put
-    #     devops_steps.step_edit_jenkinsfile_put(dev_name_new, uid, pipeline_name, resourceVersion, contents, spechash)
-    #     # 3、tojson
-    #     devops_steps.step_edit_jenkinsfile_tojson(jenkinsfile)
-    #
-    #     # 创建流水线编译所需的ns
-    #     project_steps.step_create_project(self.ws_name, project_name='kubesphere-sample-dev')
-    #
-    #     # 运行pipeline
-    #     devops_steps.step_run_pipeline(dev_name_new, pipeline_name)
 
     @allure.story('代码仓库')
     @allure.title('基于git导入代码仓库')
