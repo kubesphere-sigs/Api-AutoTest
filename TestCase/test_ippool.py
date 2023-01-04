@@ -1,12 +1,15 @@
 # -- coding: utf-8 --
 import pytest
+import sys
+import allure
+import time
 from pytest import assume
 from common import commonFunction
-from common.commonFunction import *
-from common.commonFunction import get_ippool_status
-from common.getData import *
-from fixtures.platform import *
+from common.commonFunction import get_ippool_status, get_random, random_ip, request_resource
+from common.getData import DoexcleByPandas
 from step import ippool_steps, workspace_steps, project_steps
+from fixtures.platform import create_ippool, create_ws, create_project
+
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -106,11 +109,11 @@ class TestIpPool(object):
         ippool_steps.step_assign_ws(create_ippool, self.ws_name)
         # 创建部署
         ippool_steps.step_create_deploy(create_ippool, deploy_name, container_name, self.pro_name)
-        sleep(15)
+        time.sleep(15)
         # 给ippool分配企业空间
         ippool_steps.step_assign_ws(create_ippool, create_ws)
         project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
-        sleep(5)
+        time.sleep(5)
 
     @allure.story('Ippool')
     @allure.title('删除ippool')
@@ -208,7 +211,7 @@ class TestIpPool(object):
         pytest.assume(r.json()['reason'] == 'ippool is in use, please remove the workload before deleting')
         # 删除部署
         project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
-        sleep(15)
+        time.sleep(15)
 
     @allure.story('Ippool')
     @allure.title('创建部署并分配ippool')
@@ -266,7 +269,7 @@ class TestIpPool(object):
         pytest.assume(ws_num == 1)
         # 删除部署
         project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
-        sleep(10)
+        time.sleep(10)
         re = ippool_steps.step_search_by_name(create_ippool)
         num = re.json()['items'][0]['status']['allocations']
         num_new = ippool_steps.step_get_ws_ippool_number(create_ippool, self.ws_name)
@@ -284,7 +287,7 @@ class TestIpPool(object):
         container_name = 'test-ippool-' + str(get_random())
         # 使用新建的ippool创建部署
         ippool_steps.step_create_deploy(create_ippool, deploy_name, container_name, self.pro_name)
-        sleep(15)
+        time.sleep(15)
         res = project_steps.step_get_deployment(self.pro_name, 'deployments')
         # 验证部署创建成功
         pytest.assume('unavailableReplicas' not in res.json()['items'][0]['status'])
