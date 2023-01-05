@@ -202,11 +202,11 @@ class TestProject(object):
         res = cluster_steps.step_get_node_all()
         cluster_node_all = res.json()['totalItems']
         # 获取所有没有污点的节点数量
-        cluster_node_no_taint = 0
+        cluster_node_with_taint = 0
         for i in range(0, cluster_node_all):
             try:
                 if res.json()['items'][i]['spec']['taints']:
-                    cluster_node_no_taint += 1
+                    cluster_node_with_taint += 1
             except Exception as e:
                 print(e)
         # 创建资源并将存储卷绑定到资源
@@ -220,13 +220,13 @@ class TestProject(object):
             # 获取工作负载的状态
             response = project_steps.step_get_workload(create_project, type='daemonsets', condition=condition)
             numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
-            if numberReady == cluster_node_no_taint:
+            if numberReady == cluster_node_all - cluster_node_with_taint:
                 break
             else:
                 time.sleep(30)
                 i += 30
         with pytest.assume:
-            assert numberReady == cluster_node_no_taint
+            assert numberReady == cluster_node_all - cluster_node_with_taint
 
         # 删除工作负载
         project_steps.step_delete_workload(create_project, 'daemonsets', workload_name)
@@ -1134,11 +1134,11 @@ class TestProject(object):
         res = cluster_steps.step_get_node_all()
         cluster_node_all = res.json()['totalItems']
         # 获取所有没有污点的节点数量
-        cluster_node_no_taint = 0
+        cluster_node_with_taint = 0
         for i in range(0, cluster_node_all):
             try:
                 if res.json()['items'][i]['spec']['taints']:
-                    cluster_node_no_taint += 1
+                    cluster_node_with_taint += 1
             except Exception as e:
                 print(e)
         # 创建工作负载
@@ -1153,12 +1153,12 @@ class TestProject(object):
                                                        condition=condition)
             numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
             # 验证资源的所有副本已就绪
-            if numberReady == cluster_node_no_taint:
+            if numberReady == cluster_node_all - cluster_node_with_taint:
                 break
             time.sleep(30)
             i = i + 30
         with pytest.assume:
-            assert numberReady == cluster_node_no_taint
+            assert numberReady == cluster_node_all - cluster_node_with_taint
         # 删除创建的daemonsets
         project_steps.step_delete_workload(project_name=create_project, type='daemonsets', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
