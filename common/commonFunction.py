@@ -210,7 +210,7 @@ def create_devops(ws_name, devops_name):
 
 
 # 获取devops工程的resourceversion
-def get_devops_resourceVersion(devops_name, devops_role_name):
+def get_devops_resource_version(devops_name, devops_role_name):
     """
     :param devops_name: devops工程的名称
     :param devops_role_name: devops工程的角色的名称
