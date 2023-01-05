@@ -36,7 +36,8 @@ pipeline {
     stage('运行测试脚本') {
       agent none
       environment {
-        ENV_URL = "139.198.113.205:30881"
+      # 使用apiserver的dns地址
+        ENV_URL = "ks-apiserver.kubesphere-system"
         PATH = "$PATH:/usr/local/src/allure-2.17.2/bin"
       }
       steps {
