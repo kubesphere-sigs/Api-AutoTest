@@ -484,8 +484,7 @@ def step_create_role(dev_name, name):
             "kind": "Role",
             "metadata": {"namespace": dev_name,
                          "name": name,
-                         "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
-                                                                                "\"role-template-view-credentials\","
+                         "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-members\","
                                                                                 "\"role-template-view-basic\"]",
                                          "kubesphere.io/creator": "admin"}
                          },
