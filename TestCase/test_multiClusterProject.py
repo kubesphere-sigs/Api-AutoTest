@@ -104,7 +104,7 @@ class TestProject(object):
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
             condition = 'name=' + work_name  # 查询条件
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-            volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+            volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
             volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
@@ -118,7 +118,7 @@ class TestProject(object):
                                                                     image=image, replicas=replicas,
                                                                     container_name=container_name,
                                                                     volume_info=volume_info, ports=port,
-                                                                    volumemount=volumeMounts, strategy=strategy_info)
+                                                                    volumemount=volume_mounts, strategy=strategy_info)
             i = 0
             while i < 180:
                 # 获取工作负载的状态
@@ -176,7 +176,7 @@ class TestProject(object):
                                                                       container_name=container_name, image=image,
                                                                       replicas=replicas,
                                                                       ports=port, service_ports=service_port,
-                                                                      volumemount=volumemounts, volume_info=volume_info,
+                                                                      volumemount=volume_mounts, volume_info=volume_info,
                                                                       service_name=service_name)
             # 验证资源创建成功
             i = 0
@@ -222,7 +222,7 @@ class TestProject(object):
             condition = 'name=' + service_name  # 查询条件
             port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
             port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-            volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+            volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
             volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
@@ -240,7 +240,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     work_name=service_name,
                                                                     container_name=container_name,
-                                                                    ports=port_deploy, volumemount=volumeMounts,
+                                                                    ports=port_deploy, volumemount=volume_mounts,
                                                                     image=image,
                                                                     replicas=replicas,
                                                                     volume_info=volume_info, strategy=strategy_info)
@@ -287,7 +287,7 @@ class TestProject(object):
             image = 'nginx'  # 镜像名称
             condition = 'name=' + workload_name  # 查询条件
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
-            volumeMounts = []  # 设置挂载的存储卷
+            volume_mounts = []  # 设置挂载的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
             replicas = 1  # 副本数
@@ -297,7 +297,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     work_name=workload_name,
                                                                     container_name=container_name, ports=port,
-                                                                    volumemount=volumeMounts,
+                                                                    volumemount=volume_mounts,
                                                                     image=image, replicas=replicas,
                                                                     volume_info=volume_info,
                                                                     strategy=strategy_info)
@@ -337,7 +337,7 @@ class TestProject(object):
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
             image = 'nginx'  # 镜像名称
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
-            volumeMounts = []  # 设置挂载哦的存储卷
+            volume_mounts = []  # 设置挂载哦的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
             replicas = 1  # 副本数
@@ -347,7 +347,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     work_name=workload_name,
                                                                     container_name=container_name, ports=port,
-                                                                    volumemount=volumeMounts,
+                                                                    volumemount=volume_mounts,
                                                                     image=image, replicas=replicas,
                                                                     volume_info=volume_info,
                                                                     strategy=strategy_info)
@@ -383,7 +383,7 @@ class TestProject(object):
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
             service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
             service_name = 'service' + workload_name
-            volumemounts = []
+            volume_mounts = []
             # 创建工作负载
             multi_project_steps.step_create_stateful_in_multi_project(cluster_name=project_info[1],
                                                                       project_name=project_info[0],
@@ -393,7 +393,7 @@ class TestProject(object):
                                                                       volume_info=volume_info,
                                                                       ports=port,
                                                                       service_ports=service_port,
-                                                                      volumemount=volumemounts,
+                                                                      volumemount=volume_mounts,
                                                                       service_name=service_name)
             # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
             i = 0
@@ -437,7 +437,7 @@ class TestProject(object):
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
             service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
             service_name = 'service' + workload_name
-            volumemounts = []
+            volume_mounts = []
             # 创建工作负载
             multi_project_steps.step_create_stateful_in_multi_project(cluster_name=project_info[1],
                                                                       project_name=project_info[0],
@@ -447,7 +447,7 @@ class TestProject(object):
                                                                       volume_info=volume_info,
                                                                       ports=port,
                                                                       service_ports=service_port,
-                                                                      volumemount=volumemounts,
+                                                                      volumemount=volume_mounts,
                                                                       service_name=service_name)
 
             # 按名称精确查询statefulsets
@@ -484,7 +484,7 @@ class TestProject(object):
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
             condition = 'name=' + service_name  # 查询deploy和service条件
             port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]  # 容器的端口信息
-            volumeMounts = []  # 设置挂载的存储卷
+            volume_mounts = []  # 设置挂载的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
             replicas = 2  # 副本数
@@ -498,7 +498,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     work_name=service_name,
                                                                     container_name=container_name,
-                                                                    ports=port_deploy, volumemount=volumeMounts,
+                                                                    ports=port_deploy, volumemount=volume_mounts,
                                                                     image=image,
                                                                     replicas=replicas,
                                                                     volume_info=volume_info, strategy=strategy_info)
@@ -583,7 +583,7 @@ class TestProject(object):
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
             condition = 'name=' + service_name  # 查询deploy和service条件
             port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]  # 容器的端口信息
-            volumeMounts = []  # 设置挂载的存储卷
+            volume_mounts = []  # 设置挂载的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
             replicas = 2  # 副本数
@@ -597,7 +597,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     work_name=service_name,
                                                                     container_name=container_name,
-                                                                    ports=port_deploy, volumemount=volumeMounts,
+                                                                    ports=port_deploy, volumemount=volume_mounts,
                                                                     image=image,
                                                                     replicas=replicas,
                                                                     volume_info=volume_info, strategy=strategy_info)
@@ -743,7 +743,7 @@ class TestProject(object):
             image = 'nginx'  # 镜像名称
             condition = 'name=' + workload_name  # 查询条件
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
-            volumeMounts = []  # 设置挂载的存储卷
+            volume_mounts = []  # 设置挂载的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
             replicas = 1  # 副本数
@@ -753,7 +753,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     work_name=workload_name,
                                                                     container_name=container_name, ports=port,
-                                                                    volumemount=volumeMounts,
+                                                                    volumemount=volume_mounts,
                                                                     image=image, replicas=replicas,
                                                                     volume_info=volume_info,
                                                                     strategy=strategy_info)
@@ -1605,14 +1605,14 @@ class TestProject(object):
         container_name = 'container' + str(commonFunction.get_random())  # 容器名称
         condition = 'name=' + work_name  # 查询条件
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-        volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载的存储卷
+        volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载的存储卷
         strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
         multi_project_steps.step_create_volume(self.cluster_host_name, project_name, volume_name)
         # 创建资源并将存储卷绑定到资源
         project_steps.step_create_deploy(project_name, work_name, container_name, image, replicas, port,
-                                         volumeMounts, volume_info, strategy_info, self.cluster_host_name)
+                                         volume_mounts, volume_info, strategy_info, self.cluster_host_name)
         # 验证资源创建成功
         i = 0
         while i < 300:

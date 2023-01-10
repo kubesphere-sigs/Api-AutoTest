@@ -73,14 +73,14 @@ class TestProject(object):
         image = 'redis'  # 镜像名称
         condition = 'name=' + workload_name  # 查询条件
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-        volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载的存储卷
+        volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载的存储卷
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
         project_steps.step_create_volume(create_project, volume_name)
         # 创建资源并将存储卷绑定到资源
         project_steps.step_create_deploy(create_project, work_name=workload_name, image=image, replicas=replicas,
                                          container_name=container_name, volume_info=volume_info, ports=port,
-                                         volumemount=volumeMounts, strategy=strategy_info)
+                                         volumemount=volume_mounts, strategy=strategy_info)
         # 验证资源创建成功
         i = 0
         while i < 300:
@@ -136,7 +136,7 @@ class TestProject(object):
         condition = 'name=' + workload_name  # 查询条件
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
-        volumemounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]
+        volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
         project_steps.step_create_volume(create_project, volume_name)
@@ -144,7 +144,7 @@ class TestProject(object):
         project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
                                            container_name=container_name,
                                            image=image, replicas=replicas, ports=port, service_ports=service_port,
-                                           volumemount=volumemounts, volume_info=volume_info, service_name=service_name)
+                                           volumemount=volume_mounts, volume_info=volume_info, service_name=service_name)
         # 验证资源创建成功
         readyReplicas = 0
         i = 0
@@ -197,7 +197,7 @@ class TestProject(object):
         image = 'redis'  # 镜像名称
         condition = 'name=' + workload_name  # 查询条件
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-        volumeMounts = [{"name": volume_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+        volume_mounts = [{"name": volume_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
         volume_info = [{"hostPath": {"path": "/data"}, "name": volume_name}]  # 存储卷的信息
         # 获取集群中所有的节点数
         res = cluster_steps.step_get_node_all()
@@ -213,7 +213,7 @@ class TestProject(object):
         # 创建资源并将存储卷绑定到资源
         project_steps.step_create_daemonset(create_project, work_name=workload_name, image=image,
                                             container_name=container_name, volume_info=volume_info, ports=port,
-                                            volumemount=volumeMounts)
+                                            volumemount=volume_mounts)
         # 验证资源创建成功
         numberReady = ''
         i = 0
@@ -261,7 +261,7 @@ class TestProject(object):
         condition = 'name=' + workload_name  # 查询条件
         port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
         port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-        volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+        volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         replicas = 2  # 副本数
         # 创建存储卷
@@ -271,7 +271,7 @@ class TestProject(object):
         # 创建service绑定的deployment
         project_steps.step_create_deploy(project_name=create_project, work_name=workload_name,
                                          container_name=container_name,
-                                         ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
+                                         ports=port_deploy, volumemount=volume_mounts, image=image, replicas=replicas,
                                          volume_info=volume_info, strategy=strategy_info)
         # 验证service创建成功
         response = project_steps.step_get_workload(create_project, type='services', condition=condition)
@@ -835,12 +835,12 @@ class TestProject(object):
     def test_create_deployment_wrong_name(self, deploy_name, title, create_project, container_name, strategy_info):
         image = 'nginx'  # 镜像名称
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
-        volumeMounts = []  # 设置挂载的存储卷
+        volume_mounts = []  # 设置挂载的存储卷
         replicas = 2  # 副本数
         volume_info = []
         # 创建deployment并验证创建失败
         assert project_steps.step_create_deploy(project_name=create_project, work_name=deploy_name,
-                                                container_name=container_name, ports=port, volumemount=volumeMounts,
+                                                container_name=container_name, ports=port, volumemount=volume_mounts,
                                                 image=image, replicas=replicas, volume_info=volume_info,
                                                 strategy=strategy_info).json()['status'] == 'Failure'
 
@@ -952,12 +952,12 @@ class TestProject(object):
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
         service_name = 'service' + workload_name
-        volumemounts = []
+        volume_mounts = []
         # 创建statefulsets并验证创建失败
         assert project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
                                                   container_name=container_name,
                                                   image=image, replicas=replicas, volume_info=volume_info, ports=port,
-                                                  service_ports=service_port, volumemount=volumemounts,
+                                                  service_ports=service_port, volumemount=volume_mounts,
                                                   service_name=service_name).json()['status'] == 'Failure'
 
     @allure.story('应用负载-工作负载')
@@ -971,12 +971,12 @@ class TestProject(object):
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
         service_name = 'service' + workload_name
-        volumemounts = []
+        volume_mounts = []
         # 创建工作负载
         project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
                                            container_name=container_name,
                                            image=image, replicas=replicas, volume_info=volume_info, ports=port,
-                                           service_ports=service_port, volumemount=volumemounts,
+                                           service_ports=service_port, volumemount=volume_mounts,
                                            service_name=service_name)
 
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
@@ -1021,12 +1021,12 @@ class TestProject(object):
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
         service_name = 'service' + workload_name
-        volumemounts = []
+        volume_mounts = []
         # 创建工作负载
         project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
                                            container_name=container_name,
                                            image=image, replicas=replicas, volume_info=volume_info, ports=port,
-                                           service_ports=service_port, volumemount=volumemounts,
+                                           service_ports=service_port, volumemount=volume_mounts,
                                            service_name=service_name)
 
         # 按名称精确查询statefulsets
@@ -1060,12 +1060,12 @@ class TestProject(object):
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
         service_name = 'service' + workload_name
-        volumemounts = []
+        volume_mounts = []
         # 创建工作负载
         project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
                                            container_name=container_name,
                                            image=image, replicas=replicas, volume_info=volume_info, ports=port,
-                                           service_ports=service_port, volumemount=volumemounts,
+                                           service_ports=service_port, volumemount=volume_mounts,
                                            service_name=service_name)
 
         # 查询工作负载，直至其状态为运行中
@@ -1301,7 +1301,7 @@ class TestProject(object):
         image = 'nginx'  # 镜像名称
         condition = 'name=' + workload_name  # 查询deploy和service条件
         port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]  # 容器的端口信息
-        volumeMounts = []  # 设置挂载的存储卷
+        volume_mounts = []  # 设置挂载的存储卷
         replicas = 2  # 副本数
         volume_info = []
         # 创建service
@@ -1309,7 +1309,7 @@ class TestProject(object):
         # 创建service绑定的deployment
         project_steps.step_create_deploy(project_name=create_project, work_name=workload_name,
                                          container_name=container_name,
-                                         ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
+                                         ports=port_deploy, volumemount=volume_mounts, image=image, replicas=replicas,
                                          volume_info=volume_info, strategy=strategy_info)
         # 验证service创建成功
         response = project_steps.step_get_workload(create_project, type='services', condition=condition)

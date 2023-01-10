@@ -245,9 +245,9 @@ class TestCluster(object):
                                                              end_time=now_timestamp,
                                                              step='60s', times='10')
             # 获取查询到的数据的结果类型
-            resultType = r.json()['results'][0]['data']['resultType']
+            result_type = r.json()['results'][0]['data']['resultType']
             # 验证查询到的数据的结果类型
-            assert resultType == 'matrix'
+            assert result_type == 'matrix'
 
     @allure.story('节点')
     @allure.title('查看某个集群的某个节点的状态信息')
@@ -281,9 +281,9 @@ class TestCluster(object):
         pod_name = 'non-existent'
         re = multi_cluster_steps.step_query_pod(self.cluster_any_name, node_name, pod_name)
         # 获取查询结果
-        totalItems = re.json()['totalItems']
+        total_items = re.json()['totalItems']
         # 验证查询结果
-        assert totalItems == 0
+        assert total_items == 0
 
     @allure.story('节点')
     @allure.title('按名称在某个集群中精确查询节点中存在的pod')
@@ -638,9 +638,9 @@ class TestCluster(object):
             ns = re.json()['items'][j]['metadata']['namespace']
             if ns in system_ns:
                 replica = re.json()['items'][j]['status']['replicas']
-                readyReplicas = re.json()['items'][j]['status']['readyReplicas']
+                ready_replicas = re.json()['items'][j]['status']['readyReplicas']
                 # 验证每个statefulSets的ready的副本数=副本数
-                assert replica == readyReplicas
+                assert replica == ready_replicas
             else:
                 break
 
@@ -652,12 +652,12 @@ class TestCluster(object):
         re = multi_cluster_steps.step_get_resource_of_cluster(self.cluster_any_name, 'daemonsets')
         # 获取集群daemonSets的数量
         count = re.json()['totalItems']
-        # 获取集群所有的daemonSets的currentNumberScheduled和desiredNumberScheduled
+        # 获取集群所有的daemonSets的current_number_scheduled和desired_number_scheduled
         for j in range(0, count):
-            currentNumberScheduled = re.json()['items'][j]['status']['currentNumberScheduled']
-            desiredNumberScheduled = re.json()['items'][j]['status']['desiredNumberScheduled']
-            # 验证每个daemonSets的currentNumberScheduled=desiredNumberScheduled
-            assert currentNumberScheduled == desiredNumberScheduled
+            current_number_scheduled = re.json()['items'][j]['status']['currentNumberScheduled']
+            desired_number_scheduled = re.json()['items'][j]['status']['desiredNumberScheduled']
+            # 验证每个daemonSets的current_number_scheduled=desired_number_scheduled
+            assert current_number_scheduled == desired_number_scheduled
 
     @allure.story('应用负载')
     @allure.title('查看某个集群所有的daemonSets的详情信息')
@@ -732,9 +732,9 @@ class TestCluster(object):
             r = multi_cluster_steps.step_get_app_workload_monitoring(self.cluster_any_name, project_name, type,
                                                                      resource_name)
             # 获取请求结果中监控数据的类型
-            resultType = r.json()['results'][0]['data']['resultType']
+            result_type = r.json()['results'][0]['data']['resultType']
             # 验证请求结果中监控数据的类型为vector
-            assert resultType == 'vector'
+            assert result_type == 'vector'
         else:
             print('无' + type)
 
@@ -835,16 +835,16 @@ class TestCluster(object):
         r = multi_cluster_steps.step_get_resource_of_cluster(self.cluster_any_name, type, 'status=running')
         # 获取资源的数量
         count = r.json()['totalItems']
-        # 获取资源的readyReplicas和replicas
+        # 获取资源的ready_replicas和replicas
         for j in range(0, count):
             if type == 'daemonsets':
-                readyReplicas = r.json()['items'][j]['status']['numberReady']
+                ready_replicas = r.json()['items'][j]['status']['numberReady']
                 replicas = r.json()['items'][j]['status']['numberAvailable']
             else:
-                readyReplicas = r.json()['items'][j]['status']['readyReplicas']
+                ready_replicas = r.json()['items'][j]['status']['readyReplicas']
                 replicas = r.json()['items'][j]['status']['replicas']
-            # 验证readyReplicas=replicas，从而判断资源的状态为running
-            assert readyReplicas == replicas
+            # 验证ready_replicas=replicas，从而判断资源的状态为running
+            assert ready_replicas == replicas
 
     @allure.story('应用负载')
     @allure.title('{title}')
@@ -863,13 +863,13 @@ class TestCluster(object):
             try:
                 for j in range(0, count):
                     if type == 'daemonsets':
-                        readyReplicas = re.json()['items'][j]['status']['numberReady']
+                        ready_replicas = re.json()['items'][j]['status']['numberReady']
                         replicas = re.json()['items'][j]['status']['numberAvailable']
                     else:
-                        readyReplicas = re.json()['items'][j]['status']['readyReplicas']
+                        ready_replicas = re.json()['items'][j]['status']['readyReplicas']
                         replicas = re.json()['items'][j]['status']['replicas']
                     # 判断资源状态为运行中
-                    if readyReplicas == replicas:
+                    if ready_replicas == replicas:
                         running_resource.append(re.json()['items'][j]['metadata']['name'])
                 # 使用名称和状态查询资源
                 for name in running_resource:
@@ -1114,9 +1114,9 @@ class TestCluster(object):
                 r = multi_cluster_steps.step_get_metrics_of_pvc(self.cluster_any_name, namespace, name, before_timestamp,
                                                                 now_timestamp, '60s', '60')
                 # 获取查询到的数据的结果类型
-                resultType = r.json()['results'][0]['data']['resultType']
+                result_type = r.json()['results'][0]['data']['resultType']
                 # 验证查询到的数据的结果类型
-                assert resultType == 'matrix'
+                assert result_type == 'matrix'
 
     @allure.story('存储')
     @allure.title('在某个集群查询每一个存储卷的pod信息')
@@ -1212,17 +1212,17 @@ class TestCluster(object):
         # 获取组件的数量
         component_count = len(r.json()['kubesphereStatus'])
         for j in range(0, component_count):
-            # 获取每个组件的totalBackends
-            totalBackends = r.json()['kubesphereStatus'][j]['totalBackends']
+            # 获取每个组件的total_backends
+            total_backends = r.json()['kubesphereStatus'][j]['totalBackends']
             # 获取每个组件的healthyBackends
-            healthyBackends = r.json()['kubesphereStatus'][j]['healthyBackends']
+            healthy_backends = r.json()['kubesphereStatus'][j]['healthyBackends']
             # 获取组件的名称
             component_name = r.json()['kubesphereStatus'][j]['name']
-            # 验证 totalBackends=healthyBackends
-            if totalBackends != healthyBackends:
+            # 验证 total_backends=healthy_backends
+            if total_backends != healthy_backends:
                 print('组件：' + component_name + ' 运行不正常')
                 # 校验失败仍能继续运行
-                pytest.assume(totalBackends == healthyBackends)
+                pytest.assume(total_backends == healthy_backends)
 
     @allure.story('监控告警/集群状态')
     @allure.title('在某个集群查看节点的运行状态并验证节点均健康运行')
@@ -1230,12 +1230,12 @@ class TestCluster(object):
     def test_get_node_health(self):
         # 查询节点的健康状况
         r = multi_cluster_steps.step_get_component_health(self.cluster_any_name)
-        # 获取集群的totalNodes
-        totalNodes = r.json()['nodeStatus']['totalNodes']
+        # 获取集群的total_nodes
+        total_nodes = r.json()['nodeStatus']['totalNodes']
         # 获取集群的healthyNodes
-        healthyNodes = r.json()['nodeStatus']['healthyNodes']
-        # 验证totalNodes = healthyNodes
-        assert totalNodes == healthyNodes
+        healthy_nodes = r.json()['nodeStatus']['healthyNodes']
+        # 验证total_nodes = healthy_nodes
+        assert total_nodes == healthy_nodes
 
     @allure.story('监控告警/集群状态')
     @allure.title('查看某个集群的监控信息')
@@ -1576,13 +1576,13 @@ class TestCluster(object):
     def test_edit_cluster_gateway(self):
         # 开启集群网关
         response = multi_cluster_steps.step_open_cluster_gateway(self.cluster_any_name, type='NodePort')
-        # 并获取获取uid和resourceversio
+        # 并获取获取uid和resource_version
         uid = response.json()['metadata']['uid']
-        resourceVersion = response.json()['metadata']['resourceVersion']
+        resource_version = response.json()['metadata']['resourceVersion']
         # 编辑集群config信息
         config = {"4": "5"}
         status = 'true'
-        multi_cluster_steps.step_edit_cluster_gateway(self.cluster_any_name, uid, resourceVersion, config, status)
+        multi_cluster_steps.step_edit_cluster_gateway(self.cluster_any_name, uid, resource_version, config, status)
         # 查看集群网关，并获取config信息
         re = multi_cluster_steps.step_get_cluster_gateway(self.cluster_any_name)
         config_actual = re.json()[0]['spec']['controller']['config']
