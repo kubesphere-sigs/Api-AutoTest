@@ -1269,33 +1269,6 @@ class TestProject(object):
         assert status == 'Failure'
 
     @allure.story('项目设置-资源默认请求')
-    @allure.title('只设置资源默认请求-输入错误的内存信息(包含负数)')
-    # 接口未做限制
-    def wx_test_edit_container_quota_wrong_memory_1(self):
-        # 获取环境中所有的多集群项目
-        multi_projects = multi_project_steps.step_get_multi_project_all()
-        for project_info in multi_projects:
-            # 获取资源默认请求
-            response = multi_project_steps.step_get_container_quota_in_multi_project(project_info[0], project_info[2])
-            resource_version = None
-            try:
-                if response.json()['items'][0]['metadata']['resourceVersion']:
-                    resource_version = response.json()['items'][0]['metadata']['resourceVersion']
-                else:
-                    resource_version = None
-            except Exception as e:
-                print(e)
-            # 编辑资源默认请求
-            limit = {"memory": "1000aMi"}
-            request = {"memory": "1Mi"}
-            r = multi_project_steps.step_edit_container_quota_in_multi_project(project_info[1], project_info[0],
-                                                                               resource_version, limit, request)
-        # 获取编辑结果
-        status = r.json()['status']
-        # 验证编辑失败
-        assert status == 'Failure'
-
-    @allure.story('项目设置-资源默认请求')
     @allure.title('在多集群项目只设置资源默认请求-内存、cpu')
     @allure.severity(allure.severity_level.NORMAL)
     def test_edit_container_quota_memory_1(self):
