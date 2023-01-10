@@ -385,7 +385,7 @@ class TestProject(object):
                        "kubesphere.io/description": "我是描述信息"}
         resource_version = ''
         # 编辑角色
-        project_steps.step_edit_project_role(create_project, create_role, resourceV_vrsion, annotations)
+        project_steps.step_edit_project_role(create_project, create_role, resource_version, annotations)
         time.sleep(1)
         # 查看角色
         r = project_steps.step_get_role(create_project, create_role)
