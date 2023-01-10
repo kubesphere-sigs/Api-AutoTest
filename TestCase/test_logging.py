@@ -271,17 +271,15 @@ class TestLogSearch(object):
             print(project_name + '无pod')
 
     @allure.story("集群设置")
-    @allure.title('查看日志接收器中的容器日志')
+    @allure.title('查看默认情况下日志接收器中的容器日志')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_log_receiver_log(self):
         # 查询日志接收器/容器日志
         response = cluster_steps.step_get_log_receiver('logging')
-        # 获取接收器类型和启用状态
-        component = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/component']
-        enabled = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/enabled']
-        # 校验接收器类型和启用状态，启用状态默认为开启
-        pytest.assume(component == 'logging')
-        assert enabled == 'true'
+        # 判断是否存在日志接收器
+        items = response.json()['items']
+        # 验证日志接收器不存在
+        pytest.assume(not items)
 
     @allure.story('集群设置/日志接收器')
     @allure.title('{title}')
