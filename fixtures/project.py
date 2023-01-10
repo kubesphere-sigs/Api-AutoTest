@@ -1,18 +1,18 @@
 import pytest
 import time
 from common import commonFunction
-from step import project_steps, workspace_steps
+from step import project_steps
+from fixtures.platform import create_ws
 
-
-@pytest.fixture
-def create_ws():
-    # 创建企业空间
-    ws_name = 'test-ws' + str(commonFunction.get_random())
-    workspace_steps.step_create_workspace(ws_name)
-    time.sleep(2)
-    yield ws_name
-    # 删除创建的企业空间
-    workspace_steps.step_delete_workspace(ws_name)
+# @pytest.fixture
+# def create_ws():
+#     # 创建企业空间
+#     ws_name = 'test-ws' + str(commonFunction.get_random())
+#     workspace_steps.step_create_workspace(ws_name)
+#     time.sleep(2)
+#     yield ws_name
+#     # 删除创建的企业空间
+#     workspace_steps.step_delete_workspace(ws_name)
 
 
 @pytest.fixture

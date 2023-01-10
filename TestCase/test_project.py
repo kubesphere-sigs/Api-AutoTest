@@ -9,7 +9,8 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import project_steps, platform_steps, workspace_steps, cluster_steps
-from fixtures.project import create_ws, create_project, workload_name, container_name, create_role, create_job, create_deployment, strategy_info
+from fixtures.project import create_project, workload_name, container_name, create_role, create_job, create_deployment, strategy_info
+from fixtures.platform import create_ws
 
 
 @allure.feature('Project')
