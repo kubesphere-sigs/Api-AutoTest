@@ -694,9 +694,9 @@ class TestCluster(object):
         # 查看监控信息
         r = cluster_steps.step_get_app_workload_monitoring(project_name, type, resource_name)
         # 获取请求结果中监控数据的类型
-        resultType = r.json()['results'][0]['data']['resultType']
+        result_type = r.json()['results'][0]['data']['resultType']
         # 验证请求结果中监控数据的类型为vector
-        assert resultType == 'vector'
+        assert result_type == 'vector'
 
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
