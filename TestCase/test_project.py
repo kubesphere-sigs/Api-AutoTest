@@ -146,17 +146,17 @@ class TestProject(object):
                                            image=image, replicas=replicas, ports=port, service_ports=service_port,
                                            volumemount=volume_mounts, volume_info=volume_info, service_name=service_name)
         # 验证资源创建成功
-        readyReplicas = 0
+        ready_replicas = 0
         i = 0
         while i < 120:
             # 获取工作负载的状态
             response = project_steps.step_get_workload(create_project, type='statefulsets', condition=condition)
             try:
-                readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                ready_replicas = response.json()['items'][0]['status']['readyReplicas']
             except Exception as e:
                 print(e)
             # 验证资源的所有副本已就绪
-            if readyReplicas == replicas:
+            if ready_replicas == replicas:
                 break
             else:
                 time.sleep(10)
@@ -279,16 +279,16 @@ class TestProject(object):
         with pytest.assume:
             assert name == workload_name
         # 验证deploy创建成功
-        readyReplicas = 0
+        ready_replicas = 0
         i = 0
         while i < 180:
             re = project_steps.step_get_workload(create_project, type='deployments', condition=condition)
             # 获取并验证deployment创建成功
             try:
-                readyReplicas = re.json()['items'][0]['status']['readyReplicas']
+                ready_replicas = re.json()['items'][0]['status']['readyReplicas']
             except Exception as e:
                 print(e)
-            if readyReplicas == replicas:
+            if ready_replicas == replicas:
                 break
             else:
                 time.sleep(10)
@@ -981,22 +981,22 @@ class TestProject(object):
 
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
         time.sleep(3)
-        readyReplicas = 0
+        ready_replicas = 0
         i = 3
         while i < 60:
             response = project_steps.step_get_workload(project_name=create_project, type='statefulsets',
                                                        condition=condition)
             try:
-                readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                ready_replicas = response.json()['items'][0]['status']['readyReplicas']
                 # 验证资源的所有副本已就绪
-                if readyReplicas == replicas:
+                if ready_replicas == replicas:
                     break
             except Exception as e:
                 print(e)
             time.sleep(3)
             i = i + 3
         with pytest.assume:
-            assert readyReplicas == replicas
+            assert ready_replicas == replicas
         # 删除工作负载
         project_steps.step_delete_workload(project_name=create_project, type='statefulsets', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1073,8 +1073,8 @@ class TestProject(object):
         while i < 60:
             r = project_steps.step_get_workload(create_project, type=workload_type, condition='name=' + workload_name)
             try:
-                readyReplicas = r.json()['items'][0]['status']['readyReplicas']
-                if readyReplicas == replicas:
+                ready_replicas = r.json()['items'][0]['status']['readyReplicas']
+                if ready_replicas == replicas:
                     break
             except Exception as e:
                 print(e)
@@ -1437,14 +1437,14 @@ class TestProject(object):
         time.sleep(3)
         response = project_steps.step_get_gateway(create_project)
         uid = response.json()[0]['metadata']['uid']
-        reVersion = response.json()[0]['metadata']['resourceVersion']
+        resource_version = response.json()[0]['metadata']['resourceVersion']
         # 修改网关类型为LoadBalancer,并编辑供应商、注解和配置信息
         provider = 'QingCloud Kubernetes Engine'
         annotations = {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
                        "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0"}
         configuration = {"qw": "12"}
         status_new = 'true'
-        project_steps.step_edit_gateway_lb(create_project, uid, reVersion, provider, annotations, configuration,
+        project_steps.step_edit_gateway_lb(create_project, uid, resource_version, provider, annotations, configuration,
                                            status_new)
         # 验证网关编辑成功
         response = project_steps.step_get_gateway(create_project)
@@ -1466,11 +1466,11 @@ class TestProject(object):
         time.sleep(1)
         response = project_steps.step_get_gateway(create_project)
         uid = response.json()[0]['metadata']['uid']
-        reVersion = response.json()[0]['metadata']['resourceVersion']
+        resource_version = response.json()[0]['metadata']['resourceVersion']
         # 修改网关类型为NodePort,并编辑配置信息
         configuration = {"qa": "test"}
         status_new = 'false'
-        project_steps.step_edit_gateway_np(create_project, uid, reVersion, configuration, status_new)
+        project_steps.step_edit_gateway_np(create_project, uid, resource_version, configuration, status_new)
         time.sleep(2)
         # 验证网关编辑成功
         re = project_steps.step_get_gateway(create_project)
