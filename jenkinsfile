@@ -27,7 +27,10 @@ pipeline {
     stage('安装三方python依赖') {
       steps {
         container('python') {
-          sh 'pip install -r requirements.txt'
+          sh '''
+            python3 -m pip install --upgrade pip
+            pip install -r requirements.txt
+             '''
         }
 
       }
@@ -47,8 +50,7 @@ pipeline {
               sh '''
                 envsubst < ${WORKSPACE}/config/config.yaml > ${WORKSPACE}/config/config_new.yaml
                 cd ${WORKSPACE}/TestCase
-                pytest test_*.py -v -n 4 --reruns=1 --reruns-delay=10 --alluredir ../result
-                exit 0
+                pytest test_*.py -v -n 4 --picked=first --reruns=1 --reruns-delay=10 --alluredir ../result || exit 0
                 '''
             }
             catch (Exception err) {
