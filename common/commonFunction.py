@@ -330,8 +330,8 @@ def get_app_category():
             page) + '&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm&reverse=true'
         r = requests.get(url, get_header())
         for item in r.json()['items']:
-            for appCategory in item['category_set']:
-                app_categorys.append(appCategory['category_id'])
+            for app_category in item['category_set']:
+                app_categorys.append(app_category['category_id'])
 
     for i in app_categorys:
         print(i)
