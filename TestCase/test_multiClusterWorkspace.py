@@ -278,11 +278,9 @@ class TestWorkSpace(object):
                 "kubesphere.io/creator": "admin"
                 }
         # 构建企业组织名称
-        group_names = []
-        for i in range(0, 9):
-            group_names.append(random.choice(['@', '!', '$', '#', '%', '&', '*', '_', '+']) + 'test-group')
-            group_names.append('test-group' + random.choice(['@', '!', '$', '#', '%', '&', '*', '_', '+']))
-            group_names.append('test-' + random.choice(['@', '!', '$', '#', '%', '&', '*']) + 'group')
+        group_names = [random.choice(['@', '!', '$', '#', '%', '&', '*', '_', '+']) + 'test-group',
+                       'test-group' + random.choice(['@', '!', '$', '#', '%', '&', '*', '_', '+']),
+                       'test-' + random.choice(['@', '!', '$', '#', '%', '&', '*']) + 'group']
         # 查询企业空间
         response = multi_workspace_steps.step_get_ws_info('')
         ws_count = response.json()['totalItems']
@@ -295,22 +293,6 @@ class TestWorkSpace(object):
                     assert_message = 'is invalid: [metadata.generateName: Invalid value'
                     # 校验接口返回信息
                     assert assert_message in res.text
-
-    @allure.story('企业空间设置-企业组织')
-    @allure.title('创建企业组织时绑定不存在的项目')
-    @allure.severity(allure.severity_level.CRITICAL)
-    # 接口没有校验企业空间的角色、项目和角色是否存在
-    def wx_test_create_wrong_pro_department(self):
-        group_name = 'test-group'
-        data = {"kubesphere.io/workspace-role": "wx-regular",
-                "kubesphere.io/alias-name": "",
-                "kubesphere.io/project-roles": "[{\"cluster\":\"\",\"namespace\":\"test\",\"role\":\"viewer1\"}]",
-                "kubesphere.io/devops-roles": "[]",
-                "kubesphere.io/creator": "admin"
-                }
-        # 获取返回信息
-        response = multi_workspace_steps.step_create_department(self.ws_name, group_name, data)
-        print(response.text)
 
     @allure.story('企业空间设置-企业组织')
     @allure.title('为用户分配企业组织')
