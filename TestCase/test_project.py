@@ -215,19 +215,19 @@ class TestProject(object):
                                             container_name=container_name, volume_info=volume_info, ports=port,
                                             volumemount=volume_mounts)
         # 验证资源创建成功
-        numberReady = ''
+        number_ready = ''
         i = 0
         while i < 180:
             # 获取工作负载的状态
             response = project_steps.step_get_workload(create_project, type='daemonsets', condition=condition)
-            numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
-            if numberReady == cluster_node_all - cluster_node_with_taint:
+            number_ready = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
+            if number_ready == cluster_node_all - cluster_node_with_taint:
                 break
             else:
                 time.sleep(30)
                 i += 30
         with pytest.assume:
-            assert numberReady == cluster_node_all - cluster_node_with_taint
+            assert number_ready == cluster_node_all - cluster_node_with_taint
 
         # 删除工作负载
         project_steps.step_delete_workload(create_project, 'daemonsets', workload_name)
@@ -383,9 +383,9 @@ class TestProject(object):
                        "kubesphere.io/alias-name": alias_name,
                        "kubesphere.io/creator": "admin",
                        "kubesphere.io/description": "我是描述信息"}
-        resourceVersion = ''
+        resource_version = ''
         # 编辑角色
-        project_steps.step_edit_project_role(create_project, create_role, resourceVersion, annotations)
+        project_steps.step_edit_project_role(create_project, create_role, resourceV_vrsion, annotations)
         time.sleep(1)
         # 查看角色
         r = project_steps.step_get_role(create_project, create_role)
@@ -400,16 +400,16 @@ class TestProject(object):
         role_name = 'role' + str(commonFunction.get_random())
         project_steps.step_create_role(create_project, role_name)
         time.sleep(1)
-        # 获取角色的resourceVersion
+        # 获取角色的resource_version
         response = project_steps.step_get_project_role(create_project, role_name)
-        resourceVersion = response.json()['items'][0]['metadata']['resourceVersion']
+        resource_version = response.json()['items'][0]['metadata']['resourceVersion']
         # 编辑角色的权限
         authority = '["role-template-view-basic","role-template-view-volumes","role-template-view-secrets",' \
                     '"role-template-view-configmaps","role-template-view-snapshots","role-template-view-app-workloads"]'
         annotations = {"iam.kubesphere.io/aggregation-roles": authority,
                        "kubesphere.io/alias-name": "",
                        "kubesphere.io/creator": "admin", "kubesphere.io/description": ""}
-        project_steps.step_edit_project_role(create_project, role_name, resourceVersion, annotations)
+        project_steps.step_edit_project_role(create_project, role_name, resource_version, annotations)
         time.sleep(1)
         # 查看角色
         r = project_steps.step_get_role(create_project, role_name)
@@ -1147,19 +1147,19 @@ class TestProject(object):
                                             container_name=container_name, image=image, ports=port,
                                             volume_info=volume_info, volumemount=volumemount)
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间180s
-        numberReady = ''
+        number_ready = ''
         i = 0
         while i < 180:
             response = project_steps.step_get_workload(project_name=create_project, type='daemonsets',
                                                        condition=condition)
-            numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
+            number_ready = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
             # 验证资源的所有副本已就绪
-            if numberReady == cluster_node_all - cluster_node_with_taint:
+            if number_ready == cluster_node_all - cluster_node_with_taint:
                 break
             time.sleep(30)
             i = i + 30
         with pytest.assume:
-            assert numberReady == cluster_node_all - cluster_node_with_taint
+            assert number_ready == cluster_node_all - cluster_node_with_taint
         # 删除创建的daemonsets
         project_steps.step_delete_workload(project_name=create_project, type='daemonsets', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1433,7 +1433,7 @@ class TestProject(object):
         status = 'false'
         # 创建网关
         project_steps.step_create_gateway(create_project, type_old, status)
-        # 查询网关并获取网关的uid和resourceversion
+        # 查询网关并获取网关的uid和resource_version
         time.sleep(3)
         response = project_steps.step_get_gateway(create_project)
         uid = response.json()[0]['metadata']['uid']
@@ -1462,7 +1462,7 @@ class TestProject(object):
         status = 'true'
         # 创建网关
         project_steps.step_create_gateway(create_project, type_old, status)
-        # 查询网关并获取网关的uid和resourceversion
+        # 查询网关并获取网关的uid和resource_version
         time.sleep(1)
         response = project_steps.step_get_gateway(create_project)
         uid = response.json()[0]['metadata']['uid']

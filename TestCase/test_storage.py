@@ -23,7 +23,7 @@ class TestStorage:
     sc_name1 = 'test-vsc'
     ws_name = 'ws-' + str(get_random())
     pro_ws_name = 'ws-pro-' + str(get_random())
-    allowVolumeExpansion = True
+    allow_volume_expansion = True
     volume_name = 'volume-' + str(get_random())
     project_name = pro_ws_name
     work_name = 'deploy-test'
@@ -39,8 +39,8 @@ class TestStorage:
     def setup_class(self):
         workspace_steps.step_create_workspace(ws_name=self.ws_name)
         project_steps.step_create_project(ws_name=self.ws_name, project_name=self.pro_ws_name)
-        storage_steps.create_sc(sc_name=self.sc_name, expansion=self.allowVolumeExpansion)
-        storage_steps.create_sc(sc_name=self.sc_name1, expansion=self.allowVolumeExpansion)
+        storage_steps.create_sc(sc_name=self.sc_name, expansion=self.allow_volume_expansion)
+        storage_steps.create_sc(sc_name=self.sc_name1, expansion=self.allow_volume_expansion)
         storage_steps.step_create_volume(project_name=self.pro_ws_name, volume_name=self.volume_name,
                                          sc_name=self.sc_name1)
         project_steps.step_create_deploy(project_name=self.pro_ws_name, work_name=self.work_name,

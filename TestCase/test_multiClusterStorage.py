@@ -12,7 +12,7 @@ from step import multi_cluster_storages_step, multi_cluster_steps, multi_workspa
 @allure.feature('multi_cluster_storage')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 @pytest.mark.skipif(commonFunction.get_multi_cluster_sc_qingcloud() is False, reason='csi-qingcloud存储插件不存在')
-class Test_Multi_Cluster_Storage:
+class TestMultiClusterStorage:
     # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
     __test__ = commonFunction.check_multi_cluster()
 

@@ -39,7 +39,7 @@ def step_create_user(user_name):
 
 @allure.step('登录ks,并将token写入config_new.yaml')
 def step_login(server, user='admin'):
-    yamlPath = '../config/token.yaml'
+    yaml_path = '../config/token.yaml'
     header = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "
                             "Chrome/90.0.4430.212 Safari/537.36",
               "connection": "close",
@@ -65,7 +65,7 @@ def step_login(server, user='admin'):
     t_data = {
         "token": ks_token
     }
-    with open(yamlPath, "w", encoding="utf-8") as f:
+    with open(yaml_path, "w", encoding="utf-8") as f:
         yaml.dump(data=t_data, stream=f, allow_unicode=True)
 
 
@@ -324,17 +324,16 @@ def get_apps_id():
 
 # 获取应用商店管理/应用商店页面，所有应用的分类id
 def get_app_category():
-    appCategorys = []
+    app_categorys = []
     for page in (1, 2):
         url = env_url + '/kapis/openpitrix.io/v1/apps?orderBy=create_time&paging=limit%3D10%2Cpage%3D' + str(
             page) + '&conditions=status%3Dactive%7Csuspended%2Crepo_id%3Drepo-helm&reverse=true'
         r = requests.get(url, get_header())
-        # print(r.json()['items'])
         for item in r.json()['items']:
             for appCategory in item['category_set']:
-                appCategorys.append(appCategory['category_id'])
+                app_categorys.append(appCategory['category_id'])
 
-    for i in appCategorys:
+    for i in app_categorys:
         print(i)
 
 
@@ -354,18 +353,18 @@ def get_before_timestamp(now_time, minutes):
     # 获取当前时间
     now_reduce = now_time - datetime.timedelta(minutes=minutes)
     # 转换成时间数组
-    timeArray = time.strptime(str(now_reduce)[0:19], "%Y-%m-%d %H:%M:%S")
+    time_array = time.strptime(str(now_reduce)[0:19], "%Y-%m-%d %H:%M:%S")
     # 转换成时间戳
-    before_timestamp = str(time.mktime(timeArray))[0:10]
+    before_timestamp = str(time.mktime(time_array))[0:10]
     return before_timestamp
 
 
 # 获取当前日期的时间戳
 def get_timestamp():
     now = datetime.datetime.now()
-    timeArray = time.strptime(str(now)[0:10], "%Y-%m-%d")
+    time_array = time.strptime(str(now)[0:10], "%Y-%m-%d")
     # 转换成时间戳
-    timestamp = str(time.mktime(timeArray))[0:10]
+    timestamp = str(time.mktime(time_array))[0:10]
     return timestamp
 
 
@@ -384,9 +383,9 @@ def get_custom_timestamp(day, clock):
 def get_before_timestamp_day(day):
     before = (datetime.datetime.now() - datetime.timedelta(days=day))
     # 转换为其他字符串格式
-    otherStyleTime = time.strptime(str(before)[0:10], "%Y-%m-%d")
+    other_style_time = time.strptime(str(before)[0:10], "%Y-%m-%d")
     # 转换成时间戳
-    timeStamp = str(time.mktime(otherStyleTime))[0:10]
+    timeStamp = str(time.mktime(other_style_time))[0:10]
     return timeStamp
 
 
@@ -408,9 +407,9 @@ def get_component_health_of_cluster(namespace_actual):
         component_name = response.json()[i]['name']
         namespace = response.json()[i]['namespace']
         # 获取组件的健康状态
-        healthyBackends = response.json()[i]['healthyBackends']
-        totalBackends = response.json()[i]['totalBackends']
-        if healthyBackends != totalBackends:
+        healthy_backends = response.json()[i]['healthyBackends']
+        total_backends = response.json()[i]['totalBackends']
+        if healthy_backends != total_backends:
             print('NameSpace: ' + namespace + '  组件：' + component_name + '状态异常！')
             not_ready_namespace.append(namespace)
     if namespace_actual in not_ready_namespace:
@@ -554,8 +553,8 @@ def random_ip():
     n = random.randint(0, 255)
     x = random.randint(0, 255)
     y = random.randint(0, 255)
-    randomIP = str(m) + '.' + str(n) + '.' + str(x) + '.' + str(y)
-    return randomIP
+    random_ip = str(m) + '.' + str(n) + '.' + str(x) + '.' + str(y)
+    return random_ip
 
 
 # 查询csi-qingcloud组件

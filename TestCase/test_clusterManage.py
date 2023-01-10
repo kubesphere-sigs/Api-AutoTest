@@ -1115,7 +1115,7 @@ class TestCluster(object):
         r = cluster_steps.step_get_metrics_of_pvc(namespace, name, before_timestamp, now_timestamp, '60s', '60')
         try:
             # 获取查询到的数据的结果类型
-            result_ype = r.json()['results'][0]['data']['resultType']
+            result_type = r.json()['results'][0]['data']['resultType']
             # 验证查询到的数据的结果类型
             assert result_type == 'matrix'
         except Exception as e:

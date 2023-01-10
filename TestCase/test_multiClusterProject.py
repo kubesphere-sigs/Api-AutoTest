@@ -127,8 +127,8 @@ class TestProject(object):
                                                                                   type='deployments',
                                                                                   condition=condition)
                 try:
-                    readyReplicas = response.json()['items'][0]['status']['readyReplicas']
-                    if readyReplicas:
+                    ready_replicas = response.json()['items'][0]['status']['readyReplicas']
+                    if ready_replicas:
                         break
                 except Exception as e:
                     print(e)
@@ -164,7 +164,7 @@ class TestProject(object):
             condition = 'name=' + work_name  # 查询条件
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
             service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
-            volumemounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]
+            volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]
             volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
             # 创建存储卷
             multi_project_steps.step_create_volume_in_multi_project(cluster_name=project_info[1],
@@ -187,8 +187,8 @@ class TestProject(object):
                                                                                   type='statefulsets',
                                                                                   condition=condition)
                 try:
-                    readyReplicas = response.json()['items'][0]['status']['readyReplicas']
-                    if readyReplicas == replicas:
+                    ready_replicas = response.json()['items'][0]['status']['readyReplicas']
+                    if ready_replicas == replicas:
                         break
                 except Exception as e:
                     print(e)
@@ -252,8 +252,8 @@ class TestProject(object):
                                                                                   type='deployments',
                                                                                   condition=condition)
                 try:
-                    readyReplicas = response.json()['items'][0]['status']['readyReplicas']
-                    if readyReplicas == replicas:
+                    ready_replicas = response.json()['items'][0]['status']['readyReplicas']
+                    if ready_replicas == replicas:
                         break
                 except Exception as e:
                     print(e)
@@ -403,16 +403,16 @@ class TestProject(object):
                                                                                       project_name=project_info[0],
                                                                                       type='statefulsets',
                                                                                       condition=condition)
-                    readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                    ready_replicas = response.json()['items'][0]['status']['readyReplicas']
                     # 验证资源的所有副本已就绪
-                    if readyReplicas == replicas:
+                    if ready_replicas == replicas:
                         print('创建工作负载耗时:' + str(i) + 's')
                         break
                 except Exception as e:
                     print(e)
                     time.sleep(3)
                     i = i + 3
-            pytest.assume(readyReplicas == replicas)
+            pytest.assume(ready_replicas == replicas)
             # 删除创建的工作负载
             multi_project_steps.step_delete_workload_in_multi_project(project_name=project_info[0],
                                                                       type='services', work_name=workload_name)

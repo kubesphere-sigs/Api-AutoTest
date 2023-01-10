@@ -700,7 +700,8 @@ def step_delete_configmap(project_name, configmap_name):
 @allure.step('删除指定sa')
 def step_delete_sa(project_name, sa_name):
     url = env_url + '/api/v1/namespaces/' + project_name + '/serviceaccounts/' + sa_name
-    r = requests.delete(url=url, headers=get_header())
+    response = requests.delete(url=url, headers=get_header())
+    return response
 
 
 @allure.step('删除存储卷快照')

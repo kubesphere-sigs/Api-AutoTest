@@ -448,7 +448,7 @@ class TestDevOps(object):
         # 基于gitlab创建流水线
         devops_steps.step_create_pipeline_base_gitlab(self.dev_name, dev_name_new, pipeline_name, False)
         # 等待流水线分支拉取成功
-        weatherScore = 0
+        weather_score = 0
         branch_count = 0
         i = 0
         while i < 180:
@@ -458,7 +458,7 @@ class TestDevOps(object):
                 # 获取流水线的 jenkins-metadata
                 jenkins_metadata = r.json()['items'][0]['metadata']['annotations']['pipeline.devops.kubesphere.io/jenkins-metadata']
                 # 获取流水线的健康状态
-                weatherScore = eval(jenkins_metadata)['weatherScore']  # jenkins_metadata是str类型，使用eval将其转化为dict
+                weather_score = eval(jenkins_metadata)['weatherScore']  # jenkins_metadata是str类型，使用eval将其转化为dict
                 # 获取流水线的分支数量
                 branch_count = eval(jenkins_metadata)['totalNumberOfBranches']  # jenkins_metadata是str类型，使用eval将其转化为dict
                 if jenkins_metadata:
@@ -469,7 +469,7 @@ class TestDevOps(object):
                 i += 5
         # 验证流水线的状态和分支数量正确
         with pytest.assume:
-            assert weatherScore == 100
+            assert weather_score == 100
         with pytest.assume:
             assert branch_count == 1
         # 删除创建的流水线
@@ -579,7 +579,7 @@ class TestDevOps(object):
         project_steps.step_delete_project_by_name(ns)
 
     @allure.story('持续部署')
-    @allure.title('删除持续部署任务,并删除创建的资源')
+    @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('delete_resource, title',
                              [

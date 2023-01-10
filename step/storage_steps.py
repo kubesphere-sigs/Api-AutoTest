@@ -393,7 +393,7 @@ def create_volumne_by_vs(project_name, volume_name, sc_name):
 # 存储卷 [{name: "volume-pkb0hm", persistentVolumeClaim: {claimName: "vv"}}]
 #  volume mounts [{name: "volume-pkb0hm", readOnly: false, mountPath: "/data"}]
 @allure.step('挂载存储卷')
-def mount_volume(ns_name, deploy_name, container_name, volume, volumeMounts):
+def mount_volume(ns_name, deploy_name, container_name, volume, volume_mounts):
     url1 = env_url + '/apis/apps/v1/namespaces/pro/deployments/' + deploy_name
     re = requests.get(url1, headers=get_header())
     version = re.json()['metadata']['resourceVersion']
@@ -418,7 +418,7 @@ def mount_volume(ns_name, deploy_name, container_name, volume, volumeMounts):
                                                                       "containerPort": 80,
                                                                       "protocol": "TCP"}],
                                                            "resources": {},
-                                                           "volumeMounts": volumeMounts,
+                                                           "volumeMounts": volume_mounts,
                                                            "terminationMessagePath": "/dev/termination-log",
                                                            "terminationMessagePolicy": "File",
                                                            "imagePullPolicy": "IfNotPresent"}],

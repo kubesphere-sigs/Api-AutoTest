@@ -103,7 +103,7 @@ class TestRole(object):
     @allure.story('角色列表')
     @allure.severity(allure.severity_level.CRITICAL)
     @allure.title('删除已关联用户的角色')
-    def test_delete_role_Authorized(self, create_user, create_role):
+    def test_delete_role_authorized(self, create_user, create_role):
         time.sleep(3)
         # 删除角色
         response = platform_steps.step_delete_user(create_role)

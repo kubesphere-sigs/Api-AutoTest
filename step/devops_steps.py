@@ -129,14 +129,14 @@ def step_delete_credential(devops_name, credential_name):
 
 
 @allure.step('编辑devops角色的权限信息')
-def step_edit_role_authority(devops_name, role_name, annotations, resourceVersion):
+def step_edit_role_authority(devops_name, role_name, annotations, resource_version):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + devops_name + '/roles/' + role_name
     data = {"apiVersion": "rbac.authorization.k8s.io/v1",
             "kind": "Role",
             "metadata": {"name": role_name,
                          "namespace": devops_name,
                          "annotations": annotations,
-                         "resourceVersion": resourceVersion}
+                         "resourceVersion": resource_version}
             }
     response = requests.put(url, headers=get_header(), data=json.dumps(data))
     return response
