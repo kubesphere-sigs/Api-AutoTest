@@ -26,11 +26,11 @@ class TestDevOps(object):
         __test__ = True
 
     user_name = 'wx-user' + str(commonFunction.get_random())
-    user_role = 'users-manager' + str(commonFunction.get_random())
+    user_role = 'platform-self-provisioner'
     email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
     password = 'P@88w0rd'
     ws_name = 'ws-dev' + str(commonFunction.get_random())
-    dev_name = 'wx-dev' + str(commonFunction.get_random())
+    dev_name = 'test-dev' + str(commonFunction.get_random())
     ws_role_name = ws_name + '-viewer' + str(commonFunction.get_random())
     dev_role_name = 'wx-dev-role' + str(commonFunction.get_random())
     dev_name_new = ''
@@ -265,14 +265,14 @@ class TestDevOps(object):
 
     @allure.story('工程管理-工程角色')
     @allure.title('查看devops工程默认的所有角色')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_devops_role_all(self, create_devops):
-        r = devops_steps.step_get_role(create_devops, '')
-        assert r.json()['totalItems'] == 3  # 验证初始的角色数量为3
+        response = devops_steps.step_get_role(create_devops, '')
+        assert response.json()['totalItems'] == 3  # 验证初始的角色数量为3
 
     @allure.story('工程管理-工程角色')
     @allure.title('查找devops工程指定的角色')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_devops_role_one(self, create_devops):
         role_name = 'viewer'
         r = devops_steps.step_get_role(create_devops, role_name)
@@ -310,7 +310,7 @@ class TestDevOps(object):
 
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中创建角色-角色名称为空')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_devops_role_create_name_none(self, create_devops):
         # 创建角色
         role_name = ''
@@ -320,7 +320,7 @@ class TestDevOps(object):
 
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中编辑角色基本信息')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_devops_role_edit_info(self, create_devops):
         # 创建角色
         role_name = 'test-role' + str(commonFunction.get_random())
@@ -417,9 +417,9 @@ class TestDevOps(object):
     @allure.story('工程管理-工程成员')
     @allure.title('邀请用户到devops工程')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_invite_user(self, create_devops):
+    def test_devops_invite_user(self):
         role = 'viewer'
-        response = devops_steps.step_invite_member(create_devops, self.user_name, role)
+        response = devops_steps.step_invite_member(self.dev_name_new, self.user_name, role)
         assert response.json()[0]['username'] == self.user_name  # 验证邀请后的用户名称
 
     @allure.story('工程管理-工程成员')
