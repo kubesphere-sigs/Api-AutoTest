@@ -364,8 +364,8 @@ def get_timestamp():
     now = datetime.datetime.now()
     time_array = time.strptime(str(now)[0:10], "%Y-%m-%d")
     # 转换成时间戳
-    timestamp = str(time.mktime(time_array))[0:10]
-    return timestamp
+    time_stamp = str(time.mktime(time_array))[0:10]
+    return time_stamp
 
 
 # 获取当前日期
@@ -385,8 +385,8 @@ def get_before_timestamp_day(day):
     # 转换为其他字符串格式
     other_style_time = time.strptime(str(before)[0:10], "%Y-%m-%d")
     # 转换成时间戳
-    timeStamp = str(time.mktime(other_style_time))[0:10]
-    return timeStamp
+    time_stamp = str(time.mktime(other_style_time))[0:10]
+    return time_stamp
 
 
 # 获取集群所有服务组件的状态
@@ -400,7 +400,6 @@ def get_component_health_of_cluster(namespace_actual):
     response = requests.get(url=url, headers=get_header())
     # 获取集群的组件数量
     components_count = len(response.json())
-    print(components_count)
     not_ready_namespace = []
     for i in range(0, components_count):
         # 获取组件的名称及namespace
