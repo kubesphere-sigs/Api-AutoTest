@@ -131,13 +131,13 @@ class TestDevOps(object):
         description = '我是描述信息'
         username = 'dXNlcm5hbWU='
         password = 'cGFzc3dvcmQ='
-        type = 'basic-auth'
+        credential_type = 'basic-auth'
         data = {"username": username, "password": password}
         # 创建凭证
-        response = devops_steps.step_create_credential(create_devops, name, description, type, data)
+        response = devops_steps.step_create_credential(create_devops, name, description, credential_type, data)
         # 验证新建的凭证的type
         with pytest.assume:
-            assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
+            assert response.json()['type'] == 'credential.devops.kubesphere.io/' + credential_type
         # 删除凭证
         devops_steps.step_delete_credential(create_devops, name)
 
@@ -149,13 +149,13 @@ class TestDevOps(object):
         description = 'test'
         username = 'cXdl'
         private_key = 'YXNk'
-        type = 'ssh-auth'
+        credential_type = 'ssh-auth'
         data = {"username": username, "private_key": private_key}
         # 创建凭证
-        response = devops_steps.step_create_credential(create_devops, name, description, type, data)
+        response = devops_steps.step_create_credential(create_devops, name, description, credential_type, data)
         # 验证新建的凭证的type
         with pytest.assume:
-            assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
+            assert response.json()['type'] == 'credential.devops.kubesphere.io/' + credential_type
         # 删除凭证
         devops_steps.step_delete_credential(create_devops, name)
 
@@ -166,13 +166,13 @@ class TestDevOps(object):
         name = 'test' + str(commonFunction.get_random())
         description = '我是描述信息'
         secret = 'cXdlYXNk'
-        type = 'secret-text'
+        credential_type = 'secret-text'
         data = {"secret": secret}
         # 创建凭证
-        response = devops_steps.step_create_credential(create_devops, name, description, type, data)
+        response = devops_steps.step_create_credential(create_devops, name, description, credential_type, data)
         # 验证新建的凭证的type
         with pytest.assume:
-            assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
+            assert response.json()['type'] == 'credential.devops.kubesphere.io/' + credential_type
         # 删除凭证
         devops_steps.step_delete_credential(create_devops, name)
 
@@ -182,14 +182,14 @@ class TestDevOps(object):
     def test_create_kubeconfig_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
         description = '我是描述信息'
-        type = 'kubeconfig'
+        credential_type = 'kubeconfig'
         data = {
             "content": "YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIGNlcnRpZmljYXRlLWF1dGhvcml0eS1kYXRhOiBMUzB0TFMxQ1JVZEpUaUJEUlZKVVNVWkpRMEZVUlMwdExTMHRDazFKU1VONVJFTkRRV0pEWjBGM1NVSkJaMGxDUVVSQlRrSm5hM0ZvYTJsSE9YY3dRa0ZSYzBaQlJFRldUVkpOZDBWUldVUldVVkZFUlhkd2NtUlhTbXdLWTIwMWJHUkhWbnBOUWpSWVJGUkplRTFFUlhkT1ZFRjVUWHBKZVU1R2IxaEVWRTE0VFVSRmQwMTZRWGxOZWtsNVRrWnZkMFpVUlZSTlFrVkhRVEZWUlFwQmVFMUxZVE5XYVZwWVNuVmFXRkpzWTNwRFEwRlRTWGRFVVZsS1MyOWFTV2gyWTA1QlVVVkNRbEZCUkdkblJWQkJSRU5EUVZGdlEyZG5SVUpCUzBaaENuaEpVRFJOZWxoNksxRjBTMUYwT0hRNWRVRjNiR05hU1VSMFVXUjBRekl2TVdoRFIyWjZjVEpSTkN0VEwwSndiamxaVG1kblZFeDJXR3hVTjBkNmVGWUtkRk56TjFsRVNsbHFaak5pYUhsNmFHWjNXazVIWmtGU2MwUk9NazVRWVVaRE1XcEhNMmxCV2tOWUwwTldWblY2WXpsV1YzbzFRMjhyUlhsR0wxUjJlQXB2Y0RaMWIzUmhXR2syYlM5emVVWk5SMVExY1RablVIaDFSSE51YWpaaFNIaFJWRkEzVDB0S1dFcGhPRGdyUVVSVGFUTkhNMDFZVEd0YWRuWnZNVlpoQ2xKcVZtVnRhRTU1TDBSNWIxbE9ORWRKUkN0eE5sZzFLemRVUVZGNWRtTTBaV3BNZUdGVk5HSk9WRzl6ZEhCb1lUZEZjWE5XVHk5ak5qTkpRWGQ1VFhRS09YVkVUVUppYTJkbGRHWlJhVUp6Y0dKVWRVeEhSbWN5UW1OamMyVnFaalJ3V0haaFZtaG5WMnhTVXpOWWIyMDVXU3R0VW5oM2EwaFRZa3BoZEdwdk5ncFNZUzlXTkVWVVVEQjZXSE0xTjJSdmFVY3dRMEYzUlVGQllVMXFUVU5GZDBSbldVUldVakJRUVZGSUwwSkJVVVJCWjB0clRVRTRSMEV4VldSRmQwVkNDaTkzVVVaTlFVMUNRV1k0ZDBSUldVcExiMXBKYUhaalRrRlJSVXhDVVVGRVoyZEZRa0ZKSzFOcWIwOTVMMlpzVGpacVdtMWxRVWg2WlhOUmFuaG5NM01LZWpjMGNtaHZTMmswYVRFeVdDOVBORzFCY0hGc1RtRTBZV1pFVERKV1N6RTVjbVpIZDNaSVYwMW1TalJaU1d0ak5VczFjMHRzU21SblJuRXlaRnBFTVFwSU56WlZkakowVTAxdGNVOXJWVlZDY1RWQkwydHhPWFZ2YUhwMGNGTTJSM3BVUTFVNEwza3hZMHRWYWpoMWJETjZhVVpvSzJKSmMzaHRWa1pxWmpaVENsWjNZbWQ2WlRZd09XTTVaelJNVkZWUVJHWmFkVGxSTWpaaWJtWXdLM3BwWVZjMGVYTlBibWhzYXl0b1RGUm1UM0ZGT1UxSVRYVnVVbTh5SzJwVFdqRUtlWEF6WTNwbVRrRklSM3BDZUU1SFZUWmtja1I0ZVhZNVUzRTFaa1ZaVEhsS05FRTFiSEUxTlVaeFdVRlBWV1F4U3pkRlJXUmtSbFpPUmtaRVdtZE9SZ3BOYkhjMFMwWlRkVGxJTkVWNVFrMVVOa3BRVUUxaE1saG1WemwyU1ROUFZIbEJLeTlxYlhOS2MyaHFaMlJpU0dVcmJUaGtiVnBRZW00elVUMEtMUzB0TFMxRlRrUWdRMFZTVkVsR1NVTkJWRVV0TFMwdExRbz0KICAgIHNlcnZlcjogaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjCiAgbmFtZToga3ViZXJuZXRlcwpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3Rlcjoga3ViZXJuZXRlcwogICAgbmFtZXNwYWNlOiBkZWZhdWx0CiAgICB1c2VyOiBhZG1pbgogIG5hbWU6IGFkbWluQGt1YmVybmV0ZXMKY3VycmVudC1jb250ZXh0OiBhZG1pbkBrdWJlcm5ldGVzCmtpbmQ6IENvbmZpZwpwcmVmZXJlbmNlczoge30KdXNlcnM6Ci0gbmFtZTogYWRtaW4KICB1c2VyOgogICAgdG9rZW46IGV5SmhiR2NpT2lKU1V6STFOaUlzSW10cFpDSTZJblE1YmpoMlJqWlNhSEJpYm01QlZsQjBZVU10TWw4d04xTTVRMjFVZVd0ellqWXliMmxRU1ZWb2NVVWlmUS5leUpwYzNNaU9pSnJkV0psY201bGRHVnpMM05sY25acFkyVmhZMk52ZFc1MElpd2lhM1ZpWlhKdVpYUmxjeTVwYnk5elpYSjJhV05sWVdOamIzVnVkQzl1WVcxbGMzQmhZMlVpT2lKcmRXSmxjM0JvWlhKbExYTjVjM1JsYlNJc0ltdDFZbVZ5Ym1WMFpYTXVhVzh2YzJWeWRtbGpaV0ZqWTI5MWJuUXZjMlZqY21WMExtNWhiV1VpT2lKcmRXSmxjM0JvWlhKbExYUnZhMlZ1TFRSa2JqZHJJaXdpYTNWaVpYSnVaWFJsY3k1cGJ5OXpaWEoyYVdObFlXTmpiM1Z1ZEM5elpYSjJhV05sTFdGalkyOTFiblF1Ym1GdFpTSTZJbXQxWW1WemNHaGxjbVVpTENKcmRXSmxjbTVsZEdWekxtbHZMM05sY25acFkyVmhZMk52ZFc1MEwzTmxjblpwWTJVdFlXTmpiM1Z1ZEM1MWFXUWlPaUkzTm1JMFltWXpPQzAyTURoa0xUUmtPV1V0T1dZeU9DMHpaVE5rTm1ReFptSmtZekVpTENKemRXSWlPaUp6ZVhOMFpXMDZjMlZ5ZG1salpXRmpZMjkxYm5RNmEzVmlaWE53YUdWeVpTMXplWE4wWlcwNmEzVmlaWE53YUdWeVpTSjkuR1VGOW1GYzlkQWpLdm5MMDNOMHlLWlNtUk1IT2VWQlBhUTBpT0xBYTZ6Zl9ZbmN6TmpmTHJvU2txWVNGdU1WSDdXSTNYejQ2QWdLalBKZXA0NGtHbTVQbVE3MldHY2hwTkhuek82TGNWUkhQMV9TZDBqUDVKRDdKaktMN1ZyQ3lQb2l6b2VFMi1EM3V5QWxybXN1cGV0bnJWYVM1OVctcXkzZ1pWdGt1Z1BHQ2NBcGlMOHp0M2xsVC03dVlWN1RWcEFIUkFCTEQ2eFJSM3gxdnk5N3NUTXl4S2NoRjMxa3M3a0ZUdmJkRHZjeV93ZUtoWm5RTmRWWkllNDQwTktLYmFpRHotS3dzRks4UzZzMzZpRkowdWwyd1NTaWZCcG96aENmY2JIMGV4NTZkTFZyVFlMRWFoS2JWTEJSbUpDRGZUbTUzY2VndXExYXlNZUVuUTBkQU5nCg=="}
         # 创建凭证
-        response = devops_steps.step_create_credential(create_devops, name, description, type, data)
+        response = devops_steps.step_create_credential(create_devops, name, description, credential_type, data)
         # 验证新建的凭证的type
         with pytest.assume:
-            assert response.json()['type'] == 'credential.devops.kubesphere.io/' + type
+            assert response.json()['type'] == 'credential.devops.kubesphere.io/' + credential_type
         # 删除凭证
         devops_steps.step_delete_credential(create_devops, name)
 

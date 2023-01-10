@@ -429,7 +429,7 @@ class TestProject(object):
         for project_info in multi_projects:
             workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
             condition = 'name=' + workload_name
-            type = 'statefulsets'
+            workload_type = 'statefulsets'
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
             image = 'nginx'  # 镜像名称
             replicas = 2  # 副本数
@@ -454,20 +454,20 @@ class TestProject(object):
             time.sleep(1)
             response = multi_project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
                                                                               project_name=project_info[0],
-                                                                              type=type, condition=condition)
+                                                                              type=workload_type, condition=condition)
             # 获取并验证statefulsets的名称正确
             try:
                 name = response.json()['items'][0]['metadata']['name']
             except Exception as e:
                 print(e)
                 # 删除创建的工作负载
-                multi_project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type=type,
+                multi_project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type=workload_type,
                                                                           work_name=workload_name)
                 pytest.xfail('工作负载创建失败，标记为xfail')
                 break
             pytest.assume(name == workload_name)
             # 删除创建的statefulsets
-            re = multi_project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type=type,
+            re = multi_project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type=workload_type,
                                                                            work_name=workload_name)
             assert re.json()['status']['conditions'][0]['status'] == 'True'
 
@@ -642,7 +642,7 @@ class TestProject(object):
     @allure.title('在多集群项目设置网关-NodePort')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_gateway_nodeport(self):
-        type = 'NodePort'  # 网关类型
+        gateway_type = 'NodePort'  # 网关类型
         annotations = {"servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
         # 创建网关
         # 获取环境中所有的多集群项目
@@ -650,14 +650,14 @@ class TestProject(object):
         for project_info in multi_projects:
             multi_project_steps.step_create_gateway_in_multi_project(cluster_name=project_info[1],
                                                                      project_name=project_info[0],
-                                                                     type=type, annotations=annotations)
+                                                                     type=gateway_type, annotations=annotations)
             # 查询网关
             response = multi_project_steps.step_get_gateway_in_multi_project(cluster_name=project_info[1],
                                                                              project_name=project_info[0])
             # 获取网关的类型
-            gateway_type = response.json()['spec']['type']
+            gateway_type_new = response.json()['spec']['type']
             # 验证网关创建正确
-            pytest.assume(gateway_type == type)
+            pytest.assume(gateway_type_new == gateway_type)
             # 验证网关创建成功
             pytest.assume(response.status_code == 200)
             # 删除网关
@@ -672,7 +672,7 @@ class TestProject(object):
     @allure.title('在多集群项目设置网关-LoadBalancer')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_gateway_loadbalancer(self):
-        type = 'LoadBalancer'  # 网关类型
+        gateway_type = 'LoadBalancer'  # 网关类型
         annotations = {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
                        "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0",
                        "servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
@@ -682,14 +682,14 @@ class TestProject(object):
         for project_info in multi_projects:
             multi_project_steps.step_create_gateway_in_multi_project(cluster_name=project_info[1],
                                                                      project_name=project_info[0],
-                                                                     type=type, annotations=annotations)
+                                                                     type=gateway_type, annotations=annotations)
             # 查询网关
             response = multi_project_steps.step_get_gateway_in_multi_project(cluster_name=project_info[1],
                                                                              project_name=project_info[0])
             # 获取网关的类型
-            gateway_type = response.json()['spec']['type']
+            gateway_type_new = response.json()['spec']['type']
             # 验证网关创建正确
-            pytest.assume(gateway_type == type)
+            pytest.assume(gateway_type_new == gateway_type)
             # 验证网关创建成功
             pytest.assume(response.status_code == 200)
             # 删除网关
@@ -704,8 +704,8 @@ class TestProject(object):
     @allure.title('在多集群项目编辑网关')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_edit_gateway(self):
-        type = 'LoadBalancer'  # 网关类型
-        type_new = 'NodePort'
+        gateway_type = 'LoadBalancer'  # 网关类型
+        gateway_type_new = 'NodePort'
         annotations = {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
                        "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0",
                        "servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
@@ -716,11 +716,11 @@ class TestProject(object):
             # 创建网关
             multi_project_steps.step_create_gateway_in_multi_project(cluster_name=project_info[1],
                                                                      project_name=project_info[0],
-                                                                     type=type, annotations=annotations)
+                                                                     type=gateway_type, annotations=annotations)
             # 编辑网关
             multi_project_steps.step_edit_gateway_in_multi_project(cluster_name=project_info[1],
                                                                    project_name=project_info[0],
-                                                                   type=type_new, annotations=annotations_new)
+                                                                   type=gateway_type_new, annotations=annotations_new)
             # 查询网关
             response = multi_project_steps.step_get_gateway_in_multi_project(cluster_name=project_info[1],
                                                                              project_name=project_info[0])
@@ -1545,9 +1545,9 @@ class TestProject(object):
                                                                                      end_time=now_timestamp,
                                                                                      step='4320s', times=str(10))
             # 获取结果中的数据类型
-            type = response.json()['results'][0]['data']['resultType']
+            metric_type = response.json()['results'][0]['data']['resultType']
             # 验证数据类型正确
-            assert type == 'matrix'
+            assert metric_type == 'matrix'
 
     @allure.story('概览')
     @allure.title('查询多集群项目的abnormalworkloads')

@@ -1460,9 +1460,9 @@ class TestCluster(object):
         cluster_steps.step_create_alert_policy(alert_name, node_name)
         # 查询新建的自定义告警策略，并获取其id
         re = cluster_steps.step_get_alert_custom_policy(alert_name)
-        id = re.json()['items'][0]['id']
+        alert_id = re.json()['items'][0]['id']
         # 修改自定义策略的持续时间为5min
-        cluster_steps.step_edit_alert_custom_policy(alert_name, id, node_name)
+        cluster_steps.step_edit_alert_custom_policy(alert_name, alert_id, node_name)
         # 查看告警策略的详情，并验证持续时间修改成功
         r = cluster_steps.step_get_alert_custom_policy_detail(alert_name)
         duration = r.json()['duration']

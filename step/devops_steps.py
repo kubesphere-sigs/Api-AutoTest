@@ -377,7 +377,7 @@ def step_create_pipeline(devops, devops_name, pipeline_name):
 
 
 @allure.step('编辑jenkinsfile-checkScriptCompile ')
-def step_edit_jenkinsfile_checkScriptCompile(devops_name, pipeline_name, jenkins_file):
+def step_edit_jenkinsfile_check_script_compile(devops_name, pipeline_name, jenkins_file):
     url = env_url + '/kapis/devops.kubesphere.io/v1alpha2/devops/' + devops_name + '/pipelines/' + pipeline_name + '/checkScriptCompile'
 
     data = 'value=' + jenkins_file
