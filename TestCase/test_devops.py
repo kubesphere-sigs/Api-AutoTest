@@ -266,8 +266,8 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('查看devops工程默认的所有角色')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_devops_role_all(self, create_devops):
-        response = devops_steps.step_get_role(create_devops, '')
+    def test_devops_role_all(self):
+        response = devops_steps.step_get_role(self.dev_name_new, '')
         assert response.json()['totalItems'] == 3  # 验证初始的角色数量为3
 
     @allure.story('工程管理-工程角色')
@@ -289,8 +289,8 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('模糊查找devops工程中的角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_fuzzy(self, create_devops):
-        response = devops_steps.step_get_role(create_devops, 'adm')
+    def test_devops_role_fuzzy(self):
+        response = devops_steps.step_get_role(self.dev_name_new, 'adm')
         with pytest.assume:
             assert response.json()['totalItems'] == 1  # 验证查询到的结果数量为2
         # 验证查找到的角色
@@ -425,16 +425,16 @@ class TestDevOps(object):
     @allure.story('工程管理-工程成员')
     @allure.title('编辑devops工程成员的角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_edit_user(self, create_devops):
+    def test_devops_edit_user(self):
         role = 'operator'
-        response = devops_steps.step_edit_member(create_devops, self.user_name, role)
+        response = devops_steps.step_edit_member(self.dev_name_new, self.user_name, role)
         assert response.json()['roleRef'] == 'operator'  # 验证修改后的用户角色
 
     @allure.story('工程管理-工程成员')
     @allure.title('删除devops工程的成员')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_delete_user(self, create_devops):
-        response = devops_steps.step_remove_member(create_devops, self.user_name)
+    def test_devops_delete_user(self):
+        response = devops_steps.step_remove_member(self.dev_name_new, self.user_name)
         assert response.json()['message'] == 'success'  # 验证删除成功
 
     @allure.story('流水线')
