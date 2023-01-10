@@ -644,10 +644,10 @@ class TestProject(object):
     def test_create_gateway_nodeport(self):
         gateway_type = 'NodePort'  # 网关类型
         annotations = {"servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
-        # 创建网关
         # 获取环境中所有的多集群项目
         multi_projects = multi_project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
+            # 创建网关
             multi_project_steps.step_create_gateway_in_multi_project(cluster_name=project_info[1],
                                                                      project_name=project_info[0],
                                                                      type=gateway_type, annotations=annotations)
@@ -676,10 +676,10 @@ class TestProject(object):
         annotations = {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
                        "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0",
                        "servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
-        # 创建网关
         # 获取环境中所有的多集群项目
         multi_projects = multi_project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
+            # 创建网关
             multi_project_steps.step_create_gateway_in_multi_project(cluster_name=project_info[1],
                                                                      project_name=project_info[0],
                                                                      type=gateway_type, annotations=annotations)
