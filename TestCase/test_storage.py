@@ -111,7 +111,6 @@ class TestStorage:
     @allure.title('存储类的存储卷信息')
     @allure.severity('normal')
     def test_sc_pvc(self, create_sc):
-        ex = True
         # 创建存储卷
         volume_name = 'volume-' + str(get_random())
         storage_steps.step_create_volume(self.pro_ws_name, create_sc, volume_name)
