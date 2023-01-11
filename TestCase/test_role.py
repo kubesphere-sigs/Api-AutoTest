@@ -90,7 +90,7 @@ class TestRole(object):
     @allure.story('角色详情')
     @allure.severity(allure.severity_level.NORMAL)
     @allure.title('查询角色授权用户')
-    def test_query_role_Authorized_user(self, create_role, create_user):
+    def test_query_role_authorized_user(self, create_role, create_user):
         time.sleep(3)
         # 查询角色授权用户
         res = platform_steps.step_get_role_user(create_role)
