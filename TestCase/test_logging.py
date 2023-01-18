@@ -9,7 +9,6 @@ from datetime import datetime
 from common import commonFunction
 from step import toolbox_steps, workspace_steps, project_steps, cluster_steps
 
-
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 
@@ -41,7 +40,7 @@ class TestLogSearch(object):
         # 验证容器数量大于0
         pytest.assume(pod_count > 0)
         # 查询最近12小时的日志变化趋势
-        interval = '30m'   # 时间间隔 30分钟
+        interval = '30m'  # 时间间隔 30分钟
         # 获取12小时之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         re = toolbox_steps.step_get_logs_trend(before_timestamp, now_timestamp, interval)
@@ -51,11 +50,11 @@ class TestLogSearch(object):
         today = commonFunction.get_today()
         # 获取当天12点的时间戳
         tamp = commonFunction.get_custom_timestamp(today, '12:00:00')
-        if int(now_timestamp) > int(tamp):   # 如果当前时间大于12点，则当天的日志总数大于等于最近12小时的日志总数
+        if int(now_timestamp) > int(tamp):  # 如果当前时间大于12点，则当天的日志总数大于等于最近12小时的日志总数
             assert log_counts >= logs_count
         elif int(now_timestamp) < int(tamp):  # 如果当前时间小于12点，则当天的日志总数小于等于最近12小时的日志总数
             assert logs_count >= log_counts
-        else:                                # 如果当前时间等于12点，则当天的日志总数等于最近12小时的日志总数
+        else:  # 如果当前时间等于12点，则当天的日志总数等于最近12小时的日志总数
             assert logs_count == log_counts
 
     @allure.story('日志总量')
@@ -99,7 +98,7 @@ class TestLogSearch(object):
         # 获取查询结果数据中的时间间隔
         time_1 = response.json()['histogram']['histograms'][0]['time']
         time_2 = response.json()['histogram']['histograms'][1]['time']
-        time_interval = (time_2 - time_1)/1000  # 换算成秒
+        time_interval = (time_2 - time_1) / 1000  # 换算成秒
         # 验证时间间隔正确
         assert time_interval == int(interval)
 
@@ -249,7 +248,6 @@ class TestLogSearch(object):
         # 获取项目的pod的数量
         pod_count = r.json()['totalItems']
         # 获取项目任一pod的名称
-        container_name = ''
         if pod_count > 0:
             k = numpy.random.randint(0, pod_count)
             pod_name = r.json()['items'][k]['metadata']['name']
@@ -268,22 +266,20 @@ class TestLogSearch(object):
                 # 验证日志查询成功
                 assert logs_count >= 0
             else:
-                print(project_name + '的pod' + pod_name +'无container')
+                print(project_name + '的pod' + pod_name + '无container')
         else:
             print(project_name + '无pod')
 
     @allure.story("集群设置")
-    @allure.title('查看日志接收器中的容器日志')
+    @allure.title('查看默认情况下日志接收器中的容器日志')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_log_receiver_log(self):
         # 查询日志接收器/容器日志
         response = cluster_steps.step_get_log_receiver('logging')
-        # 获取接收器类型和启用状态
-        component = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/component']
-        enabled = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/enabled']
-        # 校验接收器类型和启用状态，启用状态默认为开启
-        pytest.assume(component == 'logging')
-        assert enabled == 'true'
+        # 判断是否存在日志接收器
+        items = response.json()['items']
+        # 验证日志接收器不存在
+        pytest.assume(not items)
 
     @allure.story('集群设置/日志接收器')
     @allure.title('{title}')

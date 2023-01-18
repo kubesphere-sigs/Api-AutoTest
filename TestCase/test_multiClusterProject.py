@@ -104,7 +104,7 @@ class TestProject(object):
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
             condition = 'name=' + work_name  # 查询条件
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-            volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+            volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
             volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
@@ -118,7 +118,7 @@ class TestProject(object):
                                                                     image=image, replicas=replicas,
                                                                     container_name=container_name,
                                                                     volume_info=volume_info, ports=port,
-                                                                    volumemount=volumeMounts, strategy=strategy_info)
+                                                                    volumemount=volume_mounts, strategy=strategy_info)
             i = 0
             while i < 180:
                 # 获取工作负载的状态
@@ -127,8 +127,8 @@ class TestProject(object):
                                                                                   type='deployments',
                                                                                   condition=condition)
                 try:
-                    readyReplicas = response.json()['items'][0]['status']['readyReplicas']
-                    if readyReplicas:
+                    ready_replicas = response.json()['items'][0]['status']['readyReplicas']
+                    if ready_replicas:
                         break
                 except Exception as e:
                     print(e)
@@ -164,7 +164,7 @@ class TestProject(object):
             condition = 'name=' + work_name  # 查询条件
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
             service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
-            volumemounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]
+            volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]
             volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
             # 创建存储卷
             multi_project_steps.step_create_volume_in_multi_project(cluster_name=project_info[1],
@@ -176,7 +176,7 @@ class TestProject(object):
                                                                       container_name=container_name, image=image,
                                                                       replicas=replicas,
                                                                       ports=port, service_ports=service_port,
-                                                                      volumemount=volumemounts, volume_info=volume_info,
+                                                                      volumemount=volume_mounts, volume_info=volume_info,
                                                                       service_name=service_name)
             # 验证资源创建成功
             i = 0
@@ -187,8 +187,8 @@ class TestProject(object):
                                                                                   type='statefulsets',
                                                                                   condition=condition)
                 try:
-                    readyReplicas = response.json()['items'][0]['status']['readyReplicas']
-                    if readyReplicas == replicas:
+                    ready_replicas = response.json()['items'][0]['status']['readyReplicas']
+                    if ready_replicas == replicas:
                         break
                 except Exception as e:
                     print(e)
@@ -222,7 +222,7 @@ class TestProject(object):
             condition = 'name=' + service_name  # 查询条件
             port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
             port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-            volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+            volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
             volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
@@ -240,7 +240,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     work_name=service_name,
                                                                     container_name=container_name,
-                                                                    ports=port_deploy, volumemount=volumeMounts,
+                                                                    ports=port_deploy, volumemount=volume_mounts,
                                                                     image=image,
                                                                     replicas=replicas,
                                                                     volume_info=volume_info, strategy=strategy_info)
@@ -252,8 +252,8 @@ class TestProject(object):
                                                                                   type='deployments',
                                                                                   condition=condition)
                 try:
-                    readyReplicas = response.json()['items'][0]['status']['readyReplicas']
-                    if readyReplicas == replicas:
+                    ready_replicas = response.json()['items'][0]['status']['readyReplicas']
+                    if ready_replicas == replicas:
                         break
                 except Exception as e:
                     print(e)
@@ -287,7 +287,7 @@ class TestProject(object):
             image = 'nginx'  # 镜像名称
             condition = 'name=' + workload_name  # 查询条件
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
-            volumeMounts = []  # 设置挂载的存储卷
+            volume_mounts = []  # 设置挂载的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
             replicas = 1  # 副本数
@@ -297,7 +297,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     work_name=workload_name,
                                                                     container_name=container_name, ports=port,
-                                                                    volumemount=volumeMounts,
+                                                                    volumemount=volume_mounts,
                                                                     image=image, replicas=replicas,
                                                                     volume_info=volume_info,
                                                                     strategy=strategy_info)
@@ -337,7 +337,7 @@ class TestProject(object):
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
             image = 'nginx'  # 镜像名称
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
-            volumeMounts = []  # 设置挂载哦的存储卷
+            volume_mounts = []  # 设置挂载哦的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
             replicas = 1  # 副本数
@@ -347,7 +347,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     work_name=workload_name,
                                                                     container_name=container_name, ports=port,
-                                                                    volumemount=volumeMounts,
+                                                                    volumemount=volume_mounts,
                                                                     image=image, replicas=replicas,
                                                                     volume_info=volume_info,
                                                                     strategy=strategy_info)
@@ -383,7 +383,7 @@ class TestProject(object):
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
             service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
             service_name = 'service' + workload_name
-            volumemounts = []
+            volume_mounts = []
             # 创建工作负载
             multi_project_steps.step_create_stateful_in_multi_project(cluster_name=project_info[1],
                                                                       project_name=project_info[0],
@@ -393,7 +393,7 @@ class TestProject(object):
                                                                       volume_info=volume_info,
                                                                       ports=port,
                                                                       service_ports=service_port,
-                                                                      volumemount=volumemounts,
+                                                                      volumemount=volume_mounts,
                                                                       service_name=service_name)
             # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
             i = 0
@@ -403,16 +403,16 @@ class TestProject(object):
                                                                                       project_name=project_info[0],
                                                                                       type='statefulsets',
                                                                                       condition=condition)
-                    readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                    ready_replicas = response.json()['items'][0]['status']['readyReplicas']
                     # 验证资源的所有副本已就绪
-                    if readyReplicas == replicas:
+                    if ready_replicas == replicas:
                         print('创建工作负载耗时:' + str(i) + 's')
                         break
                 except Exception as e:
                     print(e)
                     time.sleep(3)
                     i = i + 3
-            pytest.assume(readyReplicas == replicas)
+            pytest.assume(ready_replicas == replicas)
             # 删除创建的工作负载
             multi_project_steps.step_delete_workload_in_multi_project(project_name=project_info[0],
                                                                       type='services', work_name=workload_name)
@@ -429,7 +429,7 @@ class TestProject(object):
         for project_info in multi_projects:
             workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
             condition = 'name=' + workload_name
-            type = 'statefulsets'
+            workload_type = 'statefulsets'
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
             image = 'nginx'  # 镜像名称
             replicas = 2  # 副本数
@@ -437,7 +437,7 @@ class TestProject(object):
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
             service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
             service_name = 'service' + workload_name
-            volumemounts = []
+            volume_mounts = []
             # 创建工作负载
             multi_project_steps.step_create_stateful_in_multi_project(cluster_name=project_info[1],
                                                                       project_name=project_info[0],
@@ -447,27 +447,27 @@ class TestProject(object):
                                                                       volume_info=volume_info,
                                                                       ports=port,
                                                                       service_ports=service_port,
-                                                                      volumemount=volumemounts,
+                                                                      volumemount=volume_mounts,
                                                                       service_name=service_name)
 
             # 按名称精确查询statefulsets
             time.sleep(1)
             response = multi_project_steps.step_get_workload_in_multi_project(cluster_name=project_info[1],
                                                                               project_name=project_info[0],
-                                                                              type=type, condition=condition)
+                                                                              type=workload_type, condition=condition)
             # 获取并验证statefulsets的名称正确
             try:
                 name = response.json()['items'][0]['metadata']['name']
             except Exception as e:
                 print(e)
                 # 删除创建的工作负载
-                multi_project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type=type,
+                multi_project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type=workload_type,
                                                                           work_name=workload_name)
                 pytest.xfail('工作负载创建失败，标记为xfail')
                 break
             pytest.assume(name == workload_name)
             # 删除创建的statefulsets
-            re = multi_project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type=type,
+            re = multi_project_steps.step_delete_workload_in_multi_project(project_name=project_info[0], type=workload_type,
                                                                            work_name=workload_name)
             assert re.json()['status']['conditions'][0]['status'] == 'True'
 
@@ -484,7 +484,7 @@ class TestProject(object):
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
             condition = 'name=' + service_name  # 查询deploy和service条件
             port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]  # 容器的端口信息
-            volumeMounts = []  # 设置挂载的存储卷
+            volume_mounts = []  # 设置挂载的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
             replicas = 2  # 副本数
@@ -498,7 +498,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     work_name=service_name,
                                                                     container_name=container_name,
-                                                                    ports=port_deploy, volumemount=volumeMounts,
+                                                                    ports=port_deploy, volumemount=volume_mounts,
                                                                     image=image,
                                                                     replicas=replicas,
                                                                     volume_info=volume_info, strategy=strategy_info)
@@ -583,7 +583,7 @@ class TestProject(object):
             container_name = 'container' + str(commonFunction.get_random())  # 容器名称
             condition = 'name=' + service_name  # 查询deploy和service条件
             port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]  # 容器的端口信息
-            volumeMounts = []  # 设置挂载的存储卷
+            volume_mounts = []  # 设置挂载的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
             replicas = 2  # 副本数
@@ -597,7 +597,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     work_name=service_name,
                                                                     container_name=container_name,
-                                                                    ports=port_deploy, volumemount=volumeMounts,
+                                                                    ports=port_deploy, volumemount=volume_mounts,
                                                                     image=image,
                                                                     replicas=replicas,
                                                                     volume_info=volume_info, strategy=strategy_info)
@@ -642,22 +642,22 @@ class TestProject(object):
     @allure.title('在多集群项目设置网关-NodePort')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_gateway_nodeport(self):
-        type = 'NodePort'  # 网关类型
+        gateway_type = 'NodePort'  # 网关类型
         annotations = {"servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
-        # 创建网关
         # 获取环境中所有的多集群项目
         multi_projects = multi_project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
+            # 创建网关
             multi_project_steps.step_create_gateway_in_multi_project(cluster_name=project_info[1],
                                                                      project_name=project_info[0],
-                                                                     type=type, annotations=annotations)
+                                                                     type=gateway_type, annotations=annotations)
             # 查询网关
             response = multi_project_steps.step_get_gateway_in_multi_project(cluster_name=project_info[1],
                                                                              project_name=project_info[0])
             # 获取网关的类型
-            gateway_type = response.json()['spec']['type']
+            gateway_type_new = response.json()['spec']['type']
             # 验证网关创建正确
-            pytest.assume(gateway_type == type)
+            pytest.assume(gateway_type_new == gateway_type)
             # 验证网关创建成功
             pytest.assume(response.status_code == 200)
             # 删除网关
@@ -672,24 +672,24 @@ class TestProject(object):
     @allure.title('在多集群项目设置网关-LoadBalancer')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_gateway_loadbalancer(self):
-        type = 'LoadBalancer'  # 网关类型
+        gateway_type = 'LoadBalancer'  # 网关类型
         annotations = {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
                        "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0",
                        "servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
-        # 创建网关
         # 获取环境中所有的多集群项目
         multi_projects = multi_project_steps.step_get_multi_project_all(self.ws_name)
         for project_info in multi_projects:
+            # 创建网关
             multi_project_steps.step_create_gateway_in_multi_project(cluster_name=project_info[1],
                                                                      project_name=project_info[0],
-                                                                     type=type, annotations=annotations)
+                                                                     type=gateway_type, annotations=annotations)
             # 查询网关
             response = multi_project_steps.step_get_gateway_in_multi_project(cluster_name=project_info[1],
                                                                              project_name=project_info[0])
             # 获取网关的类型
-            gateway_type = response.json()['spec']['type']
+            gateway_type_new = response.json()['spec']['type']
             # 验证网关创建正确
-            pytest.assume(gateway_type == type)
+            pytest.assume(gateway_type_new == gateway_type)
             # 验证网关创建成功
             pytest.assume(response.status_code == 200)
             # 删除网关
@@ -704,8 +704,8 @@ class TestProject(object):
     @allure.title('在多集群项目编辑网关')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_edit_gateway(self):
-        type = 'LoadBalancer'  # 网关类型
-        type_new = 'NodePort'
+        gateway_type = 'LoadBalancer'  # 网关类型
+        gateway_type_new = 'NodePort'
         annotations = {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
                        "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0",
                        "servicemesh.kubesphere.io/enabled": "false"}  # 网关的注释信息
@@ -716,11 +716,11 @@ class TestProject(object):
             # 创建网关
             multi_project_steps.step_create_gateway_in_multi_project(cluster_name=project_info[1],
                                                                      project_name=project_info[0],
-                                                                     type=type, annotations=annotations)
+                                                                     type=gateway_type, annotations=annotations)
             # 编辑网关
             multi_project_steps.step_edit_gateway_in_multi_project(cluster_name=project_info[1],
                                                                    project_name=project_info[0],
-                                                                   type=type_new, annotations=annotations_new)
+                                                                   type=gateway_type_new, annotations=annotations_new)
             # 查询网关
             response = multi_project_steps.step_get_gateway_in_multi_project(cluster_name=project_info[1],
                                                                              project_name=project_info[0])
@@ -743,7 +743,7 @@ class TestProject(object):
             image = 'nginx'  # 镜像名称
             condition = 'name=' + workload_name  # 查询条件
             port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
-            volumeMounts = []  # 设置挂载的存储卷
+            volume_mounts = []  # 设置挂载的存储卷
             strategy_info = {"type": "RollingUpdate",
                              "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
             replicas = 1  # 副本数
@@ -753,7 +753,7 @@ class TestProject(object):
                                                                     project_name=project_info[0],
                                                                     work_name=workload_name,
                                                                     container_name=container_name, ports=port,
-                                                                    volumemount=volumeMounts,
+                                                                    volumemount=volume_mounts,
                                                                     image=image, replicas=replicas,
                                                                     volume_info=volume_info,
                                                                     strategy=strategy_info)
@@ -1269,33 +1269,6 @@ class TestProject(object):
         assert status == 'Failure'
 
     @allure.story('项目设置-资源默认请求')
-    @allure.title('只设置资源默认请求-输入错误的内存信息(包含负数)')
-    # 接口未做限制
-    def wx_test_edit_container_quota_wrong_memory_1(self):
-        # 获取环境中所有的多集群项目
-        multi_projects = multi_project_steps.step_get_multi_project_all()
-        for project_info in multi_projects:
-            # 获取资源默认请求
-            response = multi_project_steps.step_get_container_quota_in_multi_project(project_info[0], project_info[2])
-            resource_version = None
-            try:
-                if response.json()['items'][0]['metadata']['resourceVersion']:
-                    resource_version = response.json()['items'][0]['metadata']['resourceVersion']
-                else:
-                    resource_version = None
-            except Exception as e:
-                print(e)
-            # 编辑资源默认请求
-            limit = {"memory": "1000aMi"}
-            request = {"memory": "1Mi"}
-            r = multi_project_steps.step_edit_container_quota_in_multi_project(project_info[1], project_info[0],
-                                                                               resource_version, limit, request)
-        # 获取编辑结果
-        status = r.json()['status']
-        # 验证编辑失败
-        assert status == 'Failure'
-
-    @allure.story('项目设置-资源默认请求')
     @allure.title('在多集群项目只设置资源默认请求-内存、cpu')
     @allure.severity(allure.severity_level.NORMAL)
     def test_edit_container_quota_memory_1(self):
@@ -1545,9 +1518,9 @@ class TestProject(object):
                                                                                      end_time=now_timestamp,
                                                                                      step='4320s', times=str(10))
             # 获取结果中的数据类型
-            type = response.json()['results'][0]['data']['resultType']
+            metric_type = response.json()['results'][0]['data']['resultType']
             # 验证数据类型正确
-            assert type == 'matrix'
+            assert metric_type == 'matrix'
 
     @allure.story('概览')
     @allure.title('查询多集群项目的abnormalworkloads')
@@ -1605,14 +1578,14 @@ class TestProject(object):
         container_name = 'container' + str(commonFunction.get_random())  # 容器名称
         condition = 'name=' + work_name  # 查询条件
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-        volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载的存储卷
+        volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载的存储卷
         strategy_info = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
         multi_project_steps.step_create_volume(self.cluster_host_name, project_name, volume_name)
         # 创建资源并将存储卷绑定到资源
         project_steps.step_create_deploy(project_name, work_name, container_name, image, replicas, port,
-                                         volumeMounts, volume_info, strategy_info, self.cluster_host_name)
+                                         volume_mounts, volume_info, strategy_info, self.cluster_host_name)
         # 验证资源创建成功
         i = 0
         while i < 300:

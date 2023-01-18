@@ -9,7 +9,8 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import project_steps, platform_steps, workspace_steps, cluster_steps
-from fixtures.project import create_ws, create_project, workload_name, container_name, create_role, create_job, create_deployment, strategy_info
+from fixtures.project import create_project, workload_name, container_name, create_role, create_job, create_deployment, strategy_info
+from fixtures.platform import create_ws
 
 
 @allure.feature('Project')
@@ -72,14 +73,14 @@ class TestProject(object):
         image = 'redis'  # 镜像名称
         condition = 'name=' + workload_name  # 查询条件
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-        volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载的存储卷
+        volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载的存储卷
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
         project_steps.step_create_volume(create_project, volume_name)
         # 创建资源并将存储卷绑定到资源
         project_steps.step_create_deploy(create_project, work_name=workload_name, image=image, replicas=replicas,
                                          container_name=container_name, volume_info=volume_info, ports=port,
-                                         volumemount=volumeMounts, strategy=strategy_info)
+                                         volumemount=volume_mounts, strategy=strategy_info)
         # 验证资源创建成功
         i = 0
         while i < 300:
@@ -135,7 +136,7 @@ class TestProject(object):
         condition = 'name=' + workload_name  # 查询条件
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
-        volumemounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]
+        volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
         project_steps.step_create_volume(create_project, volume_name)
@@ -143,19 +144,19 @@ class TestProject(object):
         project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
                                            container_name=container_name,
                                            image=image, replicas=replicas, ports=port, service_ports=service_port,
-                                           volumemount=volumemounts, volume_info=volume_info, service_name=service_name)
+                                           volumemount=volume_mounts, volume_info=volume_info, service_name=service_name)
         # 验证资源创建成功
-        readyReplicas = 0
+        ready_replicas = 0
         i = 0
         while i < 120:
             # 获取工作负载的状态
             response = project_steps.step_get_workload(create_project, type='statefulsets', condition=condition)
             try:
-                readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                ready_replicas = response.json()['items'][0]['status']['readyReplicas']
             except Exception as e:
                 print(e)
             # 验证资源的所有副本已就绪
-            if readyReplicas == replicas:
+            if ready_replicas == replicas:
                 break
             else:
                 time.sleep(10)
@@ -196,7 +197,7 @@ class TestProject(object):
         image = 'redis'  # 镜像名称
         condition = 'name=' + workload_name  # 查询条件
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-        volumeMounts = [{"name": volume_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+        volume_mounts = [{"name": volume_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
         volume_info = [{"hostPath": {"path": "/data"}, "name": volume_name}]  # 存储卷的信息
         # 获取集群中所有的节点数
         res = cluster_steps.step_get_node_all()
@@ -212,21 +213,21 @@ class TestProject(object):
         # 创建资源并将存储卷绑定到资源
         project_steps.step_create_daemonset(create_project, work_name=workload_name, image=image,
                                             container_name=container_name, volume_info=volume_info, ports=port,
-                                            volumemount=volumeMounts)
+                                            volumemount=volume_mounts)
         # 验证资源创建成功
-        numberReady = ''
+        number_ready = ''
         i = 0
         while i < 180:
             # 获取工作负载的状态
             response = project_steps.step_get_workload(create_project, type='daemonsets', condition=condition)
-            numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
-            if numberReady == cluster_node_all - cluster_node_with_taint:
+            number_ready = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
+            if number_ready == cluster_node_all - cluster_node_with_taint:
                 break
             else:
                 time.sleep(30)
                 i += 30
         with pytest.assume:
-            assert numberReady == cluster_node_all - cluster_node_with_taint
+            assert number_ready == cluster_node_all - cluster_node_with_taint
 
         # 删除工作负载
         project_steps.step_delete_workload(create_project, 'daemonsets', workload_name)
@@ -260,7 +261,7 @@ class TestProject(object):
         condition = 'name=' + workload_name  # 查询条件
         port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
         port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}]  # 容器的端口信息
-        volumeMounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
+        volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载哦的存储卷
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         replicas = 2  # 副本数
         # 创建存储卷
@@ -270,7 +271,7 @@ class TestProject(object):
         # 创建service绑定的deployment
         project_steps.step_create_deploy(project_name=create_project, work_name=workload_name,
                                          container_name=container_name,
-                                         ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
+                                         ports=port_deploy, volumemount=volume_mounts, image=image, replicas=replicas,
                                          volume_info=volume_info, strategy=strategy_info)
         # 验证service创建成功
         response = project_steps.step_get_workload(create_project, type='services', condition=condition)
@@ -278,16 +279,16 @@ class TestProject(object):
         with pytest.assume:
             assert name == workload_name
         # 验证deploy创建成功
-        readyReplicas = 0
+        ready_replicas = 0
         i = 0
         while i < 180:
             re = project_steps.step_get_workload(create_project, type='deployments', condition=condition)
             # 获取并验证deployment创建成功
             try:
-                readyReplicas = re.json()['items'][0]['status']['readyReplicas']
+                ready_replicas = re.json()['items'][0]['status']['readyReplicas']
             except Exception as e:
                 print(e)
-            if readyReplicas == replicas:
+            if ready_replicas == replicas:
                 break
             else:
                 time.sleep(10)
@@ -382,9 +383,9 @@ class TestProject(object):
                        "kubesphere.io/alias-name": alias_name,
                        "kubesphere.io/creator": "admin",
                        "kubesphere.io/description": "我是描述信息"}
-        resourceVersion = ''
+        resource_version = ''
         # 编辑角色
-        project_steps.step_edit_project_role(create_project, create_role, resourceVersion, annotations)
+        project_steps.step_edit_project_role(create_project, create_role, resource_version, annotations)
         time.sleep(1)
         # 查看角色
         r = project_steps.step_get_role(create_project, create_role)
@@ -399,16 +400,16 @@ class TestProject(object):
         role_name = 'role' + str(commonFunction.get_random())
         project_steps.step_create_role(create_project, role_name)
         time.sleep(1)
-        # 获取角色的resourceVersion
+        # 获取角色的resource_version
         response = project_steps.step_get_project_role(create_project, role_name)
-        resourceVersion = response.json()['items'][0]['metadata']['resourceVersion']
+        resource_version = response.json()['items'][0]['metadata']['resourceVersion']
         # 编辑角色的权限
         authority = '["role-template-view-basic","role-template-view-volumes","role-template-view-secrets",' \
                     '"role-template-view-configmaps","role-template-view-snapshots","role-template-view-app-workloads"]'
         annotations = {"iam.kubesphere.io/aggregation-roles": authority,
                        "kubesphere.io/alias-name": "",
                        "kubesphere.io/creator": "admin", "kubesphere.io/description": ""}
-        project_steps.step_edit_project_role(create_project, role_name, resourceVersion, annotations)
+        project_steps.step_edit_project_role(create_project, role_name, resource_version, annotations)
         time.sleep(1)
         # 查看角色
         r = project_steps.step_get_role(create_project, role_name)
@@ -834,12 +835,12 @@ class TestProject(object):
     def test_create_deployment_wrong_name(self, deploy_name, title, create_project, container_name, strategy_info):
         image = 'nginx'  # 镜像名称
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 81}]  # 容器的端口信息
-        volumeMounts = []  # 设置挂载的存储卷
+        volume_mounts = []  # 设置挂载的存储卷
         replicas = 2  # 副本数
         volume_info = []
         # 创建deployment并验证创建失败
         assert project_steps.step_create_deploy(project_name=create_project, work_name=deploy_name,
-                                                container_name=container_name, ports=port, volumemount=volumeMounts,
+                                                container_name=container_name, ports=port, volumemount=volume_mounts,
                                                 image=image, replicas=replicas, volume_info=volume_info,
                                                 strategy=strategy_info).json()['status'] == 'Failure'
 
@@ -951,12 +952,12 @@ class TestProject(object):
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
         service_name = 'service' + workload_name
-        volumemounts = []
+        volume_mounts = []
         # 创建statefulsets并验证创建失败
         assert project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
                                                   container_name=container_name,
                                                   image=image, replicas=replicas, volume_info=volume_info, ports=port,
-                                                  service_ports=service_port, volumemount=volumemounts,
+                                                  service_ports=service_port, volumemount=volume_mounts,
                                                   service_name=service_name).json()['status'] == 'Failure'
 
     @allure.story('应用负载-工作负载')
@@ -970,32 +971,32 @@ class TestProject(object):
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
         service_name = 'service' + workload_name
-        volumemounts = []
+        volume_mounts = []
         # 创建工作负载
         project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
                                            container_name=container_name,
                                            image=image, replicas=replicas, volume_info=volume_info, ports=port,
-                                           service_ports=service_port, volumemount=volumemounts,
+                                           service_ports=service_port, volumemount=volume_mounts,
                                            service_name=service_name)
 
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间60s
         time.sleep(3)
-        readyReplicas = 0
+        ready_replicas = 0
         i = 3
         while i < 60:
             response = project_steps.step_get_workload(project_name=create_project, type='statefulsets',
                                                        condition=condition)
             try:
-                readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                ready_replicas = response.json()['items'][0]['status']['readyReplicas']
                 # 验证资源的所有副本已就绪
-                if readyReplicas == replicas:
+                if ready_replicas == replicas:
                     break
             except Exception as e:
                 print(e)
             time.sleep(3)
             i = i + 3
         with pytest.assume:
-            assert readyReplicas == replicas
+            assert ready_replicas == replicas
         # 删除工作负载
         project_steps.step_delete_workload(project_name=create_project, type='statefulsets', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1020,12 +1021,12 @@ class TestProject(object):
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
         service_name = 'service' + workload_name
-        volumemounts = []
+        volume_mounts = []
         # 创建工作负载
         project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
                                            container_name=container_name,
                                            image=image, replicas=replicas, volume_info=volume_info, ports=port,
-                                           service_ports=service_port, volumemount=volumemounts,
+                                           service_ports=service_port, volumemount=volume_mounts,
                                            service_name=service_name)
 
         # 按名称精确查询statefulsets
@@ -1059,12 +1060,12 @@ class TestProject(object):
         port = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
         service_name = 'service' + workload_name
-        volumemounts = []
+        volume_mounts = []
         # 创建工作负载
         project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
                                            container_name=container_name,
                                            image=image, replicas=replicas, volume_info=volume_info, ports=port,
-                                           service_ports=service_port, volumemount=volumemounts,
+                                           service_ports=service_port, volumemount=volume_mounts,
                                            service_name=service_name)
 
         # 查询工作负载，直至其状态为运行中
@@ -1072,8 +1073,8 @@ class TestProject(object):
         while i < 60:
             r = project_steps.step_get_workload(create_project, type=workload_type, condition='name=' + workload_name)
             try:
-                readyReplicas = r.json()['items'][0]['status']['readyReplicas']
-                if readyReplicas == replicas:
+                ready_replicas = r.json()['items'][0]['status']['readyReplicas']
+                if ready_replicas == replicas:
                     break
             except Exception as e:
                 print(e)
@@ -1146,19 +1147,19 @@ class TestProject(object):
                                             container_name=container_name, image=image, ports=port,
                                             volume_info=volume_info, volumemount=volumemount)
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间180s
-        numberReady = ''
+        number_ready = ''
         i = 0
         while i < 180:
             response = project_steps.step_get_workload(project_name=create_project, type='daemonsets',
                                                        condition=condition)
-            numberReady = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
+            number_ready = response.json()['items'][0]['status']['numberReady']  # 验证资源的所有副本已就绪
             # 验证资源的所有副本已就绪
-            if numberReady == cluster_node_all - cluster_node_with_taint:
+            if number_ready == cluster_node_all - cluster_node_with_taint:
                 break
             time.sleep(30)
             i = i + 30
         with pytest.assume:
-            assert numberReady == cluster_node_all - cluster_node_with_taint
+            assert number_ready == cluster_node_all - cluster_node_with_taint
         # 删除创建的daemonsets
         project_steps.step_delete_workload(project_name=create_project, type='daemonsets', work_name=workload_name)
         # 等待工作负载删除成功，再删除项目
@@ -1300,7 +1301,7 @@ class TestProject(object):
         image = 'nginx'  # 镜像名称
         condition = 'name=' + workload_name  # 查询deploy和service条件
         port_deploy = [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80, "servicePort": 80}]  # 容器的端口信息
-        volumeMounts = []  # 设置挂载的存储卷
+        volume_mounts = []  # 设置挂载的存储卷
         replicas = 2  # 副本数
         volume_info = []
         # 创建service
@@ -1308,7 +1309,7 @@ class TestProject(object):
         # 创建service绑定的deployment
         project_steps.step_create_deploy(project_name=create_project, work_name=workload_name,
                                          container_name=container_name,
-                                         ports=port_deploy, volumemount=volumeMounts, image=image, replicas=replicas,
+                                         ports=port_deploy, volumemount=volume_mounts, image=image, replicas=replicas,
                                          volume_info=volume_info, strategy=strategy_info)
         # 验证service创建成功
         response = project_steps.step_get_workload(create_project, type='services', condition=condition)
@@ -1432,18 +1433,18 @@ class TestProject(object):
         status = 'false'
         # 创建网关
         project_steps.step_create_gateway(create_project, type_old, status)
-        # 查询网关并获取网关的uid和resourceversion
+        # 查询网关并获取网关的uid和resource_version
         time.sleep(3)
         response = project_steps.step_get_gateway(create_project)
         uid = response.json()[0]['metadata']['uid']
-        reVersion = response.json()[0]['metadata']['resourceVersion']
+        resource_version = response.json()[0]['metadata']['resourceVersion']
         # 修改网关类型为LoadBalancer,并编辑供应商、注解和配置信息
         provider = 'QingCloud Kubernetes Engine'
         annotations = {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
                        "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0"}
         configuration = {"qw": "12"}
         status_new = 'true'
-        project_steps.step_edit_gateway_lb(create_project, uid, reVersion, provider, annotations, configuration,
+        project_steps.step_edit_gateway_lb(create_project, uid, resource_version, provider, annotations, configuration,
                                            status_new)
         # 验证网关编辑成功
         response = project_steps.step_get_gateway(create_project)
@@ -1461,15 +1462,15 @@ class TestProject(object):
         status = 'true'
         # 创建网关
         project_steps.step_create_gateway(create_project, type_old, status)
-        # 查询网关并获取网关的uid和resourceversion
+        # 查询网关并获取网关的uid和resource_version
         time.sleep(1)
         response = project_steps.step_get_gateway(create_project)
         uid = response.json()[0]['metadata']['uid']
-        reVersion = response.json()[0]['metadata']['resourceVersion']
+        resource_version = response.json()[0]['metadata']['resourceVersion']
         # 修改网关类型为NodePort,并编辑配置信息
         configuration = {"qa": "test"}
         status_new = 'false'
-        project_steps.step_edit_gateway_np(create_project, uid, reVersion, configuration, status_new)
+        project_steps.step_edit_gateway_np(create_project, uid, resource_version, configuration, status_new)
         time.sleep(2)
         # 验证网关编辑成功
         re = project_steps.step_get_gateway(create_project)

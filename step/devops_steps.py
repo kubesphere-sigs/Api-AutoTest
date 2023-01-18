@@ -129,14 +129,14 @@ def step_delete_credential(devops_name, credential_name):
 
 
 @allure.step('编辑devops角色的权限信息')
-def step_edit_role_authority(devops_name, role_name, annotations, resourceVersion):
+def step_edit_role_authority(devops_name, role_name, annotations, resource_version):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + devops_name + '/roles/' + role_name
     data = {"apiVersion": "rbac.authorization.k8s.io/v1",
             "kind": "Role",
             "metadata": {"name": role_name,
                          "namespace": devops_name,
                          "annotations": annotations,
-                         "resourceVersion": resourceVersion}
+                         "resourceVersion": resource_version}
             }
     response = requests.put(url, headers=get_header(), data=json.dumps(data))
     return response
@@ -377,7 +377,7 @@ def step_create_pipeline(devops, devops_name, pipeline_name):
 
 
 @allure.step('编辑jenkinsfile-checkScriptCompile ')
-def step_edit_jenkinsfile_checkScriptCompile(devops_name, pipeline_name, jenkins_file):
+def step_edit_jenkinsfile_check_script_compile(devops_name, pipeline_name, jenkins_file):
     url = env_url + '/kapis/devops.kubesphere.io/v1alpha2/devops/' + devops_name + '/pipelines/' + pipeline_name + '/checkScriptCompile'
 
     data = 'value=' + jenkins_file
@@ -484,8 +484,7 @@ def step_create_role(dev_name, name):
             "kind": "Role",
             "metadata": {"namespace": dev_name,
                          "name": name,
-                         "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-pipelines\","
-                                                                                "\"role-template-view-credentials\","
+                         "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-members\","
                                                                                 "\"role-template-view-basic\"]",
                                          "kubesphere.io/creator": "admin"}
                          },

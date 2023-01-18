@@ -197,9 +197,9 @@ class TestIpPool(object):
         while i < 180:
             try:
                 response = project_steps.step_get_workload(self.pro_name, 'deployments', 'name=' + deploy_name)
-                readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                ready_replicas = response.json()['items'][0]['status']['readyReplicas']
                 replicas = response.json()['items'][0]['status']['replicas']
-                if readyReplicas == replicas:
+                if ready_replicas == replicas:
                     break
             except Exception as e:
                 print(e)
@@ -251,9 +251,9 @@ class TestIpPool(object):
         while i < 180:
             try:
                 response = project_steps.step_get_workload(self.pro_name, 'deployments', 'name=' + deploy_name)
-                readyReplicas = response.json()['items'][0]['status']['readyReplicas']
+                ready_replicas = response.json()['items'][0]['status']['readyReplicas']
                 replicas = response.json()['items'][0]['status']['replicas']
-                if readyReplicas == replicas:
+                if ready_replicas == replicas:
                     break
             except Exception as e:
                 print(e)

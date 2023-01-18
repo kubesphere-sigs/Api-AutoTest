@@ -720,17 +720,17 @@ def step_delete_cluster_gateway(cluster_name):
 
 
 @allure.step('编辑集群网关')
-def step_edit_cluster_gateway(cluster_name, uid, resourceVersion, config, status):
+def step_edit_cluster_gateway(cluster_name, uid, resource_version, config, status):
     """
     :param uid:
-    :param resourceVersion:
+    :param resource_version:
     :param config: ex {"4": "5"}
     :param status: 链路追踪状态 true、false
     :return:
     """
     url = env_url + '/apis/clusters/' + cluster_name + '/gateway.kubesphere.io/v1alpha1/namespaces/kubesphere-controls-system/gateways/kubesphere-router-kubesphere-system'
     data = {"metadata": {"name": "kubesphere-router-kubesphere-system", "namespace": "kubesphere-controls-system",
-                         "uid": uid, "resourceVersion": resourceVersion, "generation": 2,
+                         "uid": uid, "resourceVersion": resource_version, "generation": 2,
                          "annotations": {"kubesphere.io/annotations": "", "kubesphere.io/creator": "admin"},
                          "finalizers": ["uninstall-helm-release"], "managedFields": [
             {"manager": "controller-manager", "operation": "Update", "apiVersion": "gateway.kubesphere.io/v1alpha1",

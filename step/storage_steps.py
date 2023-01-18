@@ -121,7 +121,7 @@ def get_sc_accessor(sc_name):
 def set_sc_accessor(sc_name, ns_accessor, ws_accessor, scn):
     re = get_sc_accessor(sc_name)
     uid = re.json()['metadata']['uid']
-    resourceVersion = re.json()['metadata']['resourceVersion']
+    resource_version = re.json()['metadata']['resourceVersion']
     gen = re.json()['metadata']['generation']
     createtime = re.json()['metadata']['creationTimestamp']
     time = re.json()['metadata']['managedFields'][0]['time']
@@ -141,7 +141,7 @@ def set_sc_accessor(sc_name, ns_accessor, ws_accessor, scn):
                      "operation": "Update",
                      "time": time}],
                 "name": sc_name + "-accessor",
-                "resourceVersion": resourceVersion,
+                "resourceVersion": resource_version,
                 "uid": uid
             },
             "spec": {"storageClassName": scn,
@@ -151,6 +151,7 @@ def set_sc_accessor(sc_name, ns_accessor, ws_accessor, scn):
             }
     response = requests.put(url, headers=get_header(), data=json.dumps(data))
     return response
+
 
 @allure.step('设置项目存储类授权规则')
 def set_sc_ns_accessor(sc_name, ns_accessor, scn):
@@ -393,7 +394,7 @@ def create_volumne_by_vs(project_name, volume_name, sc_name):
 # 存储卷 [{name: "volume-pkb0hm", persistentVolumeClaim: {claimName: "vv"}}]
 #  volume mounts [{name: "volume-pkb0hm", readOnly: false, mountPath: "/data"}]
 @allure.step('挂载存储卷')
-def mount_volume(ns_name, deploy_name, container_name, volume, volumeMounts):
+def mount_volume(ns_name, deploy_name, container_name, volume, volume_mounts):
     url1 = env_url + '/apis/apps/v1/namespaces/pro/deployments/' + deploy_name
     re = requests.get(url1, headers=get_header())
     version = re.json()['metadata']['resourceVersion']
@@ -418,7 +419,7 @@ def mount_volume(ns_name, deploy_name, container_name, volume, volumeMounts):
                                                                       "containerPort": 80,
                                                                       "protocol": "TCP"}],
                                                            "resources": {},
-                                                           "volumeMounts": volumeMounts,
+                                                           "volumeMounts": volume_mounts,
                                                            "terminationMessagePath": "/dev/termination-log",
                                                            "terminationMessagePolicy": "File",
                                                            "imagePullPolicy": "IfNotPresent"}],

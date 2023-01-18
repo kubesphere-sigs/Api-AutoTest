@@ -94,23 +94,19 @@ class TestMetering(object):
     def test_get_node_consumption(self, metric_name, title):
         # 查询集群的节点信息
         response = cluster_steps.step_get_node_info()
-        # 获取集群节点的数量
-        count = response.json()['totalItems']
         # 获取节点的名称
-        for i in range(0, count):
-            try:
-                name = response.json()['items'][0]['metadata']['name']
-                # 查看节点的消费信息
-                r = toolbox_steps.step_get_node_consumption(metric_name, name)
-                # 获取metric_name
-                metric = r.json()['results'][0]['metric_name']
-                # 验证metric正确
-                with pytest.assume:
-                    assert metric == metric_name
-            except Exception as e:
-                print(e)
-                print('节点无资源消费信息')
-                break
+        try:
+            name = response.json()['items'][0]['metadata']['name']
+            # 查看节点的消费信息
+            r = toolbox_steps.step_get_node_consumption(metric_name, name)
+            # 获取metric_name
+            metric = r.json()['results'][0]['metric_name']
+            # 验证metric正确
+            with pytest.assume:
+                assert metric == metric_name
+        except Exception as e:
+            print(e)
+            print('节点无资源消费信息')
 
     @allure.story('集群资源消费情况')
     @allure.title('{title}')
@@ -170,24 +166,19 @@ class TestMetering(object):
     def test_get_pod_consumption(self, metric_name, title):
         # 查询集群的节点信息
         response = cluster_steps.step_get_node_info()
-        # 获取集群节点的数量
-        count = response.json()['totalItems']
         # 获取节点的名称
-        name = ''
-        for i in range(0, count):
-            try:
-                name = response.json()['items'][0]['metadata']['name']
-                # 查询pod的消费信息
-                r = toolbox_steps.step_get_pod_consumption(node_name=name, metric=metric_name)
-                # 获取metric_name
-                metric = r.json()['results'][0]['metric_name']
-                # 验证metric正确
-                with pytest.assume:
-                    assert metric == metric_name
-            except Exception as e:
-                print(e)
-                print('pod：' + name + '无资源消费信息')
-                break
+        try:
+            name = response.json()['items'][0]['metadata']['name']
+            # 查询pod的消费信息
+            r = toolbox_steps.step_get_pod_consumption(node_name=name, metric=metric_name)
+            # 获取metric_name
+            metric = r.json()['results'][0]['metric_name']
+            # 验证metric正确
+            with pytest.assume:
+                assert metric == metric_name
+        except Exception as e:
+            print(e)
+            print('pod：' + name + '无资源消费信息')
 
     @allure.story('集群资源消费情况')
     @allure.severity(allure.severity_level.NORMAL)

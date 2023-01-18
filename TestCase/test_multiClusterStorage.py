@@ -12,7 +12,7 @@ from step import multi_cluster_storages_step, multi_cluster_steps, multi_workspa
 @allure.feature('multi_cluster_storage')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 @pytest.mark.skipif(commonFunction.get_multi_cluster_sc_qingcloud() is False, reason='csi-qingcloud存储插件不存在')
-class Test_Multi_Cluster_Storage:
+class TestMultiClusterStorage:
     # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
     __test__ = commonFunction.check_multi_cluster()
 
@@ -21,7 +21,7 @@ class Test_Multi_Cluster_Storage:
     sc_name1 = 'test-multi-cluster-vsc'
     ws_name = 'multi-ws-' + str(get_random())
     pro_ws_name = 'multi-ws-pro-' + str(get_random())
-    allowVolumeExpansion = True
+    allow_volume_expansion = True
     volume_name = 'volume-' + str(get_random())
     work_name = 'deploy-test'
     container_name = 'container'
@@ -39,9 +39,9 @@ class Test_Multi_Cluster_Storage:
         multi_project_steps.step_create_multi_project(ws_name=self.ws_name, project_name=self.pro_ws_name,
                                                       clusters=self.cluster_name)
         multi_cluster_storages_step.step_create_sc(cluster_name=self.cluster_name, sc_name=self.sc_name,
-                                                   expansion=self.allowVolumeExpansion)
+                                                   expansion=self.allow_volume_expansion)
         multi_cluster_storages_step.step_create_sc(cluster_name=self.cluster_name, sc_name=self.sc_name1,
-                                                   expansion=self.allowVolumeExpansion)
+                                                   expansion=self.allow_volume_expansion)
         multi_cluster_storages_step.step_create_volume(cluster_name=self.cluster_name, project_name=self.pro_ws_name,
                                                        volume_name=self.volume_name, sc_name=self.sc_name1)
         multi_project_steps.step_create_deploy_in_multi_project(cluster_name=self.cluster_name,
@@ -125,7 +125,6 @@ class Test_Multi_Cluster_Storage:
     @allure.title('存储类的存储卷信息')
     @allure.severity('normal')
     def test_sc_pvc(self, create_multi_cluster_sc):
-        ex = True
         # 创建存储卷
         volume_name = 'volume-' + str(get_random())
         multi_cluster_storages_step.step_create_volume(self.cluster_name, self.pro_ws_name, create_multi_cluster_sc, volume_name)
