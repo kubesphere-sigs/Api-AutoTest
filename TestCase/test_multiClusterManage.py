@@ -1472,7 +1472,7 @@ class TestCluster(object):
     @allure.title('编辑集群可见性/添加企业空间在集群的授权')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_authorized_cluster_visibility(self):
-        # 创建企业空间，其所在集群为host集群
+        # 创建企业空间，不添加集群
         ws_name = 'test-ws' + str(commonFunction.get_random())
         alias_name = ''
         description = ''
@@ -1489,7 +1489,7 @@ class TestCluster(object):
         for i in range(0, count):
             name = response.json()['items'][i]['metadata']['name']
             ws_names.append(name)
-        # 验证授权取消成功
+        # 验证授权成功
         pytest.assume(ws_name in ws_names)
         # 删除创建的企业空间
         multi_workspace_steps.step_delete_workspace(ws_name)
