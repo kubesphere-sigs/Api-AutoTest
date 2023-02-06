@@ -384,7 +384,7 @@ def step_get_user_ws():
 
 @allure.step('创建多集群企业空间')
 def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates'
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
     clusters = []
     if isinstance(cluster_names, str):
         clusters.append({'name': cluster_names})
@@ -398,9 +398,9 @@ def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
                  "annotations": {
                      "kubesphere.io/alias-name": alias_name,
                      "kubesphere.io/description": description,
-                     "kubesphere.io/creator": "admin"
-                 }},
-            "spec": {"template": {"spec": {"manager": "admin"},
-                     "metadata": {"annotations": {"kubesphere.io/creator": "admin"}}}}}
+                     "kubesphere.io/creator": "admin"}
+                 },
+            "spec": {"template": {"spec": {"manager": "admin"}},
+                     "placement": {"clusters": clusters}}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
