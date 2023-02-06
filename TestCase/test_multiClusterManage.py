@@ -6,7 +6,7 @@ import time
 import random
 from datetime import datetime
 from common import commonFunction
-from step import multi_cluster_steps, project_steps, multi_workspace_steps, platform_steps
+from step import multi_cluster_steps, project_steps, multi_workspace_steps, platform_steps, cluster_steps
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -36,15 +36,16 @@ class TestCluster(object):
         self.cluster_any_name = response.json()['items'][i]['metadata']['name']
 
     @allure.story("概览")
-    @allure.title('查看host集群的版本信息')
+    @allure.title('查看每个集群的版本信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_version(self):
         # 查询集群的版本信息
-        r = multi_cluster_steps.step_get_cluster_version(self.cluster_host_name)
-        # 获取版本号
-        cluster_version = r.json()['gitVersion']
-        # 验证版本号获取成功
-        assert cluster_version
+        for name in self.cluster_names:
+            r = multi_cluster_steps.step_get_cluster_version(name)
+            # 获取版本号
+            cluster_version = r.json()['gitVersion']
+            # 验证版本号获取成功
+            assert cluster_version
 
     @allure.story("概览")
     @allure.title('查看每个集群的clusterrole信息')
@@ -372,7 +373,7 @@ class TestCluster(object):
         for j in range(0, project_count):
             project_name = re.json()['items'][j]['metadata']['name']
             # 查询项目的详细信息
-            r = multi_cluster_steps.step_get_project_detail(project_name)
+            r = multi_cluster_steps.step_get_project_detail(self.cluster_any_name, project_name)
             # 获取项目的状态
             status = r.json()['status']['phase']
             # 验证项目运行状态为活跃
@@ -1423,14 +1424,16 @@ class TestCluster(object):
     @allure.title('创建企业空间并验证其集群可见性')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_visibility(self):
-        # 创建企业空间，其所在集群为host集群
+        # 创建企业空间，并设置其所在集群为单个集群
         ws_name = 'test-ws' + str(commonFunction.get_random())
         alias_name = ''
         description = ''
-        multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, self.cluster_host_name)
+        # 获取集群名称
+        clusters = multi_workspace_steps.step_get_cluster_name()
+        multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, clusters[0])
         time.sleep(5)
         # 查看集群可见性
-        response = multi_cluster_steps.step_get_cluster_visibility(self.cluster_host_name)
+        response = multi_cluster_steps.step_get_cluster_visibility(clusters[0])
         # 获取所有已授权的企业空间名称
         ws_names = []
         count = response.json()['totalItems']
@@ -1476,7 +1479,7 @@ class TestCluster(object):
         ws_name = 'test-ws' + str(commonFunction.get_random())
         alias_name = ''
         description = ''
-        cluster_name = ''
+        cluster_name = []
         multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
         # 添加企业空间在host集群的授权
         multi_cluster_steps.step_authorized_cluster_visibility(self.cluster_host_name, ws_name)
