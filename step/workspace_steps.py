@@ -263,30 +263,6 @@ def step_create_workspace(ws_name):
     return response
 
 
-@allure.step('创建多集群企业空间')
-def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
-    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
-    clusters = []
-    if isinstance(cluster_names, str):
-        clusters.append({'name': cluster_names})
-    else:
-        for cluster_name in cluster_names:
-            clusters.append({'name': cluster_name})
-    data = {"apiVersion": "tenant.kubesphere.io/v1alpha2",
-            "kind": "WorkspaceTemplate",
-            "metadata":
-                {"name": ws_name,
-                 "annotations": {
-                     "kubesphere.io/alias-name": alias_name,
-                     "kubesphere.io/description": description,
-                     "kubesphere.io/creator": "admin"}
-                 },
-            "spec": {"template": {"spec": {"manager": "admin"}},
-                     "placement": {"clusters": clusters}}}
-    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
-    return response
-
-
 @allure.step('删除企业空间')
 def step_delete_workspace(ws_name):
     """
