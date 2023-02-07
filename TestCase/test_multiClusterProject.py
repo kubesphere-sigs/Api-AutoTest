@@ -4,13 +4,10 @@ import allure
 import sys
 import time
 from datetime import datetime
-from fixtures.workspace import create_multi_workspace, create_multi_project
-
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from common import commonFunction
-from step import project_steps, cluster_steps, workspace_steps, platform_steps, multi_project_steps, \
-    multi_cluster_steps, multi_workspace_steps
+from step import project_steps, cluster_steps, multi_project_steps
 
 
 @allure.feature('多集群项目管理')
@@ -1085,7 +1082,7 @@ class TestProject(object):
     @allure.story('概览')
     @allure.title('查询多集群项目的abnormalworkloads')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_project_abnormalworkloads(self, create_multi_workspace, create_multi_project):
+    def test_get_project_abnormal_workloads(self, create_multi_workspace, create_multi_project):
         clusters = cluster_steps.step_get_cluster_name()
         for name in clusters:
             # 查询多集群项目的abnormalworkloads
@@ -1098,7 +1095,7 @@ class TestProject(object):
     @allure.story('概览')
     @allure.title('查询多集群项目的federatedlimitranges')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_get_project_federatedlimitranges(self, create_multi_workspace, create_multi_project):
+    def test_get_project_federated_limit_ranges(self, create_multi_workspace, create_multi_project):
         # 查询多集群项目的federatedlimitranges
         response = multi_project_steps.step_get_project_federatedlimitranges(project_name=create_multi_project)
         # 获取查询结果中的kind

@@ -9,7 +9,6 @@ from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import cluster_steps, platform_steps
 from datetime import datetime
-from fixtures.platform import node_name
 
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用

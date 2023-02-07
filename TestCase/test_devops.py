@@ -9,8 +9,6 @@ import time
 from common import commonFunction
 from step import devops_steps, platform_steps
 from step import workspace_steps, cluster_steps, project_steps
-from fixtures.devops import create_devops
-from fixtures.platform import create_ws
 
 
 @allure.feature('DevOps')

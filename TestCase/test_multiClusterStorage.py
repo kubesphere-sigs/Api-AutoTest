@@ -2,7 +2,6 @@ from time import sleep
 
 import allure
 import pytest
-from fixtures.storage import *
 from common import commonFunction
 from common.commonFunction import get_random, request_resource
 from common.getData import DoexcleByPandas

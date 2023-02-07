@@ -10,7 +10,6 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import workspace_steps, multi_workspace_steps
-from fixtures.workspace import create_multi_workspace, create_multi_project
 
 
 @allure.feature('多集群环境企业空间')

@@ -6,7 +6,6 @@ from common import commonFunction
 from common.commonFunction import get_random, request_resource
 from common.getData import DoexcleByPandas
 from step import workspace_steps, project_steps, storage_steps
-from fixtures.storage import create_sc
 
 
 @allure.feature('storage')
