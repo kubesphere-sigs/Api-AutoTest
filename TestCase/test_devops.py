@@ -7,8 +7,8 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 import time
 from common import commonFunction
-from step import devops_steps, platform_steps
-from step import workspace_steps, cluster_steps, project_steps
+from step import devops_steps, platform_steps, workspace_steps
+from step import cluster_steps, project_steps
 
 
 @allure.feature('DevOps')
@@ -54,12 +54,12 @@ class TestDevOps(object):
     @allure.story('devops项目')
     @allure.title('创建devops工程,然后将其删除')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_devops(self):
+    def test_create_devops(self, create_ws):
         devops_name = 'test-devops' + str(commonFunction.get_random())
         # 创建devops工程
-        devops_steps.step_create_devops(self.ws_name, devops_name)
+        devops_steps.step_create_devops(create_ws, devops_name)
         # 查询devops工程
-        response = devops_steps.step_get_devopinfo(self.ws_name, devops_name)
+        response = devops_steps.step_get_devopinfo(create_ws, devops_name)
         # 获取devops工程的别名
         devops_name_new = response.json()['items'][0]['metadata']['name']
         # 获取devops的数量
@@ -68,10 +68,10 @@ class TestDevOps(object):
         with pytest.assume:
             assert count == 1
         # 删除创建的devops工程
-        devops_steps.step_delete_devops(self.ws_name, devops_name_new)
+        devops_steps.step_delete_devops(create_ws, devops_name_new)
         time.sleep(5)
         # 查询devops工程
-        re = devops_steps.step_get_devopinfo(self.ws_name, devops_name)
+        re = devops_steps.step_get_devopinfo(create_ws, devops_name)
         # 获取devops的数量
         count = re.json()['totalItems']
         # 验证数量正确
@@ -235,10 +235,10 @@ class TestDevOps(object):
 
     @allure.story('工程管理-凭证')
     @allure.title('删除凭证')
-    def test_delete_credential(self):
+    def test_delete_credential(self, create_ws, create_devops):
         credential_name = 'testdelete' + str(commonFunction.get_random())
         # 获取创建的devops工程的别名
-        response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
+        response = devops_steps.step_get_devopinfo(create_ws, create_devops)
         dev_name_new = response.json()['items'][0]['metadata']['name']
         # 创建凭证
         username = 'd2VueGlueGlu'
@@ -264,8 +264,8 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('查看devops工程默认的所有角色')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_devops_role_all(self):
-        response = devops_steps.step_get_role(self.dev_name_new, '')
+    def test_devops_role_all(self, create_devops):
+        response = devops_steps.step_get_role(create_devops, '')
         assert response.json()['totalItems'] == 3  # 验证初始的角色数量为3
 
     @allure.story('工程管理-工程角色')
@@ -287,8 +287,8 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('模糊查找devops工程中的角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_fuzzy(self):
-        response = devops_steps.step_get_role(self.dev_name_new, 'adm')
+    def test_devops_role_fuzzy(self, create_devops):
+        response = devops_steps.step_get_role(create_devops, 'adm')
         with pytest.assume:
             assert response.json()['totalItems'] == 1  # 验证查询到的结果数量为2
         # 验证查找到的角色
@@ -415,9 +415,9 @@ class TestDevOps(object):
     @allure.story('工程管理-工程成员')
     @allure.title('邀请用户到devops工程')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_invite_user(self):
+    def test_devops_invite_user(self, create_devops):
         role = 'viewer'
-        response = devops_steps.step_invite_member(self.dev_name_new, self.user_name, role)
+        response = devops_steps.step_invite_member(create_devops, self.user_name, role)
         assert response.json()[0]['username'] == self.user_name  # 验证邀请后的用户名称
 
     @allure.story('工程管理-工程成员')
@@ -543,20 +543,14 @@ class TestDevOps(object):
     @allure.story('持续部署')
     @allure.title('创建持续部署任务')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_cd(self, create_devops):
-        # 创建代码仓库
-        name = 'test-git' + str(commonFunction.get_random())
-        provider = 'git'
-        url = 'https://gitee.com/linuxsuren/demo-go-http'
-        devops_steps.step_import_code_repository(create_devops, name, provider, url)
-        time.sleep(2)
+    def test_create_cd(self, create_devops, create_code_repository):
         # 创建cd任务
         cd_name = 'test-cd' + str(commonFunction.get_random())
         annotations = {"kubesphere.io/alias-name": "bieming", "kubesphere.io/description": "miaoshu",
                        "kubesphere.io/creator": "admin"}
         ns = 'test-pro' + str(commonFunction.get_random())
         path = 'manifest'
-        devops_steps.step_create_cd(create_devops, cd_name, annotations, ns, url, path)
+        devops_steps.step_create_cd(create_devops, cd_name, annotations, ns, create_code_repository, path)
         # 查看cd任务创建的资源
         i = 0
         count = 0
@@ -584,23 +578,17 @@ class TestDevOps(object):
                                  ('true', '删除持续部署任务,并删除创建的资源'),
                                  ('false', '删除持续部署任务,不删除创建的资源')
                              ])
-    def test_delete_cd_all(self, create_devops, delete_resource, title):
-        # 创建代码仓库
-        name = 'test-git' + str(commonFunction.get_random())
-        provider = 'git'
-        url = 'https://gitee.com/linuxsuren/demo-go-http'
-        devops_steps.step_import_code_repository(create_devops, name, provider, url)
-
+    def test_delete_cd_all(self, create_devops, create_code_repository, delete_resource, title):
         # 创建cd任务
         cd_name = 'test-cd' + str(commonFunction.get_random())
         annotations = {"kubesphere.io/alias-name": "bieming", "kubesphere.io/description": "miaoshu",
                        "kubesphere.io/creator": "admin"}
         ns = 'test-pro' + str(commonFunction.get_random())
         path = 'manifest'
-        devops_steps.step_create_cd(create_devops, cd_name, annotations, ns, url, path)
+        devops_steps.step_create_cd(create_devops, cd_name, annotations, ns, create_code_repository, path)
         # 查看cd任务创建的资源
         i = 0
-        while i < 60:
+        while i < 180:
             response = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
             count = response.json()['totalItems']
             # 数量不为0 表示资源创建成功
@@ -609,12 +597,12 @@ class TestDevOps(object):
             time.sleep(1)
             i += 1
         if delete_resource == 'true':
-            # 删除cd任务并删除
+            # 删除cd任务并删除创建的资源
             devops_steps.step_delete_cd(create_devops, cd_name, delete_resource)
             # 等待资源删除成功
             count_deploy = 0
             i = 0
-            while i < 60:
+            while i < 180:
                 # 查询被删除的资源并获取查询结果
                 r = cluster_steps.step_get_project_workload_by_type(ns, 'deployments')
                 count_deploy = r.json()['totalItems']
@@ -626,6 +614,8 @@ class TestDevOps(object):
             # 验证资源删除成功
             with pytest.assume:
                 assert count_deploy == 0
+            # 删除项目
+            project_steps.step_delete_project_by_name(ns)
         elif delete_resource == 'false':
             # 删除cd任务但不删除创建的资源
             devops_steps.step_delete_cd(create_devops, cd_name, 'false')
@@ -634,8 +624,6 @@ class TestDevOps(object):
             count_deploy = re.json()['totalItems']
             with pytest.assume:
                 assert count_deploy == 1
-        # 删除项目
-        project_steps.step_delete_project_by_name(ns)
 
 
 if __name__ == "__main__":
