@@ -24,7 +24,7 @@ class TestAppTemplate(object):
     project_name = 'project-for-test-app' + str(commonFunction.get_random())
     alias_name = 'for app store'
     description = '在多集群企业空间部署app store 中的应用'
-    repo_url = 'https://helm-chart-repo.pek3a.qingstor.com/kubernetes-charts/' # 仓库的url信息
+    repo_url = 'https://charts.kubesphere.io/main'  # 仓库的url信息
 
     # 所有用例执行之前执行该方法
     def setup_class(self):

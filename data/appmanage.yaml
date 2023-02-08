@@ -1,7 +1,7 @@
 - - 1
   - /kapis/openpitrix.io/v1/workspaces/${ws_name}/repos
   - ''
-  - '{"name":"","repoType":"Helm","type":"https","visibility":"public","credential":"{}","providers":["kubernetes"],"url":"https://helm-chart-repo.pek3a.qingstor.com/kubernetes-charts/","app_default_status":"active"}'
+  - '{"name":"","repoType":"Helm","type":"https","visibility":"public","credential":"{}","providers":["kubernetes"],"url":"https://charts.kubesphere.io/main","app_default_status":"active"}'
   - 应用管理-应用仓库
   - 添加仓库时不输入应用仓库名称
   - post

@@ -278,6 +278,7 @@ def step_add_app_repository(ws_name, rpo_name, rpo_url):
     url = env_url + '/kapis/openpitrix.io/v1/workspaces/' + ws_name + '/repos'
     data = {"name": rpo_name,
             "repoType": "Helm",
+            "sync_period": "200s",
             "type": "https",
             "visibility": "public",
             "credential": "{}",
