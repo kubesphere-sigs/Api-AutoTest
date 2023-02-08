@@ -6,7 +6,6 @@ import time
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
-from pytest import assume
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import app_steps, project_steps, workspace_steps
@@ -77,7 +76,7 @@ class TestAppStore(object):
         # 获取部署结果
         result = response.text
         # 验证部署结果
-        with assume:
+        with pytest.assume:
             assert result == 'release ' + name + ' exists\n'
         # 在应用列表查询部署的应用
         re = project_steps.step_get_app(self.ws_name, self.project_name, name)
@@ -121,7 +120,7 @@ class TestAppStore(object):
         response = project_steps.step_get_app(self.ws_name, self.project_name, name)
         # 获取应用状态
         status = response.json()['items'][0]['cluster']['status']
-        with assume:
+        with pytest.assume:
             assert status == 'failed'
         # 在应用列表查询部署的应用
         response = project_steps.step_get_app(self.ws_name, self.project_name, name)
@@ -167,7 +166,7 @@ class TestAppStore(object):
                 time.sleep(20)
                 i = i + 20
         # 验证应用运行成功
-        with assume:
+        with pytest.assume:
             assert status == 'active'
         # 在应用列表查询部署的应用
         response = project_steps.step_get_app(self.ws_name, project_name, name)
