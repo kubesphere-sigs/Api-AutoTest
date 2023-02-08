@@ -241,3 +241,14 @@ def create_multi_cluster_sc():
     yield sc_name
     # 删除存储类
     multi_cluster_storages_step.delete_sc(cluster_name, sc_name)
+
+
+@pytest.fixture()
+def create_code_repository(create_devops):
+    # 创建代码仓库
+    name = 'test-git' + str(commonFunction.get_random())
+    provider = 'git'
+    url = 'https://gitee.com/linuxsuren/demo-go-http'
+    devops_steps.step_import_code_repository(create_devops, name, provider, url)
+    time.sleep(5)
+    yield url
