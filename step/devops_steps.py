@@ -482,14 +482,13 @@ def step_create_role(dev_name, name):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name + '/roles'
     data = {"apiVersion": "rbac.authorization.k8s.io/v1",
             "kind": "Role",
-            "metadata": {"namespace": dev_name,
-                         "name": name,
-                         "annotations": {"iam.kubesphere.io/aggregation-roles": "[\"role-template-view-members\","
-                                                                                "\"role-template-view-basic\"]",
-                                         "kubesphere.io/creator": "admin"}
-                         },
-            "rules": []
-            }
+            "metadata": {"namespace": dev_name, "name": name,
+                         "annotations": {
+                             "iam.kubesphere.io/aggregation-roles": "[\"role-template-view-gitrepositories\","
+                                                                    "\"role-template-view-credentials\","
+                                                                    "\"role-template-view-basic\"]",
+                             "kubesphere.io/creator": "admin"}}, "rules": []}
+
     response = requests.post(url, headers=get_header(), data=json.dumps(data))
     return response
 
@@ -574,13 +573,14 @@ def step_edit_code_repository(dev_name, name, provider, annotations, code_url):
 @allure.step('持续部署，创建持续部署')
 def step_create_cd(dev_name, cd_name, annotations, ns, cd_url, path):
     url = env_url + '/kapis/gitops.kubesphere.io/v1alpha1/namespaces/' + dev_name + '/applications'
-    data = {"kind": "Application", "apiVersion": "gitops.kubesphere.io/v1alpha1", "metadata": {"name": cd_name,
-                                                                                               "annotations": annotations},
+    data = {"kind": "Application", "apiVersion": "gitops.kubesphere.io/v1alpha1",
+            "metadata": {"name": cd_name, "annotations": annotations},
             "spec": {"kind": "argo-project", "argoApp": {"spec": {
                 "destination": {"name": "in-cluster", "server": "https://kubernetes.default.svc", "namespace": ns},
                 "source": {"repoURL": cd_url, "targetRevision": "HEAD",
                            "path": path},
-                "syncPolicy": {"automated": {}, "syncOptions": ["CreateNamespace=true"]}}}}}
+                "syncPolicy": {"automated": {}, "syncOptions": ["PrunePropagationPolicy=foreground",
+                                                                "CreateNamespace=true"]}}}}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 

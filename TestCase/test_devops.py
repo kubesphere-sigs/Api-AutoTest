@@ -22,22 +22,13 @@ class TestDevOps(object):
         __test__ = False
     else:
         __test__ = True
-
-    user_name = 'wx-user' + str(commonFunction.get_random())
-    user_role = 'platform-self-provisioner'
-    email = 'qq' + str(commonFunction.get_random()) + '@qq.com'
-    password = 'P@88w0rd'
     ws_name = 'ws-dev' + str(commonFunction.get_random())
     dev_name = 'test-dev' + str(commonFunction.get_random())
-    ws_role_name = ws_name + '-viewer' + str(commonFunction.get_random())
-    dev_role_name = 'wx-dev-role' + str(commonFunction.get_random())
     dev_name_new = ''
 
     # 所有用例执行之前执行该方法
     def setup_class(self):
-        platform_steps.step_create_user(self.user_name, self.user_role, self.email, self.password)  # 创建一个用户
         workspace_steps.step_create_workspace(self.ws_name)  # 创建一个企业空间
-        commonFunction.ws_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
         devops_steps.step_create_devops(self.ws_name, self.dev_name)  # 创建一个devops工程
         response = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name)
         self.dev_name_new = response.json()['items'][0]['metadata']['name']
@@ -49,7 +40,6 @@ class TestDevOps(object):
         dev_name_new = response.json()['items'][0]['metadata']['name']
         devops_steps.step_delete_devops(ws_name=self.ws_name, devops_name=dev_name_new)  # 删除创建的devops工程
         workspace_steps.step_delete_workspace(self.ws_name)  # 删除创建的工作空间
-        platform_steps.step_delete_user(self.user_name)  # 删除创建的用户
 
     @allure.story('devops项目')
     @allure.title('创建devops工程,然后将其删除')
@@ -109,15 +99,15 @@ class TestDevOps(object):
     @allure.story('工程管理-基本信息')
     @allure.title('编辑信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_modify_devopsinfo(self):
+    def test_modify_devopsinfo(self, create_ws, create_devops):
         # 获取devops的详细信息
-        re = devops_steps.step_get_devopinfo(self.ws_name, self.dev_name_new)
+        re = devops_steps.step_get_devopinfo(create_ws, create_devops)
         data = re.json()['items'][0]
         name = '我是别名'
         data['metadata']['annotations']['kubesphere.io/alias-name'] = name
         data['metadata']['annotations']['kubesphere.io/description'] = 'wobushi'
         # 修改devops的别名和描述信息
-        alias_name = devops_steps.step_modify_devinfo(self.ws_name, self.dev_name_new, data)
+        alias_name = devops_steps.step_modify_devinfo(create_ws, create_devops, data)
         # 校验修改后的别名
         assert alias_name == name
 
@@ -235,6 +225,7 @@ class TestDevOps(object):
 
     @allure.story('工程管理-凭证')
     @allure.title('删除凭证')
+    @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_credential(self, create_ws, create_devops):
         credential_name = 'testdelete' + str(commonFunction.get_random())
         # 获取创建的devops工程的别名
@@ -257,9 +248,9 @@ class TestDevOps(object):
         # 查询创建的凭证
         response = devops_steps.step_get_credential(dev_name_new, credential_name)
         # 获取凭证的数量
-        count = response.json()['totalItems']
+        count_new = response.json()['totalItems']
         # 验证凭证的数量正确
-        assert count == 0
+        assert count_new == 0
 
     @allure.story('工程管理-工程角色')
     @allure.title('查看devops工程默认的所有角色')
@@ -415,24 +406,35 @@ class TestDevOps(object):
     @allure.story('工程管理-工程成员')
     @allure.title('邀请用户到devops工程')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_invite_user(self, create_devops):
+    def test_devops_invite_user(self, create_user, create_ws, create_devops):
         role = 'viewer'
-        response = devops_steps.step_invite_member(create_devops, self.user_name, role)
-        assert response.json()[0]['username'] == self.user_name  # 验证邀请后的用户名称
+        commonFunction.ws_invite_user(create_ws, create_user, create_ws + '-viewer')  # 将创建的用户邀请到企业空间
+        # 将用户邀请到devops项目
+        devops_steps.step_invite_member(create_devops, create_user, role)
+        response = devops_steps.step_invite_member(create_devops, create_user, role)
+        assert response.json()[0]['username'] == create_user  # 验证邀请后的用户名称
 
     @allure.story('工程管理-工程成员')
     @allure.title('编辑devops工程成员的角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_edit_user(self):
-        role = 'operator'
-        response = devops_steps.step_edit_member(self.dev_name_new, self.user_name, role)
-        assert response.json()['roleRef'] == 'operator'  # 验证修改后的用户角色
+    def test_devops_edit_user(self, create_user, create_ws, create_devops):
+        role_old = 'operator'
+        role_new = 'viewer'
+        commonFunction.ws_invite_user(create_ws, create_user, create_ws + '-viewer')  # 将创建的用户邀请到企业空间
+        # 将用户邀请到devops项目
+        devops_steps.step_invite_member(create_devops, create_user, role_old)
+        response = devops_steps.step_edit_member(create_devops, create_user, role_new)
+        assert response.json()['roleRef'] == role_new  # 验证修改后的用户角色
 
     @allure.story('工程管理-工程成员')
     @allure.title('删除devops工程的成员')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_delete_user(self):
-        response = devops_steps.step_remove_member(self.dev_name_new, self.user_name)
+    def test_devops_delete_user(self, create_user, create_ws, create_devops):
+        role = 'operator'
+        commonFunction.ws_invite_user(create_ws, create_user, create_ws + '-viewer')  # 将创建的用户邀请到企业空间
+        # 将用户邀请到devops项目
+        devops_steps.step_invite_member(create_devops, create_user, role)
+        response = devops_steps.step_remove_member(create_devops, create_user)
         assert response.json()['message'] == 'success'  # 验证删除成功
 
     @allure.story('流水线')
@@ -536,7 +538,7 @@ class TestDevOps(object):
         devops_steps.step_delete_code_repository(create_devops, name)
         time.sleep(2)
         # 查询代码仓库
-        re = devops_steps.step_get_code_repository(self.dev_name_new, name)
+        re = devops_steps.step_get_code_repository(create_devops, name)
         # 验证仓库数量为0
         assert re.json()['totalItems'] == 0
 
@@ -578,7 +580,7 @@ class TestDevOps(object):
                                  ('true', '删除持续部署任务,并删除创建的资源'),
                                  ('false', '删除持续部署任务,不删除创建的资源')
                              ])
-    def test_delete_cd_all(self, create_devops, create_code_repository, delete_resource, title):
+    def test_delete_cd(self, create_devops, create_code_repository, delete_resource, title):
         # 创建cd任务
         cd_name = 'test-cd' + str(commonFunction.get_random())
         annotations = {"kubesphere.io/alias-name": "bieming", "kubesphere.io/description": "miaoshu",
