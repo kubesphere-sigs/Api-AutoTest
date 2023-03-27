@@ -218,7 +218,8 @@ class TestEventSearch(object):
         response = cluster_steps.step_get_log_receiver(log_type)
         log_receiver_name = response.json()['items'][0]['metadata']['name']
         # 验证日志接收器添加成功
-        pytest.assume(log_receiver_name == 'forward-' + log_type)
+        with pytest.assume:
+            assert log_receiver_name == 'forward-' + log_type
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
 
