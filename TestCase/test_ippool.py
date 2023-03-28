@@ -30,8 +30,7 @@ class TestIpPool(object):
     parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/ippool.yaml')
 
     def setup_class(self):
-        des = ''
-        ippool_steps.step_create_ippool(ippool_name=self.ippool_name, cidr=self.cidr, description=des)
+        ippool_steps.step_create_ippool(ippool_name=self.ippool_name, cidr=self.cidr, description='')
         workspace_steps.step_create_workspace(self.ws_name)
         project_steps.step_create_project(ws_name=self.ws_name, project_name=self.pro_name)
 
@@ -75,11 +74,12 @@ class TestIpPool(object):
     @allure.story('Ippool')
     @allure.title('给ippool分配企业空间')
     @allure.severity('critical')
-    def test_assign_ws(self, create_ippool):
+    def test_assign_ws(self, create_ws, create_ippool):
         # 给ippool分配企业空间
-        ippool_steps.step_assign_ws(create_ippool, self.ws_name)
+        ippool_steps.step_assign_ws(create_ippool, create_ws)
         r_new = ippool_steps.step_search_by_name(create_ippool)
-        pytest.assume(r_new.json()['items'][0]['metadata']['labels']['kubesphere.io/workspace'] == self.ws_name)
+        with pytest.assume:
+            assert r_new.json()['items'][0]['metadata']['labels']['kubesphere.io/workspace'] == create_ws
 
     @allure.story('Ippool')
     @allure.title('给已分配企业空间的ippool分配企业空间')
@@ -94,7 +94,8 @@ class TestIpPool(object):
         # 再次给ippool分配企业空间
         ippool_steps.step_assign_ws(ippool, create_ws)
         r_new = ippool_steps.step_search_by_name(ippool)
-        pytest.assume(r_new.json()['items'][0]['metadata']['labels']['kubesphere.io/workspace'] == create_ws)
+        with pytest.assume:
+            assert r_new.json()['items'][0]['metadata']['labels']['kubesphere.io/workspace'] == create_ws
         # 删除ippool
         ippool_steps.step_delete_ippool(ippool)
 
@@ -117,12 +118,17 @@ class TestIpPool(object):
     @allure.story('Ippool')
     @allure.title('删除ippool')
     @allure.severity('critical')
-    def test_delete_ippool(self, create_ippool):
+    def test_delete_ippool(self):
+        ippool_name = 'ippool-' + str(commonFunction.get_random())
+        cidr = commonFunction.random_ip() + '/24'
+        description = ' '
+        # 创建ippool
+        ippool_steps.step_create_ippool(ippool_name, cidr, description)
         # 删除ippool
-        ippool_steps.step_delete_ippool(create_ippool)
+        ippool_steps.step_delete_ippool(ippool_name)
         # 查询已删除的ippool
         time.sleep(8)
-        res = ippool_steps.step_search_by_name(create_ippool)
+        res = ippool_steps.step_search_by_name(ippool_name)
         assert res.json()['totalItems'] == 0
 
     @allure.story('Ippool')
@@ -150,7 +156,8 @@ class TestIpPool(object):
         # 验证创建成功
         time.sleep(5)
         res = ippool_steps.step_search_by_name(ippool_name)
-        pytest.assume(res.json()['items'][0]['status']['synced'] is True)
+        with pytest.assume:
+            assert res.json()['items'][0]['status']['synced'] is True
         # 删除ippool
         ippool_steps.step_delete_ippool(ippool_name)
         # 查询被删除的ippool，验证删除成功
@@ -177,7 +184,8 @@ class TestIpPool(object):
                 print(e)
                 time.sleep(1)
                 k += 1
-        pytest.assume(res.json()['items'][0]['status']['synced'] is True)
+        with pytest.assume:
+            assert res.json()['items'][0]['status']['synced'] is True
         # 删除创建的ippool
         ippool_steps.step_delete_ippool(ippool_name)
 
@@ -207,7 +215,8 @@ class TestIpPool(object):
 
         # 删除ippool
         r = ippool_steps.step_delete_ippool(create_ippool)
-        pytest.assume(r.json()['reason'] == 'ippool is in use, please remove the workload before deleting')
+        with pytest.assume:
+            assert r.json()['reason'] == 'ippool is in use, please remove the workload before deleting'
         # 删除部署
         project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
         time.sleep(15)
@@ -231,7 +240,8 @@ class TestIpPool(object):
         # 查询使用该ippool的容器组
         rr = ippool_steps.step_get_job(create_ippool)
         # 验证部署名称正确
-        pytest.assume(rr.json()['items'][0]['metadata']['labels']['app'] == deploy_name)
+        with pytest.assume:
+            assert rr.json()['items'][0]['metadata']['labels']['app'] == deploy_name
         # 删除部署
         project_steps.step_delete_workload(create_project, 'deployments', deploy_name)
 
@@ -262,10 +272,12 @@ class TestIpPool(object):
         num = r.json()['items'][0]['status']['allocations']
         num_new = ippool_steps.step_get_ws_ippool_number(create_ippool, self.ws_name)
         # 验证ippool使用数量正确
-        pytest.assume(num == num_new == 1)
+        with pytest.assume:
+            assert num == num_new == 1
         ws_num = ippool_steps.step_get_used_ws_number(create_ippool)
         # 验证使用ippool的企业空间数量
-        pytest.assume(ws_num == 1)
+        with pytest.assume:
+            assert ws_num == 1
         # 删除部署
         project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
         time.sleep(10)
@@ -273,10 +285,12 @@ class TestIpPool(object):
         num = re.json()['items'][0]['status']['allocations']
         num_new = ippool_steps.step_get_ws_ippool_number(create_ippool, self.ws_name)
         # 验证ippool使用数量正确
-        pytest.assume(num == num_new)
+        with pytest.assume:
+            assert num == num_new
         ws_num_new = ippool_steps.step_get_used_ws_number(create_ippool)
         # 验证使用ippool的企业空间数量
-        pytest.assume(ws_num_new == 0)
+        with pytest.assume:
+            assert ws_num_new == 0
 
     @allure.story('Ippool')
     @allure.title('查询ippool的容器组')
@@ -289,19 +303,23 @@ class TestIpPool(object):
         time.sleep(15)
         res = project_steps.step_get_deployment(self.pro_name, 'deployments')
         # 验证部署创建成功
-        pytest.assume('unavailableReplicas' not in res.json()['items'][0]['status'])
+        with pytest.assume:
+            assert 'unavailableReplicas' not in res.json()['items'][0]['status']
         r = ippool_steps.step_get_job(create_ippool)
         # 获取pod名称
         pod_name = r.json()['items'][0]['metadata']['name']
         # 精确查询存在的pod
         re = ippool_steps.step_search_pod(pod_name, create_ippool)
-        pytest.assume(re.status_code == 200)
+        with pytest.assume:
+            assert re.status_code == 200
         # 模糊查询存在的pod
         re = ippool_steps.step_search_pod(deploy_name, create_ippool)
-        pytest.assume(re.json()['totalItems'] == 1)
+        with pytest.assume:
+            assert re.json()['totalItems'] == 1
         # 查询不存在的pod
         re = ippool_steps.step_search_pod(pod_name='ss', ippool_name=create_ippool)
-        pytest.assume(re.json()['totalItems'] == 0)
+        with pytest.assume:
+            assert re.json()['totalItems'] == 0
         # 删除部署
         project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
 
