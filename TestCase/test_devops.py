@@ -114,7 +114,7 @@ class TestDevOps(object):
     @allure.story('工程管理-凭证')
     @allure.title('创建账户凭证')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_account_credential(self, create_ws, create_devops):
+    def test_create_account_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
         description = '我是描述信息'
         username = 'dXNlcm5hbWU='
@@ -133,7 +133,7 @@ class TestDevOps(object):
     @allure.story('工程管理-凭证')
     @allure.title('创建SSH凭证')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_ssh_credential(self, create_ws, create_devops):
+    def test_create_ssh_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
         description = 'test'
         username = 'cXdl'
@@ -151,7 +151,7 @@ class TestDevOps(object):
     @allure.story('工程管理-凭证')
     @allure.title('创建secret_text凭证')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_secret_text_credential(self, create_ws, create_devops):
+    def test_create_secret_text_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
         description = '我是描述信息'
         secret = 'cXdlYXNk'
@@ -169,7 +169,7 @@ class TestDevOps(object):
     @allure.story('工程管理-凭证')
     @allure.title('创建kubeconfig凭证')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_kube_config_credential(self, create_ws, create_devops):
+    def test_create_kube_config_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
         description = '我是描述信息'
         credential_type = 'kubeconfig'
@@ -187,7 +187,7 @@ class TestDevOps(object):
     @allure.story('工程管理-凭证')
     @allure.title('精确查询存在的凭证')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_search_credential(self, create_ws, create_devops):
+    def test_search_credential(self, create_devops):
         # 创建ssh凭证
         credential_name = 'ssh' + str(commonFunction.get_random())
         devops_steps.step_create_ssh_credential(create_devops, credential_name)
@@ -204,7 +204,7 @@ class TestDevOps(object):
     @allure.story('工程管理-凭证')
     @allure.title('模糊查询存在的凭证')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_fuzzy_search_credential(self, create_ws, create_devops):
+    def test_fuzzy_search_credential(self, create_devops):
         # 创建ssh凭证
         credential_name = 'ssh' + str(commonFunction.get_random())
         devops_steps.step_create_ssh_credential(create_devops, credential_name)
@@ -220,7 +220,7 @@ class TestDevOps(object):
     @allure.story('工程管理-凭证')
     @allure.title('查询不存在的凭证')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_search_credential_no(self, create_ws, create_devops):
+    def test_search_credential_no(self, create_devops):
         # 查询之前用例创建的SSH凭证
         condition = 'test321'
         result = devops_steps.step_search_credential(devops_name=create_devops, condition=condition)
@@ -259,14 +259,14 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('查看devops工程默认的所有角色')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_devops_role_all(self, create_ws, create_devops):
+    def test_devops_role_all(self, create_devops):
         response = devops_steps.step_get_role(create_devops, '')
         assert response.json()['totalItems'] == 3  # 验证初始的角色数量为3
 
     @allure.story('工程管理-工程角色')
     @allure.title('查找devops工程指定的角色')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_devops_role_one(self, create_ws, create_devops):
+    def test_devops_role_one(self, create_devops):
         role_name = 'viewer'
         r = devops_steps.step_get_role(create_devops, role_name)
         assert r.json()['items'][0]['metadata']['name'] == role_name  # 验证查询的角色结果为viewer
@@ -274,7 +274,7 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('查找devops工程中不存在的角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_none(self, create_ws, create_devops):
+    def test_devops_role_none(self, create_devops):
         role_name = 'no-exist'
         r = devops_steps.step_get_role(create_devops, role_name)
         assert r.json()['totalItems'] == 0  # 验证查询到的结果为空
@@ -282,7 +282,7 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('模糊查找devops工程中的角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_fuzzy(self, create_ws, create_devops):
+    def test_devops_role_fuzzy(self, create_devops):
         response = devops_steps.step_get_role(create_devops, 'adm')
         with pytest.assume:
             assert response.json()['totalItems'] == 1  # 验证查询到的结果数量为2
@@ -292,7 +292,7 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中创建角色')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_create(self, create_ws, create_devops):
+    def test_devops_role_create(self, create_devops):
         # 创建角色
         role_name = 'test-role' + str(commonFunction.get_random())
         response = devops_steps.step_create_role(create_devops, role_name)
@@ -304,7 +304,7 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中创建角色-角色名称为空')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_devops_role_create_name_none(self, create_ws, create_devops):
+    def test_devops_role_create_name_none(self, create_devops):
         # 创建角色
         role_name = ''
         response = devops_steps.step_create_role(create_devops, role_name)
@@ -314,7 +314,7 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中编辑角色基本信息')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_devops_role_edit_info(self, create_ws, create_devops):
+    def test_devops_role_edit_info(self, create_devops):
         # 创建角色
         role_name = 'test-role' + str(commonFunction.get_random())
         devops_steps.step_create_role(create_devops, role_name)
@@ -332,7 +332,7 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中编辑角色的权限信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_edit_authority(self, create_ws, create_devops):
+    def test_devops_role_edit_authority(self, create_devops):
         # 创建角色
         role_name = 'test-role' + str(commonFunction.get_random())
         devops_steps.step_create_role(create_devops, role_name)
@@ -355,7 +355,7 @@ class TestDevOps(object):
     @allure.story('工程管理-工程角色')
     @allure.title('在devops工程中删除角色,并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_role_delete(self, create_ws, create_devops):
+    def test_devops_role_delete(self, create_devops):
         # 创建角色
         role_name = 'test-role' + str(commonFunction.get_random())
         devops_steps.step_create_role(create_devops, role_name)
@@ -375,7 +375,7 @@ class TestDevOps(object):
     @allure.story('工程管理-工程成员')
     @allure.title('查看devops工程默认的所有用户')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_devops_user_all(self, create_ws, create_devops):
+    def test_devops_user_all(self, create_devops):
         # 查询成员
         response = devops_steps.step_get_member(create_devops, '')
         assert response.json()['items'][0]['metadata']['name'] == 'admin'  # 验证默认的用户仅有admin
@@ -383,7 +383,7 @@ class TestDevOps(object):
     @allure.story('工程管理-工程成员')
     @allure.title('查找devops工程指定的用户')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_devops_user_one(self, create_ws, create_devops):
+    def test_devops_user_one(self, create_devops):
         user_condition = 'admin'
         # 查询成员
         response = devops_steps.step_get_member(create_devops, user_condition)
@@ -392,7 +392,7 @@ class TestDevOps(object):
     @allure.story('工程管理-工程成员')
     @allure.title('模糊查找devops工程的用户')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_devops_user_fuzzy(self, create_ws, create_devops):
+    def test_devops_user_fuzzy(self, create_devops):
         user_condition = 'ad'
         # 查询成员
         response = devops_steps.step_get_member(create_devops, user_condition)
@@ -401,7 +401,7 @@ class TestDevOps(object):
     @allure.story('工程管理-工程成员')
     @allure.title('查找devops工程不存在的用户')
     @allure.severity(allure.severity_level.NORMAL)
-    def test_devops_user_none(self, create_ws, create_devops):
+    def test_devops_user_none(self, create_devops):
         user_condition = 'wx-ad'
         # 查询成员
         response = devops_steps.step_get_member(create_devops, user_condition)
@@ -482,7 +482,7 @@ class TestDevOps(object):
     @allure.story('代码仓库')
     @allure.title('基于git导入代码仓库')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_import_code_rep_by_git(self, create_ws, create_devops):
+    def test_import_code_rep_by_git(self, create_devops):
         # 创建代码仓库
         name = 'test-git' + str(commonFunction.get_random())
         provider = 'git'
@@ -501,7 +501,7 @@ class TestDevOps(object):
     @allure.story('代码仓库')
     @allure.title('编辑代码仓库')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_edit_rep(self, create_ws, create_devops):
+    def test_edit_rep(self, create_devops):
         # 创建代码仓库
         name = 'test-git' + str(commonFunction.get_random())
         provider = 'git'
@@ -525,7 +525,7 @@ class TestDevOps(object):
     @allure.story('代码仓库')
     @allure.title('删除代码仓库')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_delete_rep(self, create_ws, create_devops):
+    def test_delete_rep(self, create_devops):
         # 创建代码仓库
         name = 'test-git' + str(commonFunction.get_random())
         provider = 'git'
@@ -549,7 +549,7 @@ class TestDevOps(object):
     @allure.story('持续部署')
     @allure.title('创建持续部署任务')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_cd(self, create_ws, create_devops, create_code_repository):
+    def test_create_cd(self, create_devops, create_code_repository):
         # 创建cd任务
         cd_name = 'test-cd' + str(commonFunction.get_random())
         annotations = {"kubesphere.io/alias-name": "bieming", "kubesphere.io/description": "miaoshu",
@@ -600,8 +600,8 @@ class TestDevOps(object):
             # 数量不为0 表示资源创建成功
             if count != 0:
                 break
-            time.sleep(1)
-            i += 1
+            time.sleep(10)
+            i += 10
         if delete_resource == 'true':
             # 删除cd任务并删除创建的资源
             devops_steps.step_delete_cd(create_devops, cd_name, delete_resource)
