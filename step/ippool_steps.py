@@ -13,13 +13,16 @@ def step_create_ippool(ippool_name, cidr, description):
     url = env_url + '/apis/network.kubesphere.io/v1alpha1/ippools'
     data = {"apiVersion": "network.kubesphere.io/v1alpha1",
             "kind": "IPPool",
-            "metadata": {
-                "annotations": {
-                    "kubesphere.io/description": description,
-                    "kubesphere.io/creator": "admin"},
-                "name": ippool_name
-            },
-            "spec": {"type": "calico", "cidr": cidr}}
+            "metadata": {"name": ippool_name,
+                         "annotations": {
+                             "kubesphere.io/description": description,
+                             "kubesphere.io/creator": "admin"
+                         }},
+            "spec": {"type": "calico",
+                     "cidr": cidr,
+                     "name": ippool_name,
+                     "disabled": False,
+                     "ipipMode": "Always", "vxlanMode": "Never"}}
     response = requests.post(url=url, data=json.dumps(data), headers=get_header())
     return response
 
