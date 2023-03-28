@@ -611,14 +611,27 @@ def write_data_excle_to_yaml(filename, sheet_name):
 
 # 获取测试环境信息
 def write_environment_info():
-    response = cluster_steps.step_get_cluster_info()
-    # 测试环境信息
-    env = {
-        "TEST_URL": env_url,
-        "KS_VERSION": response.json()['gitVersion'],
-        "K8S_VERSION": response.json()['kubernetes']['gitVersion'],
-        "PLATFORM": response.json()['platform']
-    }
+    # 判断集群类型，是否为多集群
+    cluster_type = check_multi_cluster()
+    # 如果是单集群环境
+    if cluster_type is False:
+        response = cluster_steps.step_get_cluster_info()
+        # 测试环境信息
+        env = {
+            "TEST_URL": env_url,
+            "KS_VERSION": response.json()['gitVersion'],
+            "K8S_VERSION": response.json()['kubernetes']['gitVersion'],
+            "PLATFORM": response.json()['platform']
+        }
+    # 如果是多集群环境
+    else:
+        response = multi_cluster_steps.step_get_cluster()
+        print(response.json()['totalItems'])
+        print(response.json()['items'][0]['metadata']['name'])
+        env = {
+            "TEST_URL": env_url,
+            "CLUSTER_NAME": response.json()['items'][0]
+        }
     # 将测试环境信息写入yaml文件
     with open('../environment.properties', 'w', encoding='utf-8') as f:
         yaml.dump(env, f, sort_keys=False)

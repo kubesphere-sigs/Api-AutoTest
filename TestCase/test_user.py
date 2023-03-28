@@ -10,7 +10,6 @@ from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import platform_steps
 from common.getHeader import get_header
-from fixtures.platform import create_user, create_role
 
 
 @allure.feature('平台账户管理')

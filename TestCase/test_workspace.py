@@ -3,7 +3,6 @@ import pytest
 import allure
 import sys
 import time
-from fixtures.platform import *
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import workspace_steps, platform_steps, project_steps, devops_steps

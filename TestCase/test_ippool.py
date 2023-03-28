@@ -8,7 +8,6 @@ from common import commonFunction
 from common.commonFunction import get_ippool_status, get_random, random_ip, request_resource
 from common.getData import DoexcleByPandas
 from step import ippool_steps, workspace_steps, project_steps
-from fixtures.platform import create_ippool, create_ws, create_project
 
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用

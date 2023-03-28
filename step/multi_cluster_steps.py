@@ -152,8 +152,8 @@ def step_get_pods_of_project(cluster_name, project_name, *condition):
 
 
 @allure.step('查询指定项目的详细信息')
-def step_get_project_detail(project_name):
-    url = env_url + '/api/v1/namespaces/' + project_name
+def step_get_project_detail(cluster_name, project_name):
+    url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name
     response = requests.get(url=url, headers=get_header())
     return response
 

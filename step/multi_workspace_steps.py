@@ -362,7 +362,8 @@ def step_set_network_lsolation(ws_name, status, cluster_name):
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name
     data = [{"op": "replace", "path": "/metadata/name", "value": ws_name},
             {"op": "add", "path": "/spec/overrides", "value": [
-                {"clusterName": cluster_name[0], "clusterOverrides": [{"path": "/spec/networkIsolation", "value": status}]}]}]
+                {"clusterName": cluster_name[0],
+                 "clusterOverrides": [{"path": "/spec/networkIsolation", "value": status}]}]}]
     response = requests.patch(url=url, headers=get_header(), data=json.dumps(data))
     return response
 

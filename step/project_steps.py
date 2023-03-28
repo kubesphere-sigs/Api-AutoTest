@@ -1086,25 +1086,6 @@ def step_get_volume_snapshot(project_name, snapshot_name):
     return response
 
 
-@allure.step('编辑多集群项目')
-def step_edit_project_in_multi_project(cluster_name, ws_name, project_name, alias_name, description):
-    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
-          '/federatednamespaces/' + project_name
-
-    data = {"metadata": {"name": project_name, "namespace": project_name,
-                         "labels": {"kubesphere.io/workspace": ws_name},
-                         "annotations": {"kubesphere.io/alias-name": alias_name,
-                                         "kubesphere.io/creator": "admin",
-                                         "kubesphere.io/description": description},
-                         "finalizers": ["kubefed.io/sync-controller"]},
-            "spec": {"template": {"spec": {}},
-                     "placement": {"clusters": [{"name": cluster_name}]}, "overrides": [
-                    {"clusterName": cluster_name, "clusterOverrides": [
-                        {"path": "/metadata/annotations", "value": {"kubesphere.io/creator": "admin"}}]}]}}
-    response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
-    return response
-
-
 @allure.step('获取环境中所有的多集群项目的名称')
 def step_get_multi_projects_name():
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/federatednamespaces?sortBy=createTime'

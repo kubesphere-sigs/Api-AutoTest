@@ -8,7 +8,6 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import platform_steps
-from fixtures.platform import create_role, create_user
 
 
 @allure.feature('平台角色管理')
@@ -90,7 +89,7 @@ class TestRole(object):
     @allure.story('角色详情')
     @allure.severity(allure.severity_level.NORMAL)
     @allure.title('查询角色授权用户')
-    def test_query_role_Authorized_user(self, create_role, create_user):
+    def test_query_role_authorized_user(self, create_role, create_user):
         time.sleep(3)
         # 查询角色授权用户
         res = platform_steps.step_get_role_user(create_role)

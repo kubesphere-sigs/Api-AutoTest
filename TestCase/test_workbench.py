@@ -4,7 +4,6 @@ import allure
 import sys
 from common import commonFunction
 from step import platform_steps
-from fixtures.platform import workbench_info
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 

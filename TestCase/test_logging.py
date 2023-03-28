@@ -62,7 +62,7 @@ class TestLogSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_logs_12h(self):
         # 时间间隔,单位是秒
-        interval = '1800'
+        interval = '30m'
         # 获取当前时间的10位时间戳
         now_time = datetime.now()
         now_timestamp = str(datetime.timestamp(now_time))[0:10]
@@ -87,7 +87,7 @@ class TestLogSearch(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_logs_trend(self):
         # 时间间隔,单位是秒
-        interval = '1800'
+        interval = '30m'
         # 获取当前时间的10位时间戳
         now_time = datetime.now()
         now_timestamp = str(datetime.timestamp(now_time))[0:10]
@@ -100,7 +100,7 @@ class TestLogSearch(object):
         time_2 = response.json()['histogram']['histograms'][1]['time']
         time_interval = (time_2 - time_1) / 1000  # 换算成秒
         # 验证时间间隔正确
-        assert time_interval == int(interval)
+        assert time_interval == int(interval[:-1])*60
 
     @allure.story('日志查询规则')
     @allure.title('{title}')
@@ -276,10 +276,10 @@ class TestLogSearch(object):
     def test_get_log_receiver_log(self):
         # 查询日志接收器/容器日志
         response = cluster_steps.step_get_log_receiver('logging')
-        # 判断是否存在日志接收器
-        items = response.json()['items']
-        # 验证日志接收器不存在
-        pytest.assume(not items)
+        # 验证日志接收器默认为opensearch
+        name = response.json()['items'][0]['metadata']['name']
+        with pytest.assume:
+            assert name == 'opensearch'
 
     @allure.story('集群设置/日志接收器')
     @allure.title('{title}')
@@ -295,7 +295,8 @@ class TestLogSearch(object):
         response = cluster_steps.step_get_log_receiver(log_type)
         log_receiver_name = response.json()['items'][0]['metadata']['name']
         # 验证日志接收器添加成功
-        pytest.assume(log_receiver_name == 'forward-' + log_type)
+        with pytest.assume:
+            assert log_receiver_name == 'forward-' + log_type
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
 

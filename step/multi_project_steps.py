@@ -34,17 +34,25 @@ def step_delete_project_in_ws(ws_name, cluster_name, project_name):
 def step_create_volume_in_multi_project(cluster_name, project_name, volume_name):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedpersistentvolumeclaims'
     url2 = url + '?dryRun=All'
-
+    clusters = []
+    overrides = []
+    for name in cluster_name:
+        override = {}
+        cluster = {'name': name}
+        override['clusterName'] = name
+        override['clusterOverrides'] = []
+        clusters.append(cluster)
+        overrides.append(override)
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedPersistentVolumeClaim",
             "metadata": {"namespace": project_name, "name": volume_name,
                          "annotations": {"kubesphere.io/creator": "admin"}},
-            "spec": {"placement": {"clusters": [{"name": cluster_name}]},
+            "spec": {"placement": {"clusters": clusters},
                      "template": {"metadata": {"namespace": project_name, "labels": {}},
                                   "spec": {"accessModes": ["ReadWriteOnce"],
                                            "resources": {"requests": {"storage": "10Gi"}},
                                            "storageClassName": "local"}},
-                     "overrides": [{"clusterName": cluster_name, "clusterOverrides": []}]}}
+                     "overrides": overrides}}
 
     requests.post(url=url2, headers=get_header(), data=json.dumps(data))
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
@@ -71,13 +79,21 @@ def step_create_deploy_in_multi_project(cluster_name, project_name, work_name, c
     """
     url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federateddeployments'
     url2 = url1 + '?dryRun=All'
-
+    clusters = []
+    overrides = []
+    for name in cluster_name:
+        override = {}
+        cluster = {'name': name}
+        override['clusterName'] = name
+        override['clusterOverrides'] = []
+        clusters.append(cluster)
+        overrides.append(override)
     data = {"apiVersion": "types.kubefed.io/v1beta1", "kind": "FederatedDeployment",
             "metadata": {"namespace": project_name,
                          "name": work_name,
                          "labels": {"app": work_name},
                          "annotations": {"kubesphere.io/creator": "admin"}},
-            "spec": {"placement": {"clusters": [{"name": cluster_name}]},
+            "spec": {"placement": {"clusters": clusters},
                      "template": {"metadata": {"namespace": project_name, "labels": {"app": work_name}},
                                   "spec": {"replicas": replicas,
                                            "selector": {"matchLabels": {"app": work_name}},
@@ -97,7 +113,7 @@ def step_create_deploy_in_multi_project(cluster_name, project_name, work_name, c
                                                             "imagePullSecrets": None
                                                         }},
                                            "strategy": strategy}},
-                     "overrides": [{"clusterName": cluster_name, "clusterOverrides": []}]}}
+                     "overrides": overrides}}
 
     requests.post(url=url2, headers=get_header(), data=json.dumps(data))
     response = requests.post(url=url1, headers=get_header(), data=json.dumps(data))
@@ -110,19 +126,32 @@ def step_get_workload_in_multi_project(cluster_name, project_name, type, conditi
     :param cluster_name:
     :param project_name: 项目名称
     :param type: 负载类型
-    :param condition: 查询条件  如：name=test
+    :param condition: 查询条件
     :return:
     """
-    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces/' \
-          + project_name + '/' + type + '?' + condition
+    url = env_url + '/apis/clusters/' + cluster_name + '/apps/v1/namespaces/' \
+          + project_name + '/' + type + '/' + condition
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('在多集群项目/工作负载列表中获取指定的工作负载')
+def step_get_workload_in_multi_project_list(project_name, type, condition):
+    """
+    :param project_name: 项目名称
+    :param type: 负载类型
+    :param condition: 查询条件
+    :return:
+    """
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/federated' + type + '?name=' + condition
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('获取多集群项目存储卷状态')
 def step_get_volume_status_in_multi_project(cluster_name, project_name, volume_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces/' \
-          + project_name + '/persistentvolumeclaims?names=' + volume_name
+    url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' \
+          + project_name + '/persistentvolumeclaims/' + volume_name
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -148,6 +177,16 @@ def step_create_service_in_multi_project(cluster_name, project_name, service_nam
     url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices?dryRun=All'
     url2 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices'
 
+    clusters = []
+    overrides = []
+    for name in cluster_name:
+        override = {}
+        cluster = {'name': name}
+        override['clusterName'] = name
+        override['clusterOverrides'] = []
+        clusters.append(cluster)
+        overrides.append(override)
+
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedService",
             "metadata": {"namespace": project_name,
@@ -159,12 +198,12 @@ def step_create_service_in_multi_project(cluster_name, project_name, service_nam
                          "labels": {
                              "app": service_name},
                          "name": service_name},
-            "spec": {"placement": {"clusters": [{"name": cluster_name}]}, "template": {
+            "spec": {"placement": {"clusters": clusters}, "template": {
                 "metadata": {"namespace": project_name, "labels": {"version": "v1", "app": service_name}},
                 "spec": {"sessionAffinity": "None", "selector": {"app": service_name},
                          "template": {"metadata": {"labels": {"version": "v1", "app": service_name}}},
                          "ports": port}},
-                     "overrides": [{"clusterName": cluster_name, "clusterOverrides": []}]}}
+                     "overrides": overrides}}
     requests.post(url=url1, headers=get_header(), data=json.dumps(data))
     response = requests.post(url=url2, headers=get_header(), data=json.dumps(data))
     return response
@@ -205,25 +244,33 @@ def step_get_multi_project_all(ws):
                     project_info.append(cluster_name)
                 project_info.append(ws_name)
                 multi_projects.append(project_info)
-
     return multi_projects
 
 
 @allure.step('在多集群项目创建statefulsets')
-def step_create_stateful_in_multi_project(cluster_name, project_name, work_name, container_name, image, replicas, ports,
-                                          service_ports,
-                                          volumemount, volume_info, service_name):
+def step_create_sts_in_multi_project(cluster_name, project_name, work_name, container_name, image, replicas, ports,
+                                     service_ports,
+                                     volumemount, volume_info, service_name):
     url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedstatefulsets?dryRun=All'
     url3 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedstatefulsets'
     url2 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices?dryRun=All'
     url4 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices'
+    clusters = []
+    overrides = []
+    for name in cluster_name:
+        override = {}
+        cluster = {'name': name}
+        override['clusterName'] = name
+        override['clusterOverrides'] = []
+        clusters.append(cluster)
+        overrides.append(override)
     data1 = {"apiVersion": "types.kubefed.io/v1beta1",
              "kind": "FederatedStatefulSet",
              "metadata": {"namespace": project_name,
                           "name": work_name,
                           "labels": {"app": work_name},
                           "annotations": {"kubesphere.io/creator": "admin"}},
-             "spec": {"placement": {"clusters": [{"name": cluster_name}]},
+             "spec": {"placement": {"clusters": clusters},
                       "template": {"metadata": {"namespace": project_name, "labels": {"app": work_name}},
                                    "spec": {"replicas": replicas, "selector": {"matchLabels": {"app": work_name}},
                                             "template": {
@@ -241,7 +288,7 @@ def step_create_stateful_in_multi_project(cluster_name, project_name, work_name,
                                                                "rollingUpdate": {
                                                                    "partition": 0}},
                                             "serviceName": service_name}},
-                      "overrides": [{"clusterName": cluster_name, "clusterOverrides": []}]}}
+                      "overrides": overrides}}
 
     data2 = {"apiVersion": "types.kubefed.io/v1beta1",
              "kind": "FederatedService",
@@ -251,13 +298,13 @@ def step_create_stateful_in_multi_project(cluster_name, project_name, work_name,
                                           "kubesphere.io/creator": "admin"},
                           "labels": {"app": work_name}},
              "spec": {"placement":
-                          {"clusters": [{"name": cluster_name}]},
+                          {"clusters": clusters},
                       "template": {"metadata": {"namespace": project_name, "labels": {}},
                                    "spec": {"sessionAffinity": "None",
                                             "selector": {"app": work_name},
                                             "ports": service_ports,
                                             "clusterIP": "None"}},
-                      "overrides": [{"clusterName": cluster_name, "clusterOverrides": []}]}}
+                      "overrides": overrides}}
 
     requests.post(url=url1, headers=get_header(), data=json.dumps(data1))
     requests.post(url=url2, headers=get_header(), data=json.dumps(data2))
@@ -270,28 +317,41 @@ def step_create_stateful_in_multi_project(cluster_name, project_name, work_name,
 def step_create_route_in_multi_project(cluster_name, project_name, ingress_name, host, service_info):
     url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedingresses?dryRun=All'
     url2 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedingresses'
+    clusters = []
+    overrides = []
+    for name in cluster_name:
+        cluster = {'name': name}
+        clusters.append(cluster)
+        override = {"clusterName": name, "clusterOverrides": [{"path": "/spec/rules", "value": [
+            {"clusters": [name], "protocol": "http", "host": host,
+             "http": {"paths": [
+                 {"path": "/", "backend": service_info}]}}]},
+                                                              {"path": "/spec/tls",
+                                                               "value": []}]}
+        overrides.append(override)
+
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedIngress",
             "metadata": {"namespace": project_name, "name": ingress_name,
                          "annotations": {"kubesphere.io/creator": "admin"}},
-            "spec": {"placement": {"clusters": [{"name": cluster_name}]},
+            "spec": {"placement": {"clusters": clusters},
                      "template": {"metadata": {"namespace": project_name, "labels": {}},
                                   "spec": {"rules": [
-                                      {"clusters": [cluster_name], "protocol": "http", "host": host,
+                                      {"clusters": cluster_name, "protocol": "http", "host": host,
                                        "http": {"paths": [
                                            {"path": "/", "backend": service_info
                                             }]}}],
                                       "tls": []}},
-                     "overrides": [{"clusterName": cluster_name, "clusterOverrides": [{"path": "/spec/rules", "value": [
-                         {"clusters": [cluster_name], "protocol": "http", "host": host,
-                          "http": {"paths": [
-                              {"path": "/", "backend": service_info}]}}]},
-                                                                                      {"path": "/spec/tls",
-                                                                                       "value": []}]}]}}
-
+                     "overrides": overrides}}
     requests.post(url=url1, headers=get_header(), data=json.dumps(data))
     response = requests.post(url=url2, headers=get_header(), data=json.dumps(data))
     return response
+
+
+@allure.step('在多集群项目删除路由')
+def step_delete_route_in_multi_project(project_name, ingress_name):
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedingresses/' + ingress_name
+    requests.delete(url=url, headers=get_header())
 
 
 @allure.step('在多集群项目设置网关')
@@ -337,7 +397,7 @@ def step_modify_work_replicas_in_multi_project(cluster_name, project_name, type,
     :param replicas: 副本数
     """
     url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federated' + type + '/' + work_name
-    url2 = env_url + '/apis/clusters/host/apps/v1/namespaces/' + project_name + '/' + type + '/' + work_name
+    url2 = env_url + '/apis/clusters/' + cluster_name + '/apps/v1/namespaces/' + project_name + '/' + type + '/' + work_name
     data1 = {
         "spec": {"overrides": [{"clusterName": cluster_name,
                                 "clusterOverrides": [{"path": "/spec/replicas", "value": replicas}]
@@ -428,21 +488,30 @@ def step_get_container_quota_in_multi_project(project_name, ws_name):
 @allure.step('在多集群项目编辑容器资源默认请求')
 def step_edit_container_quota_in_multi_project(cluster_name, project_name, resource_version, limit, request):
     url_post = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedlimitranges'
-    url_put = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
-              '/federatedlimitranges/' + project_name
+    url_put = url_post + project_name
+    limits = [{"defaultRequest": request, "type": "Container", "default": limit}]
+    clusters = []
+    overrides = []
+    for name in cluster_name:
+        override = {}
+        cluster = {'name': name}
+        override['clusterName'] = name
+        override['clusterOverrides'] = []
+        clusters.append(cluster)
+        overrides.append(override)
 
     data_post = {"apiVersion": "types.kubefed.io/v1beta1",
                  "kind": "FederatedLimitRange",
                  "metadata": {"name": project_name,
                               "annotations": {"kubesphere.io/creator": "admin"}},
-                 "spec": {"placement": {"clusters": [{"name": cluster_name}]},
+                 "spec": {"placement": {"clusters": clusters},
                           "template": {"metadata": {}, "spec": {
                               "limits": [
                                   {"default": limit,
                                    "defaultRequest": request,
                                    "type": "Container"}
                               ]}},
-                          "overrides": [{"clusterName": cluster_name, "clusterOverrides": []}]}}
+                          "overrides": overrides}}
 
     data_put = {"apiVersion": "types.kubefed.io/v1beta1",
                 "kind": "FederatedLimitRange",
@@ -451,13 +520,10 @@ def step_edit_container_quota_in_multi_project(cluster_name, project_name, resou
                              "name": project_name,
                              "namespace": project_name,
                              "resourceVersion": resource_version},
-                "spec": {"overrides": [{"clusterName": cluster_name,
-                                        "clusterOverrides": []}],
-                         "placement": {"clusters": [{"name": cluster_name}]},
+                "spec": {"overrides": overrides,
+                         "placement": {"clusters": clusters},
                          "template": {"metadata": {}, "spec": {
-                             "limits": [{"defaultRequest": request,
-                                         "type": "Container",
-                                         "default": limit}]
+                             "limits": limits
                          }}}}
     if resource_version is None:
         response = requests.post(url=url_post, headers=get_header(), data=json.dumps(data_post))
@@ -513,23 +579,59 @@ def step_create_multi_project(ws_name, project_name, clusters):
     requests.post(url=url2, headers=get_header(), data=json.dumps(data1))
 
 
+@allure.step('编辑多集群项目')
+def step_edit_project_in_multi_project(cluster_name, ws_name, project_name, alias_name, description):
+    url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
+          '/federatednamespaces/' + project_name
+
+    clusters = []
+    overrides = []
+    for name in cluster_name:
+        override = {}
+        cluster = {'name': name}
+        override['clusterName'] = name
+        override['clusterOverrides'] = [{"path": "/metadata/annotations", "value": {"kubesphere.io/creator": "admin"}}]
+        clusters.append(cluster)
+        overrides.append(override)
+
+    data = {"metadata": {"name": project_name, "namespace": project_name,
+                         "labels": {"kubesphere.io/workspace": ws_name},
+                         "annotations": {"kubesphere.io/alias-name": alias_name,
+                                         "kubesphere.io/creator": "admin",
+                                         "kubesphere.io/description": description},
+                         "finalizers": ["kubefed.io/sync-controller"]},
+            "spec": {"template": {"spec": {}}, "placement": {"clusters": clusters},
+                     "overrides": overrides}}
+    response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
+    return response
+
+
 @allure.step('在多集群项目创建默认密钥')
 def step_create_secret_default_in_multi_project(cluster_name, project_name, secret_name, key, value):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
     url1 = url + '?dryRun=All'
+    clusters = []
+    overrides = []
+    for name in cluster_name:
+        override = {}
+        cluster = {'name': name}
+        override['clusterName'] = name
+        override['clusterOverrides'] = []
+        clusters.append(cluster)
+        overrides.append(override)
+
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedSecret",
             "metadata": {"namespace": project_name,
                          "name": secret_name,
                          "annotations": {"kubesphere.io/creator": "admin"}},
-            "spec": {"placement": {"clusters": [{"name": cluster_name}]},
+            "spec": {"placement": {"clusters": clusters},
                      "template": {"metadata":
                                       {"namespace": project_name, "labels": {}},
                                   "type": "Opaque",
                                   "spec": {"template": {"metadata": {"labels": {}}}},
                                   "data": {key: value}},
-                     "overrides": [{"clusterName": cluster_name, "clusterOverrides": []}
-                                   ]}}
+                     "overrides": overrides}}
 
     requests.post(url=url1, headers=get_header(), data=json.dumps(data))
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
@@ -540,19 +642,28 @@ def step_create_secret_default_in_multi_project(cluster_name, project_name, secr
 def step_create_secret_tls_in_multi_project(cluster_name, project_name, secret_name, credential, key):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
     url1 = url + '?dryRun=All'
+    clusters = []
+    overrides = []
+    for name in cluster_name:
+        override = {}
+        cluster = {'name': name}
+        override['clusterName'] = name
+        override['clusterOverrides'] = []
+        clusters.append(cluster)
+        overrides.append(override)
+
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedSecret",
             "metadata": {"namespace": project_name,
                          "name": secret_name,
                          "annotations": {"kubesphere.io/creator": "admin"}},
-            "spec": {"placement": {"clusters": [{"name": cluster_name}]},
+            "spec": {"placement": {"clusters": clusters},
                      "template": {"metadata":
                                       {"namespace": project_name, "labels": {}},
                                   "type": "kubernetes.io/tls",
                                   "spec": {"template": {"metadata": {"labels": {}}}},
                                   "data": {"tls.crt": credential, "tls.key": key}},
-                     "overrides": [{"clusterName": cluster_name, "clusterOverrides": []}
-                                   ]}}
+                     "overrides": overrides}}
     requests.post(url=url1, headers=get_header(), data=json.dumps(data))
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
@@ -585,17 +696,27 @@ def step_delete_config_map(project_name, config_name):
 def step_create_config_map_in_multi_project(cluster_name, project_name, config_name, key, value):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedconfigmaps'
     url1 = url + '?dryRun=All'
+    clusters = []
+    overrides = []
+    for name in cluster_name:
+        override = {}
+        cluster = {'name': name}
+        override['clusterName'] = name
+        override['clusterOverrides'] = []
+        clusters.append(cluster)
+        overrides.append(override)
+
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedConfigMap",
             "metadata": {
                 "namespace": project_name,
                 "name": config_name,
                 "annotations": {"kubesphere.io/creator": "admin"}},
-            "spec": {"placement": {"clusters": [{"name": cluster_name}]},
+            "spec": {"placement": {"clusters": clusters},
                      "template": {"metadata": {"namespace": project_name, "labels": {}},
                                   "spec": {"template": {"metadata": {"labels": {}}}},
                                   "data": {value: key}},
-                     "overrides": [{"clusterName": cluster_name, "clusterOverrides": []}]}}
+                     "overrides": overrides}}
     requests.post(url=url1, headers=get_header(), data=json.dumps(data))
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
@@ -639,11 +760,8 @@ def step_get_project_abnormalworkloads_in_multi_project(cluster_name, project_na
 
 
 @allure.step('在多集群环境查询项目的workloads')
-def step_get_project_workloads_in_multi_project(cluster_name, project_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/monitoring.kubesphere.io/v1alpha3/namespaces/' + \
-          project_name + '/workloads?type=rank&metrics_filter=workload_cpu_usage%7Cworkload_memory_usage_wo_cache%7C' \
-                         'workload_net_bytes_transmitted%7Cworkload_net_bytes_received%7Creplica&page=1&limit=10' \
-                         '&sort_type=desc&sort_metric=workload_cpu_usage'
+def step_get_workloads_in_multi_project(project_name):
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/federateddeployments?sortBy=createTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -652,19 +770,27 @@ def step_get_project_workloads_in_multi_project(cluster_name, project_name):
 def step_create_secret_account_in_multi_project(cluster_name, project_name, secret_name, username, password):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
     url1 = url + '?dryRun=All'
+    clusters = []
+    overrides = []
+    for name in cluster_name:
+        override = {}
+        cluster = {'name': name}
+        override['clusterName'] = name
+        override['clusterOverrides'] = []
+        clusters.append(cluster)
+        overrides.append(override)
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedSecret",
             "metadata": {"namespace": project_name,
                          "name": secret_name,
                          "annotations": {"kubesphere.io/creator": "admin"}},
-            "spec": {"placement": {"clusters": [{"name": cluster_name}]},
+            "spec": {"placement": {"clusters": clusters},
                      "template": {"metadata":
                                       {"namespace": project_name, "labels": {}},
                                   "type": "kubernetes.io/basic-auth",
                                   "spec": {"template": {"metadata": {"labels": {}}}},
                                   "data": {"password": password, "username": username}},
-                     "overrides": [{"clusterName": cluster_name, "clusterOverrides": []}
-                                   ]}}
+                     "overrides": overrides}}
 
     requests.post(url=url1, headers=get_header(), data=json.dumps(data))
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
@@ -683,12 +809,21 @@ def step_get_federatedconfigmap(project_name, config_name):
 def step_create_secret_image_in_multi_project(cluster_name, project_name, secret_name):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
     url1 = url + '?dryRun=All'
+    clusters = []
+    overrides = []
+    for name in cluster_name:
+        override = {}
+        cluster = {'name': name}
+        override['clusterName'] = name
+        override['clusterOverrides'] = []
+        clusters.append(cluster)
+        overrides.append(override)
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedSecret",
             "metadata": {"namespace": project_name,
                          "name": secret_name,
                          "annotations": {"kubesphere.io/creator": "admin"}},
-            "spec": {"placement": {"clusters": [{"name": cluster_name}]},
+            "spec": {"placement": {"clusters": clusters},
                      "template": {"metadata": {"namespace": project_name, "labels": {}},
                                   "type": "kubernetes.io/dockerconfigjson",
                                   "spec": {"template": {"metadata": {"labels": {}}}},
@@ -696,7 +831,7 @@ def step_create_secret_image_in_multi_project(cluster_name, project_name, secret
                                       ".dockerconfigjson": "eyJhdXRocyI6eyJodHRwczovL3NzIjp7InVzZXJuYW1lIjoic2FzYSIs"
                                                            "InBhc3N3b3JkIjoic2FzYSIsImVtYWlsIjoiIiwiYXV0aCI6ImMyRnpZ"
                                                            "VHB6WVhOaCJ9fX0="}},
-                     "overrides": [{"clusterName": cluster_name, "clusterOverrides": []}]}}
+                     "overrides": overrides}}
 
     requests.post(url=url1, headers=get_header(), data=json.dumps(data))
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
@@ -744,6 +879,13 @@ def step_create_volume(cluster_name, project_name, volume_name):
 @allure.step('删除指定的项目')
 def step_delete_project(cluster_name, ws_name, project_name):
     url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces/' + project_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('删除指定的多集群项目')
+def step_delete_multi_project(project_name):
+    url = env_url + '/api/v1/namespaces/' + project_name
     response = requests.delete(url=url, headers=get_header())
     return response
 

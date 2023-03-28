@@ -1,10 +1,11 @@
 # -- coding: utf-8 --
 import allure
 import sys
+import time
+import pytest
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
-from fixtures.platform import *
 from common.getData import DoexcleByPandas
 from common import commonFunction
 from step import app_steps, workspace_steps
