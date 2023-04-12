@@ -198,7 +198,7 @@ def node_name():
 @pytest.fixture()
 def create_ippool():
     ippool_name = 'ippool-' + str(commonFunction.get_random())
-    cidr = commonFunction.random_ip() + '/24'
+    cidr = commonFunction.random_ip()
     description = ' '
     # 创建ippool
     ippool_steps.step_create_ippool(ippool_name, cidr, description)

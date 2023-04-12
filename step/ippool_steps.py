@@ -2,6 +2,7 @@ import json
 
 import allure
 import requests
+
 from common.getConfig import get_apiserver
 from common.getHeader import get_header, get_header_for_patch
 
@@ -13,13 +14,16 @@ def step_create_ippool(ippool_name, cidr, description):
     url = env_url + '/apis/network.kubesphere.io/v1alpha1/ippools'
     data = {"apiVersion": "network.kubesphere.io/v1alpha1",
             "kind": "IPPool",
-            "metadata": {
-                "annotations": {
-                    "kubesphere.io/description": description,
-                    "kubesphere.io/creator": "admin"},
-                "name": ippool_name
-            },
-            "spec": {"type": "calico", "cidr": cidr}}
+            "metadata": {"name": ippool_name,
+                         "annotations": {
+                             "kubesphere.io/description": description,
+                             "kubesphere.io/creator": "admin"
+                         }},
+            "spec": {"type": "calico",
+                     "cidr": cidr,
+                     "name": ippool_name,
+                     "disabled": False,
+                     "ipipMode": "Always", "vxlanMode": "Never"}}
     response = requests.post(url=url, data=json.dumps(data), headers=get_header())
     return response
 
@@ -119,3 +123,27 @@ def step_create_deploy(ippool_name, deploy_name, container_name, pro_name):
     requests.post(url=url, data=json.dumps(data), headers=get_header())
     r_new = requests.post(url=url_new, data=json.dumps(data), headers=get_header())
     return r_new
+
+
+@allure.step('禁用IPPool')
+def step_disable_ippool(ippool_name):
+    url = env_url + '/apis/network.kubesphere.io/v1alpha1/ippools/' + ippool_name
+    data = {"spec": {"disabled": True}}
+    response = requests.patch(url=url, data=json.dumps(data), headers=get_header_for_patch())
+    return response
+
+
+@allure.step('启用IPPool')
+def step_enable_ippool(ippool_name):
+    url = env_url + '/apis/network.kubesphere.io/v1alpha1/ippools/' + ippool_name
+    data = {"spec": {"disabled": False}}
+    response = requests.patch(url=url, data=json.dumps(data), headers=get_header_for_patch())
+    return response
+
+
+@allure.step('迁移ippool')
+def step_migrate_ippool(old_ippool, new_ippool):
+    url = env_url + '/kapis/network.kubesphere.io/v1alpha2/ippool/migrate?oldippool=' + old_ippool + '&newippool=' + new_ippool
+    data = {}
+    response = requests.patch(url=url, data=json.dumps(data), headers=get_header_for_patch())
+    return response
