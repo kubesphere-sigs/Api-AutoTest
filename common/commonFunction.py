@@ -430,6 +430,8 @@ def get_components_status_of_cluster(component):
         component_status = spec[component]['networkpolicy']['enabled']
     elif component == 'whizard':
         component_status = spec['monitoring']['whizard']['enabled']
+    elif component == 'kubeedge':
+        component_status = spec['edgeruntime']['kubeedge']['enabled']
     else:
         component_status = spec[component]['enabled']
     return component_status
