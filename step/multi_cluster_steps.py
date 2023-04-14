@@ -46,6 +46,30 @@ def step_get_nodes(cluster_name):
     return response
 
 
+@allure.step('获取指定集群的边缘节点列表信息')
+def step_get_edge_nodes(cluster_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/nodes?sortBy=createTime' \
+                                                        '&limit=10&labelSelector=node-role.kubernetes.io%2Fedge%3D'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('添加边缘节点-检验内部IP地址')
+def step_check_internal_ip(cluster_name, node_name, internal_ip):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/edgeruntime.kubesphere.io/v1alpha1/nodes/join?node_name=' \
+          + node_name + '&node_ip=' + internal_ip
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('添加边缘节点-获取边缘节点配置命令')
+def step_get_edge_node_config_command(cluster_name, node_name, internal_ip, add_default_taint):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/edgeruntime.kubesphere.io/v1alpha1/nodes/join?node_name=' \
+          + node_name + '&node_ip=' + internal_ip + '&add_default_taint=' + add_default_taint
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
 @allure.step('为节点设置污点')
 def step_ste_taints(cluster_name, node_name, taints):
     url = env_url + '/api/clusters/' + cluster_name + '/v1/nodes/' + node_name
