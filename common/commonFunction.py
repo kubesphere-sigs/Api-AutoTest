@@ -428,6 +428,8 @@ def get_components_status_of_cluster(component):
         component_status = spec[component]['store']['enabled']
     elif component == 'network':
         component_status = spec[component]['networkpolicy']['enabled']
+    elif component == 'whizard':
+        component_status = spec['monitoring']['whizard']['enabled']
     else:
         component_status = spec[component]['enabled']
     return component_status

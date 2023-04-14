@@ -12,6 +12,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 @allure.feature('多集群告警')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
+@pytest.mark.skipif(commonFunction.get_components_status_of_cluster('whizard') is True, reason='集群已开启whizard功能')
 class TestMultiClusterAlerting(object):
     # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
     __test__ = commonFunction.check_multi_cluster()
@@ -62,14 +63,16 @@ class TestMultiClusterAlerting(object):
         time.sleep(180)
         re = multi_cluster_steps.step_get_alert_custom_policy(self.cluster_host_name, alert_name)
         state = re.json()['items'][0]['state']
-        pytest.assume(state == 'firing')
+        with pytest.assume:
+            assert state == 'firing'
         # 查看告警消息，并验证告警消息正确
         r = multi_cluster_steps.step_get_alert_message(self.cluster_host_name, '', 'label_filters=severity%3Dwarning')
         message_count = r.json()['total']
         policy_names = []
         for i in range(0, message_count):
             policy_names.append(r.json()['items'][i]['ruleName'])
-        pytest.assume(alert_name in policy_names)
+        with pytest.assume:
+            assert alert_name in policy_names
         # 删除告警策略
         multi_cluster_steps.step_delete_alert_custom_policy(self.cluster_host_name, alert_name)
 

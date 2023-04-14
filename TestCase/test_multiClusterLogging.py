@@ -38,7 +38,8 @@ class TestLogSearch(object):
         # 获取收集到的日志数量
         log_counts = response.json()['statistics']['logs']
         # 验证容器数量大于0
-        pytest.assume(pod_count > 0)
+        with pytest.assume:
+            assert pod_count > 0
         # 查询最近12小时的日志变化趋势
         interval = '30m'   # 时间间隔 30分钟
         # 获取12小时之前的时间戳
@@ -98,9 +99,9 @@ class TestLogSearch(object):
         # 获取查询结果数据中的时间间隔
         time_1 = response.json()['histogram']['histograms'][0]['time']
         time_2 = response.json()['histogram']['histograms'][1]['time']
-        time_interval = (time_2 - time_1) / 1000  # 换算成秒
+        time_interval = (time_2 - time_1) / 1000 / 60  # 换算成分钟
         # 验证时间间隔正确
-        assert time_interval == int(interval)
+        assert time_interval == int(interval[:2])
 
     @allure.story('日志查询规则')
     @allure.title('{title}')
@@ -237,7 +238,8 @@ class TestLogSearch(object):
         component = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/component']
         enabled = response.json()['items'][0]['metadata']['labels']['logging.kubesphere.io/enabled']
         # 校验接收器类型和启用状态，启用状态默认为开启
-        pytest.assume(component == 'logging')
+        with pytest.assume:
+            assert component == 'logging'
         assert enabled == 'true'
 
     @allure.story('集群设置/日志接收器')
@@ -254,7 +256,8 @@ class TestLogSearch(object):
         response = multi_cluster_steps.step_get_log_receiver(self.cluster_host_name, log_type)
         log_receiver_name = response.json()['items'][1]['metadata']['name']
         # 验证日志接收器添加成功
-        pytest.assume(log_receiver_name == 'forward-' + log_type)
+        with pytest.assume:
+            assert log_receiver_name == 'forward-' + log_type
         # 删除创建的日志接收器
         multi_cluster_steps.step_delete_log_receiver(self.cluster_host_name, log_receiver_name)
 
@@ -277,7 +280,8 @@ class TestLogSearch(object):
         # 查看日志接受器详情并验证更改成功
         re = multi_cluster_steps.step_get_log_receiver_detail(self.cluster_host_name, log_receiver_name)
         status = re.json()['metadata']['labels']['logging.kubesphere.io/enabled']
-        pytest.assume(status == 'false')
+        with pytest.assume:
+            assert status == 'false'
         # 删除创建的日志接收器
         multi_cluster_steps.step_delete_log_receiver(self.cluster_host_name, log_receiver_name)
 
@@ -304,7 +308,9 @@ class TestLogSearch(object):
         re = multi_cluster_steps.step_get_log_receiver_detail(self.cluster_host_name, log_receiver_name)
         host_actual = re.json()['spec']['forward']['host']
         port_actual = re.json()['spec']['forward']['port']
-        pytest.assume(host_actual == host)
-        pytest.assume(port_actual == port)
+        with pytest.assume:
+            assert host_actual == host
+        with pytest.assume:
+            assert port_actual == port
         # 删除创建的日志接收器
         multi_cluster_steps.step_delete_log_receiver(self.cluster_host_name, log_receiver_name)

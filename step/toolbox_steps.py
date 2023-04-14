@@ -156,12 +156,13 @@ def step_get_log(start_time, end_time, *cluster_name):
 
 @allure.step('查询集群日志总数的变化趋势')
 def step_get_logs_trend(start_time, end_time, interval, *cluster_name):
+    path = ''
     if cluster_name:
         for i in cluster_name:
             path = '/kapis/clusters/' + str(i) + '/tenant.kubesphere.io/v1alpha2/logs'
     else:
         path = '/kapis/tenant.kubesphere.io/v1alpha2/logs'
-    url = env_url + path + '?operation=histogram&interval=' + interval + 's&start_time=' + start_time + '&end_time=' + end_time
+    url = env_url + path + '?operation=histogram&interval=' + interval + '&start_time=' + start_time + '&end_time=' + end_time
     response = requests.get(url=url, headers=get_header())
     return response
 
