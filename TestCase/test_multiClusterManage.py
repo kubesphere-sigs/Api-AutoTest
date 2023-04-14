@@ -152,7 +152,8 @@ class TestCluster(object):
             r = multi_cluster_steps.step_get_node_detail_info(cluster_name, node_name)
             taints_actual = r.json()['spec']['taints']
             # 验证污点设置成功
-            pytest.assume(taints == taints_actual)
+            with pytest.assume:
+                assert taints == taints_actual
             # 清空设置的污点
             multi_cluster_steps.step_ste_taints(cluster_name=cluster_name, node_name=node_name, taints=[])
 
@@ -176,7 +177,8 @@ class TestCluster(object):
             r = multi_cluster_steps.step_get_node_detail_info(cluster_name, node_name)
             labels_actual = r.json()['metadata']['labels']
             # 验证标签添加成功
-            pytest.assume(labels == labels_actual)
+            with pytest.assume:
+                assert labels == labels_actual
             # 删除添加的标签
             labels_old['tester/label'] = None
             multi_cluster_steps.step_add_labels_for_node(cluster_name, node_name, labels_old)
@@ -195,7 +197,8 @@ class TestCluster(object):
             r = multi_cluster_steps.step_get_node_detail_info(cluster_name, node_name)
             cordon_status = r.json()['spec']['unschedulable']
             # 验证节点调度状态为停止调度
-            pytest.assume(cordon_status == True)
+            with pytest.assume:
+                assert cordon_status == True
             # 设置节点为启用调度
             multi_cluster_steps.step_cordon_node(cluster_name, node_name, False)
 
@@ -254,22 +257,22 @@ class TestCluster(object):
     @allure.title('查看某个集群的某个节点的状态信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_status(self):
-            # 获取节点列表中第一个节点的名称
-            re = multi_cluster_steps.step_get_nodes(self.cluster_any_name)
-            node_name = re.json()['items'][0]['metadata']['name']
-            # 获取当前时间的10位时间戳
-            now_time = datetime.now()
-            now_timestamp = str(datetime.timestamp(now_time))[0:10]
-            # 获取20分钟之前的时间戳
-            before_timestamp = commonFunction.get_before_timestamp(now_time, 20)
-            # 查看节点的状态信息
-            r = multi_cluster_steps.step_get_status_of_node(cluster_name=self.cluster_any_name, node_name=node_name,
-                                                            start_time=before_timestamp,
-                                                            end_time=now_timestamp, step='180s', times='20')
-            # 获取查询结果中的节点信息
-            node = r.json()['results'][0]['data']['result'][0]['metric']['node']
-            # 验证查询结果正确
-            assert node == node_name
+        # 获取节点列表中第一个节点的名称
+        re = multi_cluster_steps.step_get_nodes(self.cluster_any_name)
+        node_name = re.json()['items'][0]['metadata']['name']
+        # 获取当前时间的10位时间戳
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
+        # 获取20分钟之前的时间戳
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 20)
+        # 查看节点的状态信息
+        r = multi_cluster_steps.step_get_status_of_node(cluster_name=self.cluster_any_name, node_name=node_name,
+                                                        start_time=before_timestamp,
+                                                        end_time=now_timestamp, step='180s', times='20')
+        # 获取查询结果中的节点信息
+        node = r.json()['results'][0]['data']['result'][0]['metric']['node']
+        # 验证查询结果正确
+        assert node == node_name
 
     @allure.story('节点')
     @allure.title('在某个集群中查询节点中不存在的pod')
@@ -320,6 +323,47 @@ class TestCluster(object):
         name_actual = r.json()['items'][0]['metadata']['name']
         # 验证查询结果
         assert name_actual == pod_name
+
+    @allure.story('边缘节点')
+    @allure.title('在某个集群中查看边缘节点列表')
+    @allure.severity(allure.severity_level.NORMAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('whizard') is False, reason='集群已未开启边缘节点功能')
+    def test_get_edge_nodes(self):
+        # 查看边缘节点列表
+        re = multi_cluster_steps.step_get_edge_nodes(self.cluster_any_name)
+        # 获取查询结果
+        count = re.json()['totalItems']
+        # 验证查询结果
+        assert count >= 0
+
+    @allure.story('边缘节点')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.NORMAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('whizard') is False, reason='集群已未开启边缘节点功能')
+    @pytest.mark.parametrize('ip, title, status_code',
+                             [('10.10.10', '添加边缘节点时，校验ip地址格式-不符合格式的ip地址', '400'),
+                              ('10.10.10.10', '添加边缘节点时，校验ip地址格式-符合格式的ip地址', '200')])
+    def test_add_edge_node_with_invalid_ip(self, ip, title, status_code):
+        # 添加边缘节点
+        node_name = 'edge-node'
+        re = multi_cluster_steps.step_check_internal_ip(self.cluster_any_name, node_name, ip)
+        assert re.json()['code'] == int(status_code)
+
+    @allure.story('边缘节点')
+    @allure.title('{title}')
+    @allure.severity(allure.severity_level.NORMAL)
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('whizard') is False, reason='集群已未开启边缘节点功能')
+    @pytest.mark.parametrize('add_default_taint, title, result',
+                             [('true', '获取边缘节点配置命令-添加默认污点', True),
+                              ('false', '获取边缘节点配置命令-不添加默认污点', False)])
+    def test_get_edge_node_config_command(self, title, add_default_taint, result):
+        # 添加边缘节点
+        node_name = 'edge-node'
+        ip = '10.10.10.10'
+        re = multi_cluster_steps.step_get_edge_node_config_command(self.cluster_any_name, node_name, ip,
+                                                                   add_default_taint)
+        result_new = 'with-edge-taint' in re.json()['data']
+        assert result_new == result
 
     @allure.story('项目')
     @allure.title('按名称在某个集群精确查询集群中不存在的系统项目')
@@ -442,7 +486,8 @@ class TestCluster(object):
         for j in range(0, project_count):
             project_name = res.json()['items'][j]['metadata']['name']
             # 查询项目的pods信息
-            r = multi_cluster_steps.step_get_pods_of_project(cluster_name=self.cluster_any_name, project_name=project_name)
+            r = multi_cluster_steps.step_get_pods_of_project(cluster_name=self.cluster_any_name,
+                                                             project_name=project_name)
             # 获取pod的数量
             pod_count = r.json()['totalItems']
             # 获取所有pod的状态
@@ -451,10 +496,11 @@ class TestCluster(object):
                 # 获取pod的名称
                 pod_name = r.json()['items'][k]['metadata']['name']
                 if state not in ['Running', 'Succeeded']:
-                    print('集群：' + self.cluster_any_name + ' 项目：' + project_name + ' 容器组：' + pod_name + ' 状态不正常')
+                    print(
+                        '集群：' + self.cluster_any_name + ' 项目：' + project_name + ' 容器组：' + pod_name + ' 状态不正常')
                 else:
                     # 验证pod的运行状态
-                    pytest.assume(state in ['Running', 'Succeeded'])
+                    assert state in ['Running', 'Succeeded']
 
     @allure.story('项目')
     @allure.title('在某个集群中使用名称精确查询项目中存在的pod')
@@ -477,7 +523,8 @@ class TestCluster(object):
                 name = re.json()['items'][k]['metadata']['name']
                 pod_names.append(name)
             # 使用pod的名称，精确查询存在的pod
-            r = multi_cluster_steps.step_get_pods_of_project(self.cluster_any_name, project_name, 'name=' + pod_names[0])
+            r = multi_cluster_steps.step_get_pods_of_project(self.cluster_any_name, project_name,
+                                                             'name=' + pod_names[0])
             # 获取查询结果中pod名称
             pod_name_actual = r.json()['items'][0]['metadata']['name']
             # 验证查询结果正确
@@ -506,7 +553,8 @@ class TestCluster(object):
                 name = re.json()['items'][k]['metadata']['name']
                 pod_names.append(name)
             # 使用pod的名称，精确查询存在的pod
-            r = multi_cluster_steps.step_get_pods_of_project(self.cluster_any_name, project_name, 'name=' + pod_names[0][2:])
+            r = multi_cluster_steps.step_get_pods_of_project(self.cluster_any_name, project_name,
+                                                             'name=' + pod_names[0][2:])
             # 获取查询结果中pod名称
             pod_name_actual = r.json()['items'][0]['metadata']['name']
             # 验证查询结果正确
@@ -542,7 +590,8 @@ class TestCluster(object):
         r = multi_cluster_steps.step_get_user_system(self.cluster_any_name, project_name)
         state = r.json()['status']['phase']
         # 验证项目的状态为active
-        pytest.assume(state == 'Active')
+        with pytest.assume:
+            assert state == 'Active'
         # 删除创建的项目
         multi_cluster_steps.step_delete_user_system(self.cluster_any_name, project_name)
 
@@ -550,6 +599,7 @@ class TestCluster(object):
     @allure.title('在每个集群删除用户项目，并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_user_system(self):
+        status = ''
         project_name = 'user-project' + str(commonFunction.get_random())
         alias_name = 'test'
         description = 'create user-system'
@@ -560,7 +610,8 @@ class TestCluster(object):
         # 获取删除项目的状态
         state = re.json()['status']['phase']
         # 验证删除项目的状态为Terminating
-        pytest.assume(state == 'Terminating')
+        with pytest.assume:
+            assert state == 'Terminating'
         # 等待项目删除成功
         i = 0
         while i < 60:
@@ -686,6 +737,7 @@ class TestCluster(object):
                               ('daemonsets', '查看某个集群所有的daemonSets的Revision Records')])
     def test_check_app_workload_revision_records(self, type, title):
         # 查询集群所有的daemonSets
+        label_selector = ''
         res = multi_cluster_steps.step_get_resource_of_cluster(cluster_name=self.cluster_any_name, resource_type=type)
         # 获取集群daemonSets的数量
         count = res.json()['totalItems']
@@ -992,7 +1044,8 @@ class TestCluster(object):
         allure.dynamic.story(story)
         # 查询项目为kube-system的所有资源
         if type == 'persistentvolumeclaims':
-            re = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name=self.cluster_any_name, type=type,
+            re = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name=self.cluster_any_name,
+                                                                             type=type,
                                                                              project_name='kubesphere-monitoring-system')
             # 获取任一资源的名称
             name = re.json()['items'][0]['metadata']['name']
@@ -1003,14 +1056,16 @@ class TestCluster(object):
             # 在查询结果中获取资源名称
             name_actual = r.json()['items'][0]['metadata']['name']
         else:
-            re = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name=self.cluster_any_name, type=type,
+            re = multi_cluster_steps.step_get_resource_of_cluster_by_project(cluster_name=self.cluster_any_name,
+                                                                             type=type,
                                                                              project_name='kubesphere-system')
             # 获取资源数量
             count = re.json()['totalItems']
             # 获取任一资源的名称
             name = re.json()['items'][random.randint(0, count - 1)]['metadata']['name']
             # 按项目和名称查询资源
-            r = multi_cluster_steps.step_get_resource_of_cluster_by_project(self.cluster_any_name, type, 'kubesphere-system',
+            r = multi_cluster_steps.step_get_resource_of_cluster_by_project(self.cluster_any_name, type,
+                                                                            'kubesphere-system',
                                                                             'name=' + name)
             # 在查询结果中获取资源名称
             name_actual = r.json()['items'][0]['metadata']['name']
@@ -1064,7 +1119,8 @@ class TestCluster(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_query_pvc_by_status(self):
         # 查询状态为bound的存储卷
-        r = multi_cluster_steps.step_get_resource_of_cluster(self.cluster_any_name, 'persistentvolumeclaims', 'status=bound')
+        r = multi_cluster_steps.step_get_resource_of_cluster(self.cluster_any_name, 'persistentvolumeclaims',
+                                                             'status=bound')
         # 获取存储卷数量
         count = r.json()['totalItems']
         # 获取并验证所有存储卷的状态为Bound
@@ -1098,26 +1154,26 @@ class TestCluster(object):
     @allure.title('在某个集群查询每一个存储卷的监控信息')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_pvc_metrics(self):
-            # 查询集群存在的存储卷信息
-            re = multi_cluster_steps.step_get_resource_of_cluster(self.cluster_any_name, 'persistentvolumeclaims')
-            # 获取存储卷的数量
-            count = re.json()['totalItems']
-            # 获取所有存储卷的名称和所在namespace
-            for j in range(0, count):
-                name = re.json()['items'][j]['metadata']['name']
-                namespace = re.json()['items'][j]['metadata']['namespace']
-                # 获取当前时间的10位时间戳
-                now_time = datetime.now()
-                now_timestamp = str(datetime.timestamp(now_time))[0:10]
-                # 获取60分钟之前的时间时间戳
-                before_timestamp = commonFunction.get_before_timestamp(now_time, 60)
-                # 查询每个pvc最近1个小时的监控信息
-                r = multi_cluster_steps.step_get_metrics_of_pvc(self.cluster_any_name, namespace, name, before_timestamp,
-                                                                now_timestamp, '60s', '60')
-                # 获取查询到的数据的结果类型
-                result_type = r.json()['results'][0]['data']['resultType']
-                # 验证查询到的数据的结果类型
-                assert result_type == 'matrix'
+        # 查询集群存在的存储卷信息
+        re = multi_cluster_steps.step_get_resource_of_cluster(self.cluster_any_name, 'persistentvolumeclaims')
+        # 获取存储卷的数量
+        count = re.json()['totalItems']
+        # 获取所有存储卷的名称和所在namespace
+        for j in range(0, count):
+            name = re.json()['items'][j]['metadata']['name']
+            namespace = re.json()['items'][j]['metadata']['namespace']
+            # 获取当前时间的10位时间戳
+            now_time = datetime.now()
+            now_timestamp = str(datetime.timestamp(now_time))[0:10]
+            # 获取60分钟之前的时间时间戳
+            before_timestamp = commonFunction.get_before_timestamp(now_time, 60)
+            # 查询每个pvc最近1个小时的监控信息
+            r = multi_cluster_steps.step_get_metrics_of_pvc(self.cluster_any_name, namespace, name, before_timestamp,
+                                                            now_timestamp, '60s', '60')
+            # 获取查询到的数据的结果类型
+            result_type = r.json()['results'][0]['data']['resultType']
+            # 验证查询到的数据的结果类型
+            assert result_type == 'matrix'
 
     @allure.story('存储')
     @allure.title('在某个集群查询每一个存储卷的pod信息')
@@ -1196,7 +1252,8 @@ class TestCluster(object):
         # 获取请求结果中的storageclass.kubernetes.io/is-default-class
         result = r.json()['metadata']['annotations']['storageclass.kubernetes.io/is-default-class']
         # 验证结果为false
-        pytest.assume(result == 'false')
+        with pytest.assume:
+            assert result == 'false'
         # 将任一存储类型设置为默认存储类型
         r = multi_cluster_steps.step_set_default_storage_class(self.cluster_any_name, name, 'true')
         # 获取请求结果中的storageclass.kubernetes.io/is-default-class
@@ -1223,7 +1280,8 @@ class TestCluster(object):
             if total_backends != healthy_backends:
                 print('组件：' + component_name + ' 运行不正常')
                 # 校验失败仍能继续运行
-                pytest.assume(total_backends == healthy_backends)
+                with pytest.assume:
+                    assert total_backends == healthy_backends
 
     @allure.story('监控告警/集群状态')
     @allure.title('在某个集群查看节点的运行状态并验证节点均健康运行')
@@ -1248,7 +1306,8 @@ class TestCluster(object):
         # 获取210分钟之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp(now_time, 210)
         # 查询集群的最近210分钟的监控信息
-        re = multi_cluster_steps.step_get_metrics_of_cluster(self.cluster_any_name, before_timestamp, now_timestamp, '300s',
+        re = multi_cluster_steps.step_get_metrics_of_cluster(self.cluster_any_name, before_timestamp, now_timestamp,
+                                                             '300s',
                                                              '100')
         # 获取查询结果的数据类型
         for j in range(0, 10):
@@ -1269,7 +1328,8 @@ class TestCluster(object):
         # 获取240分钟之前的时间戳
         before_timestamp = commonFunction.get_before_timestamp(now_time, 240)
         # 查询集群的最近240分钟的监控信息
-        r = multi_cluster_steps.step_get_metrics_of_apiserver(self.cluster_any_name, before_timestamp, now_timestamp, '300s',
+        r = multi_cluster_steps.step_get_metrics_of_apiserver(self.cluster_any_name, before_timestamp, now_timestamp,
+                                                              '300s',
                                                               '100')
         # 获取查询结果的数据类型
         for j in range(0, 3):
@@ -1290,7 +1350,8 @@ class TestCluster(object):
         # 获取240分钟之前的时间
         before_timestamp = commonFunction.get_before_timestamp(now_time, 240)
         # 查询集群的最近240分钟的监控信息
-        r = multi_cluster_steps.step_get_metrics_of_scheduler(self.cluster_any_name, before_timestamp, now_timestamp, '300s',
+        r = multi_cluster_steps.step_get_metrics_of_scheduler(self.cluster_any_name, before_timestamp, now_timestamp,
+                                                              '300s',
                                                               '100')
         # 获取查询结果的数据类型
         for j in range(0, 2):
@@ -1309,7 +1370,8 @@ class TestCluster(object):
                               ('node_cpu_utilisation', '在某个集群通Sort by CPU查看Node Usage Ranking'),
                               ('node_memory_utilisation', '在某个集群通Sort by Memory查看Node Usage Ranking'),
                               ('node_disk_size_utilisation', '在某个集群通Sort by Local Storage查看Node Usage Ranking'),
-                              ('node_disk_inode_utilisation', '在某个集群通Sort by inode Utilization查看Node Usage Ranking'),
+                              ('node_disk_inode_utilisation',
+                               '在某个集群通Sort by inode Utilization查看Node Usage Ranking'),
                               ('node_pod_utilisation', '在某个集群通Sort by Pod Utilization查看Node Usage Ranking')
                               ])
     def test_get_node_usage_rank(self, sort, title):
@@ -1328,22 +1390,23 @@ class TestCluster(object):
     @allure.title('查看某个集群资源使用情况')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_cluster_resource_usage(self):
-            # 获取当前时间的10位时间戳
-            now_time = datetime.now()
-            now_timestamp = str(datetime.timestamp(now_time))[0:10]
-            # 获取1440分钟之前的时间
-            before_timestamp = commonFunction.get_before_timestamp(now_time, 1440)
-            # 查询最近一天的集群应用资源使用情况
-            r = multi_cluster_steps.step_get_resource_usage_of_cluster(self.cluster_any_name, before_timestamp, now_timestamp,
-                                                                       '3600s', '24')
-            # 获取结果中的数据类型
-            for j in range(0, 3):
-                try:
-                    result_type = r.json()['results'][j]['data']['resultType']
-                    # 验证数据类型为matrix
-                    assert result_type == 'matrix'
-                except Exception as e:
-                    print(e)
+        # 获取当前时间的10位时间戳
+        now_time = datetime.now()
+        now_timestamp = str(datetime.timestamp(now_time))[0:10]
+        # 获取1440分钟之前的时间
+        before_timestamp = commonFunction.get_before_timestamp(now_time, 1440)
+        # 查询最近一天的集群应用资源使用情况
+        r = multi_cluster_steps.step_get_resource_usage_of_cluster(self.cluster_any_name, before_timestamp,
+                                                                   now_timestamp,
+                                                                   '3600s', '24')
+        # 获取结果中的数据类型
+        for j in range(0, 3):
+            try:
+                result_type = r.json()['results'][j]['data']['resultType']
+                # 验证数据类型为matrix
+                assert result_type == 'matrix'
+            except Exception as e:
+                print(e)
 
     @allure.story('监控告警/应用资源')
     @allure.title('查看某个集群应用资源用量')
@@ -1376,7 +1439,8 @@ class TestCluster(object):
         # 获取1440分钟之前的时间
         before_timestamp = commonFunction.get_before_timestamp(now_time, 1440)
         # 查询最近一天的集群项目变化趋势
-        r = multi_cluster_steps.step_get_project_trend_of_cluster(self.cluster_any_name, before_timestamp, now_timestamp,
+        r = multi_cluster_steps.step_get_project_trend_of_cluster(self.cluster_any_name, before_timestamp,
+                                                                  now_timestamp,
                                                                   '3600s', '24')
         # 获取结果中的数据类型
         result_type = r.json()['results'][0]['data']['resultType']
@@ -1441,7 +1505,8 @@ class TestCluster(object):
             name = response.json()['items'][i]['metadata']['name']
             ws_names.append(name)
         # 验证集群可见性
-        pytest.assume(ws_name in ws_names)
+        with pytest.assume:
+            assert ws_name in ws_names
         # 删除创建的企业空间
         multi_workspace_steps.step_delete_workspace(ws_name)
 
@@ -1467,7 +1532,8 @@ class TestCluster(object):
             name = response.json()['items'][i]['metadata']['name']
             ws_names.append(name)
         # 验证授权取消成功
-        pytest.assume(ws_name not in ws_names)
+        with pytest.assume:
+            assert ws_name not in ws_names
         # 删除创建的企业空间
         multi_workspace_steps.step_delete_workspace(ws_name)
 
@@ -1493,7 +1559,8 @@ class TestCluster(object):
             name = response.json()['items'][i]['metadata']['name']
             ws_names.append(name)
         # 验证授权成功
-        pytest.assume(ws_name in ws_names)
+        with pytest.assume:
+            assert ws_name in ws_names
         # 删除创建的企业空间
         multi_workspace_steps.step_delete_workspace(ws_name)
 
@@ -1526,13 +1593,15 @@ class TestCluster(object):
             response = multi_cluster_steps.step_get_cluster_member(cluster_name, 'name=' + user_name)
             # 验证集群成员邀请成功
             name = response.json()['items'][0]['metadata']['name']
-            pytest.assume(name == user_name)
+            with pytest.assume:
+                assert name == user_name
             # 将用户从集群成员中移出
             multi_cluster_steps.step_remove_cluster_member(cluster_name, user_name)
             # 查询集群成员，验证移出成功
             re = multi_cluster_steps.step_get_cluster_member(cluster_name, 'name=' + user_name)
             count = re.json()['totalItems']
-            pytest.assume(count == 0)
+            with pytest.assume:
+                assert count == 0
         # 删除创建的用户
         platform_steps.step_delete_user(user_name)
 
@@ -1568,7 +1637,8 @@ class TestCluster(object):
             # 查看集群网关，并验证网关类型
             response = multi_cluster_steps.step_get_cluster_gateway(cluster_name)
             gateway_type = response.json()[0]['spec']['service']['type']
-            pytest.assume(gateway_type == type)
+            with pytest.assume:
+                assert gateway_type == type
             # 关闭集群网关
             multi_cluster_steps.step_delete_cluster_gateway(cluster_name)
             time.sleep(10)
@@ -1591,9 +1661,11 @@ class TestCluster(object):
         config_actual = re.json()[0]['spec']['controller']['config']
         status_actual = re.json()[0]['spec']['deployment']['annotations']['servicemesh.kubesphere.io/enabled']
         # 验证config信息编辑成功
-        pytest.assume(config_actual == config)
+        with pytest.assume:
+            assert config_actual == config
         # 验证集群网关的链路追踪的状态
-        pytest.assume(status_actual == status)
+        with pytest.assume:
+            assert status_actual == status
         # 关闭集群网关
         multi_cluster_steps.step_delete_cluster_gateway(self.cluster_any_name)
         time.sleep(10)
@@ -1605,10 +1677,12 @@ class TestCluster(object):
         # 开启集群网关
         multi_cluster_steps.step_open_cluster_gateway(self.cluster_any_name, type='LoadBalancer')
         # 查询项目网关
-        response = multi_cluster_steps.step_get_project_gateway(self.cluster_any_name, 'kubesphere-router-kubesphere-system')
+        response = multi_cluster_steps.step_get_project_gateway(self.cluster_any_name,
+                                                                'kubesphere-router-kubesphere-system')
         gateway_name = response.json()['items'][0]['metadata']['name']
         # 验证查询结果
-        pytest.assume(gateway_name == 'kubesphere-router-kubesphere-system')
+        with pytest.assume:
+            assert gateway_name == 'kubesphere-router-kubesphere-system'
         # 关闭集群网关
         multi_cluster_steps.step_delete_cluster_gateway(self.cluster_any_name)
 

@@ -8,7 +8,7 @@ from common.getData import DoexcleByPandas
 from step import multi_cluster_storages_step, multi_cluster_steps, multi_workspace_steps, multi_project_steps
 
 
-@allure.feature('multi_cluster_storage')
+@allure.feature('多集群存储')
 @pytest.mark.skipif(commonFunction.check_multi_cluster() is False, reason='单集群环境下不执行')
 @pytest.mark.skipif(commonFunction.get_multi_cluster_sc_qingcloud() is False, reason='csi-qingcloud存储插件不存在')
 class TestMultiClusterStorage:
@@ -32,6 +32,7 @@ class TestMultiClusterStorage:
     strategy = {"type": "RollingUpdate", "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}
 
     def setup_class(self):
+        r = ''
         self.cluster_name = multi_cluster_steps.step_get_host_cluster_name()
         multi_workspace_steps.step_create_multi_ws(ws_name=self.ws_name, alias_name='', description='',
                                                    cluster_names=self.cluster_name)
@@ -90,7 +91,7 @@ class TestMultiClusterStorage:
         request_resource(targets_new[0], targets_new[1], targets_new[2], story, targets_new[3], method, severity,
                          targets_new[4], targets_new[5])
 
-    @allure.story("存储-存储类")
+    @allure.story("存储类")
     @allure.title('设置卷操作')
     @allure.severity('normal')
     def test_set_volume_operations(self, create_multi_cluster_sc):
@@ -102,10 +103,12 @@ class TestMultiClusterStorage:
         # 查看存储类详细信息
         re = multi_cluster_storages_step.get_sc_info(self.cluster_name, create_multi_cluster_sc)
         # 验证设置成功
-        pytest.assume(re.json()['metadata']['annotations']['storageclass.kubesphere.io/allow-clone'] == 'false')
-        pytest.assume(re.json()['metadata']['annotations']['storageclass.kubesphere.io/allow-snapshot'] == 'false')
+        with pytest.assume:
+            assert re.json()['metadata']['annotations']['storageclass.kubesphere.io/allow-clone'] == 'false'
+        with pytest.assume:
+            assert re.json()['metadata']['annotations']['storageclass.kubesphere.io/allow-snapshot'] == 'false'
 
-    @allure.story("存储-存储类")
+    @allure.story("存储类")
     @allure.title('设置默认类')
     @allure.severity('normal')
     def test_set_default_sc(self):
@@ -120,7 +123,7 @@ class TestMultiClusterStorage:
         multi_cluster_storages_step.set_default_sc(self.cluster_name, self.sc_name, 'false')
         multi_cluster_storages_step.set_default_sc(self.cluster_name, 'local', 'true')
 
-    @allure.story("存储-存储类")
+    @allure.story("存储类")
     @allure.title('存储类的存储卷信息')
     @allure.severity('normal')
     def test_sc_pvc(self, create_multi_cluster_sc):
@@ -134,8 +137,10 @@ class TestMultiClusterStorage:
             'annotations'][
             'kubesphere.io/pvc-count']
         # 验证存储卷存在以及数量正确
-        pytest.assume(re.json()['items'][0]['metadata']['name'] == volume_name)
-        pytest.assume(num == '1')
+        with pytest.assume:
+            assert re.json()['items'][0]['metadata']['name'] == volume_name
+        with pytest.assume:
+            assert num == '1'
         # 删除存储卷
         multi_cluster_storages_step.delete_volume(self.cluster_name, self.pro_ws_name, volume_name)
         # 查询存储卷数量
@@ -145,10 +150,12 @@ class TestMultiClusterStorage:
         # 查询存储类已有存储卷信息
         re = multi_cluster_storages_step.search_volume_by_sc(self.cluster_name, create_multi_cluster_sc)
         # 验证存储卷不存在以及数量正确
-        pytest.assume(re.json()['totalItems'] == 0)
-        pytest.assume(num1 == '0')
+        with pytest.assume:
+            assert re.json()['totalItems'] == 0
+        with pytest.assume:
+            assert num1 == '0'
 
-    @allure.story("存储-存储类")
+    @allure.story("存储类")
     @allure.title('查询存储类已有存储卷')
     @allure.severity('normal')
     def test_search_pvc(self):
@@ -167,7 +174,7 @@ class TestMultiClusterStorage:
         # 删除存储卷
         multi_cluster_storages_step.delete_volume(self.cluster_name, self.pro_ws_name, volume_name)
 
-    @allure.story("存储-卷快照类")
+    @allure.story("卷快照类")
     @allure.title('创建卷快照类')
     @allure.severity('normal')
     def test_create_vsc(self):
@@ -182,7 +189,7 @@ class TestMultiClusterStorage:
         # 删除卷快照类
         multi_cluster_storages_step.delete_vsc(self.cluster_name, vsc_name)
 
-    @allure.story("存储-卷快照类")
+    @allure.story("卷快照类")
     @allure.title('编辑卷快照类信息')
     @allure.severity('normal')
     def test_set_vsc_info(self):
@@ -202,14 +209,18 @@ class TestMultiClusterStorage:
                                             generation, version, uid, alias_name, des)
         # 验证别名设置成功
         res = multi_cluster_storages_step.search_vsc_by_name(self.cluster_name, vsc_name)
-        pytest.assume(res.json()['items'][0]['metadata']['annotations']['kubesphere.io/alias-name'] == alias_name)
+        with pytest.assume:
+            assert res.json()['items'][0]['metadata']['annotations']['kubesphere.io/alias-name'] == alias_name
         # 验证描述信息设置成功
-        pytest.assume(res.json()['items'][0]['metadata']['annotations']['kubesphere.io/description'] == des)
+        with pytest.assume:
+            assert res.json()['items'][0]['metadata']['annotations']['kubesphere.io/description'] == des
 
-    @allure.story("存储-卷快照类")
+    @allure.story("卷快照类")
     @allure.title('验证卷快照类的卷快照数量')
     @allure.severity('normal')
     def test_get_vs_by_vsc(self):
+        r1 = ''
+        r2 = ''
         vs_name = 'snapshot-' + str(get_random())
         vsc_name = self.sc_name1
         volume_name = self.volume_name
@@ -248,10 +259,12 @@ class TestMultiClusterStorage:
         # 判断快照数量
         assert r.json()['items'][0]['metadata']['annotations']['kubesphere.io/snapshot-count'] == '0'
 
-    @allure.story("存储-卷快照类")
+    @allure.story("卷快照类")
     @allure.title('查询卷快照类的卷快照')
     @allure.severity('normal')
     def test_search_vs_by_vsc(self):
+        r1 = ''
+        r2 = ''
         vs_name = 'snapshot-' + str(get_random())
         vsc_name = self.sc_name1
         volume_name = self.volume_name
@@ -295,10 +308,12 @@ class TestMultiClusterStorage:
             j = j + 1
         assert r2.json()['totalItems'] == 0
 
-    @allure.story("存储-卷快照")
+    @allure.story("卷快照")
     @allure.title('创建快照')
     @allure.severity('normal')
     def test_create_snapshots(self):
+        r1 = ''
+        r2 = ''
         vs_name = 'snapshot-' + str(get_random())
         vsc_name = self.sc_name1
         volume_name = self.volume_name
@@ -331,10 +346,11 @@ class TestMultiClusterStorage:
             j = j + 1
         assert r2.json()['totalItems'] == 0
 
-    @allure.story("存储-卷快照")
+    @allure.story("卷快照")
     @allure.title('创建同名的快照')
     @allure.severity('normal')
     def test_create_same_snapshots(self):
+        r2 = ''
         vs_name = 'snapshot-' + str(get_random())
         vsc_name = self.sc_name1
         volume_name = self.volume_name
@@ -369,7 +385,7 @@ class TestMultiClusterStorage:
             j = j + 1
         assert r2.json()['totalItems'] == 0
 
-    @allure.story("存储-卷快照")
+    @allure.story("卷快照")
     @allure.title('查询卷快照')
     @allure.severity('normal')
     def test_search_snapshots(self):
@@ -412,10 +428,11 @@ class TestMultiClusterStorage:
             j = j + 1
         assert r2.json()['totalItems'] == 0
 
-    @allure.story("存储-卷快照")
+    @allure.story("卷快照")
     @allure.title('使用卷快照创建存储卷')
     @allure.severity('normal')
     def test_create_volume_by_snapshots(self):
+        r2 = ''
         vs_name = 'snapshot-' + str(get_random())
         vsc_name = self.sc_name1
         volume_name = self.volume_name
@@ -458,10 +475,11 @@ class TestMultiClusterStorage:
             j = j + 1
         assert r2.json()['totalItems'] == 0
 
-    @allure.story("存储-卷快照")
+    @allure.story("卷快照")
     @allure.title('使用卷快照创建同名存储卷')
     @allure.severity('normal')
     def test_create_same_volume_by_snapshots(self):
+        r2 = ''
         vs_name = 'snapshot-' + str(get_random())
         vsc_name = self.sc_name1
         volume_name = self.volume_name
