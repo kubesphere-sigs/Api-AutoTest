@@ -152,7 +152,8 @@ class TestCluster(object):
             r = multi_cluster_steps.step_get_node_detail_info(cluster_name, node_name)
             taints_actual = r.json()['spec']['taints']
             # 验证污点设置成功
-            pytest.assume(taints == taints_actual)
+            with pytest.assume:
+                assert taints == taints_actual
             # 清空设置的污点
             multi_cluster_steps.step_ste_taints(cluster_name=cluster_name, node_name=node_name, taints=[])
 
@@ -176,7 +177,8 @@ class TestCluster(object):
             r = multi_cluster_steps.step_get_node_detail_info(cluster_name, node_name)
             labels_actual = r.json()['metadata']['labels']
             # 验证标签添加成功
-            pytest.assume(labels == labels_actual)
+            with pytest.assume:
+                assert labels == labels_actual
             # 删除添加的标签
             labels_old['tester/label'] = None
             multi_cluster_steps.step_add_labels_for_node(cluster_name, node_name, labels_old)
@@ -195,7 +197,8 @@ class TestCluster(object):
             r = multi_cluster_steps.step_get_node_detail_info(cluster_name, node_name)
             cordon_status = r.json()['spec']['unschedulable']
             # 验证节点调度状态为停止调度
-            pytest.assume(cordon_status == True)
+            with pytest.assume:
+                assert cordon_status == True
             # 设置节点为启用调度
             multi_cluster_steps.step_cordon_node(cluster_name, node_name, False)
 
@@ -454,7 +457,7 @@ class TestCluster(object):
                     print('集群：' + self.cluster_any_name + ' 项目：' + project_name + ' 容器组：' + pod_name + ' 状态不正常')
                 else:
                     # 验证pod的运行状态
-                    pytest.assume(state in ['Running', 'Succeeded'])
+                    assert state in ['Running', 'Succeeded']
 
     @allure.story('项目')
     @allure.title('在某个集群中使用名称精确查询项目中存在的pod')
@@ -542,7 +545,8 @@ class TestCluster(object):
         r = multi_cluster_steps.step_get_user_system(self.cluster_any_name, project_name)
         state = r.json()['status']['phase']
         # 验证项目的状态为active
-        pytest.assume(state == 'Active')
+        with pytest.assume:
+            assert state == 'Active'
         # 删除创建的项目
         multi_cluster_steps.step_delete_user_system(self.cluster_any_name, project_name)
 
@@ -550,6 +554,7 @@ class TestCluster(object):
     @allure.title('在每个集群删除用户项目，并验证删除成功')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_delete_user_system(self):
+        status = ''
         project_name = 'user-project' + str(commonFunction.get_random())
         alias_name = 'test'
         description = 'create user-system'
@@ -560,7 +565,8 @@ class TestCluster(object):
         # 获取删除项目的状态
         state = re.json()['status']['phase']
         # 验证删除项目的状态为Terminating
-        pytest.assume(state == 'Terminating')
+        with pytest.assume:
+            assert state == 'Terminating'
         # 等待项目删除成功
         i = 0
         while i < 60:
@@ -686,6 +692,7 @@ class TestCluster(object):
                               ('daemonsets', '查看某个集群所有的daemonSets的Revision Records')])
     def test_check_app_workload_revision_records(self, type, title):
         # 查询集群所有的daemonSets
+        label_selector = ''
         res = multi_cluster_steps.step_get_resource_of_cluster(cluster_name=self.cluster_any_name, resource_type=type)
         # 获取集群daemonSets的数量
         count = res.json()['totalItems']
@@ -1196,7 +1203,8 @@ class TestCluster(object):
         # 获取请求结果中的storageclass.kubernetes.io/is-default-class
         result = r.json()['metadata']['annotations']['storageclass.kubernetes.io/is-default-class']
         # 验证结果为false
-        pytest.assume(result == 'false')
+        with pytest.assume:
+            assert result == 'false'
         # 将任一存储类型设置为默认存储类型
         r = multi_cluster_steps.step_set_default_storage_class(self.cluster_any_name, name, 'true')
         # 获取请求结果中的storageclass.kubernetes.io/is-default-class
@@ -1223,7 +1231,8 @@ class TestCluster(object):
             if total_backends != healthy_backends:
                 print('组件：' + component_name + ' 运行不正常')
                 # 校验失败仍能继续运行
-                pytest.assume(total_backends == healthy_backends)
+                with pytest.assume:
+                    assert total_backends == healthy_backends
 
     @allure.story('监控告警/集群状态')
     @allure.title('在某个集群查看节点的运行状态并验证节点均健康运行')
@@ -1441,7 +1450,8 @@ class TestCluster(object):
             name = response.json()['items'][i]['metadata']['name']
             ws_names.append(name)
         # 验证集群可见性
-        pytest.assume(ws_name in ws_names)
+        with pytest.assume:
+            assert ws_name in ws_names
         # 删除创建的企业空间
         multi_workspace_steps.step_delete_workspace(ws_name)
 
@@ -1467,7 +1477,8 @@ class TestCluster(object):
             name = response.json()['items'][i]['metadata']['name']
             ws_names.append(name)
         # 验证授权取消成功
-        pytest.assume(ws_name not in ws_names)
+        with pytest.assume:
+            assert ws_name not in ws_names
         # 删除创建的企业空间
         multi_workspace_steps.step_delete_workspace(ws_name)
 
@@ -1493,7 +1504,8 @@ class TestCluster(object):
             name = response.json()['items'][i]['metadata']['name']
             ws_names.append(name)
         # 验证授权成功
-        pytest.assume(ws_name in ws_names)
+        with pytest.assume:
+            assert ws_name in ws_names
         # 删除创建的企业空间
         multi_workspace_steps.step_delete_workspace(ws_name)
 
@@ -1526,13 +1538,15 @@ class TestCluster(object):
             response = multi_cluster_steps.step_get_cluster_member(cluster_name, 'name=' + user_name)
             # 验证集群成员邀请成功
             name = response.json()['items'][0]['metadata']['name']
-            pytest.assume(name == user_name)
+            with pytest.assume:
+                assert name == user_name
             # 将用户从集群成员中移出
             multi_cluster_steps.step_remove_cluster_member(cluster_name, user_name)
             # 查询集群成员，验证移出成功
             re = multi_cluster_steps.step_get_cluster_member(cluster_name, 'name=' + user_name)
             count = re.json()['totalItems']
-            pytest.assume(count == 0)
+            with pytest.assume:
+                assert count == 0
         # 删除创建的用户
         platform_steps.step_delete_user(user_name)
 
@@ -1568,7 +1582,8 @@ class TestCluster(object):
             # 查看集群网关，并验证网关类型
             response = multi_cluster_steps.step_get_cluster_gateway(cluster_name)
             gateway_type = response.json()[0]['spec']['service']['type']
-            pytest.assume(gateway_type == type)
+            with pytest.assume:
+                assert gateway_type == type
             # 关闭集群网关
             multi_cluster_steps.step_delete_cluster_gateway(cluster_name)
             time.sleep(10)
@@ -1591,9 +1606,11 @@ class TestCluster(object):
         config_actual = re.json()[0]['spec']['controller']['config']
         status_actual = re.json()[0]['spec']['deployment']['annotations']['servicemesh.kubesphere.io/enabled']
         # 验证config信息编辑成功
-        pytest.assume(config_actual == config)
+        with pytest.assume:
+            assert config_actual == config
         # 验证集群网关的链路追踪的状态
-        pytest.assume(status_actual == status)
+        with pytest.assume:
+            assert status_actual == status
         # 关闭集群网关
         multi_cluster_steps.step_delete_cluster_gateway(self.cluster_any_name)
         time.sleep(10)
@@ -1608,7 +1625,8 @@ class TestCluster(object):
         response = multi_cluster_steps.step_get_project_gateway(self.cluster_any_name, 'kubesphere-router-kubesphere-system')
         gateway_name = response.json()['items'][0]['metadata']['name']
         # 验证查询结果
-        pytest.assume(gateway_name == 'kubesphere-router-kubesphere-system')
+        with pytest.assume:
+            assert gateway_name == 'kubesphere-router-kubesphere-system'
         # 关闭集群网关
         multi_cluster_steps.step_delete_cluster_gateway(self.cluster_any_name)
 
