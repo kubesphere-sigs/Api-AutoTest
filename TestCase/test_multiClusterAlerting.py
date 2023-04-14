@@ -12,6 +12,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 @allure.feature('多集群告警')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
+@pytest.mark.skipif(commonFunction.get_components_status_of_cluster('whizard') is True, reason='集群已开启whizard功能')
 class TestMultiClusterAlerting(object):
     # 如果为单集群环境，则不会collect该class的所有用例。 __test__ = False
     __test__ = commonFunction.check_multi_cluster()
