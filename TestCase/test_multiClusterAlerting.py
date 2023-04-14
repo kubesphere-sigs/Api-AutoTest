@@ -63,14 +63,16 @@ class TestMultiClusterAlerting(object):
         time.sleep(180)
         re = multi_cluster_steps.step_get_alert_custom_policy(self.cluster_host_name, alert_name)
         state = re.json()['items'][0]['state']
-        pytest.assume(state == 'firing')
+        with pytest.assume:
+            assert state == 'firing'
         # 查看告警消息，并验证告警消息正确
         r = multi_cluster_steps.step_get_alert_message(self.cluster_host_name, '', 'label_filters=severity%3Dwarning')
         message_count = r.json()['total']
         policy_names = []
         for i in range(0, message_count):
             policy_names.append(r.json()['items'][i]['ruleName'])
-        pytest.assume(alert_name in policy_names)
+        with pytest.assume:
+            assert alert_name in policy_names
         # 删除告警策略
         multi_cluster_steps.step_delete_alert_custom_policy(self.cluster_host_name, alert_name)
 
