@@ -91,7 +91,7 @@ class TestMultiClusterStorage:
         request_resource(targets_new[0], targets_new[1], targets_new[2], story, targets_new[3], method, severity,
                          targets_new[4], targets_new[5])
 
-    @allure.story("存储-存储类")
+    @allure.story("存储类")
     @allure.title('设置卷操作')
     @allure.severity('normal')
     def test_set_volume_operations(self, create_multi_cluster_sc):
@@ -108,7 +108,7 @@ class TestMultiClusterStorage:
         with pytest.assume:
             assert re.json()['metadata']['annotations']['storageclass.kubesphere.io/allow-snapshot'] == 'false'
 
-    @allure.story("存储-存储类")
+    @allure.story("存储类")
     @allure.title('设置默认类')
     @allure.severity('normal')
     def test_set_default_sc(self):
@@ -123,7 +123,7 @@ class TestMultiClusterStorage:
         multi_cluster_storages_step.set_default_sc(self.cluster_name, self.sc_name, 'false')
         multi_cluster_storages_step.set_default_sc(self.cluster_name, 'local', 'true')
 
-    @allure.story("存储-存储类")
+    @allure.story("存储类")
     @allure.title('存储类的存储卷信息')
     @allure.severity('normal')
     def test_sc_pvc(self, create_multi_cluster_sc):
@@ -155,7 +155,7 @@ class TestMultiClusterStorage:
         with pytest.assume:
             assert num1 == '0'
 
-    @allure.story("存储-存储类")
+    @allure.story("存储类")
     @allure.title('查询存储类已有存储卷')
     @allure.severity('normal')
     def test_search_pvc(self):
@@ -174,7 +174,7 @@ class TestMultiClusterStorage:
         # 删除存储卷
         multi_cluster_storages_step.delete_volume(self.cluster_name, self.pro_ws_name, volume_name)
 
-    @allure.story("存储-卷快照类")
+    @allure.story("卷快照类")
     @allure.title('创建卷快照类')
     @allure.severity('normal')
     def test_create_vsc(self):
@@ -189,7 +189,7 @@ class TestMultiClusterStorage:
         # 删除卷快照类
         multi_cluster_storages_step.delete_vsc(self.cluster_name, vsc_name)
 
-    @allure.story("存储-卷快照类")
+    @allure.story("卷快照类")
     @allure.title('编辑卷快照类信息')
     @allure.severity('normal')
     def test_set_vsc_info(self):
@@ -215,7 +215,7 @@ class TestMultiClusterStorage:
         with pytest.assume:
             assert res.json()['items'][0]['metadata']['annotations']['kubesphere.io/description'] == des
 
-    @allure.story("存储-卷快照类")
+    @allure.story("卷快照类")
     @allure.title('验证卷快照类的卷快照数量')
     @allure.severity('normal')
     def test_get_vs_by_vsc(self):
@@ -259,7 +259,7 @@ class TestMultiClusterStorage:
         # 判断快照数量
         assert r.json()['items'][0]['metadata']['annotations']['kubesphere.io/snapshot-count'] == '0'
 
-    @allure.story("存储-卷快照类")
+    @allure.story("卷快照类")
     @allure.title('查询卷快照类的卷快照')
     @allure.severity('normal')
     def test_search_vs_by_vsc(self):
@@ -308,7 +308,7 @@ class TestMultiClusterStorage:
             j = j + 1
         assert r2.json()['totalItems'] == 0
 
-    @allure.story("存储-卷快照")
+    @allure.story("卷快照")
     @allure.title('创建快照')
     @allure.severity('normal')
     def test_create_snapshots(self):
@@ -346,7 +346,7 @@ class TestMultiClusterStorage:
             j = j + 1
         assert r2.json()['totalItems'] == 0
 
-    @allure.story("存储-卷快照")
+    @allure.story("卷快照")
     @allure.title('创建同名的快照')
     @allure.severity('normal')
     def test_create_same_snapshots(self):
@@ -385,7 +385,7 @@ class TestMultiClusterStorage:
             j = j + 1
         assert r2.json()['totalItems'] == 0
 
-    @allure.story("存储-卷快照")
+    @allure.story("卷快照")
     @allure.title('查询卷快照')
     @allure.severity('normal')
     def test_search_snapshots(self):
@@ -428,7 +428,7 @@ class TestMultiClusterStorage:
             j = j + 1
         assert r2.json()['totalItems'] == 0
 
-    @allure.story("存储-卷快照")
+    @allure.story("卷快照")
     @allure.title('使用卷快照创建存储卷')
     @allure.severity('normal')
     def test_create_volume_by_snapshots(self):
@@ -475,7 +475,7 @@ class TestMultiClusterStorage:
             j = j + 1
         assert r2.json()['totalItems'] == 0
 
-    @allure.story("存储-卷快照")
+    @allure.story("卷快照")
     @allure.title('使用卷快照创建同名存储卷')
     @allure.severity('normal')
     def test_create_same_volume_by_snapshots(self):
