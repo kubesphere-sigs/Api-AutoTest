@@ -28,7 +28,6 @@ class TestWhizard(object):
             resources_filter = resources_filter + '%7C' + cluster_name[i]
     else:
         resources_filter = ''
-    print(resources_filter)
 
     @allure.title('{title}')  # 设置用例标题
     @allure.severity(allure.severity_level.CRITICAL)  # 设置用例优先级
