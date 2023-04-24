@@ -491,14 +491,14 @@ def step_delete_workload(project_name, type, work_name):
 
 
 @allure.step('创建存储卷')
-def step_create_volume(project_name, volume_name):
+def step_create_volume(project_name, volume_name, storage_class):
     url = env_url + '/api/v1/namespaces/' + project_name + '/persistentvolumeclaims'
     data = {"apiVersion": "v1",
             "kind": "PersistentVolumeClaim",
             "metadata": {"namespace": project_name, "name": volume_name, "labels": {},
                          "annotations": {"kubesphere.io/creator": "admin"}},
             "spec": {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "10Gi"}},
-                     "storageClassName": "local"}}
+                     "storageClassName": storage_class}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 

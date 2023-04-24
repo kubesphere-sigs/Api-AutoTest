@@ -27,6 +27,8 @@ class TestProject(object):
     password = 'P@88w0rd'
     ws_name = 'ws-for-test-project' + str(commonFunction.get_random())
     project_name = 'test-project' + str(commonFunction.get_random())
+    # 获取集群的默认存储类
+    storage_class = cluster_steps.step_get_cluster_default_storage_class()
     # 项目名称，从yaml中获取的测试用例中用到了这个项目名称
     project_name_for_exel = 'test-project-for-exel' + str(commonFunction.get_random())
     # 从文件中读取用例信息
@@ -39,7 +41,7 @@ class TestProject(object):
         workspace_steps.step_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
         project_steps.step_create_project(self.ws_name, self.project_name)  # 创建一个project工程
         project_steps.step_create_project(self.ws_name, self.project_name_for_exel)  # 创建一个project工程用于执行excle中的用例
-        project_steps.step_create_volume(self.project_name_for_exel, self.volume_name)  # 创建存储卷
+        project_steps.step_create_volume(self.project_name_for_exel, self.volume_name, self.storage_class)  # 创建存储卷
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
@@ -74,7 +76,7 @@ class TestProject(object):
         volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]  # 设置挂载的存储卷
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
-        project_steps.step_create_volume(create_project, volume_name)
+        project_steps.step_create_volume(create_project, volume_name, self.storage_class)
         # 创建资源并将存储卷绑定到资源
         project_steps.step_create_deploy(create_project, work_name=workload_name, image=image, replicas=replicas,
                                          container_name=container_name, volume_info=volume_info, ports=port,
@@ -137,7 +139,7 @@ class TestProject(object):
         volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
-        project_steps.step_create_volume(create_project, volume_name)
+        project_steps.step_create_volume(create_project, volume_name, self.storage_class)
         # 创建资源并将存储卷绑定到资源
         project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
                                            container_name=container_name,
@@ -263,7 +265,7 @@ class TestProject(object):
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         replicas = 2  # 副本数
         # 创建存储卷
-        project_steps.step_create_volume(create_project, volume_name)
+        project_steps.step_create_volume(create_project, volume_name, self.storage_class)
         # 创建service
         project_steps.step_create_service(create_project, workload_name, port_service)
         # 创建service绑定的deployment
@@ -581,6 +583,7 @@ class TestProject(object):
     def test_create_job(self, create_project, create_job):
         # 查看任务详情
         response = project_steps.step_get_job_detail(create_project, create_job)
+        print(response.text)
         # 获取任务uid
         uid = response.json()['items'][0]['metadata']['uid']
         # 获取任务中指定的容器组完成数量
@@ -1825,7 +1828,7 @@ class TestProject(object):
     def test_delete_volume(self, create_project):
         # 创建存储卷
         volume_name = 'volume' + str(commonFunction.get_random())
-        project_steps.step_create_volume(create_project, volume_name)
+        project_steps.step_create_volume(create_project, volume_name, self.storage_class)
         # 删除存储卷
         project_steps.step_delete_volume(create_project, volume_name)
         # 查询被删除的存储卷
