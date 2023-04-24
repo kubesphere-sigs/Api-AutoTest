@@ -367,6 +367,15 @@ def step_get_pvc_detail(project_name, pvc_name):
     response = requests.get(url=url, headers=get_header())
     return response
 
+@allure.step('获取集群的默认存储类')
+def step_get_cluster_default_storage_class():
+    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/storageclasses?sortBy=createTime&limit=10'
+    response = requests.get(url=url, headers=get_header())
+    counts = response.json()['totalItems']
+    for i in range(0, counts):
+        if response.json()['items'][0]['metadata']['annotations']['storageclass.kubernetes.io/is-default-class'] == 'true':
+            return response.json()['items'][0]['metadata']['name']
+
 
 @allure.step('查询存储卷的监控信息')
 def step_get_metrics_of_pvc(project_name, pvc_name, start_time, end_time, step, times):
