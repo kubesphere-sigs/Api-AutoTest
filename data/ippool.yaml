@@ -1,34 +1,30 @@
 - - 1
-  - /apis/network.kubesphere.io/v1alpha1/ippools
+  - /kapis/resources.kubesphere.io/v1alpha3/ippools
+  - name=ss&sortBy=createTime&limit=10
   - ''
-  - '{"apiVersion": "network.kubesphere.io/v1alpha1","kind": "IPPool","metadata":
-    {"annotations": {"kubesphere.io/description": "","kubesphere.io/creator": "admin"},"name":
-    "${ippool_name}"},"spec": {"type": "calico", "cidr": "192.168.101.0/24"}}'
-  - ippool
-  - 创建同名的ippool
-  - post
+  - Ip pool
+  - 查询不存在的ippool
+  - get
   - normal
-  - r.json()['message']
-  - ippools.network.kubesphere.io "${ippool_name}" already exists
+  - r.json()['totalItems']
+  - 0
 
 - - 2
-  - /apis/network.kubesphere.io/v1alpha1/ippools
+  - /apis/network.kubesphere.io/v1alpha1/ippools/default-ipv4-ippool
   - ''
-  - '{"apiVersion": "network.kubesphere.io/v1alpha1","kind": "IPPool","metadata":
-    {"annotations": {"kubesphere.io/description": "","kubesphere.io/creator": "admin"},"name":
-    "ippool-test-name"},"spec": {"type": "calico", "cidr": "${cidr}"}}'
-  - ippool
-  - 创建相同cidr的ippool
-  - post
+  - ''
+  - Ip pool
+  - 查看yaml文件
+  - get
   - normal
-  - r.json()['reason']
-  - ippool cidr is overlapped with ${ippool_name}
+  - r.status_code
+  - 200
 
 - - 3
   - /apis/network.kubesphere.io/v1alpha1/ippools/default-ipv4-ippool
   - ''
   - ''
-  - ippool
+  - Ip pool
   - 查看ippool详情
   - get
   - normal
@@ -39,7 +35,7 @@
   - /kapis/resources.kubesphere.io/v1alpha3/ippools
   - name=de&sortBy=createTime&limit=10
   - ''
-  - ippool
+  - Ip pool
   - 模糊查询存在的ippool
   - get
   - normal
@@ -50,53 +46,12 @@
   - /kapis/resources.kubesphere.io/v1alpha3/ippools
   - name=default-ipv4-ippool&sortBy=createTime&limit=10
   - ''
-  - ippool
+  - Ip pool
   - 精确查询存在的ippool
   - get
   - normal
   - r.json()['items'][0]['metadata']['name']
   - default-ipv4-ippool
 
-- - 6
-  - /kapis/resources.kubesphere.io/v1alpha3/ippools
-  - name=ss&sortBy=createTime&limit=10
-  - ''
-  - ippool
-  - 查询不存在的ippool
-  - get
-  - normal
-  - r.json()['totalItems']
-  - 0
 
-- - 7
-  - /apis/network.kubesphere.io/v1alpha1/ippools/${ippool_name}
-  - ''
-  - '{"metadata":{"name":"${ippool_name}","labels":{"ippool.network.kubesphere.io/id":"4099","ippool.network.kubesphere.io/name":"${ippool_name}","ippool.network.kubesphere.io/type":"calico"},"annotations":{"kubesphere.io/creator":"admin","kubesphere.io/description":"","kubesphere.io/alias-name":"test"},"finalizers":["finalizers.network.kubesphere.io/ippool"]},"spec":{"type":"calico","cidr":"${cidr}","vlanConfig":{"vlanId":0,"master":""},"dns":{}}}'
-  - ippool
-  - 修改别名信息
-  - patch
-  - normal
-  - r.json()['metadata']['annotations']['kubesphere.io/alias-name']
-  - test
 
-- - 8
-  - /apis/network.kubesphere.io/v1alpha1/ippools/${ippool_name}
-  - ''
-  - '{"apiVersion":"network.kubesphere.io/v1alpha1","kind":"IPPool","metadata":{"annotations":{"kubesphere.io/alias-name":"test","kubesphere.io/creator":"admin","kubesphere.io/description":"description"},"finalizers":["finalizers.network.kubesphere.io/ippool"],"labels":{"ippool.network.kubesphere.io/id":"4099","ippool.network.kubesphere.io/name":"${ippool_name}","ippool.network.kubesphere.io/type":"calico"},"name":"${ippool_name}"},"spec":{"cidr":"${cidr}","dns":{},"type":"calico","vlanConfig":{"master":"","vlanId":0}}}'
-  - ippool
-  - 修改描述信息
-  - patch
-  - normal
-  - r.json()['metadata']['annotations']['kubesphere.io/description']
-  - description
-
-- - 9
-  - /apis/network.kubesphere.io/v1alpha1/ippools/default-ipv4-ippool
-  - ''
-  - ''
-  - ippool
-  - 查看yaml文件
-  - get
-  - normal
-  - r.status_code
-  - 200
