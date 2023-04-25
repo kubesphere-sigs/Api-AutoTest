@@ -3,7 +3,7 @@ import time
 from common import commonFunction
 from datetime import datetime
 from common.commonFunction import get_random
-from step import cluster_steps, multi_project_steps, multi_workspace_steps, project_steps, ippool_steps, platform_steps, \
+from step import cluster_steps, multi_project_steps, multi_workspace_steps, project_steps, network_steps, platform_steps, \
     workspace_steps, app_steps, devops_steps, storage_steps, multi_cluster_steps, multi_cluster_storages_step
 
 
@@ -198,15 +198,13 @@ def node_name():
 @pytest.fixture()
 def create_ippool():
     ippool_name = 'ippool-' + str(commonFunction.get_random())
-    cidr = commonFunction.random_ip()
-    description = ' '
+    ip = commonFunction.random_ip()
     # 创建ippool
-    ippool_steps.step_create_ippool(ippool_name, cidr, description)
+    network_steps.step_create_ippool(ippool_name, ip)
     time.sleep(1)
     yield ippool_name
     # 删除ippool
-    time.sleep(1)
-    ippool_steps.step_delete_ippool(ippool_name)
+    network_steps.step_delete_ippool(ippool_name)
 
 
 @pytest.fixture()
