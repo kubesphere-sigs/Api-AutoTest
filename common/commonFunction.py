@@ -556,8 +556,7 @@ def random_ip():
     n = random.randint(0, 255)
     x = random.randint(0, 255)
     y = random.randint(0, 255)
-    mask = random.randint(8, 32)
-    return str(m) + '.' + str(n) + '.' + str(x) + '.' + str(y) + '/' + str(mask)
+    return str(m) + '.' + str(n) + '.' + str(x) + '.' + str(y)
 
 
 # 查询csi-qingcloud组件
