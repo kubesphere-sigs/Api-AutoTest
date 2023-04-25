@@ -5,12 +5,13 @@ import requests
 
 from common.getConfig import get_apiserver
 from common.getHeader import get_header, get_header_for_patch
+from common.commonFunction import get_random
 
 env_url = get_apiserver()
 
 
 @allure.step('创建ippool')
-def step_create_ippool(ippool_name, cidr, description):
+def step_create_ippool(ippool_name, ip, mask=31, description='', blockSize=32):
     url = env_url + '/apis/network.kubesphere.io/v1alpha1/ippools'
     data = {"apiVersion": "network.kubesphere.io/v1alpha1",
             "kind": "IPPool",
@@ -20,11 +21,29 @@ def step_create_ippool(ippool_name, cidr, description):
                              "kubesphere.io/creator": "admin"
                          }},
             "spec": {"type": "calico",
-                     "cidr": cidr,
+                     "cidr": ip + '/' + str(mask),
                      "name": ippool_name,
                      "disabled": False,
-                     "ipipMode": "Always", "vxlanMode": "Never"}}
+                     "ipipMode": "Always",
+                     "vxlanMode": "Never",
+                     "blockSize": blockSize}}
     response = requests.post(url=url, data=json.dumps(data), headers=get_header())
+    return response
+
+
+@allure.step('更新ippool信息')
+def step_update_ippool(id, ippool_name, spec, description='', alias=''):
+    url = env_url + '/apis/network.kubesphere.io/v1alpha1/ippools/' + ippool_name
+    data = {"metadata": {"name": ippool_name,
+                         "labels": {"ippool.network.kubesphere.io/id": id,
+                                    "ippool.network.kubesphere.io/name": ippool_name,
+                                    "ippool.network.kubesphere.io/type": "calico"},
+                         "annotations": {"kubesphere.io/creator": "admin",
+                                         "kubesphere.io/description": description,
+                                         "kubesphere.io/alias-name": alias},
+                         "finalizers": ["finalizers.network.kubesphere.io/ippool"]},
+            "spec": spec}
+    response = requests.patch(url=url, data=json.dumps(data), headers=get_header_for_patch())
     return response
 
 
@@ -146,4 +165,61 @@ def step_migrate_ippool(old_ippool, new_ippool):
     url = env_url + '/kapis/network.kubesphere.io/v1alpha2/ippool/migrate?oldippool=' + old_ippool + '&newippool=' + new_ippool
     data = {}
     response = requests.patch(url=url, data=json.dumps(data), headers=get_header_for_patch())
+    return response
+
+
+@allure.step('创建网络策略')
+def step_create_network_policy(pro_name, network_name):
+    url = env_url + '/apis/networking.k8s.io/v1/namespaces/' + pro_name + '/networkpolicies'
+    data = {"kind": "NetworkPolicy", "apiVersion": "networking.k8s.io/v1",
+            "metadata": {"name": network_name, "namespace": pro_name,
+                         "annotations": {"kubesphere.io/creator": "admin"}}, "spec": {"podSelector": {}, "ingress": [
+            {"from": [{"namespaceSelector": {"matchLabels": {"kubesphere.io/namespace": "pro"}}}]}],
+                                                                                      "policyTypes": ["Ingress"]}}
+    response = requests.post(url=url, data=json.dumps(data), headers=get_header())
+    return response
+
+
+@allure.step('删除网络策略')
+def step_delete_network_policy(pro_name, network_name):
+    url = env_url + '/apis/networking.k8s.io/v1/namespaces/' + pro_name + '/networkpolicies/' + network_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
+
+@allure.step('查询网络策略')
+def step_search_network_policy(pro_name, network_name):
+    url_base = '/kapis/resources.kubesphere.io/v1alpha3/'
+    # 如果pro_name和network_name为空，则查询所有的网络策略
+    if pro_name == '' and network_name == '':
+        url = env_url + url_base + 'networkpolicies?sortBy=createTime&limit=10'
+    # 如果pro_name为空，network_name不为空，则查询network_name的网络策略
+    elif pro_name == '' and network_name != '':
+        url = env_url + url_base + 'networkpolicies?name=' + network_name + '&sortBy=createTime&limit=10'
+    # 如果pro_name不为空，network_name为空，则查询pro_name的网络策略
+    elif pro_name != '' and network_name == '':
+        url = env_url + url_base + 'namespaces/' + pro_name + '/networkpolicies?sortBy=createTime&limit=10'
+    # 如果pro_name和network_name都不为空，则查询pro_name下的network_name的网络策略
+    else:
+        url = env_url + url_base + 'namespaces/' + pro_name + '/networkpolicies?name=' + network_name + '&sortBy=createTime&limit=10'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
+
+@allure.step('修改网络策略')
+def step_update_network_policy(pro_name, network_name, alias, description):
+    url = env_url + '/apis/networking.k8s.io/v1/namespaces/' + pro_name + '/networkpolicies/' + network_name
+    data = {"metadata": {"name": network_name, "namespace": pro_name,
+                         "annotations": {"kubesphere.io/alias-name": alias, "kubesphere.io/description": description}},
+            "spec": {"podSelector": {}, "ingress": [
+                {"from": [{"namespaceSelector": {"matchLabels": {"kubesphere.io/namespace": "pro"}}}]}],
+                     "policyTypes": ["Ingress"]}}
+    response = requests.patch(url=url, data=json.dumps(data), headers=get_header_for_patch())
+    return response
+
+
+@allure.step('查看网络策略的详情信息')
+def step_get_network_policy_detail(pro_name, network_name):
+    url = env_url + '/apis/networking.k8s.io/v1/namespaces/' + pro_name + '/networkpolicies/' + network_name
+    response = requests.get(url=url, headers=get_header())
     return response
