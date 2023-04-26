@@ -200,8 +200,9 @@ class TestEventSearch(object):
         response = cluster_steps.step_get_log_receiver('events')
         # 判断是否存在日志接收器
         items = response.json()['items']
-        # 验证日志接收器不存在
-        pytest.assume(not items)
+        # 验证日志接收器存在
+        with pytest.assume:
+            assert len(items) > 0
 
     @allure.story('集群设置/日志接收器')
     @allure.title('{title}')
