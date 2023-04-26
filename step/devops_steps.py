@@ -462,7 +462,7 @@ def step_delete_pipeline(devops_name, pipeline_name):
 
 
 @allure.step('创建凭证')
-def step_create_credential(dev_name, name, description, type, data):
+def step_create_credential(dev_name, name, type, data, description=''):
     url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + dev_name + '/credentials'
     data = {"apiVersion": "v1", "kind": "Secret",
             "metadata": {"namespace": dev_name,
@@ -593,9 +593,10 @@ def step_delete_cd(dev_name, cd_name, cascade):
     :param cascade: 是否删除部署的资源，true表示删除
     :return:
     """
+    base_url = env_url + '/kapis/gitops.kubesphere.io/v1alpha1/namespaces/' + dev_name + '/applications/' + cd_name
     if cascade == 'true':
-        url = env_url + '/kapis/gitops.kubesphere.io/v1alpha1/namespaces/' + dev_name + '/applications/' + cd_name + '?cascade=true'
+        url = base_url + '?cascade=true'
     else:
-        url = env_url + '/kapis/gitops.kubesphere.io/v1alpha1/namespaces/' + dev_name + '/applications/' + cd_name
+        url = base_url
     response = requests.delete(url=url, headers=get_header())
     return response
