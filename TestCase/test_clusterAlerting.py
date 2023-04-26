@@ -23,19 +23,19 @@ class TestClusterAlerting(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_alert_policies_by_name(self):
         # 按名称查询告警策略
-        response = cluster_steps.step_get_alert_policies('builtin/', 'name=KubeletServerCertificateExpiration')
+        response = cluster_steps.step_get_alert_policies('builtin', 'name=kubesphere-system')
         # 获取告警策略数量
-        count = response.json()['total']
+        count = response.json()['totalItems']
         # 验证时数量为2
-        assert count == 2
+        assert count == 1
 
     @allure.story("监控告警/告警策略")
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('title, state, type',
-                             [('按告警状态/未激活查询内置的告警策略', 'inactive', 'builtin/'),
-                              ('按告警状态/待发送查询内置的告警策略', 'pending', 'builtin/'),
-                              ('按告警状态/发送中查询内置的告警策略', 'firing', 'builtin/'),
+                             [('按告警状态/未激活查询内置的告警策略', 'inactive', 'builtin'),
+                              ('按告警状态/待发送查询内置的告警策略', 'pending', 'builtin'),
+                              ('按告警状态/发送中查询内置的告警策略', 'firing', 'builtin'),
                               ('按告警状态/未激活查询自定义的告警策略', 'inactive', ''),
                               ('按告警状态/待发送查询自定义的告警策略', 'pending', ''),
                               ('按告警状态/发送中查询自定义的告警策略', 'firing', '')
@@ -44,13 +44,13 @@ class TestClusterAlerting(object):
         # 按告警状态查询告警策略
         response = cluster_steps.step_get_alert_policies(type, 'state=' + state)
         # 获取告警策略的数量
-        count = response.json()['total']
+        count = response.json()['totalItems']
         # 如果告警策略数量大于0，便判断策略的状态
         if count > 0:
             # 获取第一个告警策略的状态
-            state_actual = response.json()['items'][0]['state']
+            state_count = response.json()['items'][0]['status']['rulesStats'][state]
             # 验证状态
-            assert state_actual == state
+            assert state_count > 0
         else:
             assert response.status_code == 200
 
@@ -58,9 +58,9 @@ class TestClusterAlerting(object):
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('title, level, type',
-                             [('按告警级别/危险告警查询内置的告警策略', 'critical', 'builtin/'),
-                              ('按告警级别/重要告警送查询内置的告警策略', 'error', 'builtin/'),
-                              ('按告警级别/一般告警查询内置的告警策略', 'warning', 'builtin/'),
+                             [('按告警级别/危险告警查询内置的告警策略', 'critical', 'builtin'),
+                              ('按告警级别/重要告警送查询内置的告警策略', 'error', 'builtin'),
+                              ('按告警级别/一般告警查询内置的告警策略', 'warning', 'builtin'),
                               ('按告警级别/危险告警查询自定义的告警策略', 'critical', ''),
                               ('按告警级别/重要告警查询自定义的告警策略', 'error', ''),
                               ('按告警级别/一般告警查询自定义的告警策略', 'warning', '')
@@ -69,7 +69,7 @@ class TestClusterAlerting(object):
         # 按告警级别查询告警策略
         response = cluster_steps.step_get_alert_policies(type, 'label_filters=severity%3D' + level)
         # 获取告警策略的数量
-        count = response.json()['total']
+        count = response.json()['totalItems']
         # 如果告警策略数量大于0，便判断策略的状态
         if count > 0:
             # 获取第一个告警策略的状态
@@ -85,8 +85,8 @@ class TestClusterAlerting(object):
     @pytest.mark.parametrize('title, condition, type',
                              [('按告警级别、名称和告警状态查询内置的告警策略', 'name=kube&state=inactive&label_filters=severity%3Dcritical',
                                'builtin/'),
-                              ('按告警级别、名称查询内置的告警策略', 'name=kube&label_filters=severity%3Dwarning', 'builtin/'),
-                              ('按告警级别、告警状态查询内置的告警策略', 'state=inactive&label_filters=severity%3Derror', 'builtin/'),
+                              ('按告警级别、名称查询内置的告警策略', 'name=kube&label_filters=severity%3Dwarning', 'builtin'),
+                              ('按告警级别、告警状态查询内置的告警策略', 'state=inactive&label_filters=severity%3Derror', 'builtin'),
                               ('按告警级别、名称和告警状态查询自定义的告警策略', 'name=kube&state=inactive&label_filters=severity%3Dcritical',
                                ''),
                               ('按告警级别、名称查询自定义的告警策略', 'name=kube&label_filters=severity%3Dwarning', ''),
@@ -96,7 +96,7 @@ class TestClusterAlerting(object):
         # 查询告警策略
         response = cluster_steps.step_get_alert_policies(type, condition)
         # 获取告警策略的数量
-        count = response.json()['total']
+        count = response.json()['totalItems']
         # 验证数量>=0
         assert count >= 0
 

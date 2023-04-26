@@ -718,7 +718,11 @@ def step_get_alert_policies(type, condition):
     :param condition: 查询条件
     :return:
     """
-    url = env_url + '/kapis/alerting.kubesphere.io/v2alpha1/' + type + 'rules?' + condition + '&sortBy=createTime'
+    base_url = env_url + '/kapis/alerting.kubesphere.io/v2beta1/'
+    if type == 'builtin':
+        url = base_url + 'globalrulegroups?builtin=true&' + condition + '&sortBy=createTime&limit=10'
+    else:
+        url = base_url + 'clusterrulegroups?' + condition + '&sortBy=createTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
 
