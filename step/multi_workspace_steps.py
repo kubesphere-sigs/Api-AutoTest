@@ -383,7 +383,7 @@ def step_get_user_ws():
 
 
 @allure.step('创建多集群企业空间')
-def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
+def step_create_multi_ws(ws_name, cluster_names, alias_name='', description=''):
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
     clusters = []
     if isinstance(cluster_names, str):
