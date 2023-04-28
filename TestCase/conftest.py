@@ -111,7 +111,7 @@ def create_multi_workspace():
     alias_name = '跨集群'
     description = '包含所有的集群的企业空间'
     clusters = cluster_steps.step_get_cluster_name()
-    multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, clusters)
+    multi_workspace_steps.step_create_multi_ws(ws_name, clusters, alias_name, description)
     yield ws_name
     multi_workspace_steps.step_delete_workspace(ws_name)
 
@@ -248,5 +248,4 @@ def create_code_repository(create_devops):
     provider = 'git'
     url = 'https://gitee.com/linuxsuren/demo-go-http'
     devops_steps.step_import_code_repository(create_devops, name, provider, url)
-    time.sleep(5)
     yield url
