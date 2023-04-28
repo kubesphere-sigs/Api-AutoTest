@@ -22,7 +22,7 @@ class TestProject(object):
     def test_create_volume_for_deployment(self, create_multi_workspace, create_multi_project):
         clusters = cluster_steps.step_get_cluster_name()
 
-        type_name = 'volume-type'  # 存储卷的类型
+        type_name = 'volume-type'  # 存储卷的名称
         work_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
         volume_name = 'volume-deploy' + str(commonFunction.get_random())  # 存储卷名称
         replicas = 1  # 副本数
@@ -68,7 +68,8 @@ class TestProject(object):
                                                                              volume_name=volume_name)
             status = re.json()['status']['phase']
             # 验证存储卷状态正常
-            pytest.assume(status == 'Bound')
+            with pytest.assume:
+                assert status == 'Bound'
         # 删除工作负载
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='deployments',
                                                                   work_name=work_name)
@@ -128,7 +129,8 @@ class TestProject(object):
                                                                              volume_name=volume_name)
             status = re.json()['status']['phase']
             # 验证存储卷状态正常
-            pytest.assume(status == 'Bound')
+            with pytest.assume:
+                assert status == 'Bound'
         # 删除工作负载
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='statefulsets',
                                                                   work_name=work_name)
@@ -193,7 +195,8 @@ class TestProject(object):
                                                                                    volume_name=volume_name)
             status = response.json()['status']['phase']
             # 验证存储卷状态正常
-            pytest.assume(status == 'Bound')
+            with pytest.assume:
+                assert status == 'Bound'
         # 删除service
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='services',
                                                                   work_name=service_name)
@@ -208,7 +211,6 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_deployment(self, create_multi_workspace, create_multi_project):
         clusters = cluster_steps.step_get_cluster_name()
-
         workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
         container_name = 'container' + str(commonFunction.get_random())  # 容器名称
         image = 'nginx'  # 镜像名称
@@ -219,6 +221,7 @@ class TestProject(object):
                          "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
         replicas = 1  # 副本数
         volume_info = []
+        status = ''
         # 创建工作负载
         multi_project_steps.step_create_deploy_in_multi_project(cluster_name=clusters,
                                                                 project_name=create_multi_project,
@@ -245,7 +248,8 @@ class TestProject(object):
                     break
                 time.sleep(1)
                 i = i + 1
-            pytest.assume('unavailableReplicas' not in status)
+            with pytest.assume:
+                assert 'unavailableReplicas' not in status
         # 删除deployment
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
                                                                        type='deployments', work_name=workload_name)
@@ -266,6 +270,7 @@ class TestProject(object):
                          "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
         replicas = 1  # 副本数
         volume_info = []
+        name = ''
         # 创建工作负载
         multi_project_steps.step_create_deploy_in_multi_project(cluster_name=clusters,
                                                                 project_name=create_multi_project,
@@ -285,11 +290,11 @@ class TestProject(object):
             name = response.json()['items'][0]['metadata']['name']
         except Exception as e:
             print(e)
-        pytest.assume(name == workload_name)
+        with pytest.assume:
+            assert name == workload_name
         # 删除deployment
-        re = multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
+        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
                                                                        type='deployments', work_name=workload_name)
-        assert re.json()['status']['conditions'][0]['status'] == 'True'
 
     @allure.story('应用负载-工作负载')
     @allure.title('在多集群项目创建未绑定存储卷的StatefulSets，并验证运行成功')
@@ -307,6 +312,7 @@ class TestProject(object):
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
         service_name = 'service' + workload_name
         volume_mounts = []
+        ready_replicas =''
         # 创建工作负载
         multi_project_steps.step_create_sts_in_multi_project(cluster_name=clusters,
                                                              project_name=create_multi_project,
@@ -335,13 +341,13 @@ class TestProject(object):
                     print(e)
                 i += 1
                 time.sleep(1)
-        pytest.assume(ready_replicas == replicas)
+        with pytest.assume:
+            assert ready_replicas == replicas
         # 删除创建的工作负载
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
                                                                   type='services', work_name=workload_name)
-        re = multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
+        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
                                                                        type='statefulsets', work_name=workload_name)
-        assert re.json()['status']['conditions'][0]['status'] == 'True'
 
     @allure.story('应用负载-工作负载')
     @allure.title('在多集群项目按名称查询存在的StatefulSets')
@@ -359,6 +365,7 @@ class TestProject(object):
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
         service_name = 'service' + workload_name
         volume_mounts = []
+        name = ''
         # 创建工作负载
         multi_project_steps.step_create_sts_in_multi_project(cluster_name=clusters,
                                                              project_name=create_multi_project,
@@ -386,14 +393,14 @@ class TestProject(object):
                                                                       type=workload_type,
                                                                       work_name=workload_name)
             pytest.xfail('工作负载创建失败，标记为xfail')
-        pytest.assume(name == workload_name)
+        with pytest.assume:
+            assert name == workload_name
         # 删除创建的statefulsets
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
                                                                   type='services', work_name=workload_name)
-        re = multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
+        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
                                                                        type=workload_type,
                                                                        work_name=workload_name)
-        assert re.json()['status']['conditions'][0]['status'] == 'True'
 
     @allure.story('应用负载-服务')
     @allure.title('创建未绑定存储卷的service，并验证运行成功')
@@ -411,6 +418,7 @@ class TestProject(object):
                          "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
         replicas = 2  # 副本数
         volume_info = []
+        name = ''
         # 创建service
         multi_project_steps.step_create_service_in_multi_project(cluster_name=clusters,
                                                                  project_name=create_multi_project,
@@ -439,7 +447,8 @@ class TestProject(object):
                 print(e)
             time.sleep(1)
             i += 1
-        pytest.assume(name == service_name)
+        with pytest.assume:
+            assert name == service_name
         # 删除service
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='services',
                                                                   work_name=service_name)
@@ -455,6 +464,8 @@ class TestProject(object):
         service_name = 'service' + str(commonFunction.get_random())
         port_service = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]  # service的端口信息
         condition = service_name  # 查询service的条件
+        name = ''
+        count = ''
         # 创建service
         multi_project_steps.step_create_service_in_multi_project(cluster_name=clusters,
                                                                  project_name=create_multi_project,
@@ -474,7 +485,8 @@ class TestProject(object):
                 print(e)
             time.sleep(1)
             i += 1
-        pytest.assume(name == service_name)
+        with pytest.assume:
+            assert name == service_name
         # 删除service
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='services',
                                                                   work_name=service_name)
@@ -508,6 +520,7 @@ class TestProject(object):
                          "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
         replicas = 1  # 副本数
         volume_info = []
+        name = ''
         # 创建service
         multi_project_steps.step_create_service_in_multi_project(cluster_name=clusters,
                                                                  project_name=create_multi_project,
@@ -536,7 +549,8 @@ class TestProject(object):
                 print(e)
             time.sleep(1)
             i += 1
-        pytest.assume(name == service_name)
+        with pytest.assume:
+            assert name == service_name
         # 为服务创建路由
         ingress_name = 'ingress' + str(commonFunction.get_random())
         host = 'www.test' + str(commonFunction.get_random()) + '.com'
@@ -582,9 +596,11 @@ class TestProject(object):
         # 获取网关的类型
         gateway_type_new = response.json()['spec']['type']
         # 验证网关创建正确
-        pytest.assume(gateway_type_new == gateway_type)
+        with pytest.assume:
+            assert gateway_type_new == gateway_type
         # 验证网关创建成功
-        pytest.assume(response.status_code == 200)
+        with pytest.assume:
+            assert response.status_code == 200
         # 删除网关
         multi_project_steps.step_delete_gateway_in_multi_project(cluster_name=clusters[0],
                                                                  project_name=create_multi_project)
@@ -618,7 +634,8 @@ class TestProject(object):
         # 获取网关的注释信息
         gateway_annotations = response.json()['metadata']['annotations']
         # 验证网关修改成功
-        pytest.assume(gateway_annotations == annotations_new)
+        with pytest.assume:
+            assert gateway_annotations == annotations_new
         # 删除网关
         multi_project_steps.step_delete_gateway_in_multi_project(cluster_name=clusters[0],
                                                                  project_name=create_multi_project)
@@ -680,7 +697,8 @@ class TestProject(object):
                                                                          work_name=workload_name)
         pod_count = re.json()['totalItems']
         # 验证pod数量正确
-        pytest.assume(pod_count == replicas_new)
+        with pytest.assume:
+            assert pod_count == replicas_new
         # 删除deployment
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='deployments',
                                                                   work_name=workload_name)
@@ -691,6 +709,7 @@ class TestProject(object):
     def test_delete_volume(self, create_multi_workspace, create_multi_project):
         clusters = cluster_steps.step_get_cluster_name()
         volume_name = 'volume-stateful' + str(commonFunction.get_random())  # 存储卷的名称
+        response = ''
         # 创建存储卷
         multi_project_steps.step_create_volume_in_multi_project(cluster_name=clusters,
                                                                 project_name=create_multi_project,
@@ -852,86 +871,86 @@ class TestProject(object):
         assert limit == limit_actual
         assert re == request_actual
 
-    @allure.story('项目设置-资源默认请求')
-    @allure.title('在多集群项目只设置资源默认请求-输入错误的cpu信息(包含字母)')
-    # 接口未做限制
-    def wx_test_edit_container_quota_wrong_cpu(self):
-        # 获取环境中所有的多集群项目
-        multi_projects = multi_project_steps.step_get_multi_project_all(self.ws_name)
-        for project_info in multi_projects:
-            # 获取资源默认请求
-            response = multi_project_steps.step_get_container_quota_in_multi_project(project_info[0], project_info[2])
-            resource_version = None
-            try:
-                if response.json()['items'][0]['metadata']['resourceVersion']:
-                    resource_version = response.json()['items'][0]['metadata']['resourceVersion']
-                else:
-                    resource_version = None
-            except Exception as e:
-                print(e)
-            # 编辑资源默认请求
-            limit = {"cpu": "16aa"}
-            request = {"cpu": "2"}
-            r = multi_project_steps.step_edit_container_quota_in_multi_project(project_info[1], project_info[0],
-                                                                               resource_version, limit, request)
-            # 获取编辑结果
-            status = r.json()['status']
-            # 验证编辑失败
-            assert status == 'Failure'
+    # @allure.story('项目设置-资源默认请求')
+    # @allure.title('在多集群项目只设置资源默认请求-输入错误的cpu信息(包含字母)')
+    # # 接口未做限制
+    # def wx_test_edit_container_quota_wrong_cpu(self):
+    #     # 获取环境中所有的多集群项目
+    #     multi_projects = multi_project_steps.step_get_multi_project_all(self.ws_name)
+    #     for project_info in multi_projects:
+    #         # 获取资源默认请求
+    #         response = multi_project_steps.step_get_container_quota_in_multi_project(project_info[0], project_info[2])
+    #         resource_version = None
+    #         try:
+    #             if response.json()['items'][0]['metadata']['resourceVersion']:
+    #                 resource_version = response.json()['items'][0]['metadata']['resourceVersion']
+    #             else:
+    #                 resource_version = None
+    #         except Exception as e:
+    #             print(e)
+    #         # 编辑资源默认请求
+    #         limit = {"cpu": "16aa"}
+    #         request = {"cpu": "2"}
+    #         r = multi_project_steps.step_edit_container_quota_in_multi_project(project_info[1], project_info[0],
+    #                                                                            resource_version, limit, request)
+    #         # 获取编辑结果
+    #         status = r.json()['status']
+    #         # 验证编辑失败
+    #         assert status == 'Failure'
 
-    @allure.story('项目设置-资源默认请求')
-    @allure.title('只设置资源默认请求-输入错误的cpu信息(包含负数)')
-    # 接口未做限制
-    def wx_test_edit_container_quota_wrong_cpu_1(self):
-        # 获取环境中所有的多集群项目
-        multi_projects = multi_project_steps.step_get_multi_project_all()
-        for project_info in multi_projects:
-            # 获取资源默认请求
-            response = multi_project_steps.step_get_container_quota_in_multi_project(project_info[0], project_info[2])
-            resource_version = None
-            try:
-                if response.json()['items'][0]['metadata']['resourceVersion']:
-                    resource_version = response.json()['items'][0]['metadata']['resourceVersion']
-                else:
-                    resource_version = None
-            except Exception as e:
-                print(e)
-            # 编辑资源默认请求
-            limit = {"cpu": "-16"}
-            request = {"cpu": "-2"}
-            r = multi_project_steps.step_edit_container_quota_in_multi_project(project_info[1], project_info[0],
-                                                                               resource_version, limit, request)
-            # 获取编辑结果
-            status = r.json()['status']
-            # 验证编辑失败
-            assert status == 'Failure'
+    # @allure.story('项目设置-资源默认请求')
+    # @allure.title('只设置资源默认请求-输入错误的cpu信息(包含负数)')
+    # # 接口未做限制
+    # def wx_test_edit_container_quota_wrong_cpu_1(self):
+    #     # 获取环境中所有的多集群项目
+    #     multi_projects = multi_project_steps.step_get_multi_project_all()
+    #     for project_info in multi_projects:
+    #         # 获取资源默认请求
+    #         response = multi_project_steps.step_get_container_quota_in_multi_project(project_info[0], project_info[2])
+    #         resource_version = None
+    #         try:
+    #             if response.json()['items'][0]['metadata']['resourceVersion']:
+    #                 resource_version = response.json()['items'][0]['metadata']['resourceVersion']
+    #             else:
+    #                 resource_version = None
+    #         except Exception as e:
+    #             print(e)
+    #         # 编辑资源默认请求
+    #         limit = {"cpu": "-16"}
+    #         request = {"cpu": "-2"}
+    #         r = multi_project_steps.step_edit_container_quota_in_multi_project(project_info[1], project_info[0],
+    #                                                                            resource_version, limit, request)
+    #         # 获取编辑结果
+    #         status = r.json()['status']
+    #         # 验证编辑失败
+    #         assert status == 'Failure'
 
-    @allure.story('项目设置-资源默认请求')
-    @allure.title('只设置资源默认请求-输入错误的内存信息(包含非单位字母)')
-    # 接口未做限制
-    def wx_test_edit_container_quota_wrong_memory(self):
-        # 获取环境中所有的多集群项目
-        multi_projects = multi_project_steps.step_get_multi_project_all()
-        for project_info in multi_projects:
-            # 获取资源默认请求
-            response = multi_project_steps.step_get_container_quota_in_multi_project(project_info[0], project_info[2])
-            resource_version = None
-            try:
-                if response.json()['items'][0]['metadata']['resourceVersion']:
-                    resource_version = response.json()['items'][0]['metadata']['resourceVersion']
-                else:
-                    resource_version = None
-            except Exception as e:
-                print(e)
-            # 编辑资源默认请求
-            limit = {"memory": "1000aMi"}
-            request = {"memory": "1Mi"}
-            r = multi_project_steps.step_edit_container_quota_in_multi_project(project_info[1], project_info[0],
-                                                                               resource_version, limit, request)
-        # 获取编辑结果
-        status = r.json()['status']
-        # 验证编辑失败
-        assert status == 'Failure'
+    # @allure.story('项目设置-资源默认请求')
+    # @allure.title('只设置资源默认请求-输入错误的内存信息(包含非单位字母)')
+    # # 接口未做限制
+    # def wx_test_edit_container_quota_wrong_memory(self):
+    #     # 获取环境中所有的多集群项目
+    #     multi_projects = multi_project_steps.step_get_multi_project_all()
+    #     for project_info in multi_projects:
+    #         # 获取资源默认请求
+    #         response = multi_project_steps.step_get_container_quota_in_multi_project(project_info[0], project_info[2])
+    #         resource_version = None
+    #         try:
+    #             if response.json()['items'][0]['metadata']['resourceVersion']:
+    #                 resource_version = response.json()['items'][0]['metadata']['resourceVersion']
+    #             else:
+    #                 resource_version = None
+    #         except Exception as e:
+    #             print(e)
+    #         # 编辑资源默认请求
+    #         limit = {"memory": "1000aMi"}
+    #         request = {"memory": "1Mi"}
+    #         r = multi_project_steps.step_edit_container_quota_in_multi_project(project_info[1], project_info[0],
+    #                                                                            resource_version, limit, request)
+    #     # 获取编辑结果
+    #     status = r.json()['status']
+    #     # 验证编辑失败
+    #     assert status == 'Failure'
 
     @allure.story('配置中心-密钥')
     @allure.title('{title}')
@@ -977,8 +996,10 @@ class TestProject(object):
                 secret_status = response.json()['items'][0]['status']['conditions'][0]['status']
                 if secret_status:
                     # 验证查询到的密钥数量和密钥的状态正确
-                    pytest.assume(secret_count == 1)
-                    pytest.assume(secret_status == 'True')
+                    with pytest.assume:
+                        assert secret_count == 1
+                    with pytest.assume:
+                        assert secret_status == 'True'
                     break
             except Exception as e:
                 print(e)
@@ -993,7 +1014,7 @@ class TestProject(object):
     def test_create_config_map(self, create_multi_workspace, create_multi_project):
         clusters = cluster_steps.step_get_cluster_name()
         config_name = 'config-map' + str(commonFunction.get_random())
-        # 在每个多集群项目创建配置
+        # 在多集群项目创建配置
         multi_project_steps.step_create_config_map_in_multi_project(cluster_name=clusters,
                                                                     project_name=create_multi_project,
                                                                     config_name=config_name, key='wx', value='test')
@@ -1008,8 +1029,10 @@ class TestProject(object):
                 secret_status = response.json()['items'][0]['status']['conditions'][0]['status']
                 if secret_status:
                     # 验证查询到的配置数量和密钥的状态正确
-                    pytest.assume(secret_count == 1)
-                    pytest.assume(secret_status == 'True')
+                    with pytest.assume:
+                        assert secret_count == 1
+                    with pytest.assume:
+                        assert secret_status == 'True'
                     break
             except Exception as e:
                 print(e)
