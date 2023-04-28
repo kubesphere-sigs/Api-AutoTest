@@ -789,9 +789,11 @@ def step_get_log_receiver(cluster_name, type):
 
 
 @allure.step('添加日志收集器')
-def step_add_log_receiver(cluster_name, type, log_type):
+def step_add_log_receiver(cluster_name, type, log_type, name):
     """
-    :param type: fluentd、kafka
+    :param name:
+    :param cluster_name:
+    :param type: fluentd、kafka、es
     :param log_type: logging、events、auditing
     :return:
     """
@@ -799,10 +801,13 @@ def step_add_log_receiver(cluster_name, type, log_type):
         spec = {"match": "kube.*", "forward": {"port": 24224, "host": "192.168.0.10"}}
     elif type == 'kafka':
         spec = {"match": "kube.*", "kafka": {"topics": "test-kafka", "brokers": "192.168.0.10:9092"}}
+    elif type == 'es':
+        spec = {"match": "kube.*", "es": {"logstashFormat": True, "timeKey": "@timestamp",
+                                          "logstashPrefix": "ks-logstash-log", "port": 9200, "host": "192.168.0.10"}}
 
     url = env_url + '/apis/clusters/' + cluster_name + '/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs'
     data = {"apiVersion": "logging.kubesphere.io/v1alpha2", "kind": "Output",
-            "metadata": {"name": "forward-" + log_type, "namespace": "kubesphere-logging-system",
+            "metadata": {"name": name, "namespace": "kubesphere-logging-system",
                          "labels": {"logging.kubesphere.io/enabled": "true",
                                     "logging.kubesphere.io/component": log_type},
                          "annotations": {"kubesphere.io/creator": "admin"}},
@@ -863,7 +868,7 @@ def step_modify_log_receiver_status(cluster_name, name, status):
 
 
 @allure.step('编辑日志接收器的地址')
-def step_modify_log_receiver_address(cluster_name, name, host, port):
+def step_modify_log_receiver_address(type, cluster_name, name, host, port):
     """
     :param cluster_name:
     :param host:
@@ -872,6 +877,13 @@ def step_modify_log_receiver_address(cluster_name, name, host, port):
     :return:
     """
     url = env_url + '/apis/clusters/' + cluster_name + '/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs/' + name
-    data = {"spec": {"forward": {"host": host, "port": port}}}
+    if type == 'es':
+        data = {"spec": {
+            "es": {"host": host, "logstashFormat": True, "logstashPrefix": "ks-logstash-log", "port": port,
+                   "timeKey": "@timestamp"}}}
+    elif type == 'kafka':
+        data = {"spec": {"kafka": {"brokers": str(host) + ':' + str(port), "topics": "test-kafka"}}}
+    elif type == 'fluentd':
+        data = {"spec": {"forward": {"host": host, "port": port}}}
     response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
     return response
