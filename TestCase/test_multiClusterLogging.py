@@ -244,7 +244,7 @@ class TestLogSearch(object):
             # 校验接收器类型和启用状态，启用状态默认为开启
             with pytest.assume:
                 assert component == 'logging'
-            assert enabled == 'true'
+                assert enabled == 'true'
         else:
             print('日志接收器不存在，无法执行后续操作')
 
