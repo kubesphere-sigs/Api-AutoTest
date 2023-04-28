@@ -12,7 +12,7 @@ from step import toolbox_steps, multi_cluster_steps
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 
-@allure.feature('日志查询')
+@allure.feature('日志')
 @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('logging') is False, reason='集群未开启logging功能')
 class TestLogSearch(object):
     __test__ = commonFunction.check_multi_cluster()
