@@ -851,6 +851,7 @@ def step_get_log_receiver_detail(cluster_name, name):
 @allure.step('更改日志接收器的状态')
 def step_modify_log_receiver_status(cluster_name, name, status):
     """
+    :param cluster_name: 集群名称
     :param name: 日志接收器名称
     :param status: 日志接收器状态
     :return:
