@@ -3,11 +3,10 @@ import sys
 import yaml
 import json
 import random
-from step import project_steps, multi_cluster_steps
+from step import multi_cluster_steps, cluster_steps
 import time
 import datetime
 from common.getHeader import get_header, get_header_for_patch
-from step import cluster_steps
 import allure
 from common.getConfig import get_apiserver
 from common.getData import DoexcleByPandas
@@ -393,7 +392,7 @@ def get_before_timestamp_day(day):
 def get_component_health_of_cluster(namespace_actual):
     if check_multi_cluster() is True:
         # 获取多集群环境的host集群的名称
-        host_name = project_steps.step_get_host_name()
+        host_name = multi_cluster_steps.step_get_host_cluster_name()
         url = env_url + '/kapis/clusters/' + host_name + '/resources.kubesphere.io/v1alpha2/components'
     else:
         url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/components'
@@ -638,3 +637,32 @@ def write_environment_info():
     # 将测试环境信息写入yaml文件
     with open('../environment.properties', 'w', encoding='utf-8') as f:
         yaml.dump(env, f, sort_keys=False)
+
+
+# 在多集群环境，验证非联邦项目的工作负载状态为ready
+def check_workload_ready_in_multi(cluster_name, project_name, resource_type, resource_name):
+    i = 0
+    while i < 180:
+        # 获取多集群环境中的工作负载
+        response = multi_cluster_steps.step_get_app_workload_detail(cluster_name, project_name, resource_type, resource_name)
+        # 判断工作负载的状态是否为ready
+        if 'unavailableReplicas' not in response.json()['status']:
+            return True
+        else:
+            sleep(3)
+            i = i + 3
+
+
+# 在多集群环境，验证非联邦项目的工作负载不存在
+def check_workload_not_exist_in_multi(cluster_name, project_name, resource_type, resource_name):
+    i = 0
+    while i < 180:
+        # 获取多集群环境中的工作负载
+        response = multi_cluster_steps.step_get_app_workload_detail(cluster_name, project_name, resource_type,
+                                                                    resource_name)
+        # 判断工作负载不存在
+        if response.status_code == 404:
+            return True
+        else:
+            sleep(3)
+            i = i + 3
