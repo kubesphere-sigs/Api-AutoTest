@@ -2,8 +2,8 @@ import pytest
 import time
 from common import commonFunction
 from datetime import datetime
-from common.commonFunction import get_random
-from step import cluster_steps, multi_project_steps, multi_workspace_steps, project_steps, network_steps, platform_steps, \
+from step import cluster_steps, multi_project_steps, multi_workspace_steps, project_steps, network_steps, \
+    platform_steps, \
     workspace_steps, app_steps, devops_steps, storage_steps, multi_cluster_steps, multi_cluster_storages_step
 
 
@@ -35,12 +35,6 @@ def create_job(create_project):
 def workload_name():
     workload_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
     return workload_name
-
-
-@pytest.fixture()
-def container_name():
-    container_name = 'container-nginx' + str(commonFunction.get_random())  # 容器名称
-    return container_name
 
 
 @pytest.fixture()
@@ -196,15 +190,30 @@ def node_name():
 
 
 @pytest.fixture()
-def create_ippool():
-    ippool_name = 'ippool-' + str(commonFunction.get_random())
-    ip = commonFunction.random_ip()
+# 在单集群环境创建ippool
+def create_ippool(ip_pool_name, ip_address):
     # 创建ippool
-    network_steps.step_create_ippool(ippool_name, ip)
-    time.sleep(1)
-    yield ippool_name
+    network_steps.step_create_ippool(ip_pool_name, ip_address)
+    yield ip_pool_name
     # 删除ippool
-    network_steps.step_delete_ippool(ippool_name)
+    network_steps.step_delete_ippool(ip_pool_name)
+
+
+@pytest.fixture()
+# 在多集群环境创建ippool
+def create_multi_ippool(request, ip_pool_name, ip_address):
+    # 获取参数
+    # 创建ippool
+    network_steps.step_create_ippool(ip_pool_name, ip_address, cluster_name=request.param)
+    yield ip_pool_name
+    # 删除ippool
+    i = 0
+    while i < 60:
+        r = network_steps.step_delete_ippool(ip_pool_name, request.param)
+        if r.status_code == 200:
+            break
+        i += 1
+        time.sleep(1)
 
 
 @pytest.fixture()
@@ -220,7 +229,7 @@ def create_devops(create_ws):
 
 @pytest.fixture()
 def create_sc():
-    sc_name = 'sc-' + str(get_random())
+    sc_name = 'sc-' + str(commonFunction.get_random())
     ex = True
     # 创建存储类
     storage_steps.create_sc(sc_name, ex)
@@ -231,7 +240,7 @@ def create_sc():
 
 @pytest.fixture()
 def create_multi_cluster_sc():
-    sc_name = 'sc-' + str(get_random())
+    sc_name = 'sc-' + str(commonFunction.get_random())
     ex = True
     cluster_name = multi_cluster_steps.step_get_host_cluster_name()
     # 创建存储类
@@ -249,3 +258,52 @@ def create_code_repository(create_devops):
     url = 'https://gitee.com/linuxsuren/demo-go-http'
     devops_steps.step_import_code_repository(create_devops, name, provider, url)
     yield url
+
+
+@pytest.fixture()
+# 创建网络策略
+def create_network_policy(create_project):
+    # 创建网络策略
+    policy_name = 'network-policy-' + str(commonFunction.get_random())
+    network_steps.step_create_network_policy(create_project, policy_name)
+    yield policy_name
+    # 删除网络策略
+    network_steps.step_delete_network_policy(create_project, policy_name)
+
+
+@pytest.fixture()
+def ip_pool_name():
+    return 'ip-pool-' + str(commonFunction.get_random())
+
+
+@pytest.fixture()
+def ip_address():
+    return commonFunction.random_ip()
+
+
+@pytest.fixture()
+# 返回企业空间名称
+def ws_name():
+    ws_name = 'ws-test' + str(commonFunction.get_random())
+    return ws_name
+
+
+@pytest.fixture()
+# 返回项目名称
+def pro_name():
+    pro_name = 'pro-test' + str(commonFunction.get_random())
+    return pro_name
+
+
+@pytest.fixture()
+# 返回deploy名称
+def deploy_name():
+    deploy_name = 'deploy-test' + str(commonFunction.get_random())
+    return deploy_name
+
+
+@pytest.fixture()
+# 返回container名称
+def container_name():
+    container_name = 'container-test' + str(commonFunction.get_random())
+    return container_name
