@@ -34,8 +34,7 @@ class TestMultiClusterStorage:
     def setup_class(self):
         r = ''
         self.cluster_name = multi_cluster_steps.step_get_host_cluster_name()
-        multi_workspace_steps.step_create_multi_ws(ws_name=self.ws_name, alias_name='', description='',
-                                                   cluster_names=self.cluster_name)
+        multi_workspace_steps.step_create_multi_ws(ws_name=self.ws_name, cluster_names=self.cluster_name)
         multi_project_steps.step_create_multi_project(ws_name=self.ws_name, project_name=self.pro_ws_name,
                                                       clusters=self.cluster_name)
         multi_cluster_storages_step.step_create_sc(cluster_name=self.cluster_name, sc_name=self.sc_name,
