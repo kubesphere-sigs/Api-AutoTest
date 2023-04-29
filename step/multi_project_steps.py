@@ -718,20 +718,6 @@ def step_create_config_map_in_multi_project(cluster_name, project_name, config_n
                                   "spec": {"template": {"metadata": {"labels": {}}}},
                                   "data": {value: key}},
                      "overrides": overrides}}
-
-    # data = {"apiVersion": "types.kubefed.io/v1beta1",
-    #         "kind": "FederatedConfigMap",
-    #         "metadata": {"namespace": "pro-m",
-    #                      "name": "qwe",
-    #                      "annotations": {"kubesphere.io/creator": "wenxin-test"}},
-    #         "spec": {"placement": {"clusters": [{"name": "wx-host"}, {"name": "qs-cluster"}, {"name": "member331"}]},
-    #                  "template": {"metadata": {"namespace": "pro-m", "labels": {},
-    #                                            "annotations": {"kubesphere.io/creator": "wenxin-test"}},
-    #                               "spec": {"template": {"metadata": {"labels": {}}}},
-    #                               "data": {"qaz": "wsd"}},
-    #                  "overrides": [{"clusterName": "wx-host", "clusterOverrides": []},
-    #                                {"clusterName": "qs-cluster", "clusterOverrides": []},
-    #                                {"clusterName": "member331", "clusterOverrides": []}]}}
     requests.post(url=url1, headers=get_header(), data=json.dumps(data))
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
