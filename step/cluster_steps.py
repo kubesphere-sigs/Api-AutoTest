@@ -13,7 +13,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 @allure.step('获取集群的名称')
 def step_get_cluster_name():
     clusters = []
-    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/clusters'
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/clusters'
     response = requests.get(url=url, headers=get_header())
     for i in range(response.json()['totalItems']):
         clusters.append(response.json()['items'][i]['metadata']['name'])
@@ -368,8 +368,11 @@ def step_get_pvc_detail(project_name, pvc_name):
     return response
 
 @allure.step('获取集群的默认存储类')
-def step_get_cluster_default_storage_class():
-    url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/storageclasses?sortBy=createTime&limit=10'
+def step_get_cluster_default_storage_class(cluster_name=''):
+    if cluster_name:
+        url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/storageclasses?sortBy=createTime&limit=10'
+    else:
+        url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/storageclasses?sortBy=createTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     counts = response.json()['totalItems']
     for i in range(0, counts):
