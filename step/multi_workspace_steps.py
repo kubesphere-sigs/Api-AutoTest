@@ -244,7 +244,7 @@ def step_delete_user(user_name):
     requests.delete(url, headers=get_header())
 
 
-@allure.step('在多集群企业空间创建项目')
+@allure.step('在多集群企业空间的指定集群创建项目')
 def step_create_project(cluster_name, ws_name, project_name):
     url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
           ws_name + '/namespaces'
