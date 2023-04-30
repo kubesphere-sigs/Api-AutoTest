@@ -1539,10 +1539,8 @@ class TestCluster(object):
     def test_authorized_cluster_visibility(self):
         # 创建企业空间，不添加集群
         ws_name = 'test-ws' + str(commonFunction.get_random())
-        alias_name = ''
-        description = ''
         cluster_name = []
-        multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
+        multi_workspace_steps.step_create_multi_ws(ws_name, cluster_name)
         # 添加企业空间在host集群的授权
         multi_cluster_steps.step_authorized_cluster_visibility(self.cluster_host_name, ws_name)
         # 查看集群可见性
