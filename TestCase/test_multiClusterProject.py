@@ -4,6 +4,7 @@ import allure
 import sys
 import time
 from datetime import datetime
+
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from common import commonFunction
@@ -48,28 +49,21 @@ class TestProject(object):
 
         # 获取工作负载的状态
         for name in clusters:
-            i = 0
-            while i < 180:
-                response = multi_project_steps.step_get_workload_in_multi_project(cluster_name=name,
-                                                                                  project_name=create_multi_project,
-                                                                                  type='deployments',
-                                                                                  condition=condition)
-                try:
-                    ready_replicas = response.json()['status']['readyReplicas']
-                    if ready_replicas == replicas:
-                        break
-                except Exception as e:
-                    print(e)
-                time.sleep(5)
-                i += 5
-            # 获取存储卷状态
-            re = multi_project_steps.step_get_volume_status_in_multi_project(cluster_name=name,
-                                                                             project_name=create_multi_project,
-                                                                             volume_name=volume_name)
-            status = re.json()['status']['phase']
-            # 验证存储卷状态正常
-            with pytest.assume:
-                assert status == 'Bound'
+            # 验证工作负载状态为ready
+            if commonFunction.check_workload_ready_in_multi_federated(cluster_name=name,
+                                                                      project_name=create_multi_project,
+                                                                      resource_type='deployments',
+                                                                      resource_name=condition, replicas=replicas):
+                # 获取存储卷状态
+                re = multi_project_steps.step_get_volume_status_in_multi_project(cluster_name=name,
+                                                                                 project_name=create_multi_project,
+                                                                                 volume_name=volume_name)
+                status = re.json()['status']['phase']
+                # 验证存储卷状态正常
+                with pytest.assume:
+                    assert status == 'Bound'
+            else:
+                print('工作负载状态不为ready')
         # 删除工作负载
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='deployments',
                                                                   work_name=work_name)
@@ -106,33 +100,26 @@ class TestProject(object):
                                                              ports=port, service_ports=service_port,
                                                              volumemount=volume_mounts, volume_info=volume_info,
                                                              service_name=service_name)
-        # 验证资源创建成功
+        # 获取工作负载的状态
         for name in clusters:
-            i = 0
-            while i < 180:
-                # 获取工作负载的状态
-                response = multi_project_steps.step_get_workload_in_multi_project(cluster_name=name,
-                                                                                  project_name=create_multi_project,
-                                                                                  type='statefulsets',
-                                                                                  condition=condition)
-                try:
-                    ready_replicas = response.json()['status']['readyReplicas']
-                    if ready_replicas == replicas:
-                        break
-                except Exception as e:
-                    print(e)
-                i += 5
-                time.sleep(5)
-            # 获取存储卷状态
-            re = multi_project_steps.step_get_volume_status_in_multi_project(cluster_name=name,
-                                                                             project_name=create_multi_project,
-                                                                             volume_name=volume_name)
-            status = re.json()['status']['phase']
-            # 验证存储卷状态正常
-            with pytest.assume:
-                assert status == 'Bound'
+            # 验证工作负载状态为ready
+            if commonFunction.check_workload_ready_in_multi_federated(cluster_name=name,
+                                                                      project_name=create_multi_project,
+                                                                      resource_type='statefulsets',
+                                                                      resource_name=condition, replicas=replicas):
+                # 获取存储卷状态
+                re = multi_project_steps.step_get_volume_status_in_multi_project(cluster_name=name,
+                                                                                 project_name=create_multi_project,
+                                                                                 volume_name=volume_name)
+                status = re.json()['status']['phase']
+                # 验证存储卷状态正常
+                with pytest.assume:
+                    assert status == 'Bound'
+            else:
+                print('工作负载状态不为ready')
         # 删除工作负载
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='statefulsets',
+        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
+                                                                  type='statefulsets',
                                                                   work_name=work_name)
         # 删除存储卷
         multi_project_steps.step_delete_volume_in_multi_project(create_multi_project, volume_name)
@@ -142,7 +129,6 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_volume_for_service(self, create_multi_workspace, create_multi_project):
         clusters = cluster_steps.step_get_cluster_name()
-
         volume_name = 'volume-service' + str(commonFunction.get_random())  # 存储卷的名称
         type_name = 'volume-type'  # 存储卷的类型
         service_name = 'service' + str(commonFunction.get_random())  # 工作负载的名称
@@ -173,30 +159,23 @@ class TestProject(object):
                                                                 image=image,
                                                                 replicas=replicas,
                                                                 volume_info=volume_info, strategy=strategy_info)
+        # 获取工作负载的状态
         for name in clusters:
-            i = 0
-            while i < 180:
-                # 获取工作负载的状态
-                response = multi_project_steps.step_get_workload_in_multi_project(cluster_name=name,
-                                                                                  project_name=create_multi_project,
-                                                                                  type='deployments',
-                                                                                  condition=condition)
-                try:
-                    ready_replicas = response.json()['status']['readyReplicas']
-                    if ready_replicas == replicas:
-                        break
-                except Exception as e:
-                    print(e)
-                i += 5
-                time.sleep(5)
-            # 获取存储卷状态
-            response = multi_project_steps.step_get_volume_status_in_multi_project(cluster_name=name,
-                                                                                   project_name=create_multi_project,
-                                                                                   volume_name=volume_name)
-            status = response.json()['status']['phase']
-            # 验证存储卷状态正常
-            with pytest.assume:
-                assert status == 'Bound'
+            # 验证工作负载状态为ready
+            if commonFunction.check_workload_ready_in_multi_federated(cluster_name=name,
+                                                                      project_name=create_multi_project,
+                                                                      resource_type='deployments',
+                                                                      resource_name=condition, replicas=replicas):
+                # 获取存储卷状态
+                re = multi_project_steps.step_get_volume_status_in_multi_project(cluster_name=name,
+                                                                                 project_name=create_multi_project,
+                                                                                 volume_name=volume_name)
+                status = re.json()['status']['phase']
+                # 验证存储卷状态正常
+                with pytest.assume:
+                    assert status == 'Bound'
+            else:
+                print('工作负载状态不为ready')
         # 删除service
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='services',
                                                                   work_name=service_name)
@@ -252,7 +231,7 @@ class TestProject(object):
                 assert 'unavailableReplicas' not in status
         # 删除deployment
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
-                                                                       type='deployments', work_name=workload_name)
+                                                                  type='deployments', work_name=workload_name)
 
     @allure.story('应用负载-工作负载')
     @allure.title('在多集群项目按名称查询存在的deployment')
@@ -294,7 +273,7 @@ class TestProject(object):
             assert name == workload_name
         # 删除deployment
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
-                                                                       type='deployments', work_name=workload_name)
+                                                                  type='deployments', work_name=workload_name)
 
     @allure.story('应用负载-工作负载')
     @allure.title('在多集群项目创建未绑定存储卷的StatefulSets，并验证运行成功')
@@ -312,7 +291,7 @@ class TestProject(object):
         service_port = [{"name": "tcp-80", "protocol": "TCP", "port": 80, "targetPort": 80}]
         service_name = 'service' + workload_name
         volume_mounts = []
-        ready_replicas =''
+        ready_replicas = ''
         # 创建工作负载
         multi_project_steps.step_create_sts_in_multi_project(cluster_name=clusters,
                                                              project_name=create_multi_project,
@@ -347,7 +326,7 @@ class TestProject(object):
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
                                                                   type='services', work_name=workload_name)
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
-                                                                       type='statefulsets', work_name=workload_name)
+                                                                  type='statefulsets', work_name=workload_name)
 
     @allure.story('应用负载-工作负载')
     @allure.title('在多集群项目按名称查询存在的StatefulSets')
@@ -399,8 +378,8 @@ class TestProject(object):
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
                                                                   type='services', work_name=workload_name)
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
-                                                                       type=workload_type,
-                                                                       work_name=workload_name)
+                                                                  type=workload_type,
+                                                                  work_name=workload_name)
 
     @allure.story('应用负载-服务')
     @allure.title('创建未绑定存储卷的service，并验证运行成功')
@@ -566,7 +545,8 @@ class TestProject(object):
         assert name == service_name
 
         # 删除路由
-        multi_project_steps.step_delete_route_in_multi_project(project_name=create_multi_project, ingress_name=ingress_name)
+        multi_project_steps.step_delete_route_in_multi_project(project_name=create_multi_project,
+                                                               ingress_name=ingress_name)
         # 删除service
         multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='services',
                                                                   work_name=service_name)
@@ -578,7 +558,8 @@ class TestProject(object):
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('gateway_type, title, annotations',
-                             [('NodePort', '在多集群项目设置网关-NodePort', {"servicemesh.kubesphere.io/enabled": "false"}),
+                             [('NodePort', '在多集群项目设置网关-NodePort',
+                               {"servicemesh.kubesphere.io/enabled": "false"}),
                               ('LoadBalancer', '在多集群项目设置网关-LoadBalancer',
                                {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
                                 "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0",
@@ -751,44 +732,46 @@ class TestProject(object):
     @allure.severity(allure.severity_level.NORMAL)
     @pytest.mark.parametrize('title, hard',
                              [('在多集群项目设置项目配额-输入错误的cpu信息(包含字母)', {"limits.cpu": "11www",
-                                                                 "requests.cpu": "1www"
-                                                                 }),
+                                                                                        "requests.cpu": "1www"
+                                                                                        }),
                               ('在多集群项目设置项目配额-输入错误的cpu信息(包含负数)', {"limits.cpu": "11www",
-                                                                 "requests.cpu": "1www"
-                                                                 }),
+                                                                                        "requests.cpu": "1www"
+                                                                                        }),
                               ('在多集群项目设置项目配额-输入错误的内存(包含非单位字母)', {"limits.memory": "10Gi",
-                                                                 "requests.memory": "1Giw"}),
+                                                                                           "requests.memory": "1Giw"}),
                               ('在多集群项目设置项目配额-输入错误的内存(包含负数)', {"limits.memory": "-10Gi",
-                                                              "requests.memory": "1Gi"}),
+                                                                                     "requests.memory": "1Gi"}),
                               ('在多集群项目只设置项目配额-输入错误的资源配额信息(包含字母)', {"count/pods": "100q",
-                                                                   "count/deployments.apps": "6",
-                                                                   "count/statefulsets.apps": "6",
-                                                                   "count/jobs.batch": "1",
-                                                                   "count/services": "5",
-                                                                   "persistentvolumeclaims": "6",
-                                                                   "count/daemonsets.apps": "5",
-                                                                   "count/cronjobs.batch": "4",
-                                                                   "count/ingresses.extensions": "4",
-                                                                   "count/secrets": "8",
-                                                                   "count/configmaps": "7"}),
+                                                                                               "count/deployments.apps": "6",
+                                                                                               "count/statefulsets.apps": "6",
+                                                                                               "count/jobs.batch": "1",
+                                                                                               "count/services": "5",
+                                                                                               "persistentvolumeclaims": "6",
+                                                                                               "count/daemonsets.apps": "5",
+                                                                                               "count/cronjobs.batch": "4",
+                                                                                               "count/ingresses.extensions": "4",
+                                                                                               "count/secrets": "8",
+                                                                                               "count/configmaps": "7"}),
                               ('在多集群项目只设置项目配额-输入错误的资源配额信息(包含负数)', {"count/pods": "-100",
-                                                                   "count/deployments.apps": "6",
-                                                                   "count/statefulsets.apps": "6",
-                                                                   "count/jobs.batch": "1",
-                                                                   "count/services": "5",
-                                                                   "persistentvolumeclaims": "6",
-                                                                   "count/daemonsets.apps": "5",
-                                                                   "count/cronjobs.batch": "4",
-                                                                   "count/ingresses.extensions": "4",
-                                                                   "count/secrets": "8",
-                                                                   "count/configmaps": "7"}),
+                                                                                               "count/deployments.apps": "6",
+                                                                                               "count/statefulsets.apps": "6",
+                                                                                               "count/jobs.batch": "1",
+                                                                                               "count/services": "5",
+                                                                                               "persistentvolumeclaims": "6",
+                                                                                               "count/daemonsets.apps": "5",
+                                                                                               "count/cronjobs.batch": "4",
+                                                                                               "count/ingresses.extensions": "4",
+                                                                                               "count/secrets": "8",
+                                                                                               "count/configmaps": "7"}),
                               ])
     def test_edit_project_quota_wrong(self, create_multi_workspace, create_multi_project, title, hard):
         clusters = cluster_steps.step_get_cluster_name()
         # 获取项目配额的resource_version
-        resource_version = multi_project_steps.step_get_project_quota_version_in_multi_project(clusters[0], create_multi_project)
+        resource_version = multi_project_steps.step_get_project_quota_version_in_multi_project(clusters[0],
+                                                                                               create_multi_project)
         # 编辑配额信息
-        r = multi_project_steps.step_edit_project_quota_in_multi_project(clusters[0], create_multi_project, hard, resource_version)
+        r = multi_project_steps.step_edit_project_quota_in_multi_project(clusters[0], create_multi_project, hard,
+                                                                         resource_version)
         # 获取编辑结果
         status = r.json()['status']
         # 验证编辑失败
@@ -799,31 +782,38 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('title, hard',
                              [('在多集群项目只设置项目配额-CPU', {"limits.cpu": "40", "requests.cpu": "40"}),
-                              ('在多集群项目只设置项目配额-内存', {"limits.memory": "1000Gi", "requests.memory": "1Gi"}),
-                              ('在多集群项目设置项目配额-CPU、内存', {"limits.memory": "1000Gi", "requests.memory": "1Gi",
-                                                       "limits.cpu": "100", "requests.cpu": "100"}),
-                              ('在多集群项目只设置项目配额-资源配额', {"limits.memory": "1000Gi", "requests.memory": "1Gi",
-                                                      "limits.cpu": "100", "requests.cpu": "100"}),
+                              (
+                              '在多集群项目只设置项目配额-内存', {"limits.memory": "1000Gi", "requests.memory": "1Gi"}),
+                              (
+                              '在多集群项目设置项目配额-CPU、内存', {"limits.memory": "1000Gi", "requests.memory": "1Gi",
+                                                                    "limits.cpu": "100", "requests.cpu": "100"}),
+                              ('在多集群项目只设置项目配额-资源配额',
+                               {"limits.memory": "1000Gi", "requests.memory": "1Gi",
+                                "limits.cpu": "100", "requests.cpu": "100"}),
                               ('在多集群下项目设置项目配额-cpu、memory、资源配额', {"count/configmaps": "7",
-                                                                 "count/cronjobs.batch": "4",
-                                                                 "count/daemonsets.apps": "5",
-                                                                 "count/deployments.apps": "6",
-                                                                 "count/ingresses.extensions": "4",
-                                                                 "count/jobs.batch": "1",
-                                                                 "count/pods": "100",
-                                                                 "count/secrets": "8",
-                                                                 "count/services": "5",
-                                                                 "count/statefulsets.apps": "6",
-                                                                 "persistentvolumeclaims": "6",
-                                                                 "limits.cpu": "200", "limits.memory": "1000Gi",
-                                                                 "requests.cpu": "200", "requests.memory": "3Gi"})
+                                                                                  "count/cronjobs.batch": "4",
+                                                                                  "count/daemonsets.apps": "5",
+                                                                                  "count/deployments.apps": "6",
+                                                                                  "count/ingresses.extensions": "4",
+                                                                                  "count/jobs.batch": "1",
+                                                                                  "count/pods": "100",
+                                                                                  "count/secrets": "8",
+                                                                                  "count/services": "5",
+                                                                                  "count/statefulsets.apps": "6",
+                                                                                  "persistentvolumeclaims": "6",
+                                                                                  "limits.cpu": "200",
+                                                                                  "limits.memory": "1000Gi",
+                                                                                  "requests.cpu": "200",
+                                                                                  "requests.memory": "3Gi"})
                               ])
     def test_edit_project_quota(self, create_multi_workspace, create_multi_project, title, hard):
         clusters = cluster_steps.step_get_cluster_name()
         # 获取项目配额的resource_version
-        resource_version = multi_project_steps.step_get_project_quota_version_in_multi_project(clusters[0], create_multi_project)
+        resource_version = multi_project_steps.step_get_project_quota_version_in_multi_project(clusters[0],
+                                                                                               create_multi_project)
         # 编辑配额信息
-        multi_project_steps.step_edit_project_quota_in_multi_project(clusters[0], create_multi_project, hard, resource_version)
+        multi_project_steps.step_edit_project_quota_in_multi_project(clusters[0], create_multi_project, hard,
+                                                                     resource_version)
         # 获取修改后的配额信息
         i = 0
         while i < 180:
@@ -851,7 +841,8 @@ class TestProject(object):
     def test_edit_container_quota(self, create_multi_workspace, create_multi_project, title, limit, re):
         clusters = cluster_steps.step_get_cluster_name()
         # 获取资源默认请求
-        response = multi_project_steps.step_get_container_quota_in_multi_project(create_multi_project, create_multi_workspace)
+        response = multi_project_steps.step_get_container_quota_in_multi_project(create_multi_project,
+                                                                                 create_multi_workspace)
         resource_version = None
         try:
             if response.json()['items'][0]['metadata']['resourceVersion']:
@@ -864,7 +855,8 @@ class TestProject(object):
         multi_project_steps.step_edit_container_quota_in_multi_project(clusters, create_multi_project,
                                                                        resource_version, limit, re)
         # 查询编辑结果
-        response = multi_project_steps.step_get_container_quota_in_multi_project(create_multi_project, create_multi_workspace)
+        response = multi_project_steps.step_get_container_quota_in_multi_project(create_multi_project,
+                                                                                 create_multi_workspace)
         limit_actual = response.json()['items'][0]['spec']['template']['spec']['limits'][0]['default']
         request_actual = response.json()['items'][0]['spec']['template']['spec']['limits'][0]['defaultRequest']
         # 验证编辑成功
@@ -1044,7 +1036,8 @@ class TestProject(object):
     @allure.story('项目设置-高级设置')
     @allure.title('落盘日志收集-开启')
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('logging') is False, reason='集群未开启logging功能')
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('logging') is False,
+                        reason='集群未开启logging功能')
     def test_disk_log_collection_open(self, create_multi_workspace, create_multi_project):
         # 开启落盘日志收集功能
         multi_project_steps.step_set_disk_log_collection(project_name=create_multi_project, set='enabled')
@@ -1058,7 +1051,8 @@ class TestProject(object):
     @allure.story('项目设置-高级设置')
     @allure.title('落盘日志收集-关闭')
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('logging') is False, reason='集群未开启logging功能')
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('logging') is False,
+                        reason='集群未开启logging功能')
     def test_disk_log_collection_close(self, create_multi_workspace, create_multi_project):
         # 开启落盘日志收集功能
         multi_project_steps.step_set_disk_log_collection(project_name=create_multi_project, set='enabled')

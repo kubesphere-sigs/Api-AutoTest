@@ -3,7 +3,7 @@ import sys
 import yaml
 import json
 import random
-from step import multi_cluster_steps, cluster_steps
+from step import multi_cluster_steps, cluster_steps, multi_project_steps
 import time
 import datetime
 from common.getHeader import get_header, get_header_for_patch
@@ -11,7 +11,6 @@ import allure
 from common.getConfig import get_apiserver
 from common.getData import DoexcleByPandas
 from time import sleep
-
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -522,16 +521,16 @@ def request_resource(url, params, data, story, title, method, severity, conditio
     # 将用例中的内容打印在报告中
     print(
         '用例编号: ' + str(id) + '\n'
-                             '用例请求的URL地址: ' + str(url_new) + '\n'
-                                                             '用例使用的请求数据: ' + str(data) + '\n'
-                                                                                         '用例模块: ' + story + '\n'
-                                                                                                            '用例标题: ' + title + '\n'
-                                                                                                                               '用例的请求方式: ' + method + '\n '
-                                                                                                                                                      '用例优先级: ' + severity + '\n'
-                                                                                                                                                                             '用例的校验条件: ' + str(
+                                 '用例请求的URL地址: ' + str(url_new) + '\n'
+                                                                        '用例使用的请求数据: ' + str(data) + '\n'
+                                                                                                             '用例模块: ' + story + '\n'
+                                                                                                                                    '用例标题: ' + title + '\n'
+                                                                                                                                                           '用例的请求方式: ' + method + '\n '
+                                                                                                                                                                                         '用例优先级: ' + severity + '\n'
+                                                                                                                                                                                                                     '用例的校验条件: ' + str(
             condition) + '\n'
                          '用例的实际结果: ' + str(condition_new) + '\n'
-                                                            '用例的预期结果: ' + str(except_result)
+                                                                   '用例的预期结果: ' + str(except_result)
     )
 
 
@@ -628,11 +627,15 @@ def write_environment_info():
     # 如果是多集群环境
     else:
         response = multi_cluster_steps.step_get_cluster()
-        print(response.json()['totalItems'])
-        print(response.json()['items'][0]['metadata']['name'])
+        # 获取集群数量
+        cluster_count = response.json()['totalItems']
+        # 获取所有集群的名称
+        cluster_names = []
+        for i in range(cluster_count):
+            cluster_names.append(response.json()['items'][i]['metadata']['name'])
         env = {
             "TEST_URL": env_url,
-            "CLUSTER_NAME": response.json()['items'][0]
+            "CLUSTER_NAME": cluster_names,
         }
     # 将测试环境信息写入yaml文件
     with open('../environment.properties', 'w', encoding='utf-8') as f:
@@ -644,9 +647,10 @@ def check_workload_ready_in_multi(cluster_name, project_name, resource_type, res
     i = 0
     while i < 180:
         # 获取多集群环境中的工作负载
-        response = multi_cluster_steps.step_get_app_workload_detail(cluster_name, project_name, resource_type, resource_name)
+        response = multi_cluster_steps.step_get_app_workload_detail(cluster_name, project_name, resource_type,
+                                                                    resource_name)
         # 判断工作负载的状态是否为ready
-        if 'unavailableReplicas' not in response.json()['status']:
+        if 'unavailableReplicas' not in response.json()['items'][0]['status']:
             return True
         else:
             sleep(3)
@@ -666,3 +670,19 @@ def check_workload_not_exist_in_multi(cluster_name, project_name, resource_type,
         else:
             sleep(3)
             i = i + 3
+
+
+# 在多集群环境，验证联邦项目的工作负载状态为ready
+def check_workload_ready_in_multi_federated(cluster_name, project_name, resource_type, resource_name, replicas):
+    i = 0
+    while i < 180:
+        response = multi_project_steps.step_get_workload_in_multi_project(cluster_name, project_name, resource_type, resource_name)
+        try:
+            ready_replicas = response.json()['status']['readyReplicas']
+            if ready_replicas == replicas:
+                return True
+        except Exception as e:
+            print(e)
+        time.sleep(5)
+        i += 5
+    return False
