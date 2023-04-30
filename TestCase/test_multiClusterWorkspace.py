@@ -33,15 +33,15 @@ class TestWorkSpace(object):
     def setup_class(self):
         multi_workspace_steps.step_create_user(self.user_name)  # 创建一个用户
         # 创建一个多集群企业空间（包含所有的集群）
-        multi_workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, self.clusters)
+        multi_workspace_steps.step_create_multi_ws(self.ws_name, self.clusters, self.alias_name, self.description)
         # 创建若干个多集群企业空间（只部署在单个集群）
         if len(self.clusters) > 1:
             for i in range(0, len(self.clusters)):
                 ws_name_1 = 'ws-for-test-single-ws' + str(commonFunction.get_random())
-                multi_workspace_steps.step_create_multi_ws(ws_name_1,
-                                                           self.alias_name, self.description, self.clusters[i])
+                multi_workspace_steps.step_create_multi_ws(ws_name_1, self.clusters[i],
+                                                           self.alias_name, self.description)
         # 创建一个多集群企业空间,供yaml文件中的用例使用
-        multi_workspace_steps.step_create_multi_ws(self.ws_name_yaml, self.alias_name, self.description, self.clusters)
+        multi_workspace_steps.step_create_multi_ws(self.ws_name_yaml, self.clusters, self.alias_name, self.description)
 
     # 所有用例执行完之后执行该方法
     def teardown_class(self):
@@ -99,7 +99,8 @@ class TestWorkSpace(object):
         r = multi_workspace_steps.step_get_ws_role(create_multi_workspace, ws_role_name)
         authority_actual = r.json()['items'][0]['metadata']['annotations']["iam.kubesphere.io/aggregation-roles"]
         # 验证修改角色权限后的权限信息
-        pytest.assume(authority_actual == authority_edit)
+        with pytest.assume:
+            assert authority_actual == authority_edit
         # 删除创建的角色
         multi_workspace_steps.step_delete_role(create_multi_workspace, ws_role_name)
 
@@ -116,7 +117,8 @@ class TestWorkSpace(object):
         # 在企业空间中查询邀请的用户
         re = multi_workspace_steps.step_get_ws_user(create_multi_workspace, user_name)
         # 验证邀请后的成员名称
-        pytest.assume(re.json()['items'][0]['metadata']['name'] == user_name)
+        with pytest.assume:
+            assert re.json()['items'][0]['metadata']['name'] == user_name
         # 将邀请的用户移除企业空间
         workspace_steps.step_delete_ws_user(create_multi_workspace, user_name)
         # 删除用户
@@ -140,7 +142,8 @@ class TestWorkSpace(object):
         # 获取该成员的角色信息
         user_role = r.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/workspacerole']
         # 验证修改后的角色名称
-        pytest.assume(user_role == ws_role_new)
+        with pytest.assume:
+            assert user_role == ws_role_new
         # 将邀请的用户移除企业空间
         workspace_steps.step_delete_ws_user(create_multi_workspace, self.user_name)
         # 删除创建的用户
@@ -177,7 +180,8 @@ class TestWorkSpace(object):
         # 获取所有的企业组织名称
         group_name_actual = workspace_steps.step_get_department(self.ws_name)
         # 校验企业组织名称，已验证企业组织创建成功
-        pytest.assume(group_name in group_name_actual)
+        with pytest.assume:
+            assert group_name in group_name_actual
         # 编辑企业组织
         edit_data = {"metadata": {"annotations": {"kubesphere.io/workspace-role": self.ws_name + "-regular",
                                                   "kubesphere.io/alias-name": "我是别名",
@@ -186,7 +190,8 @@ class TestWorkSpace(object):
                                                   "kubesphere.io/creator": "admin"}}}
         annotations = workspace_steps.step_edit_department(self.ws_name, name, edit_data)
         # 验证编辑后的内容
-        pytest.assume("我是别名" == annotations['kubesphere.io/alias-name'])
+        with pytest.assume:
+            assert "我是别名" == annotations['kubesphere.io/alias-name']
         # 删除企业组织,并获取返回信息
         re = workspace_steps.step_delete_department(self.ws_name, name)
         # 验证删除成功
@@ -212,7 +217,8 @@ class TestWorkSpace(object):
         # 校验接口返回信息
         assert_message = 'Operation cannot be fulfilled on groups.iam.kubesphere.io "' + group_name + \
                          '": a group named ' + group_name + ' already exists in the workspace\n'
-        pytest.assume(re.text == assert_message)
+        with pytest.assume:
+            assert re.text == assert_message
         # 删除创建的企业空间
         workspace_steps.step_delete_department(self.ws_name, name)
 
@@ -275,7 +281,8 @@ class TestWorkSpace(object):
         # 获取绑定后返回的用户名
         binding_user = re.json()[0]['users'][0]
         # 校验绑定的用户名称
-        pytest.assume(binding_user == self.user_name)
+        with pytest.assume:
+            assert binding_user == self.user_name
         # 重新获取企业组织可分配的用户名称
         r = multi_workspace_steps.step_get_user_for_department(name)
         counts_new = r.json()['totalItems']
@@ -327,7 +334,8 @@ class TestWorkSpace(object):
         # 将用户从企业组织解绑
         r = workspace_steps.step_unbind_user(ws_name=create_multi_workspace, user_name=binding_user)
         # 校验解绑结果
-        pytest.assume(r.json()['message'] == 'success')
+        with pytest.assume:
+            assert r.json()['message'] == 'success'
         # 删除企业组织
         workspace_steps.step_delete_department(create_multi_workspace, name)
 
@@ -373,7 +381,8 @@ class TestWorkSpace(object):
             multi_workspace_steps.step_create_project(cluster, create_multi_workspace, project_name)
             # 查询项目并验证项目创建成功
             re = multi_workspace_steps.step_get_project(cluster, create_multi_workspace, project_name)
-            pytest.assume(re.json()['totalItems'] == 1)
+            with pytest.assume:
+                assert re.json()['totalItems'] == 1
             # 删除创建的项目
             multi_workspace_steps.step_delete_project(cluster, create_multi_workspace, project_name)
 
@@ -392,11 +401,13 @@ class TestWorkSpace(object):
             multi_workspace_steps.step_create_project(cluster, create_multi_workspace, project_name)
             # 查询项目并验证项目创建成功
             re = multi_workspace_steps.step_get_project(cluster, create_multi_workspace, project_name)
-            pytest.assume(re.json()['totalItems'] == 1)
+            with pytest.assume:
+                assert re.json()['totalItems'] == 1
             # 使用重复的名称创建项目
             r = multi_workspace_steps.step_create_project(cluster, create_multi_workspace, project_name)
             # 验证提示信息正确
-            pytest.assume(r.text == 'namespaces ' + '"' + project_name + '"' + ' already exists\n')
+            with pytest.assume:
+                assert r.text == 'namespaces ' + '"' + project_name + '"' + ' already exists\n'
             # 删除创建的项目
             multi_workspace_steps.step_delete_project(cluster, create_multi_workspace, project_name)
 
@@ -416,7 +427,8 @@ class TestWorkSpace(object):
                 multi_workspace_steps.step_create_multi_project(create_multi_workspace, multi_project_name, clusters_name[j])
                 # 查询多集群项目，验证项目创建
                 re = multi_workspace_steps.step_get_multi_project(create_multi_workspace, multi_project_name)
-                pytest.assume(re.json()['totalItems'] == 1)
+                with pytest.assume:
+                    assert re.json()['totalItems'] == 1
                 # 删除多集群项目
                 multi_workspace_steps.step_delete_multi_project(multi_project_name)
         else:
@@ -424,7 +436,8 @@ class TestWorkSpace(object):
             multi_workspace_steps.step_create_multi_project(create_multi_workspace, multi_project_name, clusters_name)
             # 查询多集群项目，验证项目创建
             re = multi_workspace_steps.step_get_multi_project(create_multi_workspace, multi_project_name)
-            pytest.assume(re.json()['totalItems'] == 1)
+            with pytest.assume:
+                assert re.json()['totalItems'] == 1
             # 删除多集群项目
             multi_workspace_steps.step_delete_multi_project(multi_project_name)
 
