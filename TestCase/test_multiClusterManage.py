@@ -1490,11 +1490,9 @@ class TestCluster(object):
     def test_get_cluster_visibility(self):
         # 创建企业空间，并设置其所在集群为单个集群
         ws_name = 'test-ws' + str(commonFunction.get_random())
-        alias_name = ''
-        description = ''
         # 获取集群名称
         clusters = multi_workspace_steps.step_get_cluster_name()
-        multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, clusters[0])
+        multi_workspace_steps.step_create_multi_ws(ws_name, clusters[0])
         time.sleep(5)
         # 查看集群可见性
         response = multi_cluster_steps.step_get_cluster_visibility(clusters[0])
@@ -1516,10 +1514,8 @@ class TestCluster(object):
     def test_unauthorized_cluster_visibility(self):
         # 创建企业空间，其所在集群为host集群
         ws_name = 'test-ws' + str(commonFunction.get_random())
-        alias_name = ''
-        description = ''
         cluster_name = self.cluster_host_name
-        multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
+        multi_workspace_steps.step_create_multi_ws(ws_name, cluster_name)
         # # 取消企业空间在host集群的授权
         multi_cluster_steps.step_unauthorized_cluster_visibility(self.cluster_host_name, ws_name)
         time.sleep(3)
