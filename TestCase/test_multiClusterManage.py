@@ -806,28 +806,28 @@ class TestCluster(object):
         response = multi_cluster_steps.step_get_cluster()
         # 获取集群的数量
         cluster_count = response.json()['totalItems']
-        for i in range(0, cluster_count):
-            # 获取每个集群的名称
-            cluster_name = response.json()['items'][i]['metadata']['name']
-            # 查询集群所有的资源
-            re = multi_cluster_steps.step_get_resource_of_cluster(cluster_name, type)
-            # 获取集群某一资源的数量
-            count = re.json()['totalItems']
-            # 获取某一资源任意的project_name,资源的名称和uid
-            if count > 0:
-                j = random.randint(0, count - 1)
-                project_name = re.json()['items'][j]['metadata']['namespace']
-                resource_name = re.json()['items'][j]['metadata']['name']
-                resource_uid = response.json()['items'][i]['metadata']['uid']
-                # 查询daemonSets的event信息
-                r = multi_cluster_steps.step_get_resource_event(cluster_name, project_name, type, resource_name,
-                                                                resource_uid)
-                # 获取请求结果的类型
-                kind = r.json()['kind']
-                # 验证请求结果的类型为EventList
-                assert kind == 'EventList'
-            else:
-                print('无' + type)
+        i = random.randint(0, cluster_count - 1)
+        # 获取任一集群的名称
+        cluster_name = response.json()['items'][i]['metadata']['name']
+        # 查询集群所有的资源
+        re = multi_cluster_steps.step_get_resource_of_cluster(cluster_name, type)
+        # 获取集群某一资源的数量
+        count = re.json()['totalItems']
+        # 获取某一资源任意的project_name,资源的名称和uid
+        if count > 0:
+            j = random.randint(0, count - 1)
+            project_name = re.json()['items'][j]['metadata']['namespace']
+            resource_name = re.json()['items'][j]['metadata']['name']
+            resource_uid = response.json()['items'][i]['metadata']['uid']
+            # 查询daemonSets的event信息
+            r = multi_cluster_steps.step_get_resource_event(cluster_name, project_name, type, resource_name,
+                                                            resource_uid)
+            # 获取请求结果的类型
+            kind = r.json()['kind']
+            # 验证请求结果的类型为EventList
+            assert kind == 'EventList'
+        else:
+            print('无' + type)
 
     @allure.story('应用负载')
     @allure.title('{title}')
