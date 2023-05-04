@@ -36,16 +36,14 @@ class TestProject(object):
                          "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
-        multi_project_steps.step_create_volume_in_multi_project(cluster_name=clusters,
-                                                                project_name=create_multi_project,
-                                                                volume_name=volume_name)
+        multi_project_steps.step_create_volume_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                              volume_name=volume_name)
         # 创建资源并将存储卷绑定到资源
-        multi_project_steps.step_create_deploy_in_multi_project(cluster_name=clusters,
-                                                                project_name=create_multi_project, work_name=work_name,
-                                                                image=image, replicas=replicas,
-                                                                container_name=container_name,
-                                                                volume_info=volume_info, ports=port,
-                                                                volumemount=volume_mounts, strategy=strategy_info)
+        multi_project_steps.step_create_deploy_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                              work_name=work_name, container_name=container_name,
+                                                              image=image, replicas=replicas, ports=port,
+                                                              volumemount=volume_mounts, volume_info=volume_info,
+                                                              strategy=strategy_info)
 
         # 获取工作负载的状态
         for name in clusters:
@@ -65,10 +63,10 @@ class TestProject(object):
             else:
                 print('工作负载状态不为ready')
         # 删除工作负载
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='deployments',
-                                                                  work_name=work_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='deployments',
+                                                                work_name=work_name)
         # 删除存储卷
-        multi_project_steps.step_delete_volume_in_multi_project(create_multi_project, volume_name)
+        multi_project_steps.step_delete_volume_in_fed_project(create_multi_project, volume_name)
 
     @allure.story('存储管理-存储卷')
     @allure.title('在多集群项目创建存储卷，然后将存储卷绑定到新建的statefulsets上，最后验证资源和存储卷的状态正常')
@@ -89,17 +87,14 @@ class TestProject(object):
         volume_mounts = [{"name": type_name, "readOnly": False, "mountPath": "/data"}]
         volume_info = [{"name": type_name, "persistentVolumeClaim": {"claimName": volume_name}}]  # 存储卷的信息
         # 创建存储卷
-        multi_project_steps.step_create_volume_in_multi_project(cluster_name=clusters,
-                                                                project_name=create_multi_project,
-                                                                volume_name=volume_name)
+        multi_project_steps.step_create_volume_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                              volume_name=volume_name)
         # 创建资源并将存储卷绑定到资源
-        multi_project_steps.step_create_sts_in_multi_project(cluster_name=clusters,
-                                                             project_name=create_multi_project, work_name=work_name,
-                                                             container_name=container_name, image=image,
-                                                             replicas=replicas,
-                                                             ports=port, service_ports=service_port,
-                                                             volumemount=volume_mounts, volume_info=volume_info,
-                                                             service_name=service_name)
+        multi_project_steps.step_create_sts_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                           work_name=work_name, container_name=container_name,
+                                                           image=image, replicas=replicas, ports=port,
+                                                           service_ports=service_port, volumemount=volume_mounts,
+                                                           volume_info=volume_info, service_name=service_name)
         # 获取工作负载的状态
         for name in clusters:
             # 验证工作负载状态为ready
@@ -118,11 +113,10 @@ class TestProject(object):
             else:
                 print('工作负载状态不为ready')
         # 删除工作负载
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
-                                                                  type='statefulsets',
-                                                                  work_name=work_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='statefulsets',
+                                                                work_name=work_name)
         # 删除存储卷
-        multi_project_steps.step_delete_volume_in_multi_project(create_multi_project, volume_name)
+        multi_project_steps.step_delete_volume_in_fed_project(create_multi_project, volume_name)
 
     @allure.story('存储管理-存储卷')
     @allure.title('在多集群项目创建存储卷，然后将存储卷绑定到新建的service上，最后验证资源和存储卷的状态正常')
@@ -143,22 +137,17 @@ class TestProject(object):
                          "rollingUpdate": {"maxUnavailable": "25%", "maxSurge": "25%"}}  # 策略信息
         replicas = 2  # 副本数
         # 创建存储卷
-        multi_project_steps.step_create_volume_in_multi_project(cluster_name=clusters,
-                                                                project_name=create_multi_project,
-                                                                volume_name=volume_name)
+        multi_project_steps.step_create_volume_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                              volume_name=volume_name)
         # 创建service
-        multi_project_steps.step_create_service_in_multi_project(cluster_name=clusters,
-                                                                 project_name=create_multi_project,
-                                                                 service_name=service_name, port=port_service)
+        multi_project_steps.step_create_service_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                               service_name=service_name, port=port_service)
         # 创建service绑定的deployment
-        multi_project_steps.step_create_deploy_in_multi_project(cluster_name=clusters,
-                                                                project_name=create_multi_project,
-                                                                work_name=service_name,
-                                                                container_name=container_name,
-                                                                ports=port_deploy, volumemount=volume_mounts,
-                                                                image=image,
-                                                                replicas=replicas,
-                                                                volume_info=volume_info, strategy=strategy_info)
+        multi_project_steps.step_create_deploy_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                              work_name=service_name, container_name=container_name,
+                                                              image=image, replicas=replicas, ports=port_deploy,
+                                                              volumemount=volume_mounts, volume_info=volume_info,
+                                                              strategy=strategy_info)
         # 获取工作负载的状态
         for name in clusters:
             # 验证工作负载状态为ready
@@ -177,13 +166,13 @@ class TestProject(object):
             else:
                 print('工作负载状态不为ready')
         # 删除service
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='services',
-                                                                  work_name=service_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='services',
+                                                                work_name=service_name)
         # 删除deployment
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='deployments',
-                                                                  work_name=service_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='deployments',
+                                                                work_name=service_name)
         # 删除存储卷
-        multi_project_steps.step_delete_volume_in_multi_project(create_multi_project, volume_name)
+        multi_project_steps.step_delete_volume_in_fed_project(create_multi_project, volume_name)
 
     @allure.story('应用负载-工作负载')
     @allure.title('在多集群项目创建未绑定存储卷的deployment，并验证运行成功')
@@ -202,14 +191,11 @@ class TestProject(object):
         volume_info = []
         status = ''
         # 创建工作负载
-        multi_project_steps.step_create_deploy_in_multi_project(cluster_name=clusters,
-                                                                project_name=create_multi_project,
-                                                                work_name=workload_name,
-                                                                container_name=container_name, ports=port,
-                                                                volumemount=volume_mounts,
-                                                                image=image, replicas=replicas,
-                                                                volume_info=volume_info,
-                                                                strategy=strategy_info)
+        multi_project_steps.step_create_deploy_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                              work_name=workload_name, container_name=container_name,
+                                                              image=image, replicas=replicas, ports=port,
+                                                              volumemount=volume_mounts, volume_info=volume_info,
+                                                              strategy=strategy_info)
 
         for name in clusters:
             i = 0
@@ -230,8 +216,8 @@ class TestProject(object):
             with pytest.assume:
                 assert 'unavailableReplicas' not in status
         # 删除deployment
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
-                                                                  type='deployments', work_name=workload_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='deployments',
+                                                                work_name=workload_name)
 
     @allure.story('应用负载-工作负载')
     @allure.title('在多集群项目按名称查询存在的deployment')
@@ -251,19 +237,15 @@ class TestProject(object):
         volume_info = []
         name = ''
         # 创建工作负载
-        multi_project_steps.step_create_deploy_in_multi_project(cluster_name=clusters,
-                                                                project_name=create_multi_project,
-                                                                work_name=workload_name,
-                                                                container_name=container_name, ports=port,
-                                                                volumemount=volume_mounts,
-                                                                image=image, replicas=replicas,
-                                                                volume_info=volume_info,
-                                                                strategy=strategy_info)
+        multi_project_steps.step_create_deploy_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                              work_name=workload_name, container_name=container_name,
+                                                              image=image, replicas=replicas, ports=port,
+                                                              volumemount=volume_mounts, volume_info=volume_info,
+                                                              strategy=strategy_info)
         time.sleep(3)
         # 按名称精确查询deployment
-        response = multi_project_steps.step_get_workload_in_multi_project_list(
-            project_name=create_multi_project,
-            type='deployments', condition=conndition)
+        response = multi_project_steps.step_get_workload_in_fed_project_list(project_name=create_multi_project,
+                                                                             type='deployments', condition=conndition)
         # 获取并验证deployment的名称正确
         try:
             name = response.json()['items'][0]['metadata']['name']
@@ -272,8 +254,8 @@ class TestProject(object):
         with pytest.assume:
             assert name == workload_name
         # 删除deployment
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
-                                                                  type='deployments', work_name=workload_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='deployments',
+                                                                work_name=workload_name)
 
     @allure.story('应用负载-工作负载')
     @allure.title('在多集群项目创建未绑定存储卷的StatefulSets，并验证运行成功')
@@ -293,16 +275,11 @@ class TestProject(object):
         volume_mounts = []
         ready_replicas = ''
         # 创建工作负载
-        multi_project_steps.step_create_sts_in_multi_project(cluster_name=clusters,
-                                                             project_name=create_multi_project,
-                                                             work_name=workload_name,
-                                                             container_name=container_name,
-                                                             image=image, replicas=replicas,
-                                                             volume_info=volume_info,
-                                                             ports=port,
-                                                             service_ports=service_port,
-                                                             volumemount=volume_mounts,
-                                                             service_name=service_name)
+        multi_project_steps.step_create_sts_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                           work_name=workload_name, container_name=container_name,
+                                                           image=image, replicas=replicas, ports=port,
+                                                           service_ports=service_port, volumemount=volume_mounts,
+                                                           volume_info=volume_info, service_name=service_name)
         # 验证资源创建成功
         for name in clusters:
             i = 0
@@ -323,10 +300,10 @@ class TestProject(object):
         with pytest.assume:
             assert ready_replicas == replicas
         # 删除创建的工作负载
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
-                                                                  type='services', work_name=workload_name)
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
-                                                                  type='statefulsets', work_name=workload_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='services',
+                                                                work_name=workload_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='statefulsets',
+                                                                work_name=workload_name)
 
     @allure.story('应用负载-工作负载')
     @allure.title('在多集群项目按名称查询存在的StatefulSets')
@@ -346,40 +323,32 @@ class TestProject(object):
         volume_mounts = []
         name = ''
         # 创建工作负载
-        multi_project_steps.step_create_sts_in_multi_project(cluster_name=clusters,
-                                                             project_name=create_multi_project,
-                                                             work_name=workload_name,
-                                                             container_name=container_name,
-                                                             image=image, replicas=replicas,
-                                                             volume_info=volume_info,
-                                                             ports=port,
-                                                             service_ports=service_port,
-                                                             volumemount=volume_mounts,
-                                                             service_name=service_name)
+        multi_project_steps.step_create_sts_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                           work_name=workload_name, container_name=container_name,
+                                                           image=image, replicas=replicas, ports=port,
+                                                           service_ports=service_port, volumemount=volume_mounts,
+                                                           volume_info=volume_info, service_name=service_name)
 
         # 按名称精确查询statefulsets
         time.sleep(1)
-        response = multi_project_steps.step_get_workload_in_multi_project_list(
-            project_name=create_multi_project,
-            type=workload_type, condition=condition)
+        response = multi_project_steps.step_get_workload_in_fed_project_list(project_name=create_multi_project,
+                                                                             type=workload_type, condition=condition)
         # 获取并验证statefulsets的名称正确
         try:
             name = response.json()['items'][0]['metadata']['name']
         except Exception as e:
             print(e)
             # 删除创建的工作负载
-            multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
-                                                                      type=workload_type,
-                                                                      work_name=workload_name)
+            multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project,
+                                                                    type=workload_type, work_name=workload_name)
             pytest.xfail('工作负载创建失败，标记为xfail')
         with pytest.assume:
             assert name == workload_name
         # 删除创建的statefulsets
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
-                                                                  type='services', work_name=workload_name)
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project,
-                                                                  type=workload_type,
-                                                                  work_name=workload_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='services',
+                                                                work_name=workload_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type=workload_type,
+                                                                work_name=workload_name)
 
     @allure.story('应用负载-服务')
     @allure.title('创建未绑定存储卷的service，并验证运行成功')
@@ -399,24 +368,19 @@ class TestProject(object):
         volume_info = []
         name = ''
         # 创建service
-        multi_project_steps.step_create_service_in_multi_project(cluster_name=clusters,
-                                                                 project_name=create_multi_project,
-                                                                 service_name=service_name, port=port_service)
+        multi_project_steps.step_create_service_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                               service_name=service_name, port=port_service)
         # 创建service绑定的deployment
-        multi_project_steps.step_create_deploy_in_multi_project(cluster_name=clusters,
-                                                                project_name=create_multi_project,
-                                                                work_name=service_name,
-                                                                container_name=container_name,
-                                                                ports=port_deploy, volumemount=volume_mounts,
-                                                                image=image,
-                                                                replicas=replicas,
-                                                                volume_info=volume_info, strategy=strategy_info)
+        multi_project_steps.step_create_deploy_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                              work_name=service_name, container_name=container_name,
+                                                              image=image, replicas=replicas, ports=port_deploy,
+                                                              volumemount=volume_mounts, volume_info=volume_info,
+                                                              strategy=strategy_info)
         i = 0
         while i < 180:
             # 验证service创建成功
-            response = multi_project_steps.step_get_workload_in_multi_project_list(
-                project_name=create_multi_project,
-                type='services', condition=condition)
+            response = multi_project_steps.step_get_workload_in_fed_project_list(project_name=create_multi_project,
+                                                                                 type='services', condition=condition)
             try:
                 status = response.json()['items'][0]['status']['conditions'][0]['status']
                 name = response.json()['items'][0]['metadata']['name']
@@ -429,11 +393,11 @@ class TestProject(object):
         with pytest.assume:
             assert name == service_name
         # 删除service
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='services',
-                                                                  work_name=service_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='services',
+                                                                work_name=service_name)
         # 删除deployment
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='deployments',
-                                                                  work_name=service_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='deployments',
+                                                                work_name=service_name)
 
     @allure.story('应用负载-服务')
     @allure.title('在多集群项目删除service，并验证删除成功')
@@ -446,15 +410,13 @@ class TestProject(object):
         name = ''
         count = ''
         # 创建service
-        multi_project_steps.step_create_service_in_multi_project(cluster_name=clusters,
-                                                                 project_name=create_multi_project,
-                                                                 service_name=service_name, port=port_service)
+        multi_project_steps.step_create_service_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                               service_name=service_name, port=port_service)
         i = 0
         while i < 180:
             # 验证service创建成功
-            response = multi_project_steps.step_get_workload_in_multi_project_list(
-                project_name=create_multi_project,
-                type='services', condition=condition)
+            response = multi_project_steps.step_get_workload_in_fed_project_list(project_name=create_multi_project,
+                                                                                 type='services', condition=condition)
             try:
                 status = response.json()['items'][0]['status']['conditions'][0]['status']
                 name = response.json()['items'][0]['metadata']['name']
@@ -467,14 +429,13 @@ class TestProject(object):
         with pytest.assume:
             assert name == service_name
         # 删除service
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='services',
-                                                                  work_name=service_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='services',
+                                                                work_name=service_name)
         j = 0
         while j < 180:
             # 验证service删除成功
-            response = multi_project_steps.step_get_workload_in_multi_project_list(
-                project_name=create_multi_project,
-                type='services', condition=condition)
+            response = multi_project_steps.step_get_workload_in_fed_project_list(project_name=create_multi_project,
+                                                                                 type='services', condition=condition)
             count = response.json()['totalItems']
             if count == 0:
                 break
@@ -501,24 +462,19 @@ class TestProject(object):
         volume_info = []
         name = ''
         # 创建service
-        multi_project_steps.step_create_service_in_multi_project(cluster_name=clusters,
-                                                                 project_name=create_multi_project,
-                                                                 service_name=service_name, port=port_service)
+        multi_project_steps.step_create_service_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                               service_name=service_name, port=port_service)
         # 创建service绑定的deployment
-        multi_project_steps.step_create_deploy_in_multi_project(cluster_name=clusters,
-                                                                project_name=create_multi_project,
-                                                                work_name=service_name,
-                                                                container_name=container_name,
-                                                                ports=port_deploy, volumemount=volume_mounts,
-                                                                image=image,
-                                                                replicas=replicas,
-                                                                volume_info=volume_info, strategy=strategy_info)
+        multi_project_steps.step_create_deploy_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                              work_name=service_name, container_name=container_name,
+                                                              image=image, replicas=replicas, ports=port_deploy,
+                                                              volumemount=volume_mounts, volume_info=volume_info,
+                                                              strategy=strategy_info)
         i = 0
         while i < 180:
             # 验证service创建成功
-            response = multi_project_steps.step_get_workload_in_multi_project_list(
-                project_name=create_multi_project,
-                type='services', condition=condition)
+            response = multi_project_steps.step_get_workload_in_fed_project_list(project_name=create_multi_project,
+                                                                                 type='services', condition=condition)
             try:
                 status = response.json()['items'][0]['status']['conditions'][0]['status']
                 name = response.json()['items'][0]['metadata']['name']
@@ -534,10 +490,10 @@ class TestProject(object):
         ingress_name = 'ingress' + str(commonFunction.get_random())
         host = 'www.test' + str(commonFunction.get_random()) + '.com'
         service_info = {"serviceName": service_name, "servicePort": 80}
-        response = multi_project_steps.step_create_route_in_multi_project(cluster_name=clusters,
-                                                                          project_name=create_multi_project,
-                                                                          ingress_name=ingress_name, host=host,
-                                                                          service_info=service_info)
+        response = multi_project_steps.step_create_route_in_fed_project(cluster_name=clusters,
+                                                                        project_name=create_multi_project,
+                                                                        ingress_name=ingress_name, host=host,
+                                                                        service_info=service_info)
         # 获取路由绑定的服务名称
         name = response.json()['spec']['overrides'][0]['clusterOverrides'][0]['value'][0]['http']['paths'][0][
             'backend']['serviceName']
@@ -545,14 +501,14 @@ class TestProject(object):
         assert name == service_name
 
         # 删除路由
-        multi_project_steps.step_delete_route_in_multi_project(project_name=create_multi_project,
-                                                               ingress_name=ingress_name)
+        multi_project_steps.step_delete_route_in_fed_project(project_name=create_multi_project,
+                                                             ingress_name=ingress_name)
         # 删除service
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='services',
-                                                                  work_name=service_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='services',
+                                                                work_name=service_name)
         # 删除deployment
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='deployments',
-                                                                  work_name=service_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='deployments',
+                                                                work_name=service_name)
 
     @allure.story('项目设置-高级设置')
     @allure.title('{title}')
@@ -637,14 +593,11 @@ class TestProject(object):
         replicas = 1  # 副本数
         volume_info = []
         # 创建工作负载
-        multi_project_steps.step_create_deploy_in_multi_project(cluster_name=clusters,
-                                                                project_name=create_multi_project,
-                                                                work_name=workload_name,
-                                                                container_name=container_name, ports=port,
-                                                                volumemount=volume_mounts,
-                                                                image=image, replicas=replicas,
-                                                                volume_info=volume_info,
-                                                                strategy=strategy_info)
+        multi_project_steps.step_create_deploy_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                              work_name=workload_name, container_name=container_name,
+                                                              image=image, replicas=replicas, ports=port,
+                                                              volumemount=volume_mounts, volume_info=volume_info,
+                                                              strategy=strategy_info)
 
         # 在工作负载列表中查询创建的工作负载，并验证其状态为运行中，最长等待时间180s
         for name in clusters:
@@ -665,11 +618,10 @@ class TestProject(object):
                 i = i + 10
         replicas_new = 2  # 副本数
         # 修改副本数
-        multi_project_steps.step_modify_work_replicas_in_multi_project(cluster_name=clusters[0],
-                                                                       project_name=create_multi_project,
-                                                                       type='deployments',
-                                                                       work_name=workload_name,
-                                                                       replicas=replicas_new)
+        multi_project_steps.step_modify_work_replicas_in_fed_project(cluster_name=clusters[0],
+                                                                     project_name=create_multi_project,
+                                                                     type='deployments', work_name=workload_name,
+                                                                     replicas=replicas_new)
         # 获取工作负载中所有的容器组，并验证其运行正常，最长等待时间60s
         time.sleep(5)
         # 查询容器的信息
@@ -681,8 +633,8 @@ class TestProject(object):
         with pytest.assume:
             assert pod_count == replicas_new
         # 删除deployment
-        multi_project_steps.step_delete_workload_in_multi_project(project_name=create_multi_project, type='deployments',
-                                                                  work_name=workload_name)
+        multi_project_steps.step_delete_workload_in_fed_project(project_name=create_multi_project, type='deployments',
+                                                                work_name=workload_name)
 
     @allure.story('存储管理-存储卷')
     @allure.title('在多集群项目删除存在的存储卷，并验证删除成功')
@@ -692,11 +644,10 @@ class TestProject(object):
         volume_name = 'volume-stateful' + str(commonFunction.get_random())  # 存储卷的名称
         response = ''
         # 创建存储卷
-        multi_project_steps.step_create_volume_in_multi_project(cluster_name=clusters,
-                                                                project_name=create_multi_project,
-                                                                volume_name=volume_name)
+        multi_project_steps.step_create_volume_in_fed_project(cluster_name=clusters, project_name=create_multi_project,
+                                                              volume_name=volume_name)
         # 删除存储卷
-        multi_project_steps.step_delete_volume_in_multi_project(create_multi_project, volume_name)
+        multi_project_steps.step_delete_volume_in_fed_project(create_multi_project, volume_name)
         # 查询被删除的存储卷
         i = 0
         # 验证存储卷被删除，最长等待时间为30s
@@ -719,11 +670,10 @@ class TestProject(object):
         description = '测试test123！@#'  # 描述信息
         clusters = cluster_steps.step_get_cluster_name()
         # 编辑项目信息
-        response = multi_project_steps.step_edit_project_in_multi_project(cluster_name=clusters,
-                                                                          ws_name=create_multi_workspace,
-                                                                          project_name=create_multi_project,
-                                                                          alias_name=alias_name,
-                                                                          description=description)
+        response = multi_project_steps.step_edit_project_in_fed_project(cluster_name=clusters,
+                                                                        ws_name=create_multi_workspace,
+                                                                        project_name=create_multi_project,
+                                                                        alias_name=alias_name, description=description)
         # 验证编辑成功
         assert response.status_code == 200
 
@@ -841,8 +791,8 @@ class TestProject(object):
     def test_edit_container_quota(self, create_multi_workspace, create_multi_project, title, limit, re):
         clusters = cluster_steps.step_get_cluster_name()
         # 获取资源默认请求
-        response = multi_project_steps.step_get_container_quota_in_multi_project(create_multi_project,
-                                                                                 create_multi_workspace)
+        response = multi_project_steps.step_get_container_quota_in_fed_project(create_multi_project,
+                                                                               create_multi_workspace)
         resource_version = None
         try:
             if response.json()['items'][0]['metadata']['resourceVersion']:
@@ -852,11 +802,11 @@ class TestProject(object):
         except Exception as e:
             print(e)
         # 编辑资源默认请求
-        multi_project_steps.step_edit_container_quota_in_multi_project(clusters, create_multi_project,
-                                                                       resource_version, limit, re)
+        multi_project_steps.step_edit_container_quota_in_fed_project(clusters, create_multi_project, resource_version,
+                                                                     limit, re)
         # 查询编辑结果
-        response = multi_project_steps.step_get_container_quota_in_multi_project(create_multi_project,
-                                                                                 create_multi_workspace)
+        response = multi_project_steps.step_get_container_quota_in_fed_project(create_multi_project,
+                                                                               create_multi_workspace)
         limit_actual = response.json()['items'][0]['spec']['template']['spec']['limits'][0]['default']
         request_actual = response.json()['items'][0]['spec']['template']['spec']['limits'][0]['defaultRequest']
         # 验证编辑成功
@@ -958,24 +908,24 @@ class TestProject(object):
         # 在多集群项目创建密钥
         secret_name = 'secret' + str(commonFunction.get_random())
         if type == 'default':
-            multi_project_steps.step_create_secret_default_in_multi_project(cluster_name=clusters,
-                                                                            project_name=create_multi_project,
-                                                                            secret_name=secret_name, key='wx',
-                                                                            value='dGVzdA==')
-        elif type == 'TLS':
-            multi_project_steps.step_create_secret_tls_in_multi_project(cluster_name=clusters,
-                                                                        project_name=create_multi_project,
-                                                                        secret_name=secret_name, credential='d3g=',
-                                                                        key='dGVzdA==')
-        elif type == 'image':
-            multi_project_steps.step_create_secret_image_in_multi_project(cluster_name=clusters,
+            multi_project_steps.step_create_secret_default_in_fed_project(cluster_name=clusters,
                                                                           project_name=create_multi_project,
-                                                                          secret_name=secret_name)
+                                                                          secret_name=secret_name, key='wx',
+                                                                          value='dGVzdA==')
+        elif type == 'TLS':
+            multi_project_steps.step_create_secret_tls_in_fed_project(cluster_name=clusters,
+                                                                      project_name=create_multi_project,
+                                                                      secret_name=secret_name, credential='d3g=',
+                                                                      key='dGVzdA==')
+        elif type == 'image':
+            multi_project_steps.step_create_secret_image_in_fed_project(cluster_name=clusters,
+                                                                        project_name=create_multi_project,
+                                                                        secret_name=secret_name)
         elif type == 'username':
-            multi_project_steps.step_create_secret_account_in_multi_project(cluster_name=clusters,
-                                                                            project_name=create_multi_project,
-                                                                            secret_name=secret_name, username='d3g=',
-                                                                            password='dGVzdA==')
+            multi_project_steps.step_create_secret_account_in_fed_project(cluster_name=clusters,
+                                                                          project_name=create_multi_project,
+                                                                          secret_name=secret_name, username='d3g=',
+                                                                          password='dGVzdA==')
 
         i = 0
         while i < 180:
@@ -998,7 +948,7 @@ class TestProject(object):
             time.sleep(5)
             i += 5
         # 删除创建的密钥
-        multi_project_steps.step_delete_federatedsecret(project_name=create_multi_project, secret_name=secret_name)
+        multi_project_steps.step_delete_fed_secret(project_name=create_multi_project, secret_name=secret_name)
 
     @allure.story('配置中心-密钥')
     @allure.title('在多集群项目创建配置')
@@ -1007,9 +957,9 @@ class TestProject(object):
         clusters = cluster_steps.step_get_cluster_name()
         config_name = 'config-map' + str(commonFunction.get_random())
         # 在多集群项目创建配置
-        multi_project_steps.step_create_config_map_in_multi_project(cluster_name=clusters,
-                                                                    project_name=create_multi_project,
-                                                                    config_name=config_name, key='wx', value='test')
+        multi_project_steps.step_create_config_map_in_fed_project(cluster_name=clusters,
+                                                                  project_name=create_multi_project,
+                                                                  config_name=config_name, key='wx', value='test')
         i = 0
         while i < 180:
             # 查询创建的配置
@@ -1031,7 +981,7 @@ class TestProject(object):
             time.sleep(3)
             i += 3
         # 删除创建的配置
-        multi_project_steps.step_delete_config_map(project_name=create_multi_project, config_name=config_name)
+        multi_project_steps.step_delete_fed_config_map(project_name=create_multi_project, config_name=config_name)
 
     @allure.story('项目设置-高级设置')
     @allure.title('落盘日志收集-开启')
@@ -1114,7 +1064,7 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_get_project_federated_limit_ranges(self, create_multi_workspace, create_multi_project):
         # 查询多集群项目的federatedlimitranges
-        response = multi_project_steps.step_get_project_federatedlimitranges(project_name=create_multi_project)
+        response = multi_project_steps.step_get_project_fed_limit_ranges(project_name=create_multi_project)
         # 获取查询结果中的kind
         kind = response.json()['kind']
         # 验证kind正确
