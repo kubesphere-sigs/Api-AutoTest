@@ -181,9 +181,9 @@ def step_get_workload_in_fed_project_list(project_name, type, condition):
     return response
 
 
-@allure.step('获取多集群项目存储卷状态')
-def step_get_volume_status_in_multi_project(cluster_name, project_name, volume_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/persistentvolumeclaims?name=' + volume_name
+@allure.step('在集群详情获取存储卷状态')
+def step_get_volume_status(cluster_name, volume_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
 
