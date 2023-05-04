@@ -1,3 +1,5 @@
+import time
+
 import requests
 import json
 import allure
@@ -98,6 +100,8 @@ def step_invite_user(ws_name, user_name, role_name):
     data = [{"username": user_name, "roleRef": role_name}]
     # 邀请成员
     response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    if response.status_code != 200:
+        time.sleep(2)
     return response
 
 
