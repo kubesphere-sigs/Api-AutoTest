@@ -87,7 +87,6 @@ class TestWorkSpace(object):
         authority_create = '["role-template-view-basic"]'  # 创建角色的权限信息
         authority_edit = '["role-template-view-basic","role-template-create-projects"]'  # 修改目标角色的权限信息
         ws_role_name = 'role' + str(commonFunction.get_random())  # 创建的角色名称
-        time.sleep(1)  # 由于新建的角色和系统自动生成的角色的生成时间是一致。后面获取角色的resourceversion是按时间排序获取的。因此在创建企业空间后sleep 1s
         # 在企业空间创建角色
         multi_workspace_steps.step_create_ws_role(create_multi_workspace, ws_role_name, authority_create)
         # 查询并获取该角色的resourceversion
