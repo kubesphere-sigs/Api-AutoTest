@@ -376,8 +376,11 @@ def step_get_cluster_default_storage_class(cluster_name=''):
     response = requests.get(url=url, headers=get_header())
     counts = response.json()['totalItems']
     for i in range(0, counts):
-        if response.json()['items'][0]['metadata']['annotations']['storageclass.kubernetes.io/is-default-class'] == 'true':
-            return response.json()['items'][0]['metadata']['name']
+        try:
+            if response.json()['items'][i]['metadata']['annotations']['storageclass.kubernetes.io/is-default-class'] == 'true':
+                return response.json()['items'][i]['metadata']['name']
+        except KeyError:
+            print('该存储类不是默认存储类')
 
 
 @allure.step('查询存储卷的监控信息')
