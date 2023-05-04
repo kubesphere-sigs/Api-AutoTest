@@ -307,3 +307,17 @@ def deploy_name():
 def container_name():
     container_name = 'container-test' + str(commonFunction.get_random())
     return container_name
+
+
+@pytest.fixture()
+# 在多集群环境创建卷快照类
+def create_multi_volume_snapshot_class(request):
+    cluster_name = request.param
+    vsc_name = 'vsc-' + str(commonFunction.get_random())
+    diver = 'disk.csi.qingcloud.com'
+    policy = 'Delete'
+    # 创建卷快照类
+    multi_cluster_storages_step.step_create_vsc(cluster_name, vsc_name, diver, policy)
+    yield vsc_name
+    # 删除卷快照类
+    multi_cluster_storages_step.delete_vsc(cluster_name, vsc_name)
