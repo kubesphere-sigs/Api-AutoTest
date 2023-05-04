@@ -48,15 +48,12 @@ class TestProject(object):
         # 获取工作负载的状态
         for name in clusters:
             # 验证工作负载状态为ready
-            if commonFunction.check_workload_ready_in_multi_federated(cluster_name=name,
-                                                                      project_name=create_multi_project,
-                                                                      resource_type='deployments',
-                                                                      resource_name=condition, replicas=replicas):
+            if commonFunction.check_workload_ready_in_fed_project(cluster_name=name, project_name=create_multi_project,
+                                                                  resource_type='deployments', resource_name=condition,
+                                                                  replicas=replicas):
                 # 获取存储卷状态
-                re = multi_project_steps.step_get_volume_status_in_multi_project(cluster_name=name,
-                                                                                 project_name=create_multi_project,
-                                                                                 volume_name=volume_name)
-                status = re.json()['status']['phase']
+                re = multi_project_steps.step_get_volume_status(cluster_name=name, volume_name=volume_name)
+                status = re.json()['items'][0]['status']['phase']
                 # 验证存储卷状态正常
                 with pytest.assume:
                     assert status == 'Bound'
@@ -98,15 +95,12 @@ class TestProject(object):
         # 获取工作负载的状态
         for name in clusters:
             # 验证工作负载状态为ready
-            if commonFunction.check_workload_ready_in_multi_federated(cluster_name=name,
-                                                                      project_name=create_multi_project,
-                                                                      resource_type='statefulsets',
-                                                                      resource_name=condition, replicas=replicas):
+            if commonFunction.check_workload_ready_in_fed_project(cluster_name=name, project_name=create_multi_project,
+                                                                  resource_type='statefulsets', resource_name=condition,
+                                                                  replicas=replicas):
                 # 获取存储卷状态
-                re = multi_project_steps.step_get_volume_status_in_multi_project(cluster_name=name,
-                                                                                 project_name=create_multi_project,
-                                                                                 volume_name=volume_name)
-                status = re.json()['status']['phase']
+                re = multi_project_steps.step_get_volume_status(cluster_name=name, volume_name=volume_name)
+                status = re.json()['items'][0]['status']['phase']
                 # 验证存储卷状态正常
                 with pytest.assume:
                     assert status == 'Bound'
@@ -151,15 +145,12 @@ class TestProject(object):
         # 获取工作负载的状态
         for name in clusters:
             # 验证工作负载状态为ready
-            if commonFunction.check_workload_ready_in_multi_federated(cluster_name=name,
-                                                                      project_name=create_multi_project,
-                                                                      resource_type='deployments',
-                                                                      resource_name=condition, replicas=replicas):
+            if commonFunction.check_workload_ready_in_fed_project(cluster_name=name, project_name=create_multi_project,
+                                                                  resource_type='deployments', resource_name=condition,
+                                                                  replicas=replicas):
                 # 获取存储卷状态
-                re = multi_project_steps.step_get_volume_status_in_multi_project(cluster_name=name,
-                                                                                 project_name=create_multi_project,
-                                                                                 volume_name=volume_name)
-                status = re.json()['status']['phase']
+                re = multi_project_steps.step_get_volume_status(cluster_name=name, volume_name=volume_name)
+                status = re.json()['items'][0]['status']['phase']
                 # 验证存储卷状态正常
                 with pytest.assume:
                     assert status == 'Bound'
