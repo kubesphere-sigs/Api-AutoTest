@@ -104,6 +104,8 @@ def step_edit_role_authory(ws_name, role_name, version, authory):
                          }
             }
     response = requests.put(url, headers=get_header(), data=json.dumps(data))
+    if response.status_code != 200:
+        time.sleep(2)
     return response
 
 
