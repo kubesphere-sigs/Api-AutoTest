@@ -629,6 +629,14 @@ def write_environment_info():
         response = multi_cluster_steps.step_get_cluster()
         # 获取集群数量
         cluster_count = response.json()['totalItems']
+        # 获取host集群的名称
+        host_cluster_name = multi_cluster_steps.step_get_host_cluster_name()
+        # 获取host集群版本
+        re = multi_cluster_steps.step_get_cluster_version(host_cluster_name)
+        ks_version = re.json()['gitVersion']
+        k8s_version = re.json()['kubernetes']['gitVersion']
+        # 获取host集群的os
+        platform = re.json()['platform']
         # 获取所有集群的名称
         cluster_names = []
         for i in range(cluster_count):
@@ -636,6 +644,9 @@ def write_environment_info():
         env = {
             "TEST_URL": env_url,
             "CLUSTER_NAME": cluster_names,
+            "KS_VERSION": ks_version,
+            "K8S_VERSION": k8s_version,
+            "PLATFORM": platform
         }
     # 将测试环境信息写入yaml文件
     with open('../environment.properties', 'w', encoding='utf-8') as f:
@@ -673,7 +684,7 @@ def check_workload_not_exist_in_multi(cluster_name, project_name, resource_type,
 
 
 # 在多集群环境，验证联邦项目的工作负载状态为ready
-def check_workload_ready_in_multi_federated(cluster_name, project_name, resource_type, resource_name, replicas):
+def check_workload_ready_in_fed_project(cluster_name, project_name, resource_type, resource_name, replicas):
     i = 0
     while i < 180:
         response = multi_project_steps.step_get_workload_in_multi_project(cluster_name, project_name, resource_type, resource_name)
