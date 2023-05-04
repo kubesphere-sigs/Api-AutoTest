@@ -1,3 +1,5 @@
+import time
+
 import requests
 import json
 import allure
@@ -82,6 +84,8 @@ def step_create_ws_role(ws_name, ws_role_name, authory):
                          }
             }
     response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    if response.status_code != 200:
+        time.sleep(2)
     return response
 
 
