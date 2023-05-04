@@ -4,11 +4,10 @@ import allure
 import sys
 import time
 from datetime import datetime
-
-sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
-
 from common import commonFunction
 from step import project_steps, cluster_steps, multi_project_steps
+
+sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 
 @allure.feature('多集群项目管理')
