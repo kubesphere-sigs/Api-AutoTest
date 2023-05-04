@@ -47,7 +47,8 @@ class TestWorkSpace(object):
     def teardown_class(self):
         user_ws = multi_workspace_steps.step_get_user_ws()  # 获取所有用户创建的企业空间
         for ws in user_ws:
-            multi_workspace_steps.step_delete_workspace(ws)  # 删除创建的企业空间
+            if 'ws-for-test-multi-ws' in ws or 'ws-for-test-single-ws' in ws:  # 判断是否为测试用例创建的企业空间
+                multi_workspace_steps.step_delete_workspace(ws)  # 删除创建的企业空间
         multi_workspace_steps.step_delete_user(self.user_name)  # 删除创建的用户
 
     @allure.title('{title}')  # 设置用例标题
