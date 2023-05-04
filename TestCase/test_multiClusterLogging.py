@@ -73,19 +73,23 @@ class TestLogSearch(object):
         response = toolbox_steps.step_get_logs_trend(before_timestamp, now_timestamp, interval, self.cluster_host_name)
         # 获取日志总量
         logs_count = response.json()['histogram']['total']
-        # 获取日志趋势图中的横坐标数量
-        count = len(response.json()['histogram']['histograms'])
-        # 获取日志趋势图中的每个时间段的日志数量之和
-        logs_count_actual = 0
-        for i in range(0, count):
-            number = response.json()['histogram']['histograms'][i]['count']
-            logs_count_actual += number
-        # 验证接口返回的日志总数和趋势图中日志的总数一致
-        assert logs_count == logs_count_actual
+        # 如果日志总量大于0
+        if logs_count > 0:
+            # 获取日志趋势图中的横坐标数量
+            count = len(response.json()['histogram']['histograms'])
+            # 获取日志趋势图中的每个时间段的日志数量之和
+            logs_count_actual = 0
+            for i in range(0, count):
+                number = response.json()['histogram']['histograms'][i]['count']
+                logs_count_actual += number
+            # 验证接口返回的日志总数和趋势图中日志的总数一致
+            assert logs_count == logs_count_actual
+        else:
+            pytest.xfail('日志总量为0, 无法验证最近 12 小时日志总量正确')
 
     @allure.story('日志总量')
     @allure.title('查询最近 12 小时日志总数变化趋势,验证时间间隔正确')
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.severity(allure.severity_level.NORMAL)
     def test_get_logs_trend(self):
         # 时间间隔
         interval = '30m'
@@ -96,12 +100,18 @@ class TestLogSearch(object):
         before_timestamp = commonFunction.get_before_timestamp(now_time, 720)
         # 查询最近 12 小时日志总数变化趋势
         response = toolbox_steps.step_get_logs_trend(before_timestamp, now_timestamp, interval, self.cluster_host_name)
-        # 获取查询结果数据中的时间间隔
-        time_1 = response.json()['histogram']['histograms'][0]['time']
-        time_2 = response.json()['histogram']['histograms'][1]['time']
-        time_interval = (time_2 - time_1) / 1000 / 60  # 换算成分钟
-        # 验证时间间隔正确
-        assert time_interval == int(interval[:2])
+        # 获取日志总量
+        logs_count = response.json()['histogram']['total']
+        # 如果日志总量大于0
+        if logs_count > 0:
+            # 获取查询结果数据中的时间间隔
+            time_1 = response.json()['histogram']['histograms'][0]['time']
+            time_2 = response.json()['histogram']['histograms'][1]['time']
+            time_interval = (time_2 - time_1) / 1000 / 60  # 换算成分钟
+            # 验证时间间隔正确
+            assert time_interval == int(interval[:2])
+        else:
+            pytest.xfail('日志总量为0，无法验证时间间隔')
 
     @allure.story('日志查询规则')
     @allure.title('{title}')
