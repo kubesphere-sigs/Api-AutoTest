@@ -16,8 +16,12 @@ class TestMultiClusterStorage:
 
     cluster_name = multi_cluster_steps.step_get_host_cluster_name()
     sc_name = 'test-multi-cluster-sc' + str(get_random())
+    # 使用csi-qingcloud
+    csi_sc_name = 'csi-qingcloud'
     ws_name = 'multi-ws-' + str(get_random())
     pro_ws_name = 'multi-ws-pro-' + str(get_random())
+    work_name = 'workload' + str(commonFunction.get_random())  # 工作负载名称
+    volume_name = 'volume-deploy' + str(commonFunction.get_random())  # 存储卷名称
     allow_volume_expansion = True
     diver = 'disk.csi.qingcloud.com'
     policy = 'Delete'
@@ -32,8 +36,14 @@ class TestMultiClusterStorage:
                                                    expansion=self.allow_volume_expansion)
         # 多集群环境下在host集群创建卷快照类
         multi_cluster_storages_step.step_create_vsc(self.cluster_name, self.sc_name, self.diver, self.policy)
+        # 创建持久卷声明
+        multi_cluster_storages_step.step_create_pvc(self.cluster_name, self.pro_ws_name, self.csi_sc_name, self.volume_name)
+        # 创建工作负载并绑定持久卷声明
+        multi_project_steps.step_create_workload_in_multi_project(self.cluster_name, self.pro_ws_name, self.work_name, self.volume_name)
 
     def teardown_class(self):
+        # 删除创建的工作负载
+        multi_project_steps.step_delete_workload_in_multi_project(self.cluster_name, self.pro_ws_name, self.work_name)
         # 删除创建的卷快照类
         multi_cluster_storages_step.delete_vsc(cluster_name=self.cluster_name, vsc_name=self.sc_name)
         # 删除创建的存储类
@@ -82,7 +92,7 @@ class TestMultiClusterStorage:
 
     @allure.story("存储类")
     @allure.title('设置为默认存储类')
-    @allure.severity('normal')
+    @allure.severity('critical')
     def test_set_default_sc(self):
         # 获取集群的默认存储类
         default_sc = cluster_steps.step_get_cluster_default_storage_class(self.cluster_name)
@@ -98,6 +108,20 @@ class TestMultiClusterStorage:
         # 将原默认存储类设置为默认，并将创建的存储类设置为非默认存储类
         multi_cluster_storages_step.set_default_sc(self.cluster_name, self.sc_name, 'false')
         multi_cluster_storages_step.set_default_sc(self.cluster_name, default_sc, 'true')
+
+    @allure.story("存储类")
+    @allure.title('设置授权规则')
+    @allure.severity('critical')
+    @pytest.mark.parametrize('title, ns_accessor, ws_accessor', [
+                            ('设置授权规则-仅设置项目', [{"field": "Name", "operator": "In", "values": ["pro"]}], []),
+                            ('设置授权规则-仅设置企业空间', [], [{"field": "Name", "operator": "NotIn", "values": ["wx"]}]),
+                            ('设置授权规则-设置项目和企业空间', [{"field": "Name", "operator": "In", "values": ["pro"]}],
+                             [{"field": "Name", "operator": "In", "values": ["test"]}])
+    ])
+    def test_set_sc_auth(self, create_multi_cluster_sc, title, ns_accessor, ws_accessor):
+        # 设置存储类授权规则
+        response = multi_cluster_storages_step.set_sc_accessor(self.cluster_name, create_multi_cluster_sc, ns_accessor, ws_accessor)
+        assert response.status_code == 200
 
     @allure.story("存储类")
     @allure.title('验证存储类的持久卷声明数量正确')
@@ -156,3 +180,62 @@ class TestMultiClusterStorage:
         assert response.json()['totalItems'] == 0
         # 删除存储卷
         multi_cluster_storages_step.delete_volume(self.cluster_name, self.pro_ws_name, volume_name)
+
+    @allure.story("持久卷声明")
+    @allure.title('克隆')
+    @allure.severity('critical')
+    def test_clone_pvc(self):
+        # 验证存储卷状态为已绑定
+        multi_cluster_storages_step.step_check_pvc_status(self.cluster_name, self.volume_name)
+        # 克隆存储卷
+        clone_name = 'clone-' + str(get_random())
+        multi_cluster_storages_step.step_clone_pvc(self.cluster_name, self.pro_ws_name, self.sc_name, self.volume_name, clone_name)
+        # 在集群详情中查询克隆的存储卷
+        re = multi_cluster_storages_step.search_volume_by_name(self.cluster_name, clone_name)
+        # 验证克隆的存储卷存在
+        with pytest.assume:
+            assert re.json()['items'][0]['metadata']['name'] == clone_name
+        # 删除克隆的存储卷
+        multi_cluster_storages_step.delete_volume(self.cluster_name, self.pro_ws_name, clone_name)
+
+    @allure.story("持久卷声明")
+    @allure.title('创建快照')
+    @allure.severity('critical')
+    def test_create_snapshot(self):
+        # 验证存储卷状态为已绑定
+        multi_cluster_storages_step.step_check_pvc_status(self.cluster_name, self.volume_name)
+        # 创建快照
+        snapshot_name = 'snapshot-' + str(get_random())
+        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, snapshot_name, self.sc_name, self.volume_name)
+        # 在集群详情中查询快照
+        re = multi_cluster_storages_step.search_vs_by_name(self.cluster_name, snapshot_name)
+        # 验证快照存在
+        with pytest.assume:
+            assert re.json()['items'][0]['metadata']['name'] == snapshot_name
+        # 删除创建的快照
+        multi_cluster_storages_step.delete_vs(self.cluster_name, self.pro_ws_name, snapshot_name)
+
+    @allure.story("持久卷声明")
+    @allure.title('使用卷快照创建存储卷声明')
+    @allure.severity('critical')
+    def test_create_pvc_by_snapshot(self):
+        # 验证存储卷状态为已绑定
+        multi_cluster_storages_step.step_check_pvc_status(self.cluster_name, self.volume_name)
+        # 创建快照
+        snapshot_name = 'snapshot-' + str(get_random())
+        multi_cluster_storages_step.create_volume_snapshots(self.cluster_name, self.pro_ws_name, snapshot_name,
+                                                            self.sc_name, self.volume_name)
+        # 验证卷快照的状态为创建成功
+        if multi_cluster_storages_step.step_check_vs_status(self.cluster_name, snapshot_name):
+            # 使用卷快照创建存储卷声明
+            pvc_name = 'pvc-' + str(get_random())
+            response = multi_cluster_storages_step.create_pvc_by_vs(self.cluster_name, self.pro_ws_name, pvc_name, snapshot_name, self.sc_name)
+            # 验证存储卷声明创建成功
+            with pytest.assume:
+                assert response.status_code == 201
+        else:
+            pytest.xfail(reason='卷快照状态不为创建成功')
+
+
+if __name__ == '__main__':
+    pytest.main(['-s', 'test_multi_cluster_storages.py'])
