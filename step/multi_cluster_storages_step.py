@@ -13,13 +13,13 @@ env_url = get_apiserver()
 
 @allure.step('通过名称查询存储卷')
 def search_volume_by_name(cluster_name, volume_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/persistentvolumeclaims?name='+volume_name+'&sortBy=createTime&limit=10'
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 def delete_volume(cluster_name, project_name, volume_name):
-    url = env_url + '/api/clusters/'+cluster_name+'/v1/namespaces/'+project_name+'/persistentvolumeclaims/' + volume_name
+    url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + '/persistentvolumeclaims/' + volume_name
     response = requests.delete(url=url, headers=get_header())
     return response
 
@@ -48,7 +48,7 @@ def step_create_sc(cluster_name, sc_name, expansion):
 
 @allure.step('创建授权规则')
 def create_sc_accessor(cluster_name, sc_name):
-    url = env_url + '/apis/clusters/'+cluster_name+'/storage.kubesphere.io/v1alpha1/accessors'
+    url = env_url + '/apis/clusters/' + cluster_name + '/storage.kubesphere.io/v1alpha1/accessors'
     data = {"apiVersion": "storage.kubesphere.io/v1alpha1",
             "kind": "Accessor",
             "metadata": {"name": sc_name + "-accessor",
@@ -92,6 +92,7 @@ def search_sc_by_name(cluster_name, sc_name):
     url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/storageclasses?name=' + sc_name + '&sortBy=createTime&limit=10'
     response = requests.get(url, headers=get_header())
     return response
+
 
 @allure.step('查询存储类信息')
 def get_sc_info(cluster_name, sc_name):
@@ -251,8 +252,8 @@ def set_default_sc(cluster_name, sc_name, expansion):
     return response
 
 
-@allure.step('创建存储卷')
-def step_create_volume(cluster_name, project_name, sc_name, volume_name):
+@allure.step('创建持久卷声明')
+def step_create_pvc(cluster_name, project_name, sc_name, volume_name):
     url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + '/persistentvolumeclaims'
     data = {"apiVersion": "v1",
             "kind": "PersistentVolumeClaim",
@@ -271,9 +272,9 @@ def step_create_volume(cluster_name, project_name, sc_name, volume_name):
 
 
 @allure.step('创建卷快照类')
-def create_vsc(cluster_name, vsc_name, driver, policy):
-    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1beta1/volumesnapshotclasses'
-    data = {"apiVersion": "snapshot.storage.k8s.io/v1beta1",
+def step_create_vsc(cluster_name, vsc_name, driver, policy):
+    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1/volumesnapshotclasses'
+    data = {"apiVersion": "snapshot.storage.k8s.io/v1",
             "kind": "VolumeSnapshotClass",
             "deletionPolicy": policy,
             "driver": driver,
@@ -287,8 +288,8 @@ def create_vsc(cluster_name, vsc_name, driver, policy):
 
 @allure.step('编辑卷快照类')
 def set_vsc(cluster_name, vsc_name, driver, policy, creationtime, time, generation, version, uid, alias_name, des):
-    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1beta1/volumesnapshotclasses/' + vsc_name
-    data = {"apiVersion": "snapshot.storage.k8s.io/v1beta1",
+    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1/volumesnapshotclasses/' + vsc_name
+    data = {"apiVersion": "snapshot.storage.k8s.io/v1",
             "deletionPolicy": policy,
             "driver": driver,
             "kind": "VolumeSnapshotClass",
@@ -336,20 +337,20 @@ def get_vs_for_vsc(cluster_name, vsc_name):
 
 @allure.step('查询卷快照类已有快照')
 def search_vs_for_vsc(cluster_name, vsc_name, vs_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/volumesnapshots?volumeSnapshotClassName=' + vsc_name + '&name='+vs_name+'&sortBy=createTime&limit=10'
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/volumesnapshots?volumeSnapshotClassName=' + vsc_name + '&name=' + vs_name + '&sortBy=createTime&limit=10'
     response = requests.get(url, headers=get_header())
     return response
 
 
 @allure.step('创建快照')
 def create_volume_snapshots(cluster_name, project, vs_name, vsc_name, volume_name):
-    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1beta1/namespaces/' + project + '/volumesnapshots'
-    data = {"apiVersion": "snapshot.storage.k8s.io/v1beta1",
+    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1/namespaces/' + project + '/volumesnapshots'
+    data = {"apiVersion": "snapshot.storage.k8s.io/v1",
             "kind": "VolumeSnapshot",
             "metadata": {"name": vs_name,
                          "annotations": {"kubesphere.io/creator": "admin"}},
             "spec": {"volumeSnapshotClassName": vsc_name,
-                     "source": {"kind": "VolumeSnapshot",
+                     "source": {"kind": "PersistentVolumeClaim",
                                 "persistentVolumeClaimName": volume_name}
                      }
             }
@@ -366,14 +367,14 @@ def search_vs_by_name(cluster_name, vs_name):
 
 @allure.step('删除卷快照')
 def delete_vs(cluster_name, project_name, vs_name):
-    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1beta1/namespaces/'+project_name+'/volumesnapshots/' + vs_name
+    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1beta1/namespaces/' + project_name + '/volumesnapshots/' + vs_name
     response = requests.delete(url, headers=get_header())
     return response
 
 
 @allure.step('通过卷快照创建卷')
 def create_volumne_by_vs(cluster_name, project_name, volume_name, sc_name):
-    url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/'+project_name+'/persistentvolumeclaims'
+    url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + '/persistentvolumeclaims'
     data = {"apiVersion": "v1",
             "kind": "PersistentVolumeClaim",
             "metadata": {"namespace": project_name,
