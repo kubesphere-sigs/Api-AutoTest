@@ -7,7 +7,7 @@
   - get
   - CRITICAL
   - r.json()['gitVersion']
-  - 3.4.0-rc.2
+  - 3.4.0
 - - 2
   - /kapis/iam.kubesphere.io/v1alpha2/clustermembers/admin/clusterroles
   - ''
