@@ -94,7 +94,8 @@ class TestNetwork(object):
                               ('创建ippool-块大小>32', 31, 33, 403)])
     def test_create_ippool_with_mask_block_size(self, title, mask, blockSize, status_code, ip_pool_name, ip_address):
         # 创建ippool
-        r = network_steps.step_create_ippool(ip_pool_name, ip_address, mask=mask, blockSize=blockSize, cluster_name=self.cluster_name)
+        r = network_steps.step_create_ippool(ip_pool_name, ip_address, mask=mask, blockSize=blockSize,
+                                             cluster_name=self.cluster_name)
         with pytest.assume:
             assert r.status_code == status_code
         # 删除创建的ippool
@@ -105,7 +106,8 @@ class TestNetwork(object):
     @allure.title('创建同名ippool')
     @allure.severity('normal')
     def test_create_ippool_with_same_name(self, ip_address):
-        r = network_steps.step_create_ippool(ippool_name=self.ippool_name, ip=ip_address, cluster_name=self.cluster_name)
+        r = network_steps.step_create_ippool(ippool_name=self.ippool_name, ip=ip_address,
+                                             cluster_name=self.cluster_name)
         with pytest.assume:
             assert r.json()['message'] == 'ippools.network.kubesphere.io "' + self.ippool_name + '" already exists'
 
@@ -119,7 +121,8 @@ class TestNetwork(object):
         spec = r.json()['items'][0]['spec']
         id = r.json()['items'][0]['metadata']['labels']['ippool.network.kubesphere.io/id']
         # 修改ippool的描述信息
-        network_steps.step_update_ippool(id, create_multi_ippool, spec, description='test', cluster_name=self.cluster_name)
+        network_steps.step_update_ippool(id, create_multi_ippool, spec, description='test',
+                                         cluster_name=self.cluster_name)
         # 获取修改后的ippool的信息
         res = network_steps.step_search_by_name(create_multi_ippool, self.cluster_name)
         description = res.json()['items'][0]['metadata']['annotations']['kubesphere.io/description']
@@ -261,8 +264,9 @@ class TestNetwork(object):
         network_steps.step_create_deploy_use_ip_pool_multi(create_multi_ippool, deploy_name, container_name,
                                                            self.pro_name, self.cluster_name)
         # 等待工作负载创建成功
-        workload_status = commonFunction.check_workload_ready_in_multi(self.cluster_name, self.pro_name, 'deployments',
-                                                                       deploy_name)
+        workload_status = multi_cluster_steps.check_workload_ready_in_multi(self.cluster_name, self.pro_name,
+                                                                            'deployments',
+                                                                            deploy_name)
         if workload_status:
             # 删除ippool
             r = network_steps.step_delete_ippool(create_multi_ippool)
@@ -271,8 +275,8 @@ class TestNetwork(object):
             # 删除部署
             project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
             # 等待部署删除成功
-            commonFunction.check_workload_not_exist_in_multi(self.cluster_name, self.pro_name, 'deployments',
-                                                             deploy_name)
+            multi_cluster_steps.check_workload_not_exist_in_multi(self.cluster_name, self.pro_name, 'deployments',
+                                                                  deploy_name)
         else:
             print('部署创建失败')
 
@@ -284,14 +288,17 @@ class TestNetwork(object):
         # 将ippool分配到企业空间
         network_steps.step_assign_ws(create_multi_ippool, self.ws_name, self.cluster_name)
         # 创建工作负载
-        network_steps.step_create_deploy_use_ip_pool_multi(create_multi_ippool, deploy_name, container_name, self.pro_name, self.cluster_name)
+        network_steps.step_create_deploy_use_ip_pool_multi(create_multi_ippool, deploy_name, container_name,
+                                                           self.pro_name, self.cluster_name)
         # 等待工作负载创建成功
-        workload_status = commonFunction.check_workload_ready_in_multi(self.cluster_name, self.pro_name, 'deployments',
-                                                                       deploy_name)
+        workload_status = multi_cluster_steps.check_workload_ready_in_multi(self.cluster_name, self.pro_name,
+                                                                            'deployments',
+                                                                            deploy_name)
         if workload_status:
             r = network_steps.step_search_by_name(create_multi_ippool, cluster_name=self.cluster_name)
             num = r.json()['items'][0]['status']['allocations']
-            num_new = network_steps.step_get_ws_ippool_number(create_multi_ippool, self.ws_name, cluster_name=self.cluster_name)
+            num_new = network_steps.step_get_ws_ippool_number(create_multi_ippool, self.ws_name,
+                                                              cluster_name=self.cluster_name)
             # 验证ippool使用数量正确
             with pytest.assume:
                 assert num == num_new == 1
@@ -302,8 +309,8 @@ class TestNetwork(object):
             # 删除部署
             project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
             # 等待部署删除成功
-            commonFunction.check_workload_not_exist_in_multi(self.cluster_name, self.pro_name, 'deployments',
-                                                             deploy_name)
+            multi_cluster_steps.check_workload_not_exist_in_multi(self.cluster_name, self.pro_name, 'deployments',
+                                                                  deploy_name)
         else:
             print('部署创建失败')
 
@@ -315,9 +322,11 @@ class TestNetwork(object):
         # 将ippool分配到企业空间
         network_steps.step_assign_ws(create_multi_ippool, self.ws_name, self.cluster_name)
         # 使用新建的ippool创建部署
-        network_steps.step_create_deploy_use_ip_pool_multi(create_multi_ippool, deploy_name, container_name, self.pro_name, self.cluster_name)
+        network_steps.step_create_deploy_use_ip_pool_multi(create_multi_ippool, deploy_name, container_name,
+                                                           self.pro_name, self.cluster_name)
         # 等待部署创建成功
-        workload_status = commonFunction.check_workload_ready_in_multi(self.cluster_name, self.pro_name, 'deployments', deploy_name)
+        workload_status = multi_cluster_steps.check_workload_ready_in_multi(self.cluster_name, self.pro_name, 'deployments',
+                                                                       deploy_name)
         if workload_status:
             r = network_steps.step_get_job(create_multi_ippool, cluster_name=self.cluster_name)
             # 获取pod名称
@@ -337,7 +346,8 @@ class TestNetwork(object):
             # 删除部署
             project_steps.step_delete_workload(self.pro_name, 'deployments', deploy_name)
             # 等待部署删除成功
-            commonFunction.check_workload_not_exist_in_multi(self.cluster_name, self.pro_name, 'deployments', deploy_name)
+            multi_cluster_steps.check_workload_not_exist_in_multi(self.cluster_name, self.pro_name, 'deployments',
+                                                             deploy_name)
         else:
             print('部署创建失败')
 

@@ -2,7 +2,9 @@ import requests
 import allure
 import sys
 import json
+import time
 from common.getConfig import get_apiserver
+from step import multi_project_steps
 
 env_url = get_apiserver()
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
@@ -887,3 +889,49 @@ def step_modify_log_receiver_address(type, cluster_name, name, host, port):
         data = {"spec": {"forward": {"host": host, "port": port}}}
     response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
     return response
+
+
+# 在多集群环境，验证非联邦项目的工作负载状态为ready
+def check_workload_ready_in_multi(cluster_name, project_name, resource_type, resource_name):
+    i = 0
+    while i < 180:
+        # 获取多集群环境中的工作负载
+        response = step_get_workload_detail(cluster_name, project_name, resource_type,
+                                                                resource_name)
+        # 判断工作负载的状态是否为ready
+        if 'unavailableReplicas' not in response.json()['items'][0]['status']:
+            return True
+        else:
+            time.sleep(3)
+            i = i + 3
+
+
+# 在多集群环境，验证非联邦项目的工作负载不存在
+def check_workload_not_exist_in_multi(cluster_name, project_name, resource_type, resource_name):
+    i = 0
+    while i < 180:
+        # 获取多集群环境中的工作负载
+        response = step_get_workload_detail(cluster_name, project_name, resource_type,
+                                                                resource_name)
+        # 判断工作负载不存在
+        if response.status_code == 404:
+            return True
+        else:
+            time.sleep(3)
+            i = i + 3
+
+
+# 在多集群环境，验证联邦项目的工作负载状态为ready
+def check_workload_ready_in_fed_project(cluster_name, project_name, resource_type, resource_name, replicas):
+    i = 0
+    while i < 180:
+        response = multi_project_steps.step_get_workload_in_multi_project(cluster_name, project_name, resource_type, resource_name)
+        try:
+            ready_replicas = response.json()['status']['readyReplicas']
+            if ready_replicas == replicas:
+                return True
+        except Exception as e:
+            print(e)
+        time.sleep(5)
+        i += 5
+    return False
