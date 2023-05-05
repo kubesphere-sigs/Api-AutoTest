@@ -658,8 +658,8 @@ def check_workload_ready_in_multi(cluster_name, project_name, resource_type, res
     i = 0
     while i < 180:
         # 获取多集群环境中的工作负载
-        response = multi_cluster_steps.step_get_app_workload_detail(cluster_name, project_name, resource_type,
-                                                                    resource_name)
+        response = multi_cluster_steps.step_get_workload_detail(cluster_name, project_name, resource_type,
+                                                                resource_name)
         # 判断工作负载的状态是否为ready
         if 'unavailableReplicas' not in response.json()['items'][0]['status']:
             return True
@@ -673,8 +673,8 @@ def check_workload_not_exist_in_multi(cluster_name, project_name, resource_type,
     i = 0
     while i < 180:
         # 获取多集群环境中的工作负载
-        response = multi_cluster_steps.step_get_app_workload_detail(cluster_name, project_name, resource_type,
-                                                                    resource_name)
+        response = multi_cluster_steps.step_get_workload_detail(cluster_name, project_name, resource_type,
+                                                                resource_name)
         # 判断工作负载不存在
         if response.status_code == 404:
             return True
