@@ -249,9 +249,9 @@ def step_get_resource_of_cluster(cluster_name, resource_type, *condition):
 
 
 @allure.step('查询工作负载的详情信息')
-def step_get_app_workload_detail(cluster_name, project_name, resource_type, resource_name):
-    url = env_url + '/apis/clusters/' + cluster_name + '/apps/v1/namespaces/' + project_name + '/' + \
-          resource_type + '/' + resource_name
+def step_get_workload_detail(cluster_name, project_name, resource_type, resource_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces/' + \
+          project_name + '/' + resource_type + '?name=' + resource_name + '&sortBy=updateTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
 
