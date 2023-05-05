@@ -723,8 +723,8 @@ class TestCluster(object):
             resource_name = re.json()['items'][j]['metadata']['name']
             project_name = re.json()['items'][j]['metadata']['namespace']
             # 查询daemonSets的详细信息
-            r = multi_cluster_steps.step_get_app_workload_detail(self.cluster_any_name, project_name, 'daemonsets',
-                                                                 resource_name)
+            r = multi_cluster_steps.step_get_workload_detail(self.cluster_any_name, project_name, 'daemonsets',
+                                                             resource_name)
             # 验证信息查询成功
             assert r.json()['kind'] == 'DaemonSet'
 
