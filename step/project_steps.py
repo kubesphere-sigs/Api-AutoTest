@@ -2,6 +2,7 @@ import requests
 import json
 import allure
 import sys
+import time
 from common.getHeader import get_header, get_header_for_patch
 from common import commonFunction
 from common.getConfig import get_apiserver
@@ -88,6 +89,19 @@ def step_get_assign_job(project_name, way, condition):
           condition + '&sortBy=updateTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
+
+@allure.step('验证任务状态为已完成')
+def step_get_job_status_complete(project_name, job_name, completions=2):
+    i = 0
+    while i < 100:
+        try:
+            res = step_get_job_detail(project_name, job_name)
+            if res.json()['items'][0]['status']['succeeded'] == completions:
+                return True
+        except KeyError:
+            time.sleep(5)
+            i = i + 5
+    return False
 
 
 @allure.step('删除指定任务，并返回删除结果')
