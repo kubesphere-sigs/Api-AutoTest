@@ -25,7 +25,7 @@ class TestNetwork(object):
     ip = random_ip()
     ws_name = 'test-network-ws' + str(get_random())
     pro_name = 'test-network-pro' + str(get_random())
-    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/ippool.yaml')
+    parametrize = DoexcleByPandas().get_data_from_yaml(filename='../data/network.yaml')
 
     def setup_class(self):
         network_steps.step_create_ippool(ippool_name=self.ippool_name, ip=self.ip)
@@ -245,7 +245,7 @@ class TestNetwork(object):
         # 分配企业空间
         network_steps.step_assign_ws(create_ippool, self.ws_name)
         # 创建部署
-        network_steps.step_create_deploy(create_ippool, deploy_name, container_name, self.pro_name)
+        network_steps.step_create_deploy_use_ip_pool(create_ippool, deploy_name, container_name, self.pro_name)
         # 等待部署创建成功
         i = 0
         while i < 180:
@@ -277,7 +277,7 @@ class TestNetwork(object):
         # 将ippool分配到企业空间
         network_steps.step_assign_ws(create_ippool, create_ws)
         # 创建部署
-        network_steps.step_create_deploy(create_ippool, deploy_name, container_name, create_project)
+        network_steps.step_create_deploy_use_ip_pool(create_ippool, deploy_name, container_name, create_project)
         # 查询创建的部署
         time.sleep(30)
         res = project_steps.step_get_deployment(create_project, 'deployments')
@@ -301,7 +301,7 @@ class TestNetwork(object):
         deploy_name = 'deploy-' + str(get_random())
         container_name = 'container-' + str(get_random())
         # 创建工作负载
-        network_steps.step_create_deploy(create_ippool, deploy_name, container_name, self.pro_name)
+        network_steps.step_create_deploy_use_ip_pool(create_ippool, deploy_name, container_name, self.pro_name)
         # 等待工作负载创建成功
         i = 0
         while i < 180:
@@ -346,7 +346,7 @@ class TestNetwork(object):
         deploy_name = 'deploy-' + str(get_random())
         container_name = 'test-ippool-' + str(get_random())
         # 使用新建的ippool创建部署
-        network_steps.step_create_deploy(create_ippool, deploy_name, container_name, self.pro_name)
+        network_steps.step_create_deploy_use_ip_pool(create_ippool, deploy_name, container_name, self.pro_name)
         time.sleep(15)
         res = project_steps.step_get_deployment(self.pro_name, 'deployments')
         # 验证部署创建成功
@@ -440,35 +440,41 @@ class TestNetwork(object):
     def test_disable_ippool_and_move_to_same_ws(self, create_ippool, create_ws):
         # 将ippool分配到企业空间
         network_steps.step_assign_ws(create_ippool, create_ws)
+        # 创建另一个ippool
+        new_ip_pool_name = create_ippool + 'test'
+        new_ip_address = commonFunction.random_ip()
+        network_steps.step_create_ippool(new_ip_pool_name, new_ip_address)
+        # 将ippool分配到相同的企业空间
+        network_steps.step_assign_ws(new_ip_pool_name, create_ws)
         # 禁用ippool
         network_steps.step_disable_ippool(create_ippool)
-        # 创建ippool
-        ippool_name = 'ippool-' + str(get_random())
-        ip = ip = commonFunction.random_ip()
-        network_steps.step_create_ippool(ippool_name, ip)
-        # 将ippool分配到企业空间
-        network_steps.step_assign_ws(ippool_name, create_ws)
         # 迁移ippool
-        res = network_steps.step_migrate_ippool(create_ippool, ippool_name)
-        assert res.text == '405: Method Not Allowed'
+        res = network_steps.step_migrate_ippool(create_ippool, new_ip_pool_name)
+        with pytest.assume:
+            assert res.json()['message'] == 'success'
+        # 删除ippool
+        network_steps.step_delete_ippool(new_ip_pool_name)
 
     @allure.story('Ip pool')
     @allure.title('禁用ippool，并迁移到企业空间不同的ippool')
     @allure.severity('critical')
     def test_disable_ippool_and_move_to_diff_ws(self, create_ippool, create_ws):
         # 将ippool分配到企业空间
-        network_steps.step_assign_ws(create_ippool, create_ws)
+        network_steps.step_assign_ws(create_ippool, self.ws_name)
+        # 创建另一个ippool
+        new_ip_pool_name = create_ippool + 'test'
+        new_ip_address = commonFunction.random_ip()
+        network_steps.step_create_ippool(new_ip_pool_name, new_ip_address)
+        # 将ippool分配到不同的企业空间
+        network_steps.step_assign_ws(new_ip_pool_name, create_ippool)
         # 禁用ippool
         network_steps.step_disable_ippool(create_ippool)
-        # 创建ippool
-        ippool_name = 'ippool-' + str(get_random())
-        ip = commonFunction.random_ip()
-        network_steps.step_create_ippool(ippool_name, ip)
-        # 将ippool分配到企业空间
-        network_steps.step_assign_ws(ippool_name, self.ws_name)
         # 迁移ippool
-        res = network_steps.step_migrate_ippool(create_ippool, ippool_name)
-        assert res.text == '405: Method Not Allowed'
+        res = network_steps.step_migrate_ippool(create_ippool, new_ip_pool_name)
+        with pytest.assume:
+            assert res.status_code == 400
+        # 删除ippool
+        network_steps.step_delete_ippool(new_ip_pool_name)
 
     @allure.story('Network policy')
     @allure.title('创建网络策略')
