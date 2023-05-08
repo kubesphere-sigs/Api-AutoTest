@@ -35,7 +35,7 @@ class TestAppStore(object):
         # 获取集群名称
         clusters = cluster_steps.step_get_cluster_name()
         # 创建一个多集群企业空间（包含所有的集群）
-        multi_workspace_steps.step_create_multi_ws(self.ws_name, self.alias_name, self.description, clusters)
+        multi_workspace_steps.step_create_multi_ws(self.ws_name, clusters, self.alias_name, self.description)
         # 在企业空间的host集群上创建一个项目
         multi_project_steps.step_create_project_for_cluster(cluster_name=self.host_name, ws_name=self.ws_name,
                                                             project_name=self.project_name)
@@ -112,8 +112,8 @@ class TestAppStore(object):
         response = app_steps.step_get_app_status_multi(self.host_name, self.ws_name, self.project_name, name)
         # 获取应用状态
         status = response.json()['items'][0]['cluster']['status']
-        pytest.assume(status == 'failed')
-
+        with pytest.assume:
+            assert status == 'failed'
         # 在应用列表查询部署的应用
         response = app_steps.step_get_deployed_app_multi(self.host_name, self.ws_name, self.project_name, name)
         # 获取应用的cluster_id
@@ -152,7 +152,8 @@ class TestAppStore(object):
                 time.sleep(1)
                 i = i + 1
         # 验证应用运行成功
-        pytest.assume(status == 'active')
+        with pytest.assume:
+            assert status == 'active'
         # 在应用列表查询部署的应用
         response = app_steps.step_get_deployed_app_multi(self.host_name, self.ws_name, self.project_name, name)
         # 获取应用的cluster_id
