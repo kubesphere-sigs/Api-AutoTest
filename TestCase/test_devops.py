@@ -99,7 +99,7 @@ class TestDevOps(object):
     @allure.story('工程管理-基本信息')
     @allure.title('编辑信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_modify_devopsinfo(self, create_ws, create_devops):
+    def test_modify_devops_info(self, create_ws, create_devops):
         # 获取devops的详细信息
         re = devops_steps.step_get_devopinfo(create_ws, create_devops)
         data = re.json()['items'][0]
