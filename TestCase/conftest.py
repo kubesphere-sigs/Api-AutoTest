@@ -220,8 +220,18 @@ def create_multi_ippool(request, ip_pool_name, ip_address):
 def create_devops(create_ws):
     dev_name = 'test-dev' + str(commonFunction.get_random())
     devops_steps.step_create_devops(create_ws, dev_name)  # 创建一个devops工程
-    response = devops_steps.step_get_devopinfo(create_ws, dev_name)
-    devops_name_new = response.json()['items'][0]['metadata']['name']
+    i = 0
+    devops_name_new = ''
+    while i < 60:
+        try:
+            response = devops_steps.step_get_devopinfo(create_ws, dev_name)
+            devops_name_new = response.json()['items'][0]['metadata']['name']
+            if len(devops_name_new) > 0:
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            i += 1
     yield devops_name_new
     # 删除devops工程
     devops_steps.step_delete_devops(create_ws, devops_name_new)
