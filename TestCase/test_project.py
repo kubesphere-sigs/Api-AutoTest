@@ -144,7 +144,8 @@ class TestProject(object):
         project_steps.step_create_stateful(project_name=create_project, work_name=workload_name,
                                            container_name=container_name,
                                            image=image, replicas=replicas, ports=port, service_ports=service_port,
-                                           volumemount=volume_mounts, volume_info=volume_info, service_name=service_name)
+                                           volumemount=volume_mounts, volume_info=volume_info,
+                                           service_name=service_name)
         # 验证资源创建成功
         ready_replicas = 0
         i = 0
@@ -390,7 +391,8 @@ class TestProject(object):
         # 查看角色
         r = project_steps.step_get_role(create_project, create_project_role)
         assert r.json()['items'][0]['metadata']['annotations']['kubesphere.io/alias-name'] == alias_name  # 验证修改后的别名
-        assert r.json()['items'][0]['metadata']['annotations']['kubesphere.io/description'] == '我是描述信息'  # 验证修改后的描述信息
+        assert r.json()['items'][0]['metadata']['annotations'][
+                   'kubesphere.io/description'] == '我是描述信息'  # 验证修改后的描述信息
 
     @allure.story("项目设置-项目角色")
     @allure.title('项目中编辑角色的权限信息')
@@ -1291,10 +1293,13 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('project_type, cluster_type, title',
                              [
-                                 ('LoadBalancer', 'NodePort', '在已开启集群网关的前提下开启项目网关并设置类型为LoadBalancer'),
+                                 ('LoadBalancer', 'NodePort',
+                                  '在已开启集群网关的前提下开启项目网关并设置类型为LoadBalancer'),
                                  ('NodePort', 'NodePort', '在已开启集群网关的前提下开启项目网关并设置类型为NodePort'),
-                                 ('NodePort', 'LoadBalancer', '在已开启集群网关的前提下开启项目网关并设置类型为NodePort'),
-                                 ('LoadBalancer', 'LoadBalancer', '在已开启集群网关的前提下开启项目网关并设置类型为LoadBalancer')
+                                 ('NodePort', 'LoadBalancer',
+                                  '在已开启集群网关的前提下开启项目网关并设置类型为NodePort'),
+                                 ('LoadBalancer', 'LoadBalancer',
+                                  '在已开启集群网关的前提下开启项目网关并设置类型为LoadBalancer')
                              ])
     def test_create_project_gateway_after_cluster(self, project_type, cluster_type, title, create_project):
         # 开启集群网关
@@ -1315,9 +1320,11 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('project_type, cluster_type, title',
                              [('NodePort', 'LoadBalancer', '在已开启项目网关的前提下开启集群网关并设置类型为NodePort'),
-                              ('LoadBalancer', 'LoadBalancer', '在已开启项目网关的前提下开启集群网关并设置类型为LoadBalancer'),
+                              ('LoadBalancer', 'LoadBalancer',
+                               '在已开启项目网关的前提下开启集群网关并设置类型为LoadBalancer'),
                               ('NodePort', 'NodePort', '在已开启项目网关的前提下开启集群网关并设置类型为NodePort'),
-                              ('LoadBalancer', 'NodePort', '在已开启项目网关的前提下开启集群网关并设置类型为LoadBalancer')
+                              ('LoadBalancer', 'NodePort',
+                               '在已开启项目网关的前提下开启集群网关并设置类型为LoadBalancer')
                               ])
     def test_create_cluster_gateway_after_project(self, project_type, cluster_type, title, create_project):
         status = 'true'  # 链路追踪开启状态
@@ -1380,10 +1387,19 @@ class TestProject(object):
         # 创建网关
         project_steps.step_create_gateway(create_project, type_old, status)
         # 查询网关并获取网关的uid和resource_version
-        time.sleep(1)
-        response = project_steps.step_get_gateway(create_project)
-        uid = response.json()[0]['metadata']['uid']
-        resource_version = response.json()[0]['metadata']['resourceVersion']
+        i = 0
+        uid = ''
+        resource_version = ''
+        while i < 60:
+            try:
+                response = project_steps.step_get_gateway(create_project)
+                uid = response.json()[0]['metadata']['uid']
+                resource_version = response.json()[0]['metadata']['resourceVersion']
+                break
+            except Exception as e:
+                print(e)
+                i += 1
+                time.sleep(1)
         # 修改网关类型为NodePort,并编辑配置信息
         configuration = {"qa": "test"}
         status_new = 'false'
@@ -1527,7 +1543,8 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('type, title, data',
                              [('Opaque', '创建默认类型的保密字典', {"test": "d3g="}),
-                              ('kubernetes.io/tls', '创建TLS信息类型的保密字典', {"tls.crt": "cWE=", "tls.key": "cXc="}),
+                              (
+                              'kubernetes.io/tls', '创建TLS信息类型的保密字典', {"tls.crt": "cWE=", "tls.key": "cXc="}),
                               ('kubernetes.io/basic-auth', '创建用户名和密码类型的保密字典',
                                {"username": "dGVzdA==", "password": "d3g="}),
                               ('kubernetes.io/dockerconfigjson', '创建镜像服务信息类型的保密字典', {
@@ -2168,12 +2185,17 @@ class TestProject(object):
     @allure.title('{title}')
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('title, spec',
-                             [('添加白名单条目/内部白名单/出站', {"egress": [{"to": [{"namespace": {"name": "default"}}]}]}),
-                              ('添加白名单条目/内部白名单/入站', {"ingress": [{"from": [{"namespace": {"name": "default"}}]}]}),
-                              ('添加白名单条目/外部白名单/出站', {"egress": [{"ports": [{"port": 80, "protocol": "TCP"}],
-                                                                "to": [{"ipBlock": {"cidr": "10.10.10.10/24"}}]}]}),
-                              ('添加白名单条目/外部白名单/入站', {"ingress": [{"ports": [{"port": 80, "protocol": "TCP"}],
-                                                                 "from": [{"ipBlock": {"cidr": "10.10.10.10/24"}}]}]}),
+                             [('添加白名单条目/内部白名单/出站',
+                               {"egress": [{"to": [{"namespace": {"name": "default"}}]}]}),
+                              ('添加白名单条目/内部白名单/入站',
+                               {"ingress": [{"from": [{"namespace": {"name": "default"}}]}]}),
+                              (
+                              '添加白名单条目/外部白名单/出站', {"egress": [{"ports": [{"port": 80, "protocol": "TCP"}],
+                                                                             "to": [{"ipBlock": {
+                                                                                 "cidr": "10.10.10.10/24"}}]}]}),
+                              ('添加白名单条目/外部白名单/入站',
+                               {"ingress": [{"ports": [{"port": 80, "protocol": "TCP"}],
+                                             "from": [{"ipBlock": {"cidr": "10.10.10.10/24"}}]}]}),
                               ])
     def test_add_allowlist(self, title, spec, create_ws, create_project):
         # 开启网络隔离
