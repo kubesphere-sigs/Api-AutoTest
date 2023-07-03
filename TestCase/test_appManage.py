@@ -268,11 +268,12 @@ class TestAppTemplate(object):
         app_steps.step_add_version(self.ws_name, app_id)
         # 等待应用版本添加成功
         i = 0
+        versions = []
         while i < 60:
             try:
                 # 获取应用模版中所有的版本version
                 versions = app_steps.step_get_app_versions(self.ws_name, app_id)
-                if versions:
+                if len(versions) > 0:
                     break
             except Exception as e:
                 print(e)

@@ -125,7 +125,6 @@ class TestAppStore(object):
     # 将用例信息以参数化的方式传入测试方法
     @pytest.mark.parametrize('id,app_name,conf,story,title,severity,except_result', parametrize)
     def test_deploy_from_appstore(self, id, app_name, conf, story, title, severity, except_result):
-
         allure.dynamic.story(story)  # 动态生成模块
         allure.dynamic.severity(severity)  # 动态生成用例等级
 
@@ -137,6 +136,7 @@ class TestAppStore(object):
                                                        project_name=self.project_name, app_id=app_id, name=name,
                                                        version_id=version_id, conf=conf)
         i = 0
+        status = ''
         while i < 300:
             # 查看应用部署情况
             response = app_steps.step_get_app_status_multi(self.host_name, self.ws_name, self.project_name, name)

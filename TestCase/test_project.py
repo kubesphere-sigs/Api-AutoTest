@@ -508,12 +508,13 @@ class TestProject(object):
         role = 'operator'
         project_steps.step_edit_project_member_role(self.project_name, self.user_name, role)
         i = 0
+        role_actual = ''
         while i < 60:
             try:
                 # 查看项目成员，并获取其角色
                 response = project_steps.step_get_project_member(self.project_name, self.user_name)
                 role_actual = response.json()['items'][0]['metadata']['annotations']['iam.kubesphere.io/role']
-                if role_actual:
+                if len(role_actual) > 0:
                     break
             except Exception as e:
                 print(e)
@@ -1537,13 +1538,14 @@ class TestProject(object):
         secret_name = 'test-secret-' + str(commonFunction.get_random())
         project_steps.step_create_secret(create_project, secret_name, type, data)
         i = 0
+        data_actual = ''
         while i < 60:
             try:
                 # 查看保密字典详情
                 response = project_steps.step_get_secret(create_project, secret_name)
                 # 获取保密字典的数据
                 data_actual = response.json()['items'][0]['data']
-                if data_actual:
+                if len(data_actual) > 0:
                     break
             except Exception as e:
                 print(e)
@@ -1583,13 +1585,14 @@ class TestProject(object):
         project_steps.step_create_secret(create_project, secret_name, configuration_type, data)
         # 验证创建成功
         i = 0
+        count = 0
         while i < 60:
             try:
                 # 查看保密字典详情
                 response = project_steps.step_get_secret(create_project, secret_name)
                 # 获取保密字典的数据
                 count = response.json()['totalItems']
-                if count:
+                if count > 0:
                     break
             except Exception as e:
                 print(e)
@@ -1746,12 +1749,13 @@ class TestProject(object):
         # 编辑配额信息
         project_steps.step_edit_project_quota(create_project, hard, resource_version)
         i = 0
+        hard_actual = ''
         while i < 60:
             try:
                 # 获取修改后的配额信息
                 response = project_steps.step_get_project_quota(create_project)
                 hard_actual = response.json()['data']['hard']
-                if hard_actual:
+                if len(hard_actual) > 0:
                     break
             except Exception as e:
                 print(e)
@@ -1804,11 +1808,12 @@ class TestProject(object):
         project_steps.step_edit_project_quota(create_project, hard, resource_version)
         # 获取修改后的配额信息
         i = 0
+        hard_actual = ''
         while i < 60:
             try:
                 response = project_steps.step_get_project_quota(create_project)
                 hard_actual = response.json()['data']['hard']
-                if hard_actual:
+                if len(hard_actual) > 0:
                     break
             except Exception as e:
                 print(e)

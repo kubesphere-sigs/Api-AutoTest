@@ -2,7 +2,6 @@
 import pytest
 import allure
 import sys
-import time
 import random
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用

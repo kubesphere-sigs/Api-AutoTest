@@ -38,7 +38,8 @@ class TestLogSearch(object):
         # 获取收集到的日志数量
         log_counts = response.json()['statistics']['logs']
         # 验证容器数量大于0
-        pytest.assume(pod_count > 0)
+        with pytest.assume:
+            assert pod_count > 0
         # 查询最近12小时的日志变化趋势
         interval = '30m'  # 时间间隔 30分钟
         # 获取12小时之前的时间戳
@@ -319,7 +320,8 @@ class TestLogSearch(object):
         # 查看日志接受器详情并验证更改成功
         re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
         status = re.json()['metadata']['labels']['logging.kubesphere.io/enabled']
-        pytest.assume(status == 'false')
+        with pytest.assume:
+            assert status == 'false'
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
 
@@ -346,8 +348,9 @@ class TestLogSearch(object):
         re = cluster_steps.step_get_log_receiver_detail(log_receiver_name)
         host_actual = re.json()['spec']['forward']['host']
         port_actual = re.json()['spec']['forward']['port']
-        pytest.assume(host_actual == host)
-        pytest.assume(port_actual == port)
+        with pytest.assume:
+            assert host_actual == host
+            assert port_actual == port
         # 删除创建的日志接收器
         cluster_steps.step_delete_log_receiver(log_receiver_name)
 

@@ -167,6 +167,7 @@ class TestMetering(object):
             # 获取集群节点的数量
             count = re.json()['totalItems']
             # 获取节点的名称
+            name = ''
             for j in range(0, count):
                 try:
                     name = re.json()['items'][j]['metadata']['name']
