@@ -8,7 +8,6 @@ import sys
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 from common.getHeader import get_header
-from common import commonFunction
 from common.getConfig import get_apiserver
 
 env_url = get_apiserver()
@@ -31,6 +30,11 @@ def step_edit_role_authory(ws_name, role_name, version, authory):
     response = requests.put(url, headers=get_header(), data=json.dumps(data))
     return response
 
+@allure.step('查询指定的企业空间')
+def step_get_ws_info(ws_name):
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha3/workspacetemplates?name=' + ws_name
+    response = requests.get(url=url, headers=get_header())
+    return response
 
 @allure.step('企业空间概览信息')
 def step_get_ws_num_info(ws_name):
