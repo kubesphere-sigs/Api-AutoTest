@@ -5,7 +5,7 @@ import sys
 import time
 from datetime import datetime
 from common import commonFunction
-from step import project_steps, cluster_steps, multi_project_steps
+from step import project_steps, cluster_steps, multi_project_steps, multi_cluster_steps
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -47,7 +47,7 @@ class TestProject(object):
         # 获取工作负载的状态
         for name in clusters:
             # 验证工作负载状态为ready
-            if commonFunction.check_workload_ready_in_fed_project(cluster_name=name, project_name=create_multi_project,
+            if multi_cluster_steps.check_workload_ready_in_fed_project(cluster_name=name, project_name=create_multi_project,
                                                                   resource_type='deployments', resource_name=condition,
                                                                   replicas=replicas):
                 # 获取存储卷状态
@@ -94,7 +94,7 @@ class TestProject(object):
         # 获取工作负载的状态
         for name in clusters:
             # 验证工作负载状态为ready
-            if commonFunction.check_workload_ready_in_fed_project(cluster_name=name, project_name=create_multi_project,
+            if multi_cluster_steps.check_workload_ready_in_fed_project(cluster_name=name, project_name=create_multi_project,
                                                                   resource_type='statefulsets', resource_name=condition,
                                                                   replicas=replicas):
                 # 获取存储卷状态
@@ -144,7 +144,7 @@ class TestProject(object):
         # 获取工作负载的状态
         for name in clusters:
             # 验证工作负载状态为ready
-            if commonFunction.check_workload_ready_in_fed_project(cluster_name=name, project_name=create_multi_project,
+            if multi_cluster_steps.check_workload_ready_in_fed_project(cluster_name=name, project_name=create_multi_project,
                                                                   resource_type='deployments', resource_name=condition,
                                                                   replicas=replicas):
                 # 获取存储卷状态
