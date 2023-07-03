@@ -960,6 +960,13 @@ def step_get_project_info(ws_name):
     return response
 
 
+@allure.step('查询指定项目信息')
+def step_get_project_info_by_name(ws_name, project_name):
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces?name=' + project_name + \
+          '&labelSelector=kubefed.io%2Fmanaged%21%3Dtrue%2C%20kubesphere.io%2Fkubefed-host-namespace%21%3Dtrue&sortBy=createTime&limit=10'
+    response = requests.get(url=url, headers=get_header())
+    return response
+
 @allure.step('在项目中查询pod')
 def step_get_pod_info(project_name, pod_name):
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/namespaces/' + project_name + '/pods?' \
