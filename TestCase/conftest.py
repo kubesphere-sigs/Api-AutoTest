@@ -87,9 +87,16 @@ def create_project_role(create_project):
     role_name = 'role' + str(commonFunction.get_random())
     # 创建角色
     project_steps.step_create_role(create_project, role_name)
-    time.sleep(1)
+    # 等待角色创建成功
+    i = 0
+    while i < 60:
+        role_info = project_steps.step_get_role(create_project, role_name)
+        if role_info.json()['totalItems'] == 1:
+            break
+        else:
+            time.sleep(1)
+            i += 1
     yield role_name
-    time.sleep(1)
     project_steps.step_project_delete_role(create_project, role_name)
 
 
