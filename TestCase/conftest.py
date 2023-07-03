@@ -149,10 +149,16 @@ def create_ws():
     ws_name = 'test-ws' + str(commonFunction.get_random())
     # 创建企业空间
     workspace_steps.step_create_workspace(ws_name)
-    time.sleep(1)
+    i = 0
+    while i < 60:
+        ws_info = workspace_steps.step_get_ws_info(ws_name)
+        if ws_info.status_code == 200:
+            break
+        else:
+            time.sleep(1)
+            i += 1
     yield ws_name
     # 删除企业空间
-    time.sleep(1)
     workspace_steps.step_delete_workspace(ws_name)
 
 
@@ -223,15 +229,12 @@ def create_devops(create_ws):
     i = 0
     devops_name_new = ''
     while i < 60:
-        try:
-            response = devops_steps.step_get_devopinfo(create_ws, dev_name)
-            devops_name_new = response.json()['items'][0]['metadata']['name']
-            if len(devops_name_new) > 0:
-                break
-        except Exception as e:
-            print(e)
-            time.sleep(1)
-            i += 1
+        response = devops_steps.step_get_devopinfo(create_ws, dev_name)
+        devops_name_new = response.json()['items'][0]['metadata']['name']
+        if len(devops_name_new) > 0:
+            break
+        time.sleep(1)
+        i += 1
     yield devops_name_new
     # 删除devops工程
     devops_steps.step_delete_devops(create_ws, devops_name_new)
