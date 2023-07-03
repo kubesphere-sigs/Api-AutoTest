@@ -12,10 +12,17 @@ def create_project(create_ws):
     # 创建项目
     project_name = 'test-pro' + str(commonFunction.get_random())
     project_steps.step_create_project(create_ws, project_name)
-    time.sleep(3)
+    # 等待项目创建成功
+    i = 0
+    while i < 60:
+        project_info = project_steps.step_get_project_info_by_name(create_ws, project_name)
+        if project_info['totalItems'] == 1:
+            break
+        else:
+            time.sleep(1)
+            i += 1
     yield project_name
     # 删除创建的项目
-    time.sleep(1)
     project_steps.step_delete_project(create_ws, project_name)
 
 
