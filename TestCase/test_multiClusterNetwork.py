@@ -265,8 +265,7 @@ class TestNetwork(object):
                                                            self.pro_name, self.cluster_name)
         # 等待工作负载创建成功
         workload_status = multi_cluster_steps.check_workload_ready_in_multi(self.cluster_name, self.pro_name,
-                                                                            'deployments',
-                                                                            deploy_name)
+                                                                            'deployments', deploy_name)
         if workload_status:
             # 删除ippool
             r = network_steps.step_delete_ippool(create_multi_ippool)
