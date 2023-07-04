@@ -1,7 +1,6 @@
 allure-pytest==2.13.2
 allure-python-commons==2.13.2
 apipkg==1.5
-assume==0.4.0
 attrs==20.2.0
 boto3==1.23.10
 botocore==1.26.10
