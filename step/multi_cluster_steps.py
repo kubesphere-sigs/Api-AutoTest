@@ -37,7 +37,10 @@ def step_get_cluster_name():
 def step_get_host_cluster_name():
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/clusters?labelSelector=cluster-role.kubesphere.io%2Fhost%3D'
     response = requests.get(url=url, headers=get_header())
-    host_cluster_name = response.json()['items'][0]['metadata']['name']
+    try:
+        host_cluster_name = response.json()['items'][0]['metadata']['name']
+    except IndexError:
+            host_cluster_name = None
     return host_cluster_name
 
 
@@ -896,14 +899,13 @@ def check_workload_ready_in_multi(cluster_name, project_name, resource_type, res
     i = 0
     while i < 180:
         # 获取多集群环境中的工作负载
-        response = step_get_workload_detail(cluster_name, project_name, resource_type,
-                                                                resource_name)
+        response = step_get_workload_detail(cluster_name, project_name, resource_type, resource_name)
         # 判断工作负载的状态是否为ready
         if 'unavailableReplicas' not in response.json()['items'][0]['status']:
             return True
         else:
-            time.sleep(3)
-            i = i + 3
+            time.sleep(5)
+            i = i + 5
 
 
 # 在多集群环境，验证非联邦项目的工作负载不存在
@@ -911,11 +913,10 @@ def check_workload_not_exist_in_multi(cluster_name, project_name, resource_type,
     i = 0
     while i < 180:
         # 获取多集群环境中的工作负载
-        response = step_get_workload_detail(cluster_name, project_name, resource_type,
-                                                                resource_name)
+        response = step_get_workload_detail(cluster_name, project_name, resource_type, resource_name)
         # 判断工作负载不存在
-        if response.status_code == 404:
-            return True
+        if response.json()['totalItems'] == 0:
+            break
         else:
             time.sleep(3)
             i = i + 3
