@@ -1,4 +1,6 @@
 # -- coding: utf-8 --
+import time
+
 import pytest
 import allure
 import sys
@@ -8,7 +10,7 @@ sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义
 
 from common.getData import DoexcleByPandas
 from common import commonFunction
-from step import workspace_steps, multi_workspace_steps
+from step import workspace_steps, multi_workspace_steps, platform_steps
 
 
 @allure.feature('多集群环境企业空间')
@@ -110,6 +112,17 @@ class TestWorkSpace(object):
         # 创建用户
         user_name = 'test' + str(commonFunction.get_random())
         multi_workspace_steps.step_create_user(user_name)
+        # 等待用户的状态为活跃
+        i = 0
+        while i < 10:
+            try:
+                re = platform_steps.step_get_user_info(user_name)
+                if re.json()['items'][0]['status']['state'] == 'Active':
+                    break
+            except KeyError as e:
+                print(e)
+                i += 1
+                time.sleep(1)
         # 将用户邀请到企业空间
         ws_role_invite = create_multi_workspace + '-viewer'  # 邀请用户时赋予的角色
         workspace_steps.step_invite_user(create_multi_workspace, user_name, ws_role_invite)
@@ -275,6 +288,8 @@ class TestWorkSpace(object):
         # 创建企业组织,并获取创建的企业组织的name
         resp = multi_workspace_steps.step_create_department(create_multi_workspace, group_name, data)
         name = resp.json()['metadata']['name']
+        # 获取企业组织可分配的用户名称的数量
+        count = multi_workspace_steps.step_get_user_for_department(name).json()['totalItems']
         # 将指定用户绑定到指定企业组织
         re = workspace_steps.step_binding_user(create_multi_workspace, name, self.user_name)
         # 获取绑定后返回的用户名
@@ -283,8 +298,17 @@ class TestWorkSpace(object):
         with pytest.assume:
             assert binding_user == self.user_name
         # 重新获取企业组织可分配的用户名称
-        r = multi_workspace_steps.step_get_user_for_department(name)
-        counts_new = r.json()['totalItems']
+        i = 0
+        counts_new = count
+        r = ''
+        while i < 10:
+            r = multi_workspace_steps.step_get_user_for_department(name)
+            counts_new = r.json()['totalItems']
+            if counts_new == count - 1:
+                break
+            else:
+                i += 1
+                time.sleep(1)
         user_name = []
         for i in range(0, counts_new):
             user_name.append(r.json()['items'][i]['metadata']['name'])
