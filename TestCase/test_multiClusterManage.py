@@ -726,7 +726,7 @@ class TestCluster(object):
             r = multi_cluster_steps.step_get_workload_detail(self.cluster_any_name, project_name, 'daemonsets',
                                                              resource_name)
             # 验证信息查询成功
-            assert r.json()['kind'] == 'DaemonSet'
+            assert r.json()['items'][0]['metadata']['annotations']['deprecated.daemonset.template.generation'] is not None
 
     @allure.story('应用负载')
     @allure.title('{title}')
