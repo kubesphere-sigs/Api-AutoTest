@@ -40,7 +40,7 @@ def step_get_host_cluster_name():
     try:
         host_cluster_name = response.json()['items'][0]['metadata']['name']
     except IndexError:
-            host_cluster_name = None
+        host_cluster_name = None
     return host_cluster_name
 
 
@@ -541,29 +541,38 @@ def step_get_cluster_scheduler(cluster_name):
 
 @allure.step('在监控告警/查看指定集群的告警信息')
 def step_get_alert_message(cluster_name, type, condition):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/' + type + 'alerts?' + \
-          condition + '&sortBy=createTime'
+    base_url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2beta1/clusteralerts?sortBy=activeAt&limit=10&'
+    if type == 'builtin':
+        url = base_url + 'builtin=true&' + condition
+    else:
+        url = base_url + condition
+    print(url)
+    # 'http://139.198.113.15:30881/kapis/clusters/host/alerting.kubesphere.io/v2beta1/clusteralerts?label_filters=severity%3Dcritical'
+    # 'http://139.198.113.15:30882/kapis/clusters/host/alerting.kubesphere.io/v2beta1/clusteralerts?sortBy=activeAt&limit=10&label_filters=severity%3Dcritical'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
-@allure.step('在监控告警/告警策略中创建告警策略(节点cpu利用率大于0)')
+@allure.step('在监控告警/规则组中创建规则组(策略为节点cpu利用率大于0.01)')
 def step_create_alert_policy(cluster_name, alert_name, node_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules'
-    data = {"name": alert_name, "query": "node:node_cpu_utilisation:avg1m{node=\"" + node_name + "\"} > 0",
-            "duration": "1m", "labels": {"severity": "warning"},
-            "annotations": {"summary": "Node " + node_name + " CPU usage > 0%",
-                            "message": "", "kind": "Node", "resources": "[\"" + node_name + "\"]",
-                            "rules": "[{\"_metricType\":\"node:node_cpu_utilisation:avg1m{$1}\","
-                                     "\"condition_type\":\">\",\"thresholds\":\"0\",\"unit\":\"%\"}]"}}
+    url = env_url + '/apis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2beta1/clusterrulegroups'
+    data = {"apiVersion": "alerting.kubesphere.io/v2beta1", "kind": "ClusterRuleGroup",
+            "metadata": {"name": alert_name, "labels": {"alerting.kubesphere.io/enable": "true"},
+                         "annotations": {"kubesphere.io/creator": "admin"}},
+            "annotations": {"aliasName": "", "description": ""},
+            "spec": {"interval": "1s", "partial_response_strategy": "", "rules": [
+                {"alert": alert_name + "test", "annotations": {"summary": "test-sum", "message": "test-mes"},
+                 "exprBuilder": {
+                     "node": {"names": [node_name], "metricThreshold": {"cpu": {"utilization": 0.01}},
+                              "comparator": ">"}},
+                 "disable": False, "for": "1m", "severity": "critical", "expr": ""}]}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
 
-@allure.step('在监控告警/查看用户自定义告警')
+@allure.step('在监控告警/查看用户自定义规则组')
 def step_get_alert_custom_policy(cluster_name, alert_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules?name=' \
-          + alert_name + '&sortBy=createTime'
+    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2beta1/clusterrulegroups/?name=' + alert_name
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -576,26 +585,24 @@ def step_delete_alert_custom_policy(cluster_name, alert_name):
 
 
 @allure.step('在监控告警/修改用户自定义告警策略的持续时间为5min')
-def step_edit_alert_custom_policy(cluster_name, alert_name, id, node_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules/' + alert_name
-    data = {"cluster": "default",
-            "name": alert_name, "type": "",
-            "id": id,
-            "query": "node:node_cpu_utilisation:avg1m{node=\"" + node_name + "\"} > 0",
-            "duration": "5m", "labels": {"alerttype": "metric", "rule_id": id, "severity": "warning"},
-            "state": "inactive", "health": "unknown"}
+def step_edit_alert_custom_policy(cluster_name, alert_name, id, resource_version, node_name):
+    url = env_url + '/apis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2beta1/clusterrulegroups/' + alert_name
+    data = {"kind": "ClusterRuleGroup", "apiVersion": "alerting.kubesphere.io/v2beta1",
+            "metadata": {"name": alert_name, "labels": {"alerting.kubesphere.io/enable": "true"},
+                         "annotations": {"kubesphere.io/creator": "admin"}, "resourceVersion": resource_version},
+            "spec": {"interval": "1s", "rules": [
+                {"alert": alert_name + "test", "expr": "", "for": "5m", "severity": "critical",
+                 "labels": {"rule_id": id},
+                 "annotations": {"summary": "test-sum", "message": "test-mes"}, "exprBuilder": {
+                    "node": {"names": [node_name], "metricThreshold": {"cpu": {"utilization": 0.01}},
+                             "comparator": ">"}},
+                 "disable": False}]}}
+
     response = requests.put(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
 
-@allure.step('在监控告警/查看用户自定义告警详情')
-def step_get_alert_custom_policy_detail(cluster_name, alert_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules/' + alert_name
-    response = requests.get(url=url, headers=get_header())
-    return response
-
-
-@allure.step('查看告警策略')
+@allure.step('查看规则组')
 def step_get_alert_policies(cluster_name, type, condition):
     """
     :type cluster_name:
@@ -603,8 +610,11 @@ def step_get_alert_policies(cluster_name, type, condition):
     :param condition: 查询条件
     :return:
     """
-
-    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/' + type + 'rules?' + condition + '&sortBy=createTime'
+    base_url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2beta1/globalrulegroups?'
+    if type == 'builtin':
+        url = base_url + 'builtin=true&' + condition
+    else:
+        url = base_url + condition
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -926,7 +936,8 @@ def check_workload_not_exist_in_multi(cluster_name, project_name, resource_type,
 def check_workload_ready_in_fed_project(cluster_name, project_name, resource_type, resource_name, replicas):
     i = 0
     while i < 180:
-        response = multi_project_steps.step_get_workload_in_multi_project(cluster_name, project_name, resource_type, resource_name)
+        response = multi_project_steps.step_get_workload_in_multi_project(cluster_name, project_name, resource_type,
+                                                                          resource_name)
         try:
             ready_replicas = response.json()['status']['readyReplicas']
             if ready_replicas == replicas:
