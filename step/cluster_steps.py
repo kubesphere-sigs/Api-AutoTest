@@ -586,29 +586,40 @@ def step_open_cluster_gateway(type):
         data = {"apiVersion": "gateway.kubesphere.io/v1alpha1", "kind": "Gateway",
                 "metadata": {"namespace": "kubesphere-controls-system", "name": "kubesphere-router-kubesphere-system",
                              "creator": "admin",
-                             "annotations": {"kubesphere.io/annotations": "", "kubesphere.io/creator": "admin"}},
+                             "annotations": {"kubesphere.io/annotations": "", "kubesphere.io/creator": "admin"},
+                             "labels": {"kubesphere.io/gateway-type": "cluster"}},
                 "spec": {
-                    "controller": {"replicas": 1, "annotations": {}, "config": {},
+                    "controller": {"replicas": 1, "annotations": {}, "config": {"worker-processes": "4"},
                                    "scope": {"enabled": False, "namespace": ""}},
                     "deployment": {"annotations": {"servicemesh.kubesphere.io/enabled": "false"}, "replicas": 1},
-                    "service": {"annotations": {},
-                                "type": "NodePort"}}
-                }
+                    "service": {"annotations": {}, "type": "NodePort"}}}
+
     elif type == 'LoadBalancer':
         data = {"apiVersion": "gateway.kubesphere.io/v1alpha1", "kind": "Gateway",
                 "metadata": {"namespace": "kubesphere-controls-system", "name": "kubesphere-router-kubesphere-system",
                              "creator": "admin",
                              "annotations": {"kubesphere.io/annotations": "QingCloud Kubernetes Engine",
-                                             "kubesphere.io/creator": "admin"}}, "spec": {
-                "controller": {"replicas": 1, "annotations": {}, "config": {},
-                               "scope": {"enabled": False, "namespace": ""}},
-                "deployment": {"annotations": {"servicemesh.kubesphere.io/enabled": "false"}, "replicas": 1},
-                "service": {
-                    "annotations": {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
-                                    "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0"},
-                    "type": "LoadBalancer"}}}
-
+                                             "kubesphere.io/creator": "admin"},
+                             "labels": {"kubesphere.io/gateway-type": "cluster"}},
+                "spec": {
+                    "controller": {"replicas": 1, "annotations": {}, "config": {"worker-processes": "4"},
+                                   "scope": {"enabled": False, "namespace": ""}},
+                    "deployment": {"annotations": {"servicemesh.kubesphere.io/enabled": "false"}, "replicas": 1},
+                    "service": {"annotations": {"service.beta.kubernetes.io/qingcloud-load-balancer-eip-ids": "",
+                                                "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0"},
+                                "type": "LoadBalancer"}}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    # 查询集群网关,并等待其创建成功
+    i = 0
+    while i < 60:
+        try:
+            response = step_get_cluster_gateway()
+            if response.json()[0]['status']:
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            i += 1
     return response
 
 
