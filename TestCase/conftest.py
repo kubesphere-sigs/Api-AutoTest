@@ -15,10 +15,15 @@ def create_project(create_ws):
     # 等待项目创建成功
     i = 0
     while i < 60:
-        project_info = project_steps.step_get_project_info_by_name(create_ws, project_name)
-        if project_info.json()['totalItems'] == 1:
-            break
-        else:
+        try:
+            project_info = project_steps.step_get_project_info_by_name(create_ws, project_name)
+            if project_info.json()['totalItems'] == 1:
+                break
+            else:
+                time.sleep(1)
+                i += 1
+        except KeyError as e:
+            print(e)
             time.sleep(1)
             i += 1
     yield project_name
