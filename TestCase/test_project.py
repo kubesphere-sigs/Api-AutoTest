@@ -527,16 +527,17 @@ class TestProject(object):
     @allure.story("项目设置-项目成员")
     @allure.title('删除project的成员')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_project_delete_user(self):
+    def test_project_delete_user(self, create_user, create_ws, create_project):
+        workspace_steps.step_invite_user(create_ws, create_user, create_ws + '-viewer')  # 将创建的用户邀请到企业空间
         # 将用户邀请到项目
         role = 'admin'
-        project_steps.step_invite_member(self.project_name, self.user_name, role)
+        project_steps.step_invite_member(create_project, create_user, role)
         # 查看项目成员，并验证添加成功
         name = ''
         i = 0
         while i < 60:
             try:
-                res = project_steps.step_get_project_member(self.project_name, self.user_name)
+                res = project_steps.step_get_project_member(create_project, create_user)
                 name = res.json()['items'][0]['metadata']['name']
                 if name:
                     break
@@ -545,11 +546,11 @@ class TestProject(object):
                 i += 5
                 time.sleep(5)
         with pytest.assume:
-            assert name == self.user_name
+            assert name == create_user
         # 移出项目成员
-        project_steps.step_remove_project_member(self.project_name, self.user_name)
+        project_steps.step_remove_project_member(create_project, create_user)
         # 查询被移出的成员
-        response = project_steps.step_get_project_member(self.project_name, self.user_name)
+        response = project_steps.step_get_project_member(create_project, create_user)
         count = response.json()['totalItems']
         # 验证查询结果为空
         assert count == 0
@@ -1279,7 +1280,6 @@ class TestProject(object):
         status = 'true'  # 链路追踪开启状态
         # 创建项目网关
         project_steps.step_create_gateway(create_project, type, status)
-        time.sleep(5)
         # 查看项目网关，并验证网关类型
         response = project_steps.step_get_gateway(create_project)
         type_actual = response.json()[0]['spec']['service']['type']
@@ -1304,7 +1304,6 @@ class TestProject(object):
     def test_create_project_gateway_after_cluster(self, project_type, cluster_type, title, create_project):
         # 开启集群网关
         cluster_steps.step_open_cluster_gateway(cluster_type)
-        time.sleep(2)
         status = 'true'  # 链路追踪开启状态
         # 创建项目网关
         response = project_steps.step_create_gateway(create_project, project_type, status)
@@ -1314,6 +1313,7 @@ class TestProject(object):
             assert result == "can't create project gateway if global gateway enabled\n"
         # 关闭集群网关
         cluster_steps.step_delete_cluster_gateway()
+        time.sleep(3)
 
     @allure.story('项目设置-网关设置')
     @allure.title('{title}')
@@ -1330,10 +1330,8 @@ class TestProject(object):
         status = 'true'  # 链路追踪开启状态
         # 创建项目网关
         project_steps.step_create_gateway(create_project, project_type, status)
-        time.sleep(3)
         # 创建集群网关
         cluster_steps.step_open_cluster_gateway(cluster_type)
-        time.sleep(2)
         # 在项目中查看网关信息
         response = project_steps.step_get_gateway(create_project)
         cluster_gateway_name = response.json()[0]['metadata']['name']
@@ -1355,10 +1353,9 @@ class TestProject(object):
     def test_edit_gateway_lb(self, create_project):
         type_old = 'NodePort'
         status = 'false'
-        # 创建网关
+        # 创建项目网关
         project_steps.step_create_gateway(create_project, type_old, status)
         # 查询网关并获取网关的uid和resource_version
-        time.sleep(3)
         response = project_steps.step_get_gateway(create_project)
         uid = response.json()[0]['metadata']['uid']
         resource_version = response.json()[0]['metadata']['resourceVersion']
@@ -1387,19 +1384,9 @@ class TestProject(object):
         # 创建网关
         project_steps.step_create_gateway(create_project, type_old, status)
         # 查询网关并获取网关的uid和resource_version
-        i = 0
-        uid = ''
-        resource_version = ''
-        while i < 60:
-            try:
-                response = project_steps.step_get_gateway(create_project)
-                uid = response.json()[0]['metadata']['uid']
-                resource_version = response.json()[0]['metadata']['resourceVersion']
-                break
-            except Exception as e:
-                print(e)
-                i += 1
-                time.sleep(1)
+        response = project_steps.step_get_gateway(create_project)
+        uid = response.json()[0]['metadata']['uid']
+        resource_version = response.json()[0]['metadata']['resourceVersion']
         # 修改网关类型为NodePort,并编辑配置信息
         configuration = {"qa": "test"}
         status_new = 'false'
