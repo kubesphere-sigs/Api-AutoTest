@@ -367,6 +367,17 @@ def step_create_gateway(project_name, type, status):
                                     "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0"},
                     "type": type}}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    # 查询项目网关，并等待其创建成功
+    i = 0
+    while i < 60:
+        try:
+            res = step_get_gateway(project_name)
+            if res.json()[0]['status']:
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            i += 1
     return response
 
 
