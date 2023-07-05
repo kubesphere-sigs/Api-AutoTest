@@ -168,10 +168,11 @@ def create_ws():
     ws_name = 'test-ws' + str(commonFunction.get_random())
     # 创建企业空间
     workspace_steps.step_create_workspace(ws_name)
+    # 等待企业空间创建成功
     i = 0
     while i < 60:
         ws_info = workspace_steps.step_get_ws_info(ws_name)
-        if ws_info.status_code == 200:
+        if ws_info.json()['totalItems'] == 1:
             break
         else:
             time.sleep(1)
