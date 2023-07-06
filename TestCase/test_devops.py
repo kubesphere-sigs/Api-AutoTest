@@ -201,7 +201,7 @@ class TestDevOps(object):
         credential_name = 'ssh' + str(commonFunction.get_random())
         devops_steps.step_create_ssh_credential(create_devops, credential_name)
         # 查询之前创建的凭证
-        condition = credential_name
+        condition = 'ssh'
         result = devops_steps.step_search_credential(devops_name=create_devops, condition=condition)
         # 校验查询结果
         with pytest.assume:
@@ -277,7 +277,7 @@ class TestDevOps(object):
     def test_devops_role_fuzzy(self, create_devops):
         response = devops_steps.step_get_role(create_devops, 'adm')
         with pytest.assume:
-            assert response.json()['totalItems'] == 1  # 验证查询到的结果数量为2
+            assert response.json()['totalItems'] == 1  # 验证查询到的结果数量为1
         # 验证查找到的角色
         assert response.json()['items'][0]['metadata']['name'] == 'admin'
 
@@ -404,7 +404,7 @@ class TestDevOps(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_invite_user(self, create_user, create_ws, create_devops):
         role = 'viewer'
-        commonFunction.ws_invite_user(create_ws, create_user, create_ws + '-viewer')  # 将创建的用户邀请到企业空间
+        commonFunction.ws_invite_user(create_ws, create_user, create_ws + '-' + role)  # 将创建的用户邀请到企业空间
         # 将用户邀请到devops项目
         devops_steps.step_invite_member(create_devops, create_user, role)
         response = devops_steps.step_invite_member(create_devops, create_user, role)
@@ -416,7 +416,7 @@ class TestDevOps(object):
     def test_devops_edit_user(self, create_user, create_ws, create_devops):
         role_old = 'operator'
         role_new = 'viewer'
-        commonFunction.ws_invite_user(create_ws, create_user, create_ws + '-viewer')  # 将创建的用户邀请到企业空间
+        commonFunction.ws_invite_user(create_ws, create_user, create_ws + '-' + role_new)  # 将创建的用户邀请到企业空间
         # 将用户邀请到devops项目
         devops_steps.step_invite_member(create_devops, create_user, role_old)
         response = devops_steps.step_edit_member(create_devops, create_user, role_new)
