@@ -97,15 +97,27 @@ def step_get_role_user(ws_name, role_name):
     return response
 
 
-@allure.step('邀请用户到企业空间')
+@allure.step('邀请用户到企业空间并等待邀请成功')
 def step_invite_user(ws_name, user_name, role_name):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers'
     # 邀请成员的信息
     data = [{"username": user_name, "roleRef": role_name}]
     # 邀请成员
     response = requests.post(url, headers=get_header(), data=json.dumps(data))
-    if response.status_code != 200:
-        time.sleep(2)
+    # 等待邀请成功
+    i = 0
+    while i < 10:
+        try:
+            res = step_get_ws_user(ws_name, user_name)
+            if res.json()['items'][0]['status']['state'] == 'Active':
+                break
+            else:
+                time.sleep(1)
+                i += 1
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            i += 1
     return response
 
 
