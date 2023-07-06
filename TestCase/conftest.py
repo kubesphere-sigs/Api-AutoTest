@@ -111,7 +111,6 @@ def create_role():
     role_name = 'role' + str(commonFunction.get_random())
     # 创建角色
     platform_steps.step_create_role(role_name, authority)
-    time.sleep(1)
     yield role_name
     # 删除角色
     platform_steps.step_delete_role(role_name)
@@ -158,6 +157,17 @@ def create_user(create_role):
     password = 'P@88w0rd'
     # 使用新创建的角色创建用户
     platform_steps.step_create_user(user_name, create_role, email, password)
+    # # 等待用户创建成功
+    i = 0
+    while i < 10:
+        try:
+            user_info = platform_steps.step_get_user_info(user_name)
+            if user_info.json()['items'][0]['status']['state']:
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            i += 1
     yield user_name
     # 删除用户
     platform_steps.step_delete_user(user_name)
@@ -248,7 +258,7 @@ def create_devops(create_ws):
     devops_steps.step_create_devops(create_ws, dev_name)  # 创建一个devops工程
     i = 0
     devops_name_new = ''
-    while i < 60:
+    while i < 10:
         response = devops_steps.step_get_devopinfo(create_ws, dev_name)
         devops_name_new = response.json()['items'][0]['metadata']['name']
         if len(devops_name_new) > 0:
