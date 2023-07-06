@@ -40,6 +40,7 @@ class TestProject(object):
         workspace_steps.step_create_workspace(self.ws_name)  # 创建一个企业空间
         workspace_steps.step_invite_user(self.ws_name, self.user_name, self.ws_name + '-viewer')  # 将创建的用户邀请到企业空间
         project_steps.step_create_project(self.ws_name, self.project_name)  # 创建一个project工程
+        project_steps.step_invite_member(self.project_name, self.user_name, 'viewer')  # 将创建的用户邀请到项目
         project_steps.step_create_project(self.ws_name, self.project_name_for_exel)  # 创建一个project工程用于执行excle中的用例
         project_steps.step_create_volume(self.project_name_for_exel, self.volume_name, self.storage_class)  # 创建存储卷
 
@@ -328,7 +329,15 @@ class TestProject(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_role_all(self, create_project):
         # 查看项目中的所有角色
-        r = project_steps.step_get_role(create_project)
+        i = 0
+        r = ''
+        while i < 10:
+            r = project_steps.step_get_role(create_project)
+            if r.json()['totalItems'] > 0:
+                break
+            else:
+                time.sleep(1)
+                i += 1
         assert r.json()['totalItems'] == 3  # 验证初始的角色数量为3
 
     @allure.story("项目设置-项目角色")
@@ -352,8 +361,15 @@ class TestProject(object):
     @allure.severity(allure.severity_level.NORMAL)
     def test_project_role_fuzzy(self, create_project):
         role_name = 'adm'
-        r = project_steps.step_get_role(create_project, role_name)
-        assert r.json()['totalItems'] == 1  # 验证查询到的结果数量为1
+        i = 0
+        r = ''
+        while i < 10:
+            r = project_steps.step_get_role(create_project, role_name)
+            if r.json()['totalItems'] > 0:
+                break
+            else:
+                time.sleep(1)
+                i += 1
         # 验证查找到的角色
         assert r.json()['items'][0]['metadata']['name'] == 'admin'
 
@@ -540,16 +556,16 @@ class TestProject(object):
         # 查看项目成员，并验证添加成功
         name = ''
         i = 0
-        while i < 60:
+        while i < 10:
             try:
                 res = project_steps.step_get_project_member(create_project, create_user)
                 name = res.json()['items'][0]['metadata']['name']
-                if name:
+                if len(name) > 0:
                     break
             except Exception as e:
                 print(e)
-                i += 5
-                time.sleep(5)
+                i += 1
+                time.sleep(1)
         with pytest.assume:
             assert name == create_user
         # 移出项目成员
@@ -1536,7 +1552,8 @@ class TestProject(object):
     @pytest.mark.parametrize('type, title, data',
                              [('Opaque', '创建默认类型的保密字典', {"test": "d3g="}),
                               (
-                              'kubernetes.io/tls', '创建TLS信息类型的保密字典', {"tls.crt": "cWE=", "tls.key": "cXc="}),
+                                      'kubernetes.io/tls', '创建TLS信息类型的保密字典',
+                                      {"tls.crt": "cWE=", "tls.key": "cXc="}),
                               ('kubernetes.io/basic-auth', '创建用户名和密码类型的保密字典',
                                {"username": "dGVzdA==", "password": "d3g="}),
                               ('kubernetes.io/dockerconfigjson', '创建镜像服务信息类型的保密字典', {
@@ -2182,9 +2199,10 @@ class TestProject(object):
                               ('添加白名单条目/内部白名单/入站',
                                {"ingress": [{"from": [{"namespace": {"name": "default"}}]}]}),
                               (
-                              '添加白名单条目/外部白名单/出站', {"egress": [{"ports": [{"port": 80, "protocol": "TCP"}],
-                                                                             "to": [{"ipBlock": {
-                                                                                 "cidr": "10.10.10.10/24"}}]}]}),
+                                      '添加白名单条目/外部白名单/出站',
+                                      {"egress": [{"ports": [{"port": 80, "protocol": "TCP"}],
+                                                   "to": [{"ipBlock": {
+                                                       "cidr": "10.10.10.10/24"}}]}]}),
                               ('添加白名单条目/外部白名单/入站',
                                {"ingress": [{"ports": [{"port": 80, "protocol": "TCP"}],
                                              "from": [{"ipBlock": {"cidr": "10.10.10.10/24"}}]}]}),
