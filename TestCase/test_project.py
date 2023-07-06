@@ -401,10 +401,17 @@ class TestProject(object):
         # 创建项目角色
         role_name = 'role' + str(commonFunction.get_random())
         project_steps.step_create_role(create_project, role_name)
-        time.sleep(1)
-        # 获取角色的resource_version
-        response = project_steps.step_get_project_role(create_project, role_name)
-        resource_version = response.json()['items'][0]['metadata']['resourceVersion']
+        # 等待角色创建成功并获取角色的resource_version
+        i = 0
+        while i < 10:
+            try:
+                response = project_steps.step_get_project_role(create_project, role_name)
+                resource_version = response.json()['items'][0]['metadata']['resourceVersion']
+                break
+            except IndexError as e:
+                print(e)
+                i += 1
+                time.sleep(1)
         # 编辑角色的权限
         authority = '["role-template-view-basic","role-template-view-volumes","role-template-view-secrets",' \
                     '"role-template-view-configmaps","role-template-view-snapshots","role-template-view-app-workloads"]'
@@ -425,8 +432,6 @@ class TestProject(object):
     @allure.title('项目中删除角色')
     @allure.severity(allure.severity_level.CRITICAL)
     def test_project_delete_role(self, create_project_role, create_project):
-        # 验证角色创建成功
-        time.sleep(3)
         response = project_steps.step_get_project_role(create_project, create_project_role)
         count = response.json()['totalItems']
         with pytest.assume:
@@ -490,8 +495,8 @@ class TestProject(object):
                     break
             except Exception as e:
                 print(e)
-                i += 5
-                time.sleep(5)
+                i += 1
+                time.sleep(1)
         assert role_actual == role
 
     # 用例的执行结果应当为false。接口没有对不存在的用户做限制
@@ -520,8 +525,8 @@ class TestProject(object):
                     break
             except Exception as e:
                 print(e)
-                i += 3
-                time.sleep(3)
+                i += 1
+                time.sleep(1)
         assert role_actual == role  # 验证修改后的用户角色
 
     @allure.story("项目设置-项目成员")
