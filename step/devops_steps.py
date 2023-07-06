@@ -162,8 +162,11 @@ def step_edit_role_info(devops_name, role_name, alias, description):
 
 @allure.step('查询指定的devops角色')
 def step_get_role(devope_name, role_name):
-    url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devope_name + '/roles?' \
-                                                                                'name=' + role_name + '&sortBy=createTime&annotation=kubesphere.io%2Fcreator'
+    base_url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/devops/' + devope_name + '/roles?'
+    if len(role_name) > 0:
+        url = base_url + 'name=' + role_name + '&sortBy=createTime&annotation=kubesphere.io%2Fcreator'
+    else:
+        url = base_url + 'sortBy=createTime&annotation=kubesphere.io%2Fcreator'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -464,30 +467,26 @@ def step_delete_pipeline(devops_name, pipeline_name):
 @allure.step('创建凭证')
 def step_create_credential(dev_name, name, type, data, description=''):
     url = env_url + '/kapis/devops.kubesphere.io/v1alpha3/devops/' + dev_name + '/credentials'
-    data = {"apiVersion": "v1", "kind": "Secret",
-            "metadata": {"namespace": dev_name,
-                         "labels": {"app": name},
-                         "annotations": {"kubesphere.io/description": description,
-                                         "kubesphere.io/creator": "admin"},
-                         "name": name},
-            "type": "credential.devops.kubesphere.io/" + type,
-            "data": data
-            }
-    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    resource = {"apiVersion": "v1", "kind": "Secret",
+                "metadata": {"namespace": dev_name,
+                             "labels": {"app": name},
+                             "annotations": {"kubesphere.io/description": description,
+                                             "kubesphere.io/creator": "admin"},
+                             "name": name},
+                "type": "credential.devops.kubesphere.io/" + type,
+                "data": data
+                }
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(resource))
     return response
 
 
 @allure.step('项目设置/创建角色')
 def step_create_role(dev_name, name):
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/namespaces/' + dev_name + '/roles'
-    data = {"apiVersion": "rbac.authorization.k8s.io/v1",
-            "kind": "Role",
-            "metadata": {"namespace": dev_name, "name": name,
-                         "annotations": {
-                             "iam.kubesphere.io/aggregation-roles": "[\"role-template-view-gitrepositories\","
-                                                                    "\"role-template-view-credentials\","
-                                                                    "\"role-template-view-basic\"]",
-                             "kubesphere.io/creator": "admin"}}, "rules": []}
+    data = {"apiVersion": "rbac.authorization.k8s.io/v1", "kind": "Role",
+            "metadata": {"namespace": dev_name, "name": name, "annotations": {
+                "iam.kubesphere.io/aggregation-roles": "[\"role-template-view-members\",\"role-template-view-basic\"]",
+                "kubesphere.io/creator": "admin"}}, "rules": []}
 
     response = requests.post(url, headers=get_header(), data=json.dumps(data))
     return response
