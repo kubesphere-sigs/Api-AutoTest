@@ -261,7 +261,8 @@ def create_devops(create_ws):
     while i < 10:
         response = devops_steps.step_get_devopinfo(create_ws, dev_name)
         devops_name_new = response.json()['items'][0]['metadata']['name']
-        if len(devops_name_new) > 0:
+        status = response.json()['items'][0]['metadata']['annotations']['devopsproject.devops.kubesphere.io/syncstatus']
+        if status == 'successful':
             break
         time.sleep(1)
         i += 1
