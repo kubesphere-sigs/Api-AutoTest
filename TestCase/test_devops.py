@@ -452,7 +452,8 @@ class TestDevOps(object):
                 # 查看流水线详情
                 r = devops_steps.step_get_pipeline(dev_name_new, pipeline_name)
                 # 获取流水线的 jenkins-metadata
-                jenkins_metadata = r.json()['items'][0]['metadata']['annotations']['pipeline.devops.kubesphere.io/jenkins-metadata']
+                jenkins_metadata = r.json()['items'][0]['metadata']['annotations'][
+                    'pipeline.devops.kubesphere.io/jenkins-metadata']
                 # 获取流水线的健康状态
                 weather_score = eval(jenkins_metadata)['weatherScore']  # jenkins_metadata是str类型，使用eval将其转化为dict
                 # 获取流水线的分支数量
@@ -579,7 +580,8 @@ class TestDevOps(object):
     def test_delete_cd(self, create_devops, create_code_repository, delete_resource, title):
         # 创建cd任务
         cd_name = 'test-cd' + str(commonFunction.get_random())
-        annotations = {"kubesphere.io/alias-name": "", "kubesphere.io/description": "", "kubesphere.io/creator": "admin"}
+        annotations = {"kubesphere.io/alias-name": "", "kubesphere.io/description": "",
+                       "kubesphere.io/creator": "admin"}
         ns = 'test-pro' + str(commonFunction.get_random())
         path = 'manifest'
         devops_steps.step_create_cd(create_devops, cd_name, annotations, ns, create_code_repository, path)
