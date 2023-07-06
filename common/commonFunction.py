@@ -187,7 +187,8 @@ def ws_invite_user(ws_name, user_name, ws_role):
     """
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers'
     data = [{"username": user_name, "roleRef": ws_role}]
-    requests.post(url, headers=get_header(), data=json.dumps(data))
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
 
 
 # 创建devops工程
