@@ -2,7 +2,9 @@ import requests
 import allure
 import sys
 import json
+import time
 from common.getConfig import get_apiserver
+from step import multi_project_steps
 
 env_url = get_apiserver()
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
@@ -35,7 +37,10 @@ def step_get_cluster_name():
 def step_get_host_cluster_name():
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha3/clusters?labelSelector=cluster-role.kubesphere.io%2Fhost%3D'
     response = requests.get(url=url, headers=get_header())
-    host_cluster_name = response.json()['items'][0]['metadata']['name']
+    try:
+        host_cluster_name = response.json()['items'][0]['metadata']['name']
+    except IndexError:
+        host_cluster_name = None
     return host_cluster_name
 
 
@@ -249,9 +254,9 @@ def step_get_resource_of_cluster(cluster_name, resource_type, *condition):
 
 
 @allure.step('查询工作负载的详情信息')
-def step_get_app_workload_detail(cluster_name, project_name, resource_type, resource_name):
-    url = env_url + '/apis/clusters/' + cluster_name + '/apps/v1/namespaces/' + project_name + '/' + \
-          resource_type + '/' + resource_name
+def step_get_workload_detail(cluster_name, project_name, resource_type, resource_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/namespaces/' + \
+          project_name + '/' + resource_type + '?name=' + resource_name + '&sortBy=createTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -536,29 +541,38 @@ def step_get_cluster_scheduler(cluster_name):
 
 @allure.step('在监控告警/查看指定集群的告警信息')
 def step_get_alert_message(cluster_name, type, condition):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/' + type + 'alerts?' + \
-          condition + '&sortBy=createTime'
+    base_url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2beta1/clusteralerts?sortBy=activeAt&limit=10&'
+    if type == 'builtin':
+        url = base_url + 'builtin=true&' + condition
+    else:
+        url = base_url + condition
+    print(url)
+    # 'http://139.198.113.15:30881/kapis/clusters/host/alerting.kubesphere.io/v2beta1/clusteralerts?label_filters=severity%3Dcritical'
+    # 'http://139.198.113.15:30882/kapis/clusters/host/alerting.kubesphere.io/v2beta1/clusteralerts?sortBy=activeAt&limit=10&label_filters=severity%3Dcritical'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
-@allure.step('在监控告警/告警策略中创建告警策略(节点cpu利用率大于0)')
+@allure.step('在监控告警/规则组中创建规则组(策略为节点cpu利用率大于0.01)')
 def step_create_alert_policy(cluster_name, alert_name, node_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules'
-    data = {"name": alert_name, "query": "node:node_cpu_utilisation:avg1m{node=\"" + node_name + "\"} > 0",
-            "duration": "1m", "labels": {"severity": "warning"},
-            "annotations": {"summary": "Node " + node_name + " CPU usage > 0%",
-                            "message": "", "kind": "Node", "resources": "[\"" + node_name + "\"]",
-                            "rules": "[{\"_metricType\":\"node:node_cpu_utilisation:avg1m{$1}\","
-                                     "\"condition_type\":\">\",\"thresholds\":\"0\",\"unit\":\"%\"}]"}}
+    url = env_url + '/apis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2beta1/clusterrulegroups'
+    data = {"apiVersion": "alerting.kubesphere.io/v2beta1", "kind": "ClusterRuleGroup",
+            "metadata": {"name": alert_name, "labels": {"alerting.kubesphere.io/enable": "true"},
+                         "annotations": {"kubesphere.io/creator": "admin"}},
+            "annotations": {"aliasName": "", "description": ""},
+            "spec": {"interval": "1s", "partial_response_strategy": "", "rules": [
+                {"alert": alert_name + "test", "annotations": {"summary": "test-sum", "message": "test-mes"},
+                 "exprBuilder": {
+                     "node": {"names": [node_name], "metricThreshold": {"cpu": {"utilization": 0.01}},
+                              "comparator": ">"}},
+                 "disable": False, "for": "1m", "severity": "critical", "expr": ""}]}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
 
-@allure.step('在监控告警/查看用户自定义告警')
+@allure.step('在监控告警/查看用户自定义规则组')
 def step_get_alert_custom_policy(cluster_name, alert_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules?name=' \
-          + alert_name + '&sortBy=createTime'
+    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2beta1/clusterrulegroups/?name=' + alert_name
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -571,26 +585,24 @@ def step_delete_alert_custom_policy(cluster_name, alert_name):
 
 
 @allure.step('在监控告警/修改用户自定义告警策略的持续时间为5min')
-def step_edit_alert_custom_policy(cluster_name, alert_name, id, node_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules/' + alert_name
-    data = {"cluster": "default",
-            "name": alert_name, "type": "",
-            "id": id,
-            "query": "node:node_cpu_utilisation:avg1m{node=\"" + node_name + "\"} > 0",
-            "duration": "5m", "labels": {"alerttype": "metric", "rule_id": id, "severity": "warning"},
-            "state": "inactive", "health": "unknown"}
+def step_edit_alert_custom_policy(cluster_name, alert_name, id, resource_version, node_name):
+    url = env_url + '/apis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2beta1/clusterrulegroups/' + alert_name
+    data = {"kind": "ClusterRuleGroup", "apiVersion": "alerting.kubesphere.io/v2beta1",
+            "metadata": {"name": alert_name, "labels": {"alerting.kubesphere.io/enable": "true"},
+                         "annotations": {"kubesphere.io/creator": "admin"}, "resourceVersion": resource_version},
+            "spec": {"interval": "1s", "rules": [
+                {"alert": alert_name + "test", "expr": "", "for": "5m", "severity": "critical",
+                 "labels": {"rule_id": id},
+                 "annotations": {"summary": "test-sum", "message": "test-mes"}, "exprBuilder": {
+                    "node": {"names": [node_name], "metricThreshold": {"cpu": {"utilization": 0.01}},
+                             "comparator": ">"}},
+                 "disable": False}]}}
+
     response = requests.put(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
 
-@allure.step('在监控告警/查看用户自定义告警详情')
-def step_get_alert_custom_policy_detail(cluster_name, alert_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/rules/' + alert_name
-    response = requests.get(url=url, headers=get_header())
-    return response
-
-
-@allure.step('查看告警策略')
+@allure.step('查看规则组')
 def step_get_alert_policies(cluster_name, type, condition):
     """
     :type cluster_name:
@@ -598,8 +610,11 @@ def step_get_alert_policies(cluster_name, type, condition):
     :param condition: 查询条件
     :return:
     """
-
-    url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2alpha1/' + type + 'rules?' + condition + '&sortBy=createTime'
+    base_url = env_url + '/kapis/clusters/' + cluster_name + '/alerting.kubesphere.io/v2beta1/globalrulegroups?'
+    if type == 'builtin':
+        url = base_url + 'builtin=true&' + condition
+    else:
+        url = base_url + condition
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -789,9 +804,11 @@ def step_get_log_receiver(cluster_name, type):
 
 
 @allure.step('添加日志收集器')
-def step_add_log_receiver(cluster_name, type, log_type):
+def step_add_log_receiver(cluster_name, type, log_type, name):
     """
-    :param type: fluentd、kafka
+    :param name:
+    :param cluster_name:
+    :param type: fluentd、kafka、es
     :param log_type: logging、events、auditing
     :return:
     """
@@ -799,10 +816,13 @@ def step_add_log_receiver(cluster_name, type, log_type):
         spec = {"match": "kube.*", "forward": {"port": 24224, "host": "192.168.0.10"}}
     elif type == 'kafka':
         spec = {"match": "kube.*", "kafka": {"topics": "test-kafka", "brokers": "192.168.0.10:9092"}}
+    elif type == 'es':
+        spec = {"match": "kube.*", "es": {"logstashFormat": True, "timeKey": "@timestamp",
+                                          "logstashPrefix": "ks-logstash-log", "port": 9200, "host": "192.168.0.10"}}
 
     url = env_url + '/apis/clusters/' + cluster_name + '/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs'
     data = {"apiVersion": "logging.kubesphere.io/v1alpha2", "kind": "Output",
-            "metadata": {"name": "forward-" + log_type, "namespace": "kubesphere-logging-system",
+            "metadata": {"name": name, "namespace": "kubesphere-logging-system",
                          "labels": {"logging.kubesphere.io/enabled": "true",
                                     "logging.kubesphere.io/component": log_type},
                          "annotations": {"kubesphere.io/creator": "admin"}},
@@ -851,6 +871,7 @@ def step_get_log_receiver_detail(cluster_name, name):
 @allure.step('更改日志接收器的状态')
 def step_modify_log_receiver_status(cluster_name, name, status):
     """
+    :param cluster_name: 集群名称
     :param name: 日志接收器名称
     :param status: 日志接收器状态
     :return:
@@ -862,7 +883,7 @@ def step_modify_log_receiver_status(cluster_name, name, status):
 
 
 @allure.step('编辑日志接收器的地址')
-def step_modify_log_receiver_address(cluster_name, name, host, port):
+def step_modify_log_receiver_address(type, cluster_name, name, host, port):
     """
     :param cluster_name:
     :param host:
@@ -871,6 +892,58 @@ def step_modify_log_receiver_address(cluster_name, name, host, port):
     :return:
     """
     url = env_url + '/apis/clusters/' + cluster_name + '/logging.kubesphere.io/v1alpha2/namespaces/kubesphere-logging-system/outputs/' + name
-    data = {"spec": {"forward": {"host": host, "port": port}}}
+    if type == 'es':
+        data = {"spec": {
+            "es": {"host": host, "logstashFormat": True, "logstashPrefix": "ks-logstash-log", "port": port,
+                   "timeKey": "@timestamp"}}}
+    elif type == 'kafka':
+        data = {"spec": {"kafka": {"brokers": str(host) + ':' + str(port), "topics": "test-kafka"}}}
+    elif type == 'fluentd':
+        data = {"spec": {"forward": {"host": host, "port": port}}}
     response = requests.patch(url=url, headers=get_header_for_patch(), data=json.dumps(data))
     return response
+
+
+# 在多集群环境，验证非联邦项目的工作负载状态为ready
+def check_workload_ready_in_multi(cluster_name, project_name, resource_type, resource_name):
+    i = 0
+    while i < 180:
+        # 获取多集群环境中的工作负载
+        response = step_get_workload_detail(cluster_name, project_name, resource_type, resource_name)
+        # 判断工作负载的状态是否为ready
+        if 'unavailableReplicas' not in response.json()['items'][0]['status']:
+            return True
+        else:
+            time.sleep(5)
+            i = i + 5
+
+
+# 在多集群环境，验证非联邦项目的工作负载不存在
+def check_workload_not_exist_in_multi(cluster_name, project_name, resource_type, resource_name):
+    i = 0
+    while i < 180:
+        # 获取多集群环境中的工作负载
+        response = step_get_workload_detail(cluster_name, project_name, resource_type, resource_name)
+        # 判断工作负载不存在
+        if response.json()['totalItems'] == 0:
+            break
+        else:
+            time.sleep(3)
+            i = i + 3
+
+
+# 在多集群环境，验证联邦项目的工作负载状态为ready
+def check_workload_ready_in_fed_project(cluster_name, project_name, resource_type, resource_name, replicas):
+    i = 0
+    while i < 180:
+        response = multi_project_steps.step_get_workload_in_multi_project(cluster_name, project_name, resource_type,
+                                                                          resource_name)
+        try:
+            ready_replicas = response.json()['status']['readyReplicas']
+            if ready_replicas == replicas:
+                return True
+        except Exception as e:
+            print(e)
+        time.sleep(5)
+        i += 5
+    return False

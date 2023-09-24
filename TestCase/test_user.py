@@ -167,6 +167,8 @@ class TestUser(object):
                              [('user', '修改密码，然后使用修改后的密码登陆ks'),
                               ('admin', '使用admin账号修改用户密码，然后使用修改后的密码登陆ks')])
     def test_modify_user_pwd_by_admin(self, type, title, create_user):
+        response = ''
+        headers = ''
         # 等待创建的用户被激活
         time.sleep(3)
         # 使用新创建的用户登陆，并获取headers

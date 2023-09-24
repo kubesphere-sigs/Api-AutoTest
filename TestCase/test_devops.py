@@ -99,7 +99,7 @@ class TestDevOps(object):
     @allure.story('工程管理-基本信息')
     @allure.title('编辑信息')
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_modify_devopsinfo(self, create_ws, create_devops):
+    def test_modify_devops_info(self, create_ws, create_devops):
         # 获取devops的详细信息
         re = devops_steps.step_get_devopinfo(create_ws, create_devops)
         data = re.json()['items'][0]
@@ -116,14 +116,12 @@ class TestDevOps(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_account_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
-        description = '我是描述信息'
         username = 'dXNlcm5hbWU='
         password = 'cGFzc3dvcmQ='
         credential_type = 'basic-auth'
         data = {"username": username, "password": password}
         # 创建凭证
-        response = devops_steps.step_create_credential(create_devops, name, description, credential_type, data)
-        print(response.json())
+        response = devops_steps.step_create_credential(create_devops, name, credential_type, data)
         # 验证新建的凭证的type
         with pytest.assume:
             assert response.json()['type'] == 'credential.devops.kubesphere.io/' + credential_type
@@ -135,13 +133,12 @@ class TestDevOps(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_ssh_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
-        description = 'test'
         username = 'cXdl'
         private_key = 'YXNk'
         credential_type = 'ssh-auth'
         data = {"username": username, "private_key": private_key}
         # 创建凭证
-        response = devops_steps.step_create_credential(create_devops, name, description, credential_type, data)
+        response = devops_steps.step_create_credential(create_devops, name, credential_type, data)
         # 验证新建的凭证的type
         with pytest.assume:
             assert response.json()['type'] == 'credential.devops.kubesphere.io/' + credential_type
@@ -153,13 +150,11 @@ class TestDevOps(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_secret_text_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
-        description = '我是描述信息'
         secret = 'cXdlYXNk'
         credential_type = 'secret-text'
         data = {"secret": secret}
         # 创建凭证
-        response = devops_steps.step_create_credential(create_devops, name, description, credential_type, data)
-        print(response.json())
+        response = devops_steps.step_create_credential(create_devops, name, credential_type, data)
         # 验证新建的凭证的type
         with pytest.assume:
             assert response.json()['type'] == 'credential.devops.kubesphere.io/' + credential_type
@@ -171,13 +166,11 @@ class TestDevOps(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_create_kube_config_credential(self, create_devops):
         name = 'test' + str(commonFunction.get_random())
-        description = '我是描述信息'
         credential_type = 'kubeconfig'
         data = {
             "content": "YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIGNlcnRpZmljYXRlLWF1dGhvcml0eS1kYXRhOiBMUzB0TFMxQ1JVZEpUaUJEUlZKVVNVWkpRMEZVUlMwdExTMHRDazFKU1VONVJFTkRRV0pEWjBGM1NVSkJaMGxDUVVSQlRrSm5hM0ZvYTJsSE9YY3dRa0ZSYzBaQlJFRldUVkpOZDBWUldVUldVVkZFUlhkd2NtUlhTbXdLWTIwMWJHUkhWbnBOUWpSWVJGUkplRTFFUlhkT1ZFRjVUWHBKZVU1R2IxaEVWRTE0VFVSRmQwMTZRWGxOZWtsNVRrWnZkMFpVUlZSTlFrVkhRVEZWUlFwQmVFMUxZVE5XYVZwWVNuVmFXRkpzWTNwRFEwRlRTWGRFVVZsS1MyOWFTV2gyWTA1QlVVVkNRbEZCUkdkblJWQkJSRU5EUVZGdlEyZG5SVUpCUzBaaENuaEpVRFJOZWxoNksxRjBTMUYwT0hRNWRVRjNiR05hU1VSMFVXUjBRekl2TVdoRFIyWjZjVEpSTkN0VEwwSndiamxaVG1kblZFeDJXR3hVTjBkNmVGWUtkRk56TjFsRVNsbHFaak5pYUhsNmFHWjNXazVIWmtGU2MwUk9NazVRWVVaRE1XcEhNMmxCV2tOWUwwTldWblY2WXpsV1YzbzFRMjhyUlhsR0wxUjJlQXB2Y0RaMWIzUmhXR2syYlM5emVVWk5SMVExY1RablVIaDFSSE51YWpaaFNIaFJWRkEzVDB0S1dFcGhPRGdyUVVSVGFUTkhNMDFZVEd0YWRuWnZNVlpoQ2xKcVZtVnRhRTU1TDBSNWIxbE9ORWRKUkN0eE5sZzFLemRVUVZGNWRtTTBaV3BNZUdGVk5HSk9WRzl6ZEhCb1lUZEZjWE5XVHk5ak5qTkpRWGQ1VFhRS09YVkVUVUppYTJkbGRHWlJhVUp6Y0dKVWRVeEhSbWN5UW1OamMyVnFaalJ3V0haaFZtaG5WMnhTVXpOWWIyMDVXU3R0VW5oM2EwaFRZa3BoZEdwdk5ncFNZUzlXTkVWVVVEQjZXSE0xTjJSdmFVY3dRMEYzUlVGQllVMXFUVU5GZDBSbldVUldVakJRUVZGSUwwSkJVVVJCWjB0clRVRTRSMEV4VldSRmQwVkNDaTkzVVVaTlFVMUNRV1k0ZDBSUldVcExiMXBKYUhaalRrRlJSVXhDVVVGRVoyZEZRa0ZKSzFOcWIwOTVMMlpzVGpacVdtMWxRVWg2WlhOUmFuaG5NM01LZWpjMGNtaHZTMmswYVRFeVdDOVBORzFCY0hGc1RtRTBZV1pFVERKV1N6RTVjbVpIZDNaSVYwMW1TalJaU1d0ak5VczFjMHRzU21SblJuRXlaRnBFTVFwSU56WlZkakowVTAxdGNVOXJWVlZDY1RWQkwydHhPWFZ2YUhwMGNGTTJSM3BVUTFVNEwza3hZMHRWYWpoMWJETjZhVVpvSzJKSmMzaHRWa1pxWmpaVENsWjNZbWQ2WlRZd09XTTVaelJNVkZWUVJHWmFkVGxSTWpaaWJtWXdLM3BwWVZjMGVYTlBibWhzYXl0b1RGUm1UM0ZGT1UxSVRYVnVVbTh5SzJwVFdqRUtlWEF6WTNwbVRrRklSM3BDZUU1SFZUWmtja1I0ZVhZNVUzRTFaa1ZaVEhsS05FRTFiSEUxTlVaeFdVRlBWV1F4U3pkRlJXUmtSbFpPUmtaRVdtZE9SZ3BOYkhjMFMwWlRkVGxJTkVWNVFrMVVOa3BRVUUxaE1saG1WemwyU1ROUFZIbEJLeTlxYlhOS2MyaHFaMlJpU0dVcmJUaGtiVnBRZW00elVUMEtMUzB0TFMxRlRrUWdRMFZTVkVsR1NVTkJWRVV0TFMwdExRbz0KICAgIHNlcnZlcjogaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjCiAgbmFtZToga3ViZXJuZXRlcwpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3Rlcjoga3ViZXJuZXRlcwogICAgbmFtZXNwYWNlOiBkZWZhdWx0CiAgICB1c2VyOiBhZG1pbgogIG5hbWU6IGFkbWluQGt1YmVybmV0ZXMKY3VycmVudC1jb250ZXh0OiBhZG1pbkBrdWJlcm5ldGVzCmtpbmQ6IENvbmZpZwpwcmVmZXJlbmNlczoge30KdXNlcnM6Ci0gbmFtZTogYWRtaW4KICB1c2VyOgogICAgdG9rZW46IGV5SmhiR2NpT2lKU1V6STFOaUlzSW10cFpDSTZJblE1YmpoMlJqWlNhSEJpYm01QlZsQjBZVU10TWw4d04xTTVRMjFVZVd0ellqWXliMmxRU1ZWb2NVVWlmUS5leUpwYzNNaU9pSnJkV0psY201bGRHVnpMM05sY25acFkyVmhZMk52ZFc1MElpd2lhM1ZpWlhKdVpYUmxjeTVwYnk5elpYSjJhV05sWVdOamIzVnVkQzl1WVcxbGMzQmhZMlVpT2lKcmRXSmxjM0JvWlhKbExYTjVjM1JsYlNJc0ltdDFZbVZ5Ym1WMFpYTXVhVzh2YzJWeWRtbGpaV0ZqWTI5MWJuUXZjMlZqY21WMExtNWhiV1VpT2lKcmRXSmxjM0JvWlhKbExYUnZhMlZ1TFRSa2JqZHJJaXdpYTNWaVpYSnVaWFJsY3k1cGJ5OXpaWEoyYVdObFlXTmpiM1Z1ZEM5elpYSjJhV05sTFdGalkyOTFiblF1Ym1GdFpTSTZJbXQxWW1WemNHaGxjbVVpTENKcmRXSmxjbTVsZEdWekxtbHZMM05sY25acFkyVmhZMk52ZFc1MEwzTmxjblpwWTJVdFlXTmpiM1Z1ZEM1MWFXUWlPaUkzTm1JMFltWXpPQzAyTURoa0xUUmtPV1V0T1dZeU9DMHpaVE5rTm1ReFptSmtZekVpTENKemRXSWlPaUp6ZVhOMFpXMDZjMlZ5ZG1salpXRmpZMjkxYm5RNmEzVmlaWE53YUdWeVpTMXplWE4wWlcwNmEzVmlaWE53YUdWeVpTSjkuR1VGOW1GYzlkQWpLdm5MMDNOMHlLWlNtUk1IT2VWQlBhUTBpT0xBYTZ6Zl9ZbmN6TmpmTHJvU2txWVNGdU1WSDdXSTNYejQ2QWdLalBKZXA0NGtHbTVQbVE3MldHY2hwTkhuek82TGNWUkhQMV9TZDBqUDVKRDdKaktMN1ZyQ3lQb2l6b2VFMi1EM3V5QWxybXN1cGV0bnJWYVM1OVctcXkzZ1pWdGt1Z1BHQ2NBcGlMOHp0M2xsVC03dVlWN1RWcEFIUkFCTEQ2eFJSM3gxdnk5N3NUTXl4S2NoRjMxa3M3a0ZUdmJkRHZjeV93ZUtoWm5RTmRWWkllNDQwTktLYmFpRHotS3dzRks4UzZzMzZpRkowdWwyd1NTaWZCcG96aENmY2JIMGV4NTZkTFZyVFlMRWFoS2JWTEJSbUpDRGZUbTUzY2VndXExYXlNZUVuUTBkQU5nCg=="}
         # 创建凭证
-        response = devops_steps.step_create_credential(create_devops, name, description, credential_type, data)
-        print(response.json())
+        response = devops_steps.step_create_credential(create_devops, name, credential_type, data)
         # 验证新建的凭证的type
         with pytest.assume:
             assert response.json()['type'] == 'credential.devops.kubesphere.io/' + credential_type
@@ -194,7 +187,6 @@ class TestDevOps(object):
         # 查询之前用例创建的SSH凭证
         condition = credential_name
         result = devops_steps.step_search_credential(devops_name=create_devops, condition=condition)
-        print(result)
         # 校验查询结果
         with pytest.assume:
             assert result == condition
@@ -209,7 +201,7 @@ class TestDevOps(object):
         credential_name = 'ssh' + str(commonFunction.get_random())
         devops_steps.step_create_ssh_credential(create_devops, credential_name)
         # 查询之前创建的凭证
-        condition = credential_name
+        condition = 'ssh'
         result = devops_steps.step_search_credential(devops_name=create_devops, condition=condition)
         # 校验查询结果
         with pytest.assume:
@@ -285,7 +277,7 @@ class TestDevOps(object):
     def test_devops_role_fuzzy(self, create_devops):
         response = devops_steps.step_get_role(create_devops, 'adm')
         with pytest.assume:
-            assert response.json()['totalItems'] == 1  # 验证查询到的结果数量为2
+            assert response.json()['totalItems'] == 1  # 验证查询到的结果数量为1
         # 验证查找到的角色
         assert response.json()['items'][0]['metadata']['name'] == 'admin'
 
@@ -335,15 +327,15 @@ class TestDevOps(object):
     def test_devops_role_edit_authority(self, create_devops):
         # 创建角色
         role_name = 'test-role' + str(commonFunction.get_random())
-        devops_steps.step_create_role(create_devops, role_name)
+        response = devops_steps.step_create_role(create_devops, role_name)
         # 获取角色的resourceVersion
-        resource_version = commonFunction.get_devops_resource_version(create_devops, role_name)
+        resource_version = response.json()['metadata']['resourceVersion']
         # 编辑角色的权限
-        authority = '["role-template-view-pipelines","role-template-view-credentials","role-template-view-basic","role-template-manage-pipelines"]'
+        authority = '["role-template-view-pipelines","role-template-view-credentials","role-template-view-basic"]'
         annotations = {"iam.kubesphere.io/aggregation-roles": authority,
-                       "kubesphere.io/alias-name": "我是别名",
+                       "kubesphere.io/alias-name": "",
                        "kubesphere.io/creator": "admin",
-                       "kubesphere.io/description": "我是描述信息"}
+                       "kubesphere.io/description": ""}
 
         response = devops_steps.step_edit_role_authority(create_devops, role_name, annotations, resource_version)
         # 验证修改后的权限信息
@@ -412,7 +404,7 @@ class TestDevOps(object):
     @allure.severity(allure.severity_level.CRITICAL)
     def test_devops_invite_user(self, create_user, create_ws, create_devops):
         role = 'viewer'
-        commonFunction.ws_invite_user(create_ws, create_user, create_ws + '-viewer')  # 将创建的用户邀请到企业空间
+        commonFunction.ws_invite_user(create_ws, create_user, create_ws + '-' + role)  # 将创建的用户邀请到企业空间
         # 将用户邀请到devops项目
         devops_steps.step_invite_member(create_devops, create_user, role)
         response = devops_steps.step_invite_member(create_devops, create_user, role)
@@ -424,7 +416,7 @@ class TestDevOps(object):
     def test_devops_edit_user(self, create_user, create_ws, create_devops):
         role_old = 'operator'
         role_new = 'viewer'
-        commonFunction.ws_invite_user(create_ws, create_user, create_ws + '-viewer')  # 将创建的用户邀请到企业空间
+        commonFunction.ws_invite_user(create_ws, create_user, create_ws + '-' + role_new)  # 将创建的用户邀请到企业空间
         # 将用户邀请到devops项目
         devops_steps.step_invite_member(create_devops, create_user, role_old)
         response = devops_steps.step_edit_member(create_devops, create_user, role_new)
@@ -460,7 +452,8 @@ class TestDevOps(object):
                 # 查看流水线详情
                 r = devops_steps.step_get_pipeline(dev_name_new, pipeline_name)
                 # 获取流水线的 jenkins-metadata
-                jenkins_metadata = r.json()['items'][0]['metadata']['annotations']['pipeline.devops.kubesphere.io/jenkins-metadata']
+                jenkins_metadata = r.json()['items'][0]['metadata']['annotations'][
+                    'pipeline.devops.kubesphere.io/jenkins-metadata']
                 # 获取流水线的健康状态
                 weather_score = eval(jenkins_metadata)['weatherScore']  # jenkins_metadata是str类型，使用eval将其转化为dict
                 # 获取流水线的分支数量
@@ -587,7 +580,7 @@ class TestDevOps(object):
     def test_delete_cd(self, create_devops, create_code_repository, delete_resource, title):
         # 创建cd任务
         cd_name = 'test-cd' + str(commonFunction.get_random())
-        annotations = {"kubesphere.io/alias-name": "bieming", "kubesphere.io/description": "miaoshu",
+        annotations = {"kubesphere.io/alias-name": "", "kubesphere.io/description": "",
                        "kubesphere.io/creator": "admin"}
         ns = 'test-pro' + str(commonFunction.get_random())
         path = 'manifest'
@@ -604,7 +597,7 @@ class TestDevOps(object):
             i += 10
         if delete_resource == 'true':
             # 删除cd任务并删除创建的资源
-            devops_steps.step_delete_cd(create_devops, cd_name, delete_resource)
+            devops_steps.step_delete_cd(create_devops, cd_name, 'true')
             # 等待资源删除成功
             count_deploy = 0
             i = 0

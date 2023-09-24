@@ -167,6 +167,7 @@ class TestMetering(object):
             # 获取集群节点的数量
             count = re.json()['totalItems']
             # 获取节点的名称
+            name = ''
             for j in range(0, count):
                 try:
                     name = re.json()['items'][j]['metadata']['name']
@@ -328,12 +329,12 @@ class TestMetering(object):
                     # 获取项目的数量
                     project_count = re.json()['totalItems']
                     project_names = []
-                    # 获取企业空间中项目的名称
-                    for j in range(0, project_count):
-                        project_name = re.json()['items'][j]['metadata']['name']
-                        project_names.append(project_name)
-                    # 查询每个项目最近1h的资源消费信息
-                    if len(project_names) > 0:
+                    if project_count > 0:
+                        # 获取企业空间中项目的名称
+                        for j in range(0, project_count):
+                            project_name = re.json()['items'][j]['metadata']['name']
+                            project_names.append(project_name)
+                        # 查询每个项目最近1h的资源消费信息
                         r = multi_meter_steps.step_get_project_consumption(metric, project_names)
                         # 获取查询结果中的metric_name
                         metric_name = r.json()['results'][0]['metric_name']
@@ -593,3 +594,7 @@ class TestMetering(object):
                                             print(e)
                                             print('项目：' + project_name + ' 资源类型：' + k + ' 资源名称：' + key + ' 无历史消费信息')
                                             break
+
+
+if __name__ == '__main__':
+    pytest.main(['-s', 'test_multi_meter.py'])

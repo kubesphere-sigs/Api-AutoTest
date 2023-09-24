@@ -1,3 +1,5 @@
+import time
+
 import requests
 import json
 import allure
@@ -82,6 +84,8 @@ def step_create_ws_role(ws_name, ws_role_name, authory):
                          }
             }
     response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    if response.status_code != 200:
+        time.sleep(2)
     return response
 
 
@@ -100,6 +104,8 @@ def step_edit_role_authory(ws_name, role_name, version, authory):
                          }
             }
     response = requests.put(url, headers=get_header(), data=json.dumps(data))
+    if response.status_code != 200:
+        time.sleep(2)
     return response
 
 
@@ -244,7 +250,7 @@ def step_delete_user(user_name):
     requests.delete(url, headers=get_header())
 
 
-@allure.step('在多集群企业空间创建项目')
+@allure.step('在多集群企业空间的指定集群创建项目')
 def step_create_project(cluster_name, ws_name, project_name):
     url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
           ws_name + '/namespaces'
@@ -383,7 +389,7 @@ def step_get_user_ws():
 
 
 @allure.step('创建多集群企业空间')
-def step_create_multi_ws(ws_name, alias_name, description, cluster_names):
+def step_create_multi_ws(ws_name, cluster_names, alias_name='', description=''):
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces'
     clusters = []
     if isinstance(cluster_names, str):

@@ -3,16 +3,14 @@ import sys
 import yaml
 import json
 import random
-from step import project_steps, multi_cluster_steps
+from step import multi_cluster_steps, cluster_steps, multi_project_steps
 import time
 import datetime
 from common.getHeader import get_header, get_header_for_patch
-from step import cluster_steps
 import allure
 from common.getConfig import get_apiserver
 from common.getData import DoexcleByPandas
 from time import sleep
-
 
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
@@ -189,7 +187,8 @@ def ws_invite_user(ws_name, user_name, ws_role):
     """
     url = env_url + '/kapis/iam.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/workspacemembers'
     data = [{"username": user_name, "roleRef": ws_role}]
-    requests.post(url, headers=get_header(), data=json.dumps(data))
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
 
 
 # 创建devops工程
@@ -393,7 +392,7 @@ def get_before_timestamp_day(day):
 def get_component_health_of_cluster(namespace_actual):
     if check_multi_cluster() is True:
         # 获取多集群环境的host集群的名称
-        host_name = project_steps.step_get_host_name()
+        host_name = multi_cluster_steps.step_get_host_cluster_name()
         url = env_url + '/kapis/clusters/' + host_name + '/resources.kubesphere.io/v1alpha2/components'
     else:
         url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/components'
@@ -523,16 +522,16 @@ def request_resource(url, params, data, story, title, method, severity, conditio
     # 将用例中的内容打印在报告中
     print(
         '用例编号: ' + str(id) + '\n'
-                             '用例请求的URL地址: ' + str(url_new) + '\n'
-                                                             '用例使用的请求数据: ' + str(data) + '\n'
-                                                                                         '用例模块: ' + story + '\n'
-                                                                                                            '用例标题: ' + title + '\n'
-                                                                                                                               '用例的请求方式: ' + method + '\n '
-                                                                                                                                                      '用例优先级: ' + severity + '\n'
-                                                                                                                                                                             '用例的校验条件: ' + str(
+                                 '用例请求的URL地址: ' + str(url_new) + '\n'
+                                                                        '用例使用的请求数据: ' + str(data) + '\n'
+                                                                                                             '用例模块: ' + story + '\n'
+                                                                                                                                    '用例标题: ' + title + '\n'
+                                                                                                                                                           '用例的请求方式: ' + method + '\n '
+                                                                                                                                                                                         '用例优先级: ' + severity + '\n'
+                                                                                                                                                                                                                     '用例的校验条件: ' + str(
             condition) + '\n'
                          '用例的实际结果: ' + str(condition_new) + '\n'
-                                                            '用例的预期结果: ' + str(except_result)
+                                                                   '用例的预期结果: ' + str(except_result)
     )
 
 
@@ -556,8 +555,7 @@ def random_ip():
     n = random.randint(0, 255)
     x = random.randint(0, 255)
     y = random.randint(0, 255)
-    mask = random.randint(8, 32)
-    return str(m) + '.' + str(n) + '.' + str(x) + '.' + str(y) + '/' + str(mask)
+    return str(m) + '.' + str(n) + '.' + str(x) + '.' + str(y)
 
 
 # 查询csi-qingcloud组件
@@ -630,11 +628,26 @@ def write_environment_info():
     # 如果是多集群环境
     else:
         response = multi_cluster_steps.step_get_cluster()
-        print(response.json()['totalItems'])
-        print(response.json()['items'][0]['metadata']['name'])
+        # 获取集群数量
+        cluster_count = response.json()['totalItems']
+        # 获取host集群的名称
+        host_cluster_name = multi_cluster_steps.step_get_host_cluster_name()
+        # 获取host集群版本
+        re = multi_cluster_steps.step_get_cluster_version(host_cluster_name)
+        ks_version = re.json()['gitVersion']
+        k8s_version = re.json()['kubernetes']['gitVersion']
+        # 获取host集群的os
+        platform = re.json()['platform']
+        # 获取所有集群的名称
+        cluster_names = []
+        for i in range(cluster_count):
+            cluster_names.append(response.json()['items'][i]['metadata']['name'])
         env = {
             "TEST_URL": env_url,
-            "CLUSTER_NAME": response.json()['items'][0]
+            "CLUSTER_NAME": cluster_names,
+            "KS_VERSION": ks_version,
+            "K8S_VERSION": k8s_version,
+            "PLATFORM": platform
         }
     # 将测试环境信息写入yaml文件
     with open('../environment.properties', 'w', encoding='utf-8') as f:

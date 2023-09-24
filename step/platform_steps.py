@@ -173,7 +173,7 @@ def step_modify_user_pwd(user_name, headers, new_pwd):
 def step_get_base_info(start_time, end_time, step, times):
     url = env_url + '/kapis/monitoring.kubesphere.io/v1alpha3/kubesphere?start=' + start_time + \
           '&end=' + end_time + '&step=' + step + 's&times=' + times + '&metrics_filter=kubesphere_cluser_count%7C' \
-          'kubesphere_workspace_count%7Ckubesphere_user_count%7Ckubesphere_app_template_count%24'
+                                                                      'kubesphere_workspace_count%7Ckubesphere_user_count%7Ckubesphere_app_template_count%24'
     response = requests.get(url=url, headers=get_header())
     return response
 
@@ -205,6 +205,3 @@ def step_get_kubeconfig():
     url = env_url + '/kapis/resources.kubesphere.io/v1alpha2/users/admin/kubeconfig'
     response = requests.get(url=url, headers=get_header())
     return response
-
-
-

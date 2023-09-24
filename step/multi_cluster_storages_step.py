@@ -1,3 +1,5 @@
+import time
+
 import requests
 import json
 import allure
@@ -13,13 +15,13 @@ env_url = get_apiserver()
 
 @allure.step('通过名称查询存储卷')
 def search_volume_by_name(cluster_name, volume_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/persistentvolumeclaims?name='+volume_name+'&sortBy=createTime&limit=10'
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 def delete_volume(cluster_name, project_name, volume_name):
-    url = env_url + '/api/clusters/'+cluster_name+'/v1/namespaces/'+project_name+'/persistentvolumeclaims/' + volume_name
+    url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + '/persistentvolumeclaims/' + volume_name
     response = requests.delete(url=url, headers=get_header())
     return response
 
@@ -48,7 +50,7 @@ def step_create_sc(cluster_name, sc_name, expansion):
 
 @allure.step('创建授权规则')
 def create_sc_accessor(cluster_name, sc_name):
-    url = env_url + '/apis/clusters/'+cluster_name+'/storage.kubesphere.io/v1alpha1/accessors'
+    url = env_url + '/apis/clusters/' + cluster_name + '/storage.kubesphere.io/v1alpha1/accessors'
     data = {"apiVersion": "storage.kubesphere.io/v1alpha1",
             "kind": "Accessor",
             "metadata": {"name": sc_name + "-accessor",
@@ -93,6 +95,7 @@ def search_sc_by_name(cluster_name, sc_name):
     response = requests.get(url, headers=get_header())
     return response
 
+
 @allure.step('查询存储类信息')
 def get_sc_info(cluster_name, sc_name):
     url = env_url + '/apis/clusters/' + cluster_name + '/storage.k8s.io/v1/storageclasses/' + sc_name
@@ -122,38 +125,54 @@ def get_sc_accessor(cluster_name, sc_name):
     return response
 
 
+@allure.step('存储类授权规则初始化')
+def init_sc_accessor(cluster_name, sc_name):
+    url = env_url + '/apis/clusters/' + cluster_name + '/storage.kubesphere.io/v1alpha1/accessors'
+    data = {"apiVersion": "storage.kubesphere.io/v1alpha1", "kind": "Accessor",
+            "metadata": {"name": sc_name + "-accessor", "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": {"storageClassName": sc_name + "-disabled", "namespaceSelector": {
+                "fieldSelector": [{"fieldExpressions": [{"field": "Name", "operator": "In", "values": []}]}]},
+                     "workspaceSelector": {
+                         "fieldSelector": [{"fieldExpressions": [{"field": "Name", "operator": "In", "values": []}]}]}}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
 @allure.step('设置存储类授权规则')
-def set_sc_accessor(cluster_name, sc_name, ns_accessor, ws_accessor, scn):
-    re = get_sc_accessor(sc_name)
+def set_sc_accessor(cluster_name, sc_name, ns_accessor, ws_accessor):
+    # 授权规则初始化
+    init_sc_accessor(cluster_name, sc_name)
+    # 查询存储类授权规则
+    re = get_sc_accessor(cluster_name, sc_name)
+    # 获取存储类授权规则uid
     uid = re.json()['metadata']['uid']
+    # 获取存储类授权规则resourceVersion
     resource_version = re.json()['metadata']['resourceVersion']
+    # 获取存储类授权规则的generation
     gen = re.json()['metadata']['generation']
+    # 获取存储类授权规则的createtime
     createtime = re.json()['metadata']['creationTimestamp']
+    # 获取存储类授权规则的time
     time = re.json()['metadata']['managedFields'][0]['time']
+    # 设置存储类授权规则
     url = env_url + '/apis/clusters/' + cluster_name + '/storage.kubesphere.io/v1alpha1/accessors/' + sc_name + '-accessor'
-    data = {"apiVersion": "storage.kubesphere.io/v1alpha1",
+    data = {"cluster": cluster_name,
+            "name": sc_name + "-accessor",
+            "apiVersion": "storage.kubesphere.io/v1alpha1",
             "kind": "Accessor",
-            "metadata": {
-                "annotations": {"kubesphere.io/creator": "admin"},
-                "creationTimestamp": createtime,
-                "generation": gen,
-                "managedFields": [
-                    {"apiVersion": "storage.kubesphere.io/v1alpha1",
-                     "fieldsType": "FieldsV1",
+            "metadata": {"annotations": {"kubesphere.io/creator": "admin"}, "creationTimestamp": createtime,
+                         "generation": gen, "managedFields": [
+                    {"apiVersion": "storage.kubesphere.io/v1alpha1", "fieldsType": "FieldsV1",
                      "fieldsV1": {"f:metadata": {"f:annotations": {".": {}, "f:kubesphere.io/creator": {}}},
-                                  "f:spec": {".": {}, "f:storageClassName": {}}},
-                     "manager": "python-requests",
-                     "operation": "Update",
-                     "time": time}],
-                "name": sc_name + "-accessor",
-                "resourceVersion": resource_version,
-                "uid": uid
-            },
-            "spec": {"storageClassName": scn,
-                     "namespaceSelector": {"fieldSelector": [{"fieldExpressions": ns_accessor}]},
-                     "workspaceSelector": {"fieldSelector": [{"fieldExpressions": ws_accessor}]}
-                     }
-            }
+                                  "f:spec": {".": {}, "f:namespaceSelector": {".": {}, "f:fieldSelector": {}},
+                                             "f:storageClassName": {},
+                                             "f:workspaceSelector": {".": {}, "f:fieldSelector": {}}}},
+                     "manager": "Mozilla", "operation": "Update", "time": time}],
+                         "name": sc_name + "-accessor", "resourceVersion": resource_version,
+                         "uid": uid}, "spec": {"namespaceSelector": {
+            "fieldSelector": [{"fieldExpressions": ns_accessor}]},
+            "storageClassName": sc_name,
+            "workspaceSelector": {"fieldSelector": [{"fieldExpressions": ws_accessor}]}}}
     response = requests.put(url, headers=get_header(), data=json.dumps(data))
     return response
 
@@ -251,8 +270,8 @@ def set_default_sc(cluster_name, sc_name, expansion):
     return response
 
 
-@allure.step('创建存储卷')
-def step_create_volume(cluster_name, project_name, sc_name, volume_name):
+@allure.step('创建持久卷声明')
+def step_create_pvc(cluster_name, project_name, sc_name, volume_name):
     url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + '/persistentvolumeclaims'
     data = {"apiVersion": "v1",
             "kind": "PersistentVolumeClaim",
@@ -270,10 +289,38 @@ def step_create_volume(cluster_name, project_name, sc_name, volume_name):
     return response
 
 
+@allure.step('验证持久卷声明的状态为已绑定')
+def step_check_pvc_status(cluster_name, volume_name):
+    i = 0
+    while i < 60:
+        # 查询指定的存储卷声明
+        response = search_volume_by_name(cluster_name, volume_name)
+        try:
+            if response.json()['items'][0]['status']['phase'] == 'Bound':
+                break
+            else:
+                time.sleep(1)
+                i += 1
+        except KeyError:
+            print('KeyError')
+
+
+@allure.step('克隆持久卷声明')
+def step_clone_pvc(cluster_name, project_name, sc_name, volume_name, clone_name):
+    url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + '/persistentvolumeclaims'
+    data = {"apiVersion": "v1", "kind": "PersistentVolumeClaim",
+            "metadata": {"name": clone_name, "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "10Gi"}},
+                     "dataSource": {"kind": "PersistentVolumeClaim", "name": volume_name},
+                     "storageClassName": sc_name}}
+    response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    return response
+
+
 @allure.step('创建卷快照类')
-def create_vsc(cluster_name, vsc_name, driver, policy):
-    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1beta1/volumesnapshotclasses'
-    data = {"apiVersion": "snapshot.storage.k8s.io/v1beta1",
+def step_create_vsc(cluster_name, vsc_name, driver, policy):
+    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1/volumesnapshotclasses'
+    data = {"apiVersion": "snapshot.storage.k8s.io/v1",
             "kind": "VolumeSnapshotClass",
             "deletionPolicy": policy,
             "driver": driver,
@@ -287,8 +334,8 @@ def create_vsc(cluster_name, vsc_name, driver, policy):
 
 @allure.step('编辑卷快照类')
 def set_vsc(cluster_name, vsc_name, driver, policy, creationtime, time, generation, version, uid, alias_name, des):
-    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1beta1/volumesnapshotclasses/' + vsc_name
-    data = {"apiVersion": "snapshot.storage.k8s.io/v1beta1",
+    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1/volumesnapshotclasses/' + vsc_name
+    data = {"apiVersion": "snapshot.storage.k8s.io/v1",
             "deletionPolicy": policy,
             "driver": driver,
             "kind": "VolumeSnapshotClass",
@@ -336,20 +383,20 @@ def get_vs_for_vsc(cluster_name, vsc_name):
 
 @allure.step('查询卷快照类已有快照')
 def search_vs_for_vsc(cluster_name, vsc_name, vs_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/volumesnapshots?volumeSnapshotClassName=' + vsc_name + '&name='+vs_name+'&sortBy=createTime&limit=10'
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/volumesnapshots?volumeSnapshotClassName=' + vsc_name + '&name=' + vs_name + '&sortBy=createTime&limit=10'
     response = requests.get(url, headers=get_header())
     return response
 
 
 @allure.step('创建快照')
 def create_volume_snapshots(cluster_name, project, vs_name, vsc_name, volume_name):
-    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1beta1/namespaces/' + project + '/volumesnapshots'
-    data = {"apiVersion": "snapshot.storage.k8s.io/v1beta1",
+    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1/namespaces/' + project + '/volumesnapshots'
+    data = {"apiVersion": "snapshot.storage.k8s.io/v1",
             "kind": "VolumeSnapshot",
             "metadata": {"name": vs_name,
                          "annotations": {"kubesphere.io/creator": "admin"}},
             "spec": {"volumeSnapshotClassName": vsc_name,
-                     "source": {"kind": "VolumeSnapshot",
+                     "source": {"kind": "PersistentVolumeClaim",
                                 "persistentVolumeClaimName": volume_name}
                      }
             }
@@ -363,36 +410,42 @@ def search_vs_by_name(cluster_name, vs_name):
     response = requests.get(url, headers=get_header())
     return response
 
+@allure.step('验证卷快照的状态为创建成功')
+def step_check_vs_status(cluster_name, vs_name):
+    i = 0
+    while i < 180:
+        # 查询指定的卷快照类
+        response = search_vs_by_name(cluster_name, vs_name)
+        try:
+            if response.json()['items'][0]['status']['readyToUse']:
+                return True
+            else:
+                time.sleep(1)
+                i += 1
+        except KeyError:
+            print('KeyError')
+    return False
+
+
+@allure.step('使用卷快照创建持久卷声明')
+def create_pvc_by_vs(cluster_name, project_name, pvc_name, vs_name, sc_name):
+    url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' + project_name + '/persistentvolumeclaims'
+    data = {"apiVersion": "v1", "kind": "PersistentVolumeClaim",
+            "metadata": {"namespace": project_name, "name": pvc_name, "labels": {},
+                         "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": {"resources": {"requests": {"storage": "10Gi"}}, "storageClassName": sc_name,
+                     "dataSource": {"name": vs_name, "kind": "VolumeSnapshot", "apiGroup": "snapshot.storage.k8s.io"},
+                     "accessModes": ["ReadWriteOnce"]}}
+    response = requests.post(url, headers=get_header(), data=json.dumps(data))
+    return response
 
 @allure.step('删除卷快照')
 def delete_vs(cluster_name, project_name, vs_name):
-    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1beta1/namespaces/'+project_name+'/volumesnapshots/' + vs_name
+    url = env_url + '/apis/clusters/' + cluster_name + '/snapshot.storage.k8s.io/v1beta1/namespaces/' + project_name + '/volumesnapshots/' + vs_name
     response = requests.delete(url, headers=get_header())
     return response
 
 
-@allure.step('通过卷快照创建卷')
-def create_volumne_by_vs(cluster_name, project_name, volume_name, sc_name):
-    url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/'+project_name+'/persistentvolumeclaims'
-    data = {"apiVersion": "v1",
-            "kind": "PersistentVolumeClaim",
-            "metadata": {"namespace": project_name,
-                         "name": volume_name,
-                         "labels": {},
-                         "annotations": {"kubesphere.io/creator": "admin"}},
-            "spec": {"resources": {"requests": {"storage": "10Gi"}},
-                     "storageClassName": sc_name,
-                     "dataSource": {"name": volume_name,
-                                    "kind": "VolumeSnapshot",
-                                    "apiGroup": "snapshot.storage.k8s.io"},
-                     "accessModes": ["ReadWriteOnce"]}
-            }
-    response = requests.post(url, headers=get_header(), data=json.dumps(data))
-    return response
-
-
-# 存储卷 [{name: "volume-pkb0hm", persistentVolumeClaim: {claimName: "vv"}}]
-#  volume mounts [{name: "volume-pkb0hm", readOnly: false, mountPath: "/data"}]
 @allure.step('挂载存储卷')
 def mount_volume(cluster_name, ns_name, deploy_name, container_name, volume, volume_mounts):
     url1 = env_url + '/apis/' + cluster_name + '/apps/v1/namespaces/pro/deployments/' + deploy_name

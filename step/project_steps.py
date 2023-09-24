@@ -2,6 +2,7 @@ import requests
 import json
 import allure
 import sys
+import time
 from common.getHeader import get_header, get_header_for_patch
 from common import commonFunction
 from common.getConfig import get_apiserver
@@ -88,6 +89,19 @@ def step_get_assign_job(project_name, way, condition):
           condition + '&sortBy=updateTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
+
+@allure.step('验证任务状态为已完成')
+def step_get_job_status_complete(project_name, job_name, completions=2):
+    i = 0
+    while i < 100:
+        try:
+            res = step_get_job_detail(project_name, job_name)
+            if res.json()['items'][0]['status']['succeeded'] == completions:
+                return True
+        except KeyError:
+            time.sleep(5)
+            i = i + 5
+    return False
 
 
 @allure.step('删除指定任务，并返回删除结果')
@@ -353,6 +367,17 @@ def step_create_gateway(project_name, type, status):
                                     "service.beta.kubernetes.io/qingcloud-load-balancer-type": "0"},
                     "type": type}}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    # 查询项目网关，并等待其创建成功
+    i = 0
+    while i < 60:
+        try:
+            res = step_get_gateway(project_name)
+            if res.json()[0]['status']:
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            i += 1
     return response
 
 
@@ -491,14 +516,14 @@ def step_delete_workload(project_name, type, work_name):
 
 
 @allure.step('创建存储卷')
-def step_create_volume(project_name, volume_name):
+def step_create_volume(project_name, volume_name, storage_class):
     url = env_url + '/api/v1/namespaces/' + project_name + '/persistentvolumeclaims'
     data = {"apiVersion": "v1",
             "kind": "PersistentVolumeClaim",
             "metadata": {"namespace": project_name, "name": volume_name, "labels": {},
                          "annotations": {"kubesphere.io/creator": "admin"}},
             "spec": {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "10Gi"}},
-                     "storageClassName": "local"}}
+                     "storageClassName": storage_class}}
     response = requests.post(url=url, headers=get_header(), data=json.dumps(data))
     return response
 
@@ -945,6 +970,13 @@ def step_get_project_info(ws_name):
     response = requests.get(url=url, headers=get_header())
     return response
 
+
+@allure.step('查询指定项目信息')
+def step_get_project_info_by_name(ws_name, project_name):
+    url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces?name=' + project_name + \
+          '&labelSelector=kubefed.io%2Fmanaged%21%3Dtrue%2C%20kubesphere.io%2Fkubefed-host-namespace%21%3Dtrue&sortBy=createTime&limit=10'
+    response = requests.get(url=url, headers=get_header())
+    return response
 
 @allure.step('在项目中查询pod')
 def step_get_pod_info(project_name, pod_name):

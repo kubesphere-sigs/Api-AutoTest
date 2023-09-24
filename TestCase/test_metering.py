@@ -167,6 +167,7 @@ class TestMetering(object):
         # 查询集群的节点信息
         response = cluster_steps.step_get_node_info()
         # 获取节点的名称
+        name = ''
         try:
             name = response.json()['items'][0]['metadata']['name']
             # 查询pod的消费信息

@@ -339,28 +339,27 @@ class TestCluster(object):
     @allure.story('边缘节点')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('whizard') is False, reason='集群已未开启边缘节点功能')
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('kubeedge') is False, reason='集群已未开启边缘节点功能')
     @pytest.mark.parametrize('ip, title, status_code',
                              [('10.10.10', '添加边缘节点时，校验ip地址格式-不符合格式的ip地址', '400'),
                               ('10.10.10.10', '添加边缘节点时，校验ip地址格式-符合格式的ip地址', '200')])
     def test_add_edge_node_with_invalid_ip(self, ip, title, status_code):
         # 添加边缘节点
         node_name = 'edge-node'
-        re = multi_cluster_steps.step_check_internal_ip(self.cluster_any_name, node_name, ip)
-        assert re.json()['code'] == int(status_code)
+        re = multi_cluster_steps.step_check_internal_ip(self.cluster_host_name, node_name, ip)
+        assert re.status_code == int(status_code)
 
     @allure.story('边缘节点')
     @allure.title('{title}')
     @allure.severity(allure.severity_level.NORMAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('whizard') is False, reason='集群已未开启边缘节点功能')
+    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('kubeedge') is False, reason='集群已未开启边缘节点功能')
     @pytest.mark.parametrize('add_default_taint, title, result',
                              [('true', '获取边缘节点配置命令-添加默认污点', True),
                               ('false', '获取边缘节点配置命令-不添加默认污点', False)])
-    def test_get_edge_node_config_command(self, title, add_default_taint, result):
+    def test_get_edge_node_config_command(self, title, add_default_taint, result, ip_address):
         # 添加边缘节点
-        node_name = 'edge-node'
-        ip = '10.10.10.10'
-        re = multi_cluster_steps.step_get_edge_node_config_command(self.cluster_any_name, node_name, ip,
+        node_name = 'edge-node' + str(commonFunction.get_random())
+        re = multi_cluster_steps.step_get_edge_node_config_command(self.cluster_host_name, node_name, ip_address,
                                                                    add_default_taint)
         result_new = 'with-edge-taint' in re.json()['data']
         assert result_new == result
@@ -724,10 +723,10 @@ class TestCluster(object):
             resource_name = re.json()['items'][j]['metadata']['name']
             project_name = re.json()['items'][j]['metadata']['namespace']
             # 查询daemonSets的详细信息
-            r = multi_cluster_steps.step_get_app_workload_detail(self.cluster_any_name, project_name, 'daemonsets',
-                                                                 resource_name)
+            r = multi_cluster_steps.step_get_workload_detail(self.cluster_any_name, project_name, 'daemonsets',
+                                                             resource_name)
             # 验证信息查询成功
-            assert r.json()['kind'] == 'DaemonSet'
+            assert r.json()['items'][0]['metadata']['annotations']['deprecated.daemonset.template.generation'] is not None
 
     @allure.story('应用负载')
     @allure.title('{title}')
@@ -807,28 +806,28 @@ class TestCluster(object):
         response = multi_cluster_steps.step_get_cluster()
         # 获取集群的数量
         cluster_count = response.json()['totalItems']
-        for i in range(0, cluster_count):
-            # 获取每个集群的名称
-            cluster_name = response.json()['items'][i]['metadata']['name']
-            # 查询集群所有的资源
-            re = multi_cluster_steps.step_get_resource_of_cluster(cluster_name, type)
-            # 获取集群某一资源的数量
-            count = re.json()['totalItems']
-            # 获取某一资源任意的project_name,资源的名称和uid
-            if count > 0:
-                j = random.randint(0, count - 1)
-                project_name = re.json()['items'][j]['metadata']['namespace']
-                resource_name = re.json()['items'][j]['metadata']['name']
-                resource_uid = response.json()['items'][i]['metadata']['uid']
-                # 查询daemonSets的event信息
-                r = multi_cluster_steps.step_get_resource_event(cluster_name, project_name, type, resource_name,
-                                                                resource_uid)
-                # 获取请求结果的类型
-                kind = r.json()['kind']
-                # 验证请求结果的类型为EventList
-                assert kind == 'EventList'
-            else:
-                print('无' + type)
+        i = random.randint(0, cluster_count - 1)
+        # 获取任一集群的名称
+        cluster_name = response.json()['items'][i]['metadata']['name']
+        # 查询集群所有的资源
+        re = multi_cluster_steps.step_get_resource_of_cluster(cluster_name, type)
+        # 获取集群某一资源的数量
+        count = re.json()['totalItems']
+        # 获取某一资源任意的project_name,资源的名称和uid
+        if count > 0:
+            j = random.randint(0, count - 1)
+            project_name = re.json()['items'][j]['metadata']['namespace']
+            resource_name = re.json()['items'][j]['metadata']['name']
+            resource_uid = response.json()['items'][i]['metadata']['uid']
+            # 查询daemonSets的event信息
+            r = multi_cluster_steps.step_get_resource_event(cluster_name, project_name, type, resource_name,
+                                                            resource_uid)
+            # 获取请求结果的类型
+            kind = r.json()['kind']
+            # 验证请求结果的类型为EventList
+            assert kind == 'EventList'
+        else:
+            print('无' + type)
 
     @allure.story('应用负载')
     @allure.title('{title}')
@@ -1490,11 +1489,9 @@ class TestCluster(object):
     def test_get_cluster_visibility(self):
         # 创建企业空间，并设置其所在集群为单个集群
         ws_name = 'test-ws' + str(commonFunction.get_random())
-        alias_name = ''
-        description = ''
         # 获取集群名称
         clusters = multi_workspace_steps.step_get_cluster_name()
-        multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, clusters[0])
+        multi_workspace_steps.step_create_multi_ws(ws_name, clusters[0])
         time.sleep(5)
         # 查看集群可见性
         response = multi_cluster_steps.step_get_cluster_visibility(clusters[0])
@@ -1516,10 +1513,8 @@ class TestCluster(object):
     def test_unauthorized_cluster_visibility(self):
         # 创建企业空间，其所在集群为host集群
         ws_name = 'test-ws' + str(commonFunction.get_random())
-        alias_name = ''
-        description = ''
         cluster_name = self.cluster_host_name
-        multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
+        multi_workspace_steps.step_create_multi_ws(ws_name, cluster_name)
         # # 取消企业空间在host集群的授权
         multi_cluster_steps.step_unauthorized_cluster_visibility(self.cluster_host_name, ws_name)
         time.sleep(3)
@@ -1543,10 +1538,8 @@ class TestCluster(object):
     def test_authorized_cluster_visibility(self):
         # 创建企业空间，不添加集群
         ws_name = 'test-ws' + str(commonFunction.get_random())
-        alias_name = ''
-        description = ''
         cluster_name = []
-        multi_workspace_steps.step_create_multi_ws(ws_name, alias_name, description, cluster_name)
+        multi_workspace_steps.step_create_multi_ws(ws_name, cluster_name)
         # 添加企业空间在host集群的授权
         multi_cluster_steps.step_authorized_cluster_visibility(self.cluster_host_name, ws_name)
         # 查看集群可见性

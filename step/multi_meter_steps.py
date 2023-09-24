@@ -131,9 +131,8 @@ def step_get_workspace_info():
 
 @allure.step('查询企业空间的项目信息')
 def step_get_project_info(cluster_name, ws_name):
-    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + \
-          ws_name + '/namespaces?' \
-          'sortBy=createTime&labelSelector=%21kubesphere.io%2Fkubefed-host-namespace%2C%21kubesphere.io%2Fdevopsproject'
+    url = env_url + '/kapis/clusters/' + cluster_name + '/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + \
+          '/namespaces?labelSelector=kubefed.io%2Fmanaged%21%3Dtrue%2C%20kubesphere.io%2Fkubefed-host-namespace%21%3Dtrue&sortBy=createTime'
     response = requests.get(url=url, headers=get_header())
     return response
 

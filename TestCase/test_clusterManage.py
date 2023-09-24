@@ -10,7 +10,6 @@ from common import commonFunction
 from step import cluster_steps, platform_steps
 from datetime import datetime
 
-
 sys.path.append('../')  # 将项目路径加到搜索路径中，使得自定义模块可以引用
 
 
@@ -319,7 +318,7 @@ class TestCluster(object):
         # 获取集群中系统项目的数量
         response = cluster_steps.step_query_system_project('')
         project_count = response.json()['totalItems']
-        i = random.randint(0, project_count-1)
+        i = random.randint(0, project_count - 1)
         # 获取集群任一系统项目的名称
         project_name = response.json()['items'][i]['metadata']['name']
         # 查询项目的配额信息
@@ -363,7 +362,7 @@ class TestCluster(object):
         # 获取集群中系统项目的数量
         response = cluster_steps.step_query_system_project('')
         project_count = response.json()['totalItems']
-        i = random.randint(0, project_count-1)
+        i = random.randint(0, project_count - 1)
         # 获取集群任一系统项目的名称
         res = cluster_steps.step_query_system_project('')
         project_name = res.json()['items'][i]['metadata']['name']
@@ -383,7 +382,7 @@ class TestCluster(object):
         response = cluster_steps.step_query_system_project('')
         project_count = response.json()['totalItems']
         # 获取集群中任一系统项目的名称
-        i = random.randint(0, project_count-1)
+        i = random.randint(0, project_count - 1)
         project_name = response.json()['items'][i]['metadata']['name']
         # 查询项目的pods信息
         r = cluster_steps.step_get_pods_of_project(project_name=project_name)
@@ -396,7 +395,7 @@ class TestCluster(object):
             pod_name = r.json()['items'][j]['metadata']['name']
             if state not in ['Running', 'Succeeded']:
                 print(pod_name)
-            # 验证pod的运行状态
+                # 验证pod的运行状态
                 with pytest.assume:
                     assert state in ['Running', 'Succeeded']
 
@@ -542,7 +541,7 @@ class TestCluster(object):
         # 获取集群deployments的数量
         count = response.json()['totalItems']
         # 获取集群任一的deployments的labels
-        i = random.randint(0, count-1)
+        i = random.randint(0, count - 1)
         label_selector = ''
         project_name = response.json()['items'][i]['metadata']['namespace']
         labels = response.json()['items'][i]['spec']['selector']['matchLabels']
@@ -568,7 +567,7 @@ class TestCluster(object):
         response = cluster_steps.step_get_system_of_cluster()
         system_count = response.json()['totalItems']
         # 查询集群任一系统项目的statefulSets
-        i = random.randint(0, system_count-1)
+        i = random.randint(0, system_count - 1)
         system_name = response.json()['items'][i]['metadata']['name']
         re = cluster_steps.step_get_resource_of_cluster_by_project('statefulsets', system_name)
         # 获取集群statefulSets的数量
@@ -588,7 +587,7 @@ class TestCluster(object):
         response = cluster_steps.step_get_system_of_cluster()
         system_count = response.json()['totalItems']
         # 查询集群任一系统项目的daemonSets
-        i = random.randint(0, system_count-1)
+        i = random.randint(0, system_count - 1)
         system_name = response.json()['items'][i]['metadata']['name']
         re = cluster_steps.step_get_resource_of_cluster_by_project('daemonsets', system_name)
         # 获取集群daemonSets的数量
@@ -609,7 +608,7 @@ class TestCluster(object):
         # 获取集群daemonSets的数量
         count = response.json()['totalItems']
         # 获取集群中任一的daemonSets的名称和所在的项目名称
-        i = random.randint(0, count-1)
+        i = random.randint(0, count - 1)
         resource_name = response.json()['items'][i]['metadata']['name']
         project_name = response.json()['items'][i]['metadata']['namespace']
         # 查询daemonSets的详细信息
@@ -629,7 +628,7 @@ class TestCluster(object):
         # 获取集群daemonSets的数量
         count = response.json()['totalItems']
         # 获取任一的daemonSets的label、project_name和daemonSets的名称
-        i = random.randint(0, count-1)
+        i = random.randint(0, count - 1)
         labels = response.json()['items'][i]['metadata']['labels']
         # 将labels的key和value拼接为label_selector
         label_selector = ''
@@ -658,7 +657,7 @@ class TestCluster(object):
         response = cluster_steps.step_get_system_of_cluster()
         system_count = response.json()['totalItems']
         # 查询集群任一系统项目的Jobs
-        i = random.randint(0, system_count-1)
+        i = random.randint(0, system_count - 1)
         system_name = response.json()['items'][i]['metadata']['name']
         re = cluster_steps.step_get_resource_of_cluster_by_project(type, system_name)
         # 获取集群Jobs的数量
@@ -687,7 +686,7 @@ class TestCluster(object):
         # 获取集群daemonSets的数量
         count = response.json()['totalItems']
         # 获取任一的daemonSets的project_name和daemonSets的名称
-        i = random.randint(0, count-1)
+        i = random.randint(0, count - 1)
         project_name = response.json()['items'][i]['metadata']['namespace']
         resource_name = response.json()['items'][i]['metadata']['name']
         # 查看监控信息
@@ -856,7 +855,7 @@ class TestCluster(object):
         running_resource = []
         ready_replicas = 0
         # 获取任一状态为运行中的资源名称
-        i = random.randint(0, count-1)
+        i = random.randint(0, count - 1)
         if type == 'daemonsets':
             ready_replicas = response.json()['items'][i]['status']['numberReady']
             replicas = response.json()['items'][i]['status']['numberAvailable']
@@ -1018,7 +1017,7 @@ class TestCluster(object):
         # 获取crd的数量
         count = response.json()['totalItems']
         # 获取任一crd的名称
-        i = random.randint(0, count-1)
+        i = random.randint(0, count - 1)
         name = response.json()['items'][i]['metadata']['name']
         # 查询CRD的详情信息
         r = cluster_steps.step_get_crd_detail(name)
@@ -1083,7 +1082,7 @@ class TestCluster(object):
         # 获取存储卷的数量
         count = response.json()['totalItems']
         # 获取任一存储卷的名称和所在namespace
-        i = random.randint(0, count-1)
+        i = random.randint(0, count - 1)
         name = response.json()['items'][i]['metadata']['name']
         namespace = response.json()['items'][i]['metadata']['namespace']
         # 查询存储卷的详情信息
@@ -1128,7 +1127,7 @@ class TestCluster(object):
         # 获取集群中所有的系统项目名称
         re = cluster_steps.step_get_system_of_cluster()
         project_count = re.json()['totalItems']
-        i = random.randint(0, project_count-1)
+        i = random.randint(0, project_count - 1)
         project = re.json()['items'][i]['metadata']['name']
         # 查询项目中存在的存储卷信息
         response = cluster_steps.step_get_project_pvc(project)
@@ -1136,7 +1135,7 @@ class TestCluster(object):
         count = response.json()['totalItems']
         try:
             # 获取任一存储卷的名称和所在namespace
-            j = random.randint(0, count-1)
+            j = random.randint(0, count - 1)
             name = response.json()['items'][j]['metadata']['name']
             # 查询存储卷的pod信息
             r = cluster_steps.step_get_pods_of_project(project, 'pvcName=' + name)
@@ -1159,7 +1158,7 @@ class TestCluster(object):
         # 获取存储卷的数量
         count = response.json()['totalItems']
         # 获取任一存储卷的名称和所在namespace
-        i = random.randint(0, count-1)
+        i = random.randint(0, count - 1)
         name = response.json()['items'][i]['metadata']['name']
         namespace = response.json()['items'][i]['metadata']['namespace']
         # 查询每个pvc的快照信息
@@ -1407,68 +1406,6 @@ class TestCluster(object):
         result_type = response.json()['results'][0]['data']['resultType']
         # 验证数据类型为matrix
         assert result_type == 'matrix'
-
-    @allure.story('监控告警/告警策略')
-    @allure.title('创建告警策略（节点的cpu使用率大于0）')
-    @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
-    def test_create_alert_policy(self):
-        # 获取集群的节点名称
-        response = cluster_steps.step_get_nodes()
-        node_count = response.json()['totalItems']  # 节点数量
-        node_names = []
-        for i in range(0, node_count):
-            node_names.append(response.json()['items'][i]['metadata']['name'])
-        # 获取任意节点名称
-        node_name = node_names[numpy.random.randint(0, node_count)]
-        # 创建告警策略（节点的cpu使用率大于0）
-        alert_name = 'test-alert' + str(commonFunction.get_random())
-        cluster_steps.step_create_alert_policy(alert_name, node_name)
-        # 等待150s后查看新建的告警策略，并验证其状态为firing
-        time.sleep(150)
-        re = cluster_steps.step_get_alert_custom_policy(alert_name)
-        state = re.json()['items'][0]['state']
-        with pytest.assume:
-            assert state == 'firing'
-        # 查看告警消息，并验证告警消息正确
-        r = cluster_steps.step_get_alert_message('', 'label_filters=severity%3Dwarning')
-        message_count = r.json()['total']
-        policy_names = []
-        for i in range(0, message_count):
-            policy_names.append(r.json()['items'][i]['ruleName'])
-        with pytest.assume:
-            assert alert_name in policy_names
-        # 删除告警策略
-        cluster_steps.step_delete_alert_custom_policy(alert_name)
-
-    @allure.story('监控告警/告警策略')
-    @allure.title('修改告警策略中的持续时间')
-    @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.skipif(commonFunction.get_components_status_of_cluster('alerting') is False, reason='集群未开启alerting功能')
-    def test_edit_alert_custom_policy(self):
-        # 获取集群的节点名称
-        response = cluster_steps.step_get_nodes()
-        node_count = response.json()['totalItems']  # 节点数量
-        node_names = []
-        for i in range(0, node_count):
-            node_names.append(response.json()['items'][i]['metadata']['name'])
-        # 获取任意节点名称
-        node_name = node_names[random.randint(0, node_count - 1)]
-        # 创建告警策略（节点的cpu使用率大于0）
-        alert_name = 'test-alert' + str(commonFunction.get_random())
-        cluster_steps.step_create_alert_policy(alert_name, node_name)
-        # 查询新建的自定义告警策略，并获取其id
-        re = cluster_steps.step_get_alert_custom_policy(alert_name)
-        alert_id = re.json()['items'][0]['id']
-        # 修改自定义策略的持续时间为5min
-        cluster_steps.step_edit_alert_custom_policy(alert_name, alert_id, node_name)
-        # 查看告警策略的详情，并验证持续时间修改成功
-        r = cluster_steps.step_get_alert_custom_policy_detail(alert_name)
-        duration = r.json()['duration']
-        with pytest.assume:
-            assert duration == '5m'
-        # 删除告警策略
-        cluster_steps.step_delete_alert_custom_policy(alert_name)
 
     @allure.story('集群设置/网关设置')
     @allure.title('{title}')

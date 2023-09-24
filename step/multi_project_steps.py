@@ -3,6 +3,7 @@ import allure
 import sys
 import json
 from common.getConfig import get_apiserver
+from common import commonFunction
 from step import multi_workspace_steps
 
 env_url = get_apiserver()
@@ -31,7 +32,7 @@ def step_delete_project_in_ws(ws_name, cluster_name, project_name):
 
 
 @allure.step('在多集群环境创建存储卷')
-def step_create_volume_in_multi_project(cluster_name, project_name, volume_name):
+def step_create_volume_in_fed_project(cluster_name, project_name, volume_name):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedpersistentvolumeclaims'
     url2 = url + '?dryRun=All'
     clusters = []
@@ -43,6 +44,7 @@ def step_create_volume_in_multi_project(cluster_name, project_name, volume_name)
         override['clusterOverrides'] = []
         clusters.append(cluster)
         overrides.append(override)
+        # 获取集群的默认存储类
     data = {"apiVersion": "types.kubefed.io/v1beta1",
             "kind": "FederatedPersistentVolumeClaim",
             "metadata": {"namespace": project_name, "name": volume_name,
@@ -51,7 +53,7 @@ def step_create_volume_in_multi_project(cluster_name, project_name, volume_name)
                      "template": {"metadata": {"namespace": project_name, "labels": {}},
                                   "spec": {"accessModes": ["ReadWriteOnce"],
                                            "resources": {"requests": {"storage": "10Gi"}},
-                                           "storageClassName": "local"}},
+                                           }},
                      "overrides": overrides}}
 
     requests.post(url=url2, headers=get_header(), data=json.dumps(data))
@@ -59,10 +61,41 @@ def step_create_volume_in_multi_project(cluster_name, project_name, volume_name)
     return response
 
 
+@allure.step('在多集群环境指定项目创建部署并挂载存储卷')
+def step_create_workload_in_multi_project(cluster_name, project_name, work_name, pvc_name, container_name='', image='nginx'):
+    base_url = env_url + '/apis/clusters/' + cluster_name + '/apps/v1/namespaces/' + project_name + '/deployments'
+    url = base_url + '?dryRun=All'
+    container_name = container_name if container_name else work_name + '-container' + str(commonFunction.get_random())
+    volume_name = pvc_name + '-volume' + str(commonFunction.get_random())
+    data = {"apiVersion": "apps/v1", "kind": "Deployment",
+            "metadata": {"namespace": project_name, "labels": {"app": work_name}, "name": work_name,
+                         "annotations": {"kubesphere.io/creator": "admin"}},
+            "spec": {"replicas": 1, "selector": {"matchLabels": {"app": work_name}}, "template": {
+                "metadata": {"labels": {"app": work_name}, "annotations": {"kubesphere.io/imagepullsecrets": "{}",
+                                                                      "logging.kubesphere.io/logsidecar-config": "{}",
+                                                                      "kubesphere.io/creator": "admin"}}, "spec": {
+                    "containers": [{"name": container_name, "imagePullPolicy": "IfNotPresent",
+                                    "ports": [{"name": "tcp-80", "protocol": "TCP", "containerPort": 80}],
+                                    "image": image, "volumeMounts": [
+                            {"name": volume_name, "readOnly": False, "mountPath": "/data"}]}],
+                    "serviceAccount": "default", "terminationGracePeriodSeconds": 30, "initContainers": [], "volumes": [
+                        {"name": volume_name, "persistentVolumeClaim": {"claimName": pvc_name}}],
+                    "imagePullSecrets": None}}, "strategy": {"type": "RollingUpdate",
+                                                             "rollingUpdate": {"maxUnavailable": "25%",
+                                                                               "maxSurge": "25%"}}}}
+    requests.post(url=url, headers=get_header(), data=json.dumps(data))
+    response = requests.post(url=base_url, headers=get_header(), data=json.dumps(data))
+    return response
+
+@allure.step('删除多集群环境指定项目的部署')
+def step_delete_workload_in_multi_project(cluster_name, project_name, work_name):
+    url = env_url + '/apis/clusters/' + cluster_name + '/apps/v1/namespaces/' + project_name + '/deployments/' + work_name
+    response = requests.delete(url=url, headers=get_header())
+    return response
+
 @allure.step('在多集群项目创建deployment')
-def step_create_deploy_in_multi_project(cluster_name, project_name, work_name, container_name, image, replicas, ports,
-                                        volumemount,
-                                        volume_info, strategy):
+def step_create_deploy_in_fed_project(cluster_name, project_name, work_name, container_name, image, replicas, ports,
+                                        volumemount, volume_info, strategy):
     """
     :param cluster_name:
     :param strategy: 策略信息
@@ -136,7 +169,7 @@ def step_get_workload_in_multi_project(cluster_name, project_name, type, conditi
 
 
 @allure.step('在多集群项目/工作负载列表中获取指定的工作负载')
-def step_get_workload_in_multi_project_list(project_name, type, condition):
+def step_get_workload_in_fed_project_list(project_name, type, condition):
     """
     :param project_name: 项目名称
     :param type: 负载类型
@@ -148,23 +181,22 @@ def step_get_workload_in_multi_project_list(project_name, type, condition):
     return response
 
 
-@allure.step('获取多集群项目存储卷状态')
-def step_get_volume_status_in_multi_project(cluster_name, project_name, volume_name):
-    url = env_url + '/api/clusters/' + cluster_name + '/v1/namespaces/' \
-          + project_name + '/persistentvolumeclaims/' + volume_name
+@allure.step('在集群详情获取存储卷状态')
+def step_get_volume_status(cluster_name, volume_name):
+    url = env_url + '/kapis/clusters/' + cluster_name + '/resources.kubesphere.io/v1alpha3/persistentvolumeclaims?name=' + volume_name + '&sortBy=createTime&limit=10'
     response = requests.get(url=url, headers=get_header())
     return response
 
 
 @allure.step('删除多集群项目指定的工作负载')
-def step_delete_workload_in_multi_project(project_name, type, work_name):
+def step_delete_workload_in_fed_project(project_name, type, work_name):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federated' + type + '/' + work_name
     response = requests.delete(url=url, headers=get_header())
     return response
 
 
 @allure.step('删除多集群项目的存储卷')
-def step_delete_volume_in_multi_project(project_name, volume_name):
+def step_delete_volume_in_fed_project(project_name, volume_name):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
           '/federatedpersistentvolumeclaims/' + volume_name
     # 删除存储卷
@@ -173,7 +205,7 @@ def step_delete_volume_in_multi_project(project_name, volume_name):
 
 
 @allure.step('在多集群环境创建无状态服务')
-def step_create_service_in_multi_project(cluster_name, project_name, service_name, port):
+def step_create_service_in_fed_project(cluster_name, project_name, service_name, port):
     url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices?dryRun=All'
     url2 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedservices'
 
@@ -248,7 +280,7 @@ def step_get_multi_project_all(ws):
 
 
 @allure.step('在多集群项目创建statefulsets')
-def step_create_sts_in_multi_project(cluster_name, project_name, work_name, container_name, image, replicas, ports,
+def step_create_sts_in_fed_project(cluster_name, project_name, work_name, container_name, image, replicas, ports,
                                      service_ports,
                                      volumemount, volume_info, service_name):
     url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedstatefulsets?dryRun=All'
@@ -314,7 +346,7 @@ def step_create_sts_in_multi_project(cluster_name, project_name, work_name, cont
 
 
 @allure.step('在多集群项目创建路由')
-def step_create_route_in_multi_project(cluster_name, project_name, ingress_name, host, service_info):
+def step_create_route_in_fed_project(cluster_name, project_name, ingress_name, host, service_info):
     url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedingresses?dryRun=All'
     url2 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedingresses'
     clusters = []
@@ -349,7 +381,7 @@ def step_create_route_in_multi_project(cluster_name, project_name, ingress_name,
 
 
 @allure.step('在多集群项目删除路由')
-def step_delete_route_in_multi_project(project_name, ingress_name):
+def step_delete_route_in_fed_project(project_name, ingress_name):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedingresses/' + ingress_name
     requests.delete(url=url, headers=get_header())
 
@@ -390,7 +422,7 @@ def step_get_gateway_in_multi_project(cluster_name, project_name):
 
 
 @allure.step('修改多集群项目工作负载副本数')
-def step_modify_work_replicas_in_multi_project(cluster_name, project_name, type, work_name, replicas):
+def step_modify_work_replicas_in_fed_project(cluster_name, project_name, type, work_name, replicas):
     """
     :param project_name: 项目名称
     :param work_name: 工作负载名称
@@ -475,7 +507,7 @@ def step_get_project_quota_in_multi_project(cluster_name, project_name):
 
 
 @allure.step('获取多集群环境容器默认资源请求')
-def step_get_container_quota_in_multi_project(project_name, ws_name):
+def step_get_container_quota_in_fed_project(project_name, ws_name):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
           '/federatedlimitranges?workspace=' + ws_name
     try:
@@ -486,7 +518,7 @@ def step_get_container_quota_in_multi_project(project_name, ws_name):
 
 
 @allure.step('在多集群项目编辑容器资源默认请求')
-def step_edit_container_quota_in_multi_project(cluster_name, project_name, resource_version, limit, request):
+def step_edit_container_quota_in_fed_project(cluster_name, project_name, resource_version, limit, request):
     url_post = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedlimitranges'
     url_put = url_post + project_name
     limits = [{"defaultRequest": request, "type": "Container", "default": limit}]
@@ -533,7 +565,7 @@ def step_edit_container_quota_in_multi_project(cluster_name, project_name, resou
 
 
 @allure.step('创建多集群项目')
-def step_create_multi_project(ws_name, project_name, clusters):
+def step_create_fed_project(ws_name, project_name, clusters):
     url = env_url + '/kapis/tenant.kubesphere.io/v1alpha2/workspaces/' + ws_name + '/namespaces'
     url1 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatednamespaces?dryRun=All'
     url2 = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatednamespaces'
@@ -580,7 +612,7 @@ def step_create_multi_project(ws_name, project_name, clusters):
 
 
 @allure.step('编辑多集群项目')
-def step_edit_project_in_multi_project(cluster_name, ws_name, project_name, alias_name, description):
+def step_edit_project_in_fed_project(cluster_name, ws_name, project_name, alias_name, description):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
           '/federatednamespaces/' + project_name
 
@@ -607,7 +639,7 @@ def step_edit_project_in_multi_project(cluster_name, ws_name, project_name, alia
 
 
 @allure.step('在多集群项目创建默认密钥')
-def step_create_secret_default_in_multi_project(cluster_name, project_name, secret_name, key, value):
+def step_create_secret_default_in_fed_project(cluster_name, project_name, secret_name, key, value):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
     url1 = url + '?dryRun=All'
     clusters = []
@@ -639,7 +671,7 @@ def step_create_secret_default_in_multi_project(cluster_name, project_name, secr
 
 
 @allure.step('在多集群项目创建TLS类型密钥')
-def step_create_secret_tls_in_multi_project(cluster_name, project_name, secret_name, credential, key):
+def step_create_secret_tls_in_fed_project(cluster_name, project_name, secret_name, credential, key):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
     url1 = url + '?dryRun=All'
     clusters = []
@@ -678,14 +710,14 @@ def step_get_federatedsecret(project_name, secret_name):
 
 
 @allure.step('在多集群项目删除密钥')
-def step_delete_federatedsecret(project_name, secret_name):
+def step_delete_fed_secret(project_name, secret_name):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets/' + secret_name
     response = requests.delete(url=url, headers=get_header())
     return response
 
 
 @allure.step('在多集群项目删除配置')
-def step_delete_config_map(project_name, config_name):
+def step_delete_fed_config_map(project_name, config_name):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + \
           '/federatedconfigmaps/' + config_name
     response = requests.delete(url=url, headers=get_header())
@@ -693,7 +725,7 @@ def step_delete_config_map(project_name, config_name):
 
 
 @allure.step('在多集群项目创建配置')
-def step_create_config_map_in_multi_project(cluster_name, project_name, config_name, key, value):
+def step_create_config_map_in_fed_project(cluster_name, project_name, config_name, key, value):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedconfigmaps'
     url1 = url + '?dryRun=All'
     clusters = []
@@ -713,7 +745,8 @@ def step_create_config_map_in_multi_project(cluster_name, project_name, config_n
                 "name": config_name,
                 "annotations": {"kubesphere.io/creator": "admin"}},
             "spec": {"placement": {"clusters": clusters},
-                     "template": {"metadata": {"namespace": project_name, "labels": {}},
+                     "template": {"metadata": {"namespace": project_name, "labels": {},
+                                               "annotations": {"kubesphere.io/creator": "admin"}},
                                   "spec": {"template": {"metadata": {"labels": {}}}},
                                   "data": {value: key}},
                      "overrides": overrides}}
@@ -767,7 +800,7 @@ def step_get_workloads_in_multi_project(project_name):
 
 
 @allure.step('在多集群项目创建账户密码密钥')
-def step_create_secret_account_in_multi_project(cluster_name, project_name, secret_name, username, password):
+def step_create_secret_account_in_fed_project(cluster_name, project_name, secret_name, username, password):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
     url1 = url + '?dryRun=All'
     clusters = []
@@ -806,7 +839,7 @@ def step_get_federatedconfigmap(project_name, config_name):
 
 
 @allure.step('在多集群项目创建镜像仓库类型密钥')
-def step_create_secret_image_in_multi_project(cluster_name, project_name, secret_name):
+def step_create_secret_image_in_fed_project(cluster_name, project_name, secret_name):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedsecrets'
     url1 = url + '?dryRun=All'
     clusters = []
@@ -849,7 +882,7 @@ def step_get_host_name():
 
 
 @allure.step('在多集群环境查询项目的federatedlimitranges')
-def step_get_project_federatedlimitranges(project_name):
+def step_get_project_fed_limit_ranges(project_name):
     url = env_url + '/apis/types.kubefed.io/v1beta1/namespaces/' + project_name + '/federatedlimitranges'
     response = requests.get(url=url, headers=get_header())
     return response
@@ -884,7 +917,7 @@ def step_delete_project(cluster_name, ws_name, project_name):
 
 
 @allure.step('删除指定的多集群项目')
-def step_delete_multi_project(project_name):
+def step_delete_fed_project(project_name):
     url = env_url + '/api/v1/namespaces/' + project_name
     response = requests.delete(url=url, headers=get_header())
     return response

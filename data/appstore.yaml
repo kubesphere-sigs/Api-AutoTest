@@ -4,28 +4,28 @@
   - 应用商店
   - 从应用商店部署RabbitMQ
   - CRITICAL
-  - active
+  - created
 - - 2
   - Harbor
   - "expose:\n  type: ingress\n  tls:\n    enabled: true\n    secretName: ''\n    notarySecretName: ''\n    commonName: ''\n  ingress:\n    hosts:\n      core: core.harbor.domain\n      notary: notary.harbor.domain\n    controller: default\n    annotations:\n      ingress.kubernetes.io/ssl-redirect: 'true'\n      ingress.kubernetes.io/proxy-body-size: '0'\n      nginx.ingress.kubernetes.io/ssl-redirect: 'true'\n      nginx.ingress.kubernetes.io/proxy-body-size: '0'\n  clusterIP:\n    name: harbor\n    ports:\n      httpPort: 80\n      httpsPort: 443\n      notaryPort: 4443\n  nodePort:\n    name: harbor\n    ports:\n      http:\n        port: 80\n        nodePort: 30002\n      https:\n        port: 443\n        nodePort: 30003\n      notary:\n        port: 4443\n        nodePort: 30004\n  loadBalancer:\n    name: harbor\n    IP: ''\n    ports:\n      httpPort: 80\n      httpsPort: 443\n      notaryPort: 4443\n    annotations: {}\n    sourceRanges: []\nexternalURL: 'https://core.harbor.domain'\ninternalTLS:\n  enabled: false\n  certSource: auto\n  trustCa: ''\n  core:\n    secretName: ''\n    crt: ''\n    key: ''\n  jobservice:\n    secretName: ''\n    crt: ''\n    key: ''\n  registry:\n    secretName: ''\n    crt: ''\n    key: ''\n  portal:\n    secretName: ''\n    crt: ''\n    key: ''\n  chartmuseum:\n    secretName: ''\n    crt: ''\n    key: ''\n  clair:\n    secretName: ''\n    crt: ''\n    key: ''\n  trivy:\n    secretName: ''\n    crt: ''\n    key: ''\npersistence:\n  enabled: true\n  resourcePolicy: keep\n  persistentVolumeClaim:\n    registry:\n      existingClaim: ''\n      storageClass: ''\n      subPath: ''\n      accessMode: ReadWriteOnce\n      size: 5Gi\n    chartmuseum:\n      existingClaim: ''\n      storageClass: ''\n      subPath: ''\n      accessMode: ReadWriteOnce\n      size: 5Gi\n    jobservice:\n      existingClaim: ''\n      storageClass: ''\n      subPath: ''\n      accessMode: ReadWriteOnce\n      size: 1Gi\n    database:\n      existingClaim: ''\n      storageClass: ''\n      subPath: ''\n      accessMode: ReadWriteOnce\n      size: 1Gi\n    redis:\n      existingClaim: ''\n      storageClass: ''\n      subPath: ''\n      accessMode: ReadWriteOnce\n      size: 1Gi\n    trivy:\n      existingClaim: ''\n      storageClass: ''\n      subPath: ''\n      accessMode: ReadWriteOnce\n      size: 5Gi\n  imageChartStorage:\n    disableredirect: false\n    type: filesystem\n    filesystem:\n      rootdirectory: /storage\n    azure:\n      accountname: accountname\n      accountkey: base64encodedaccountkey\n      container: containername\n    gcs:\n      bucket: bucketname\n      encodedkey: base64-encoded-json-key-file\n    s3:\n      region: us-west-1\n      bucket: bucketname\n    swift:\n      authurl: 'https://storage.myprovider.com/v3/auth'\n      username: username\n      password: password\n      container: containername\n    oss:\n      accesskeyid: accesskeyid\n      accesskeysecret: accesskeysecret\n      region: regionname\n      bucket: bucketname\nimagePullPolicy: IfNotPresent\nimagePullSecrets: null\nupdateStrategy:\n  type: RollingUpdate\nlogLevel: info\nharborAdminPassword: Harbor12345\nsecretKey: not-a-secure-key\nproxy:\n  httpProxy: null\n  httpsProxy: null\n  noProxy: '127.0.0.1,localhost,.local,.internal'\n  components:\n    - core\n    - jobservice\n    - clair\nnginx:\n  image:\n    repository: goharbor/nginx-photon\n    tag: v2.0.0\n  replicas: 1\n  nodeSelector: {}\n  tolerations: []\n  affinity: {}\n  podAnnotations: {}\nportal:\n  image:\n    repository: goharbor/harbor-portal\n    tag: v2.0.0\n  replicas: 1\n  nodeSelector: {}\n  tolerations: []\n  affinity: {}\n  podAnnotations: {}\ncore:\n  image:\n    repository: goharbor/harbor-core\n    tag: v2.0.0\n  replicas: 1\n  livenessProbe:\n    initialDelaySeconds: 300\n  nodeSelector: {}\n  tolerations: []\n  affinity: {}\n  podAnnotations: {}\n  secret: ''\n  secretName: ''\n  xsrfKey: ''\njobservice:\n  image:\n    repository: goharbor/harbor-jobservice\n    tag: v2.0.0\n  replicas: 1\n  maxJobWorkers: 10\n  jobLogger: file\n  nodeSelector: {}\n  tolerations: []\n  affinity: {}\n  podAnnotations: {}\n  secret: ''\nregistry:\n  registry:\n    image:\n      repository: goharbor/registry-photon\n      tag: v2.0.0\n  controller:\n    image:\n      repository: goharbor/harbor-registryctl\n      tag: v2.0.0\n  replicas: 1\n  nodeSelector: {}\n  tolerations: []\n  affinity: {}\n  podAnnotations: {}\n  secret: ''\n  relativeurls: false\n  credentials:\n    username: harbor_registry_user\n    password: harbor_registry_password\n    htpasswd: >-\n      harbor_registry_user:$2y$10$9L4Tc0DJbFFMB6RdSCunrOpTHdwhid4ktBJmLD00bYgqkkGOvll3m\n  middleware:\n    enabled: false\n    type: cloudFront\n    cloudFront:\n      baseurl: example.cloudfront.net\n      keypairid: KEYPAIRID\n      duration: 3000s\n      ipfilteredby: none\n      privateKeySecret: my-secret\nchartmuseum:\n  enabled: true\n  absoluteUrl: false\n  image:\n    repository: goharbor/chartmuseum-photon\n    tag: v2.0.0\n  replicas: 1\n  nodeSelector: {}\n  tolerations: []\n  affinity: {}\n  podAnnotations: {}\nclair:\n  enabled: true\n  clair:\n    image:\n      repository: goharbor/clair-photon\n      tag: v2.0.0\n  adapter:\n    image:\n      repository: goharbor/clair-adapter-photon\n      tag: v2.0.0\n  replicas: 1\n  updatersInterval: 12\n  nodeSelector: {}\n  tolerations: []\n  affinity: {}\n  podAnnotations: {}\ntrivy:\n  enabled: true\n  image:\n    repository: goharbor/trivy-adapter-photon\n    tag: v2.0.0\n  replicas: 1\n  debugMode: false\n  vulnType: 'os,library'\n  severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'\n  ignoreUnfixed: false\n  insecure: false\n  gitHubToken: ''\n  skipUpdate: false\n  resources:\n    requests:\n      cpu: 200m\n      memory: 512Mi\n    limits:\n      cpu: 1\n      memory: 1Gi\n  podAnnotations: {}\nnotary:\n  enabled: true\n  server:\n    image:\n      repository: goharbor/notary-server-photon\n      tag: v2.0.0\n    replicas: 1\n  signer:\n    image:\n      repository: goharbor/notary-signer-photon\n      tag: v2.0.0\n    replicas: 1\n  nodeSelector: {}\n  tolerations: []\n  affinity: {}\n  podAnnotations: {}\n  secretName: ''\ndatabase:\n  type: internal\n  internal:\n    image:\n      repository: goharbor/harbor-db\n      tag: v2.0.0\n    initContainerImage:\n      repository: busybox\n      tag: latest\n    password: changeit\n    nodeSelector: {}\n    tolerations: []\n    affinity: {}\n  external:\n    host: 192.168.0.1\n    port: '5432'\n    username: user\n    password: password\n    coreDatabase: registry\n    clairDatabase: clair\n    notaryServerDatabase: notary_server\n    notarySignerDatabase: notary_signer\n    sslmode: disable\n  maxIdleConns: 50\n  maxOpenConns: 100\n  podAnnotations: {}\nredis:\n  type: internal\n  internal:\n    image:\n      repository: goharbor/redis-photon\n      tag: v2.0.0\n    nodeSelector: {}\n    tolerations: []\n    affinity: {}\n  external:\n    host: 192.168.0.2\n    port: '6379'\n    coreDatabaseIndex: '0'\n    jobserviceDatabaseIndex: '1'\n    registryDatabaseIndex: '2'\n    chartmuseumDatabaseIndex: '3'\n    clairAdapterIndex: '4'\n    trivyAdapterIndex: '5'\n    password: ''\n  podAnnotations: {}\n"
   - 应用商店
   - 从应用商店部署harbor
   - CRITICAL
-  - active
+  - created
 - - 3
   - PostgreSQL
   - "image:\n  postgres:\n    repository: postgres\n    tag: 12.0-alpine\n    pullPolicy: IfNotPresent\nimagePullSecrets: []\nnameOverride: ''\nfullnameOverride: ''\nserviceAccount:\n  create: true\n  name: null\npodSecurityContext: {}\nsecurityContext: {}\npersistence:\n  enabled: true\n  size: 5Gi\n  subPath: pgdata\nrootUsername: postgres\nrootPassword: password\nservice:\n  type: ClusterIP\n  port: 5432\nresources: {}\nnodeSelector: {}\ntolerations: []\naffinity: {}\ntests:\n  enabled: false\n"
   - 应用商店
   - 从应用商店部署postgresql
   - CRITICAL
-  - active
+  - created
 - - 4
   - Elasticsearch Exporter
   - "replicaCount: 1\nrestartPolicy: Always\nimage:\n  repository: justwatch/elasticsearch_exporter\n  tag: 1.1.0\n  pullPolicy: IfNotPresent\n  pullSecret: ''\nsecurityContext:\n  enabled: true\n  runAsUser: 1000\nresources: {}\npriorityClassName: ''\nnodeSelector: {}\ntolerations: {}\npodAnnotations: {}\naffinity: {}\nservice:\n  type: ClusterIP\n  httpPort: 9108\n  metricsPort:\n    name: http\n  annotations: {}\n  labels: {}\nenv: {}\nenvFromSecret: ''\nextraEnvSecrets: {}\nsecretMounts: []\nes:\n  uri: 'http://localhost:9200'\n  all: true\n  indices: true\n  indices_settings: true\n  shards: true\n  snapshots: true\n  cluster_settings: false\n  timeout: 30s\n  sslSkipVerify: false\n  ssl:\n    enabled: false\n    useExistingSecrets: false\n    ca:\n      path: /ssl/ca.pem\n    client:\n      enabled: true\n      pemPath: /ssl/client.pem\n      keyPath: /ssl/client.key\nweb:\n  path: /metrics\nserviceMonitor:\n  enabled: true\n  labels:\n    app.kubernetes.io/vendor: kubesphere\n  interval: 10s\n  scrapeTimeout: 10s\n  scheme: http\n  relabelings: []\nprometheusRule:\n  enabled: false\n  labels: {}\n  rules: []\nserviceAccount:\n  create: false\n  name: default\npodSecurityPolicies:\n  enabled: false\n"
   - 应用商店
   - 从应用商店部署elasticsearch exporter
   - CRITICAL
-  - active
+  - created
 
 - - 5
   - Redis
@@ -33,7 +33,7 @@
   - 应用商店
   - 从应用商店部署Redis
   - CRITICAL
-  - active
+  - created
 
 - - 6
   - MongoDB
@@ -41,7 +41,7 @@
   - 应用商店
   - 从应用商店部署mongodb
   - CRITICAL
-  - active
+  - created
 
 - - 7
   - RadonDB MySQL
@@ -49,7 +49,7 @@
   - 应用商店
   - 从应用商店部署RadonDB MYSQL
   - CRITICAL
-  - active
+  - created
 
 - - 8
   - Memcached
@@ -57,7 +57,7 @@
   - 应用商店
   - 从应用商店部署memcached
   - CRITICAL
-  - active
+  - created
 
 - - 9
   - MinIO
@@ -65,7 +65,7 @@
   - 应用商店
   - 从应用商店部署Minio
   - CRITICAL
-  - active
+  - created
 
 - - 10
   - MySQL Exporter
@@ -73,7 +73,7 @@
   - 应用商店
   - 从应用商店部署mysql exporter
   - CRITICAL
-  - active
+  - created
 
 - - 11
   - Tomcat
@@ -81,7 +81,7 @@
   - 应用商店
   - 从应用商店部署tomcat
   - CRITICAL
-  - active
+  - created
 
 - - 12
   - etcd
@@ -89,7 +89,7 @@
   - 应用商店
   - 从应用商店部署etcd
   - CRITICAL
-  - active
+  - created
 
 - - 13
   - MySQL
@@ -97,7 +97,7 @@
   - 应用商店
   - '从应用商店部署mysql '
   - CRITICAL
-  - active
+  - created
 
 - - 14
   - Redis Exporter
@@ -105,7 +105,7 @@
   - 应用商店
   - 从应用商店部署redis exporter
   - CRITICAL
-  - active
+  - created
 
 - - 15
   - APISIX
@@ -113,7 +113,7 @@
   - 应用商店
   - 从应用商店部署apisix
   - CRITICAL
-  - active
+  - created
 
 - - 16
   - NGINX
@@ -121,7 +121,7 @@
   - 应用商店
   - 从应用商店部署NGINX
   - CRITICAL
-  - active
+  - created
 
 - - 17
   - crane
@@ -129,7 +129,7 @@
   - 应用商店
   - 从应用商店部署CRANE
   - CRITICAL
-  - active
+  - created
 
 - - 18
   - meshery
@@ -137,7 +137,7 @@
   - 应用商店
   - 从应用商店部署meshery
   - CRITICAL
-  - active
+  - created
 
 - - 19
   - jh-gitlab
@@ -145,7 +145,7 @@
   - 应用商店
   - 从应用商店部署jh-gitlab
   - CRITICAL
-  - active
+  - created
 
 - - 20
   - qiming-operator
@@ -153,7 +153,7 @@
   - 应用商店
   - 从应用商店部署qiming-operator
   - CRITICAL
-  - active
+  - created
 
 - - 21
   - easegress
@@ -161,7 +161,7 @@
   - 应用商店
   - 从应用商店部署easegress
   - CRITICAL
-  - active
+  - created
 
 - - 22
   - RadonDB PostgreSQL
@@ -169,7 +169,7 @@
   - 应用商店
   - 从应用商店部署RadonDB PostgreSQL
   - CRITICAL
-  - active
+  - created
 
 - - 23
   - edgemesh
@@ -177,7 +177,7 @@
   - 应用商店
   - 从应用商店部署edgemesh
   - CRITICAL
-  - active
+  - created
 
 - - 24
   - chaos-mesh
@@ -185,7 +185,7 @@
   - 应用商店
   - 从应用商店部署chaos-mesh
   - CRITICAL
-  - active
+  - created
 
 - - 25
   - fpga-operator
@@ -193,7 +193,7 @@
   - 应用商店
   - 从应用商店部署fpga-operator
   - CRITICAL
-  - active
+  - created
 
 - - 26
   - juicefs
@@ -201,7 +201,7 @@
   - 应用商店
   - 从应用商店部署juicefs
   - CRITICAL
-  - active
+  - created
 
 - - 27
   - nocalhost
@@ -209,4 +209,4 @@
   - 应用商店
   - 从应用商店部署nocalhost
   - CRITICAL
-  - active
+  - created
