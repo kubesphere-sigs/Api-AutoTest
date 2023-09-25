@@ -6,7 +6,7 @@ pipeline {
       spec:
         containers:
         - name: python
-          image: kubespheredev/builder-python:v3.2.0
+          image: wenxinxin/python-image:3.8.2
           command: [\'sleep\']
           args: [\'1d\']
       '''
