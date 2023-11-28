@@ -6,7 +6,7 @@ pipeline {
       spec:
         containers:
         - name: python
-          image: wenxinxin/python-image:3.8.2
+          image: qiaoshilu/devops-kse-python:v3.5.0
           command: [\'sleep\']
           args: [\'1d\']
       '''
@@ -40,7 +40,7 @@ pipeline {
       agent none
       environment {
       // 使用apiserver的dns地址
-        ENV_URL = "ks-apiserver.kubesphere-system"
+        ENV_URL = "172.31.53.27:30464"
         PATH = "$PATH:/usr/local/src/allure-2.17.2/bin"
       }
       steps {

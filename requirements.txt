@@ -56,3 +56,4 @@ urllib3==1.25.11
 utils==1.0.1
 xlrd==1.2.0
 zipp==3.3.0
+loguru==0.7.0
